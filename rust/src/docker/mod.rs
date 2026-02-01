@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::io::{BufRead, BufReader};
-use std::process::{Command, Stdio, Child};
-use std::sync::mpsc;
+use std::process::{Child, Command, Stdio};
+use std::sync::{mpsc, Arc};
 use std::time::Duration;
 use tracing::{debug, error};
 
@@ -41,6 +41,8 @@ pub struct DockerClient {
     config: DockerConfig,
 }
 
+pub type OutputCallback = dyn Fn(&str) + Send + Sync + 'static;
+
 impl DockerClient {
     pub fn new(config: DockerConfig) -> Self {
         Self { config }
@@ -70,18 +72,50 @@ impl DockerClient {
         memory_limit: Option<&str>,
         volume_host_dir: Option<&str>,
     ) -> Result<ProcessResult, std::io::Error> {
+        self.run_command_with_limits_and_volume_with_callback(
+            container_image,
+            work_dir,
+            command,
+            timeout_seconds,
+            memory_limit,
+            volume_host_dir,
+            None,
+        )
+    }
+
+    /// Run a command in a Docker container with resource limits and optional output callback
+    pub fn run_command_with_limits_and_volume_with_callback(
+        &self,
+        container_image: Option<&str>,
+        work_dir: Option<&str>,
+        command: &[&str],
+        timeout_seconds: Option<u64>,
+        memory_limit: Option<&str>,
+        volume_host_dir: Option<&str>,
+        output_callback: Option<Arc<OutputCallback>>,
+    ) -> Result<ProcessResult, std::io::Error> {
         let image = container_image.unwrap_or(&self.config.image);
-        let work = work_dir.or(self.config.work_dir.as_deref()).unwrap_or("/workspace");
+        let work = work_dir
+            .or(self.config.work_dir.as_deref())
+            .unwrap_or("/workspace");
         let timeout = timeout_seconds.or(self.config.timeout).unwrap_or(300);
         let memory = memory_limit.or(self.config.memory.as_deref());
-        let host_dir = volume_host_dir
-            .map(|s| s.to_string())
-            .unwrap_or_else(|| std::env::current_dir().unwrap().to_string_lossy().to_string());
+        let host_dir = volume_host_dir.map(|s| s.to_string()).unwrap_or_else(|| {
+            std::env::current_dir()
+                .unwrap()
+                .to_string_lossy()
+                .to_string()
+        });
 
         // Generate deterministic container name
         let container_name = format!(
             "bench-{}",
-            uuid::Uuid::new_v4().to_string().replace('-', "").chars().take(12).collect::<String>()
+            uuid::Uuid::new_v4()
+                .to_string()
+                .replace('-', "")
+                .chars()
+                .take(12)
+                .collect::<String>()
         );
 
         // Build docker command
@@ -143,20 +177,23 @@ impl DockerClient {
             .spawn()?;
 
         let (tx, rx) = mpsc::channel();
+        let tx_for_stderr = tx.clone();
         let stdout = process.stdout.take().unwrap();
         let stderr = process.stderr.take().unwrap();
 
-        // Spawn threads to read output (all data moved into threads)
-        let tx_clone = tx.clone();
+        let callback_for_stdout = output_callback.clone();
         let _handle: std::thread::JoinHandle<()> = std::thread::spawn(move || {
             let reader = BufReader::new(stdout);
             for line in reader.lines() {
                 match line {
                     Ok(line) => {
-                        let _ = tx_clone.send(Ok(line));
+                        if let Some(ref cb) = callback_for_stdout {
+                            cb(&line);
+                        }
+                        let _ = tx.send(Ok(line));
                     }
                     Err(_) => {
-                        let _ = tx_clone.send(Err(()));
+                        let _ = tx.send(Err(()));
                         break;
                     }
                 }
@@ -168,10 +205,10 @@ impl DockerClient {
             for line in reader.lines() {
                 match line {
                     Ok(line) => {
-                        let _ = tx.send(Ok(line));
+                        let _ = tx_for_stderr.send(Ok(line));
                     }
                     Err(_) => {
-                        let _ = tx.send(Err(()));
+                        let _ = tx_for_stderr.send(Err(()));
                         break;
                     }
                 }

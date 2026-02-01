@@ -1,6 +1,7 @@
 use crate::docker::DockerClient;
 use crate::model::Exercise;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::fs;
 use std::path::{Path, PathBuf};
 use tracing::{debug, error, info, warn};
@@ -607,13 +608,14 @@ fn run_claude_in_docker(
         prompt,
     ];
 
-    let result = docker_client.run_command_with_limits_and_volume(
+    let result = docker_client.run_command_with_limits_and_volume_with_callback(
         None,
         Some("/workspace"),
         &command,
         None,
         None,
         Some(&temp_work_dir.to_string_lossy()),
+        Some(std::sync::Arc::new(|line| process_message(line))),
     )?;
 
     let end_time = std::time::Instant::now();
@@ -748,5 +750,275 @@ fn cleanup_temp_dir(temp_dir: &Path) {
             }
         }
         let _ = fs::remove_dir(temp_dir);
+    }
+}
+
+fn process_message(line: &str) {
+    if let Ok(json) = serde_json::from_str::<Value>(line) {
+        if let Some(msg_type) = json.get("type").and_then(|v| v.as_str()) {
+            match msg_type {
+                "stream_event" => process_stream_event(&json),
+                "assistant" => process_assistant_message(&json),
+                "user" => process_user_message(&json),
+                "result" => {
+                    println!("Result: {}", json);
+                }
+                _ => {
+                    // println!("{}", line);
+                }
+            }
+        }
+    } else {
+        println!("{}", line);
+    }
+}
+
+fn process_stream_event(json: &Value) {
+    if let Some(event) = json.get("event").and_then(|v| v.as_object()) {
+        if let Some(event_type) = event.get("type").and_then(|v| v.as_str()) {
+            match event_type {
+                "message_start" => {
+                    if let Some(message) = event.get("message").and_then(|v| v.as_object()) {
+                        if let Some(content) = message.get("content") {
+                            process_content(content);
+                        }
+                    }
+                }
+                "message_delta" => {
+                    if let Some(delta) = event.get("delta").and_then(|v| v.as_object()) {
+                        if let Some(delta_type) = delta.get("type").and_then(|v| v.as_str()) {
+                            match delta_type {
+                                "thinking_delta" => {
+                                    if let Some(thinking) = delta.get("thinking").and_then(|v| v.as_str()) {
+                                        print!("{}", thinking);
+                                    }
+                                }
+                                "input_json_delta" => {
+                                    if let Some(partial) = delta.get("partial_json").and_then(|v| v.as_str()) {
+                                        print!("{}", partial);
+                                    }
+                                }
+                                "text_delta" => {
+                                    if let Some(text) = delta.get("text").and_then(|v| v.as_str()) {
+                                        print!("{}", text);
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                }
+                "content_block_delta" => {
+                    if let Some(delta) = event.get("delta").and_then(|v| v.as_object()) {
+                        if let Some(delta_type) = delta.get("type").and_then(|v| v.as_str()) {
+                            match delta_type {
+                                "thinking_delta" => {
+                                    if let Some(thinking) = delta.get("thinking").and_then(|v| v.as_str()) {
+                                        print!("{}", thinking);
+                                    }
+                                }
+                                "input_json_delta" => {
+                                    if let Some(partial) = delta.get("partial_json").and_then(|v| v.as_str()) {
+                                        print!("{}", partial);
+                                    }
+                                }
+                                "text_delta" => {
+                                    if let Some(text) = delta.get("text").and_then(|v| v.as_str()) {
+                                        print!("{}", text);
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                }
+                "message_stop" => {
+                    println!();
+                }
+                _ => {}
+            }
+        }
+    }
+}
+
+fn process_assistant_message(json: &Value) {
+    if let Some(message) = json.get("message").and_then(|v| v.as_object()) {
+        if let Some(content) = message.get("content") {
+            process_content(content);
+        }
+    }
+}
+
+fn process_user_message(json: &Value) {
+    if let Some(message) = json.get("message").and_then(|v| v.as_object()) {
+        if let Some(content) = message.get("content") {
+            if content.is_array() {
+                if let Some(items) = content.as_array() {
+                    for item in items {
+                        if let Some(item_type) = item.get("type").and_then(|v| v.as_str()) {
+                            match item_type {
+                                "text" => {
+                                    if let Some(text) = item.get("text").and_then(|v| v.as_str()) {
+                                        println!("{}", text);
+                                    }
+                                }
+                                "tool_result" => {
+                                    if let Some(tool_content) = item.get("content").and_then(|v| v.as_str()) {
+                                        let with_newlines = tool_content.replace("\\n", "\n");
+                                        println!("tool_result:\n{}", with_newlines);
+                                    } else {
+                                        println!("tool_result: {}", item);
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                }
+            } else if let Some(content_type) = content.get("type").and_then(|v| v.as_str()) {
+                match content_type {
+                    "text" => {
+                        if let Some(text) = content.get("text").and_then(|v| v.as_str()) {
+                            println!("{}", text);
+                        }
+                    }
+                    "tool_result" => {
+                        println!("tool_result: {}", content.get("content").unwrap_or(&Value::Null));
+                    }
+                    _ => {}
+                }
+            }
+        }
+    }
+}
+
+fn process_content(content: &Value) {
+    if content.is_array() {
+        if let Some(items) = content.as_array() {
+            for item in items {
+                process_content_item(item);
+            }
+        }
+    } else if let Some(obj) = content.as_object() {
+        if let Some(item_type) = obj.get("type").and_then(|v| v.as_str()) {
+            match item_type {
+                "thinking" => {
+                    if let Some(thinking) = obj.get("thinking").and_then(|v| v.as_str()) {
+                        print!("{}", thinking);
+                    }
+                }
+                "tool_use" => {
+                    render_tool_use(obj);
+                }
+                "text" => {
+                    if let Some(text) = obj.get("text").and_then(|v| v.as_str()) {
+                        print!("{}", text);
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+}
+
+fn process_content_item(item: &Value) {
+    if let Some(item_type) = item.get("type").and_then(|v| v.as_str()) {
+        match item_type {
+            "thinking" => {
+                if let Some(thinking) = item.get("thinking").and_then(|v| v.as_str()) {
+                    print!("{}", thinking);
+                }
+            }
+            "tool_use" => {
+                render_tool_use(item.as_object().unwrap());
+            }
+            "text" => {
+                if let Some(text) = item.get("text").and_then(|v| v.as_str()) {
+                    print!("{}", text);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+fn render_tool_use(item: &serde_json::Map<String, Value>) {
+    if let Some(name) = item.get("name").and_then(|v| v.as_str()) {
+        match name {
+            "Edit" => {
+                if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
+                    let file_path = input.get("file_path").and_then(|v| v.as_str()).unwrap_or("");
+                    let old_string = input.get("old_string").and_then(|v| v.as_str()).unwrap_or("");
+                    let new_string = input.get("new_string").and_then(|v| v.as_str()).unwrap_or("");
+                    println!("Edit {}", file_path);
+                    println!("Old");
+                    let old_normalized = old_string.replace("\\n", "\n");
+                    println!("{}", old_normalized);
+                    println!("New");
+                    let new_normalized = new_string.replace("\\n", "\n");
+                    println!("{}", new_normalized);
+                }
+            }
+            "Glob" => {
+                if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
+                    if let Some(pattern) = input.get("pattern").and_then(|v| v.as_str()) {
+                        println!("\ntool_use: Glob {}", pattern);
+                    }
+                }
+            }
+            "Read" => {
+                if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
+                    if let Some(file_path) = input.get("file_path").and_then(|v| v.as_str()) {
+                        println!("\ntool_use: Read {}", file_path);
+                    }
+                }
+            }
+            "Write" => {
+                if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
+                    let file_path = input.get("file_path").and_then(|v| v.as_str()).unwrap_or("");
+                    let content = input.get("content").and_then(|v| v.as_str()).unwrap_or("");
+                    println!("\ntool_use: Write {}", file_path);
+                    println!("Content: ");
+                    let normalized = content.replace("\\n", "\n");
+                    println!("{}", normalized);
+                }
+            }
+            "Bash" => {
+                if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
+                    let run_in_background = input.get("run_in_background").and_then(|v| v.as_bool()).unwrap_or(false);
+                    let description = input.get("description").and_then(|v| v.as_str()).unwrap_or("");
+                    let command = input.get("command").and_then(|v| v.as_str()).unwrap_or("");
+                    println!("\ntool_use: Bash {}{}", if run_in_background { "(in background) " } else { " " }, description);
+                    println!("Command: {}", command);
+                }
+            }
+            "TaskOutput" => {
+                if let Some(input) = item.get("input") {
+                    println!("\ntool_use: {} {}", name, input);
+                }
+            }
+            "TodoWrite" => {
+                println!("\ntool_use: TodoWrite");
+                if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
+                    if let Some(todos) = input.get("todos").and_then(|v| v.as_array()) {
+                        for todo in todos {
+                            let content = todo.get("content").and_then(|v| v.as_str()).unwrap_or("");
+                            let status = todo.get("status").and_then(|v| v.as_str()).unwrap_or("");
+                            match status {
+                                "in_progress" => println!("[⟳] {}", content),
+                                "pending" => println!("[⌛] {}", content),
+                                "completed" => println!("[✅] {}", content),
+                                _ => println!("[ ] {}", content),
+                            }
+                        }
+                    }
+                }
+            }
+            _ => {
+                if let Some(input) = item.get("input") {
+                    println!("\ntool_use: {} {}", name, input);
+                }
+            }
+        }
     }
 }
