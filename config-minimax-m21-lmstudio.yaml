@@ -3,7 +3,7 @@
 
 # Path to the polyglot-benchmark repository
 benchmark_path: "../polyglot-benchmark"
-parallelism: 1
+
 # Docker configuration
 docker:
   # Name of the custom Docker image with build tools
@@ -11,18 +11,18 @@ docker:
   # Container working directory
   work_dir: "/workspace"
   # Timeout for exercise execution in seconds
-  timeout: 600
+  timeout: 7200
   # Memory limit for container (e.g., "2g")
   memory: "2g"
   # Environment variables to be set inside the runner
   environment:
     - ANTHROPIC_AUTH_TOKEN: "your-secret-key"
     - ANTHROPIC_API_KEY: ""
-    - ANTHROPIC_MODEL: "glm-4.7-flash"
-    - ANTHROPIC_DEFAULT_HAIKU_MODEL: "glm-4.7-flash"
-    - ANTHROPIC_DEFAULT_OPUS_MODEL: "glm-4.7-flash"
-    - ANTHROPIC_DEFAULT_SONNET_MODEL: "glm-4.7-flash"
-    - ANTHROPIC_BASE_URL: "http://host.docker.internal:8080"
+    - ANTHROPIC_MODEL: "minimax-m21-200b"
+    - ANTHROPIC_DEFAULT_HAIKU_MODEL: "minimax-m21-200b"
+    - ANTHROPIC_DEFAULT_OPUS_MODEL: "minimax-m21-200b"
+    - ANTHROPIC_DEFAULT_SONNET_MODEL: "minimax-m21-200b"
+    - ANTHROPIC_BASE_URL: "http://host.docker.internal:3456"
     - CLAUDE_CODE_MAX_OUTPUT_TOKENS: "100000"
     - CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
     - API_TIMEOUT_MS: "3000000"
@@ -51,6 +51,6 @@ claude:
 # Output configuration
 output:
   # Directory for exercise outputs
-  results_dir: "../benchmark-results/glm-4.7-flash-Q4_K_M-r2"
+  results_dir: "../benchmark-results/minimax-lmstudio"
   # Log level (DEBUG, INFO, WARN, ERROR)
   log_level: "INFO"

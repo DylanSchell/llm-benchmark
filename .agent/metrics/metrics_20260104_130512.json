@@ -1,0 +1,45 @@
+{
+  "summary": {
+    "iterations": 2,
+    "successful": 0,
+    "failed": 2,
+    "errors": 0,
+    "checkpoints": 0,
+    "rollbacks": 0
+  },
+  "iterations": [
+    {
+      "iteration": 1,
+      "duration": 4.8614420890808105,
+      "success": false,
+      "error": "Iteration failed",
+      "timestamp": "2026-01-04T13:05:04.490570",
+      "trigger_reason": "initial",
+      "output_preview": "",
+      "tokens_used": 0,
+      "cost": 0.0,
+      "tools_used": []
+    },
+    {
+      "iteration": 2,
+      "duration": 4.461776971817017,
+      "success": false,
+      "error": "Iteration failed",
+      "timestamp": "2026-01-04T13:05:10.955181",
+      "trigger_reason": "recovery",
+      "output_preview": "",
+      "tokens_used": 0,
+      "cost": 0.0,
+      "tools_used": []
+    }
+  ],
+  "cost": {
+    "total": 0.0,
+    "by_tool": {},
+    "history": []
+  },
+  "analysis": {
+    "avg_iteration_duration": 4.661609530448914,
+    "success_rate": 0.0
+  }
+}

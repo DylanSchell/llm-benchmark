@@ -1,0 +1,51 @@
+# Base image for running the benchmark runner
+FROM bellsoft/liberica-openjdk-alpine:17
+
+# Install essential build tools
+RUN apk add --no-cache \
+    bash \
+    git \
+    maven \
+    python3 \
+    py3-pip \
+    nodejs \
+    npm \
+    go \
+    cargo \
+    clang \
+    clang-dev \
+    make \
+    g++ \
+    curl \
+    wget \
+    uv
+
+# Install Claude Code CLI
+RUN npm install -g @anthropic-ai/claude-code
+RUN npm install -g claude-plugins
+RUN npx claude-plugins install @anthropics/claude-code-plugins/ralph-wiggum
+#RUN claude plugin install ralph-wiggum@anthropics
+# Create non-privileged user
+RUN adduser -D -s /bin/bash -u 1000 runner && \
+    chown -R runner:runner /home/runner
+
+# Create workspace directory
+RUN mkdir -p /workspace && chown runner:runner /workspace
+
+# Set working directory
+WORKDIR /workspace
+
+# Switch to non-root user
+USER runner
+
+# Install claude code transcript extraction tool
+RUN uv tool install claude-code-transcripts
+COPY gradle-8.7-bin.zip /opt/gradle/gradle-8.7-bin.zip
+
+# Ensure gradle daemon is disabled
+RUN mkdir -p /home/runner/.gradle && echo "org.gradle.daemon=false" >> /home/runner/.gradle/gradle.properties
+
+# TODO: Pre-Download gradle 8.7 that is used during many of these builds
+
+# Default command
+CMD ["/bin/bash"]

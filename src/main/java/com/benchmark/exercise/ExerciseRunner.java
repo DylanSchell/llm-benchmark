@@ -101,8 +101,7 @@ public class ExerciseRunner {
             logger.info("=============================================================================");
             logger.info("Running {} exercise {} ({}/{})", language, exercise.getName(), ++counter, total);
             // Skip if result already exists
-            if (benchmarkRunner.resultFileExists(exercise.getName(), agentName, language)) {
-                logger.info("Result file already exists for {}/{}, skipping", language, exercise.getName());
+            if (benchmarkRunner.resultFileSuccess(exercise.getName(), agentName, language)) {
                 continue;
             }
             // Verify exercise directory

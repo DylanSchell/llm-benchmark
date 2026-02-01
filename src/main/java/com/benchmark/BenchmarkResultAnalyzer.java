@@ -217,19 +217,7 @@ public class BenchmarkResultAnalyzer {
         markdown.append("| Benchmark | Total Results | Success | Failed | Completion %% | Total Duration | Tokens |\n");
         markdown.append("|-----------|---------------|---------|--------|---------------|----------------|--------|\n");
 
-        for (BenchmarkStats stats : sortedStats) {
-            double completionPercent = (stats.successResults * 100.0) / stats.totalResults;
-            String durationStr = formatDuration(stats.totalDuration);
-            markdown.append(String.format("| [%s](#%s) | %d | %d | %d | %.1f%% | %s | %s |\n",
-                    stats.benchmarkName,
-                    stats.benchmarkName,
-                    stats.totalResults,
-                    stats.successResults,
-                    stats.failedResults,
-                    completionPercent,
-                    durationStr,
-                    formatTokens(stats.uncachedInputTokens, stats.cachedInputTokens, stats.outputTokens)));
-        }
+        dumpSortedStats(sortedStats, markdown);
 
         markdown.append("\n");
         markdown.append("# Success rates per exercise\n\n");
@@ -257,24 +245,18 @@ public class BenchmarkResultAnalyzer {
         }
 
         exerciseStats.sort(this::sortByPercentage);
-        for (BenchmarkStats stats : exerciseStats) {
-            double completionPercent = (stats.successResults * 100.0) / stats.totalResults;
-            String durationStr = formatDuration(stats.totalDuration);
-            markdown.append(String.format("| [%s](#%s) | %d | %d | %d | %.1f%% | %s | %s |\n",
-                    stats.benchmarkName, stats.benchmarkName, stats.totalResults, stats.successResults,
-                    stats.failedResults, completionPercent, durationStr, formatTokens(stats.uncachedInputTokens, stats.cachedInputTokens, stats.outputTokens)));
-        }
+        dumpSortedStats(exerciseStats, markdown);
 
         // Breakdown of individual benchmark runs per model confgururation
         resultsByBenchmark.forEach((benchmarkName, results) -> {
             markdown.append("\n");
-            markdown.append(String.format("# %s\n\n", benchmarkName));
+            markdown.append(String.format("# %s\n\n", benchmarkName.replace(".","_")));
             markdown.append("| Exercise | Success | Duration | Tokens |\n");
             markdown.append("|----------|---------|----------|--------|\n");
             for (SimpleResult simpleResult : results) {
                 markdown.append(String.format("| [%s](#%s) | %s | %s | %s |\n",
-                        simpleResult.exerciseName,
-                        simpleResult.exerciseName,
+                        simpleResult.exerciseName.replace(".","_"),
+                        simpleResult.exerciseName.replace(".","_"),
                         simpleResult.success ? "✅" : simpleResult.duration >= 7199 ? "⏰" : "❌",
                         formatDuration(simpleResult.duration),
                         formatTokens(simpleResult.uncachedInputTokens, simpleResult.cachedInputTokens, simpleResult.outputTokens)));
@@ -285,14 +267,14 @@ public class BenchmarkResultAnalyzer {
         // Breakdown per exercise how long each model took, and if it succeeded
         resultsByExercise.forEach((exercise, results) -> {
             markdown.append("\n");
-            markdown.append(String.format("# %s\n\n", exercise));
+            markdown.append(String.format("# %s\n\n", exercise.replace(".","_")));
             markdown.append("| Model | Success | Duration | Tokens |\n");
             markdown.append("|-------|---------|----------|--------|\n");
             results.sort(Comparator.comparingDouble(o -> o.duration));
             for (SimpleResult simpleResult : results) {
                 markdown.append(String.format("| [%s](#%s) | %s | %s | %s |\n",
-                        simpleResult.model,
-                        simpleResult.model,
+                        simpleResult.model.replace(".","_"),
+                        simpleResult.model.replace(".","_"),
                         simpleResult.success ? "✅" : isLikelyTimeout(simpleResult.duration) ? "⏰" : "❌",
                         formatDuration(simpleResult.duration),
                         formatTokens(simpleResult.uncachedInputTokens, simpleResult.cachedInputTokens, simpleResult.outputTokens)));
@@ -306,6 +288,22 @@ public class BenchmarkResultAnalyzer {
         Files.writeString(Paths.get("results.md"), markdown.toString());
         System.out.println("Results written to results.md");
         System.out.println("\n" + markdown);
+    }
+
+    private void dumpSortedStats(List<BenchmarkStats> sortedStats, StringBuilder markdown) {
+        for (BenchmarkStats stats : sortedStats) {
+            double completionPercent = (stats.successResults * 100.0) / stats.totalResults;
+            String durationStr = formatDuration(stats.totalDuration);
+            markdown.append(String.format("| [%s](#%s) | %d | %d | %d | %.1f%% | %s | %s |\n",
+                    stats.benchmarkName.replace(".","_"),
+                    stats.benchmarkName.replace(".","_"),
+                    stats.totalResults,
+                    stats.successResults,
+                    stats.failedResults,
+                    completionPercent,
+                    durationStr,
+                    formatTokens(stats.uncachedInputTokens, stats.cachedInputTokens, stats.outputTokens)));
+        }
     }
 
     /**

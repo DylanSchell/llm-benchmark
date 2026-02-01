@@ -295,4 +295,22 @@ public class BenchmarkRunner {
             System.exit(1);
         }
     }
+
+    public boolean resultFileSuccess(String name, String agentName, String language) {
+        String resultsDir = config.getOutput().getResultsDir();
+        Path resultsPath = Paths.get(resultsDir);
+        String filename = String.format("result_%s_%s_%s.json", agentName, language, name);
+        var p = resultsPath.resolve(filename);
+        if (Files.exists(p)) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            try {
+                var er = mapper.readTree(p.toFile());
+                return er.has("success") && er.get("success").asBoolean();
+            } catch (IOException e) {
+                // ignore, and assume it was not succesful
+            }
+        }
+        return false;
+    }
 }

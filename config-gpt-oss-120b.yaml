@@ -2,7 +2,7 @@
 # Runner for the Aider polyglot benchmark suite using Claude Code
 
 # Path to the polyglot-benchmark repository
-benchmark_path: "./polyglot-benchmark"
+benchmark_path: "../polyglot-benchmark"
 
 # Docker configuration
 docker:
@@ -11,16 +11,15 @@ docker:
   # Container working directory
   work_dir: "/workspace"
   # Timeout for exercise execution in seconds
-  timeout: 7200
+  timeout: 600
   # Memory limit for container (e.g., "2g")
   memory: "2g"
   # Environment variables to be set inside the runner
   environment:
     - ANTHROPIC_AUTH_TOKEN: "your-secret-key"
     - ANTHROPIC_API_KEY: ""
-#    - ANTHROPIC_LOG: "debug"
     - ANTHROPIC_MODEL: "gpt-oss-120b"
-    - ANTHROPIC_DEFAULT_HAIKU_MODEL: "gpt-oss-120b"
+    - ANTHROPIC_DEFAULT_HAIKU_MODEL: "nemotron-3-nano-30b"
     - ANTHROPIC_DEFAULT_OPUS_MODEL: "gpt-oss-120b"
     - ANTHROPIC_DEFAULT_SONNET_MODEL: "gpt-oss-120b"
     - ANTHROPIC_BASE_URL: "http://host.docker.internal:8080"
@@ -45,13 +44,13 @@ claude:
   # Path to claude CLI binary
   cli_path: "/usr/local/bin/claude"
   # Model to use for solving exercises
-  model: "sonnet"
+  model: "gpt-oss-120b"
   # Additional arguments to pass to claude
   extra_args: []
 
 # Output configuration
 output:
   # Directory for exercise outputs
-  results_dir: "../benchmark-results/gpt-oss-120b"
+  results_dir: "../benchmark-results/gpt-oss-120b-r6"
   # Log level (DEBUG, INFO, WARN, ERROR)
   log_level: "INFO"

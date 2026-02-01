@@ -1,0 +1,2 @@
+* monitor claude progress inside the container:
+- /home/runner/.claude/todos

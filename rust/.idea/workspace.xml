@@ -12,11 +12,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="04630505-3a3b-41a8-aa57-aa490acaa604" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../config-minimax-m21-4_k_m.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../config-glm-4.7-flash.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../config-glm-4.7-flash.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../config-gpt-oss-120b.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../config-gpt-oss-120b.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../results.md" beforeDir="false" afterPath="$PROJECT_DIR$/../results.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results.md" beforeDir="false" afterPath="$PROJECT_DIR$/results.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../src/main/java/com/benchmark/BenchmarkResultAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../src/main/java/com/benchmark/BenchmarkResultAnalyzer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/com/benchmark/BenchmarkRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/../src/main/java/com/benchmark/BenchmarkRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main/java/com/benchmark/exercise/ExerciseRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/../src/main/java/com/benchmark/exercise/ExerciseRunner.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,7 +27,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="17" />
+    <option name="cachedIndexableFilesCount" value="51" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:dev" />
@@ -48,6 +51,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Cargo.Generate Results.executor": "Run",
     "Cargo.Run benchmark.executor": "Run",
     "Cargo.Run gpt-oss-120b.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
@@ -90,7 +94,7 @@
     </configuration>
     <configuration name="Run gpt-oss-120b" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
-      <option name="command" value="run -- run --config config-gpt-oss-120b.yaml" />
+      <option name="command" value="run -- run --agent claude --config config-gpt-oss-120b.yaml" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <envs>
         <env name="RUST_LOG" value="debug" />
@@ -143,6 +147,7 @@
       <updated>1769758394434</updated>
       <workItem from="1769758395486" duration="3317000" />
       <workItem from="1769791262401" duration="4190000" />
+      <workItem from="1769952137370" duration="1193000" />
     </task>
     <servers />
   </component>
@@ -156,6 +161,11 @@
           <url>file://$PROJECT_DIR$/src/agent/mod.rs</url>
           <line>444</line>
           <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/docker/mod.rs</url>
+          <line>138</line>
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
