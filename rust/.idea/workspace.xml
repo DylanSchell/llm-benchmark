@@ -11,10 +11,9 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="04630505-3a3b-41a8-aa57-aa490acaa604" name="Changes" comment="committing remaining files">
+    <list default="true" id="04630505-3a3b-41a8-aa57-aa490acaa604" name="Changes" comment="rust version now actually displays similar output to the java version">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/agent/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/docker/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/docker/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results.md" beforeDir="false" afterPath="$PROJECT_DIR$/results.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,7 +24,7 @@
     <option name="cachedIndexableFilesCount" value="51" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:dev" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:release" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
@@ -68,7 +67,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Cargo.Run gpt-oss-120b">
+  <component name="RunManager" selected="Cargo.Generate Results">
     <configuration name="Generate Results" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="release" />
       <option name="command" value="run --package benchmark --bin benchmark -- analyze --results-dir ../../benchmark-results" />
@@ -142,7 +141,7 @@
       <updated>1769758394434</updated>
       <workItem from="1769758395486" duration="3317000" />
       <workItem from="1769791262401" duration="4190000" />
-      <workItem from="1769952137370" duration="2744000" />
+      <workItem from="1769952137370" duration="8032000" />
     </task>
     <task id="LOCAL-00001" summary="committing remaining files">
       <option name="closed" value="true" />
@@ -160,7 +159,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769953388522</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="rust version now actually displays similar output to the java version">
+      <option name="closed" value="true" />
+      <created>1769954938791</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1769954938791</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -168,7 +175,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="committing remaining files" />
-    <option name="LAST_COMMIT_MESSAGE" value="committing remaining files" />
+    <MESSAGE value="rust version now actually displays similar output to the java version" />
+    <option name="LAST_COMMIT_MESSAGE" value="rust version now actually displays similar output to the java version" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

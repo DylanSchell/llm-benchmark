@@ -4,6 +4,7 @@ import com.benchmark.BenchmarkRunner;
 import com.benchmark.agent.ReferenceAgent;
 import com.benchmark.config.Config;
 import com.benchmark.docker.DockerClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +27,7 @@ import java.util.concurrent.Future;
  */
 public class ExerciseRunner {
     private static final Logger logger = LoggerFactory.getLogger(ExerciseRunner.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Config config;
     private final DockerClient dockerClient;
@@ -165,9 +167,8 @@ public class ExerciseRunner {
         return new Exercise(
                 exerciseName,
                 language,
-                findSourceFile(exerciseDir, language),
-                findTestFile(exerciseDir, language),
-                findReferenceFile(exerciseDir, language)
+                exerciseDir,
+                parseMetadata(exerciseDir)
         );
     }
 
@@ -195,9 +196,8 @@ public class ExerciseRunner {
                         exercises.add(new Exercise(
                                 exerciseName,
                                 language,
-                                findSourceFile(exerciseDir, language),
-                                findTestFile(exerciseDir, language),
-                                findReferenceFile(exerciseDir, language)
+                                exerciseDir,
+                                parseMetadata(exerciseDir)
                         ));
                     });
         } catch (IOException e) {
@@ -222,64 +222,20 @@ public class ExerciseRunner {
     }
 
     /**
-     * Finds the main source file for an exercise.
+     * Parses the metadata from .meta/config.json for an exercise.
      */
-    private Path findSourceFile(Path exerciseDir, String language) {
-        Path sourcePath = exerciseDir.resolve("src/main/java");
-        if (Files.exists(sourcePath)) {
-            try (Stream<Path> paths = Files.walk(sourcePath)) {
-                return paths.filter(Files::isRegularFile)
-                        .filter(p -> p.toString().endsWith(".java"))
-                        .findFirst()
-                        .orElse(null);
-            } catch (IOException e) {
-                return null;
-            }
+    private ExerciseMetadata parseMetadata(Path exerciseDir) {
+        Path metaConfigPath = exerciseDir.resolve(".meta").resolve("config.json");
+        if (!Files.exists(metaConfigPath)) {
+            logger.debug("No metadata file found at {}", metaConfigPath);
+            return null;
         }
-        return null;
-    }
-
-    /**
-     * Finds the test file for an exercise.
-     */
-    private Path findTestFile(Path exerciseDir, String language) {
-        Path testPath = exerciseDir.resolve("src/test/java");
-        if (Files.exists(testPath)) {
-            try (Stream<Path> paths = Files.walk(testPath)) {
-                return paths.filter(Files::isRegularFile)
-                        .filter(p -> p.toString().endsWith("Test.java"))
-                        .findFirst()
-                        .orElse(null);
-            } catch (IOException e) {
-                return null;
-            }
+        try {
+            return objectMapper.readValue(metaConfigPath.toFile(), ExerciseMetadata.class);
+        } catch (IOException e) {
+            logger.warn("Failed to parse metadata at {}: {}", metaConfigPath, e.getMessage());
+            return null;
         }
-        return null;
-    }
-
-    /**
-     * Finds the reference implementation for an exercise.
-     */
-    private Path findReferenceFile(Path exerciseDir, String language) {
-        if (language.equals("java")) {
-            Path refPath = exerciseDir.resolve(".meta/src/reference/java");
-            if (Files.exists(refPath)) {
-                try (Stream<Path> paths = Files.walk(refPath)) {
-                    return paths.filter(Files::isRegularFile)
-                            .filter(p -> p.toString().endsWith(".java"))
-                            .findFirst()
-                            .orElse(null);
-                } catch (IOException e) {
-                    return null;
-                }
-            }
-        } else if (language.equals("go")) {
-            Path refPath = exerciseDir.resolve(".meta");
-            if (Files.exists(refPath)) {
-                return refPath;
-            }
-        }
-        return null;
     }
 
     /**

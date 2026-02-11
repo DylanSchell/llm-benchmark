@@ -187,7 +187,7 @@ public class ReferenceAgent {
     protected ReferenceResult runAgent(Exercise exercise, Path hostExerciseDir, Path tempWorkDir, Path resultDir) throws IOException {
         // Copy reference implementation to source directory
         Instant startTime = Instant.now();
-        if (exercise.getReferencePath() != null) {
+        if (exercise.hasReference()) {
             copyReferenceImplementation(exercise, tempWorkDir);
         } else {
             logger.warn("No reference implementation found for: {}", exercise.getName());
@@ -277,6 +277,18 @@ public class ReferenceAgent {
                     }
                 });
             }
+        } else if ( "go".equals(exercise.getLanguage()) ) {
+            Iterable<Path> testPath = exercise.getTestPath();
+            for (Path refPath : testPath) {
+                try {
+                    String fileName = refPath.getFileName().toString();
+                    Path destFile = destDir.resolve(fileName);
+                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Copied test file: {}", fileName);
+                } catch (IOException e) {
+                    logger.error("Failed to copy test file {}: {}", refPath, e.getMessage());
+                }
+            }
         }
     }
 
@@ -284,46 +296,69 @@ public class ReferenceAgent {
      * Copies the reference implementation Java files to the main source directory.
      */
     private void copyReferenceImplementation(Exercise exercise, Path tempDir) throws IOException {
-        Path refDir = exercise.getReferencePath().getParent();
-
-        if (refDir == null || !Files.exists(refDir)) {
-            logger.warn("Reference directory not found for: {}", exercise.getName());
+        Iterable<Path> refDirs = exercise.getReferencePath();
+        if (refDirs == null) {
             return;
         }
-        if (exercise.getLanguage().equals("java")) {
-            Path mainSrcDir = tempDir.resolve("src/main/java");
-            Files.createDirectories(mainSrcDir);
-
-            logger.info("Copying reference implementation from {} to {}", refDir, mainSrcDir);
-
-            try (Stream<Path> paths = Files.walk(refDir)) {
-                paths.filter(Files::isRegularFile)
-                        .filter(p -> p.toString().endsWith(".java"))
-                        .forEach(refFile -> {
-                            try {
-                                String fileName = refFile.getFileName().toString();
-                                Path destFile = mainSrcDir.resolve(fileName);
-                                Files.copy(refFile, destFile, StandardCopyOption.REPLACE_EXISTING);
-                                logger.info("Copied reference file: {}", fileName);
-                            } catch (IOException e) {
-                                logger.error("Failed to copy reference file {}: {}", refFile, e.getMessage());
-                            }
-                        });
+        for (Path refPath : refDirs) {
+            if (refPath == null || !Files.exists(refPath)) {
+                logger.warn("Reference path not found for: {}", exercise.getName());
+                return;
             }
-        } else if (exercise.getLanguage().equals("go")) {
-            try (Stream<Path> paths = Files.walk(refDir)) {
-                paths.filter(Files::isRegularFile)
-                        .filter(p -> p.toString().endsWith(".go"))
-                        .forEach(refFile -> {
-                            try {
-                                String fileName = refFile.getFileName().toString();
-                                Path destFile = tempDir.resolve(fileName);
-                                Files.copy(refFile, destFile, StandardCopyOption.REPLACE_EXISTING);
-                                logger.info("Copied reference file: {}", fileName);
-                            } catch (IOException e) {
-                                logger.error("Failed to copy reference file {}: {}", refFile, e.getMessage());
-                            }
-                        });
+            if (exercise.getLanguage().equals("java")) {
+                Path mainSrcDir = tempDir.resolve("src/main/java");
+                Files.createDirectories(mainSrcDir);
+
+                logger.info("Copying reference implementation from {} to {}", refPath, mainSrcDir);
+
+                try (Stream<Path> paths = Files.walk(refPath)) {
+                    paths.filter(Files::isRegularFile)
+                            .filter(p -> p.toString().endsWith(".java"))
+                            .forEach(refFile -> {
+                                try {
+                                    String fileName = refFile.getFileName().toString();
+                                    Path destFile = mainSrcDir.resolve(fileName);
+                                    Files.copy(refFile, destFile, StandardCopyOption.REPLACE_EXISTING);
+                                    logger.info("Copied reference file: {}", fileName);
+                                } catch (IOException e) {
+                                    logger.error("Failed to copy reference file {}: {}", refFile, e.getMessage());
+                                }
+                            });
+                }
+                // overwrite with "sample"
+                for(Path examplePath: exercise.getExamples()) {
+                    try {
+                        String fileName = examplePath.getFileName().toString();
+                        // copy this over the "reference"?
+                        Path destFile = tempDir.resolve("src/main/java").resolve(fileName);
+                        //Path destFile = tempDir.resolve(destFileName);
+                        Files.copy(examplePath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                        logger.info("Copied reference file: {}", fileName);
+                    } catch (IOException e) {
+                        logger.error("Failed to copy reference file {}: {}", examplePath, e.getMessage());
+                    }
+                }
+            } else if (exercise.getLanguage().equals("go")) {
+                try {
+                    String fileName = refPath.getFileName().toString();
+                    Path destFile = tempDir.resolve(fileName);
+                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Copied reference file: {}", fileName);
+                } catch (IOException e) {
+                    logger.error("Failed to copy reference file {}: {}", refPath, e.getMessage());
+                }
+            }
+        }
+        for(Path examplePath: exercise.getExamples()) {
+            try {
+                String fileName = examplePath.getFileName().toString();
+                // copy this over the "reference"?
+                String destFileName = exercise.getReferencePath().iterator().next().getFileName().toString();
+                Path destFile = tempDir.resolve(destFileName);
+                Files.copy(examplePath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                logger.info("Copied reference file: {}", fileName);
+            } catch (IOException e) {
+                logger.error("Failed to copy reference file {}: {}", examplePath, e.getMessage());
             }
         }
     }

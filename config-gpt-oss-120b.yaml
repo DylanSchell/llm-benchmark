@@ -3,7 +3,7 @@
 
 # Path to the polyglot-benchmark repository
 benchmark_path: "../polyglot-benchmark"
-
+parallelism: 1
 # Docker configuration
 docker:
   # Name of the custom Docker image with build tools
@@ -22,7 +22,7 @@ docker:
     - ANTHROPIC_DEFAULT_HAIKU_MODEL: "nemotron-3-nano-30b"
     - ANTHROPIC_DEFAULT_OPUS_MODEL: "gpt-oss-120b"
     - ANTHROPIC_DEFAULT_SONNET_MODEL: "gpt-oss-120b"
-    - ANTHROPIC_BASE_URL: "http://host.docker.internal:8080"
+    - ANTHROPIC_BASE_URL: "http://mac-mini-server.local:8080"
     - CLAUDE_CODE_MAX_OUTPUT_TOKENS: "100000"
     - CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
     - API_TIMEOUT_MS: "3000000"
@@ -33,7 +33,7 @@ docker:
 # Exercise configuration
 exercise:
   # Language to run (java, python, go, rust, cpp, javascript)
-  language: "java"
+  language: "go,java"
   # Specific exercise name (e.g., "series") - leave empty to run all
   name: "series"
   # Path to the exercise within the language directory
@@ -51,6 +51,6 @@ claude:
 # Output configuration
 output:
   # Directory for exercise outputs
-  results_dir: "../benchmark-results/gpt-oss-120b-r6"
+  results_dir: "../benchmark-results/gpt-oss-120b-r8"
   # Log level (DEBUG, INFO, WARN, ERROR)
   log_level: "INFO"

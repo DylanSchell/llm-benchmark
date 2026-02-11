@@ -158,10 +158,12 @@ public class ClaudeAgent extends ReferenceAgent {
             prompt.append("3. The tests are validated to be correct, never assume the test to be wrong!\n\n");
             prompt.append("4. Do not run tests in the background, run them synchronously in the forground, so you do not need to poll for results\n");
         }
-        if (exercise.getTestPath() != null && Files.exists(exercise.getTestPath())) {
-            String needle = "../polyglot-benchmark/" + exercise.getLanguage() + "/exercises/practice/" + exercise.getName();
-            String fixedTestPath = exercise.getTestPath().toString().replaceAll(needle, "/workspace");
-            prompt.append("Test file location: ").append(fixedTestPath).append("\n");
+        for(Path testPath: exercise.getTestPath()) {
+            if (exercise.getTestPath() != null && Files.exists(testPath)) {
+                String needle = "../polyglot-benchmark/" + exercise.getLanguage() + "/exercises/practice/" + exercise.getName();
+                String fixedTestPath = exercise.getTestPath().toString().replaceAll(needle, "/workspace");
+                prompt.append("Test file location: ").append(fixedTestPath).append("\n");
+            }
         }
         prompt.append("\nImplement the solution directly, do not ask me to review.\n");
         if ("java".equals(exercise.getLanguage())) {

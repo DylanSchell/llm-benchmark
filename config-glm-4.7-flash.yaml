@@ -51,6 +51,6 @@ claude:
 # Output configuration
 output:
   # Directory for exercise outputs
-  results_dir: "../benchmark-results/glm-4.7-flash-Q4_K_M-r2"
+  results_dir: "../benchmark-results/glm-4.7-flash-r3"
   # Log level (DEBUG, INFO, WARN, ERROR)
   log_level: "INFO"

@@ -19,7 +19,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Main entry point for the benchmark runner.
@@ -31,6 +34,7 @@ public class BenchmarkRunner {
     private final Config config;
     private final DockerClient dockerClient;
     private final ExerciseRunner exerciseRunner;
+    private static final Set<String> supportedLanguages = Set.of("java", "go");
 
     public BenchmarkRunner(Path configPath) throws Exception {
         this.config = ConfigLoader.load(configPath);
@@ -53,11 +57,20 @@ public class BenchmarkRunner {
     /**
      * Run all exercises for a language using the reference agent.
      *
-     * @param language Programming language
+     * @param languages comma separated list of programming language exercises to process
      * @return List of results for all exercises
      */
-    public List<ExerciseResult> runAllReferenceExercises(ReferenceAgent agent, String language, String agentName) {
-        return exerciseRunner.runAllReferenceExercises(agent, language, agentName);
+    public List<ExerciseResult> runAllReferenceExercises(ReferenceAgent agent, String languages, String agentName) {
+        List<ExerciseResult> result = new ArrayList<>();
+        String[] split = languages.split(",");
+        for (String language : split) {
+            String trimmedLanguage = language.trim().toLowerCase();
+            if (supportedLanguages.contains(trimmedLanguage)) {
+                List<ExerciseResult> languageResults = exerciseRunner.runAllReferenceExercises(agent, language.trim(), agentName);
+                result.addAll(languageResults);
+            }
+        }
+        return result;
     }
 
 

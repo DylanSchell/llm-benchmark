@@ -48,7 +48,7 @@ public class BenchmarkResultAnalyzer {
             // Find result files in this directory (but not timestamped result files)
             List<PathTime> resultFiles = new ArrayList<>(Files.list(dir)
                     .filter(p -> p.toString().endsWith(".json"))
-                    .filter(p -> p.getFileName().toString().startsWith("result_claude"))
+                    .filter(p -> p.getFileName().toString().startsWith("result_claude") || p.getFileName().toString().startsWith("result_reference"))
                     .filter(p -> !Pattern.matches(".*result_claude_\\d{8}_\\d{6}\\.json", p.getFileName().toString())) // Exclude timestamped files
                     .map(p -> {
                         try {
@@ -82,10 +82,10 @@ public class BenchmarkResultAnalyzer {
                         SimpleResult simple = mapper.readValue(resultFile.toFile(), SimpleResult.class);
                         simple.model = benchmarkName;
                         allResults.add(simple);
-                        allExercises.add(simple.exerciseName);
+                        allExercises.add(simple.exerciseName+"_"+simple.language);
                         resultsByBenchmark.computeIfAbsent(benchmarkName, k -> new ArrayList<>())
                                 .add(simple);
-                        resultsByExercise.computeIfAbsent(simple.exerciseName, k -> new ArrayList<>())
+                        resultsByExercise.computeIfAbsent(simple.exerciseName+"_"+simple.language, k -> new ArrayList<>())
                                 .add(simple);
                         stats.totalResults++;
                         if (simple.success) {
@@ -255,8 +255,8 @@ public class BenchmarkResultAnalyzer {
             markdown.append("|----------|---------|----------|--------|\n");
             for (SimpleResult simpleResult : results) {
                 markdown.append(String.format("| [%s](#%s) | %s | %s | %s |\n",
-                        simpleResult.exerciseName.replace(".","_"),
-                        simpleResult.exerciseName.replace(".","_"),
+                        simpleResult.exerciseName.replace(".","_")+"_"+simpleResult.language,
+                        simpleResult.exerciseName.replace(".","_")+"_"+simpleResult.language,
                         simpleResult.success ? "✅" : simpleResult.duration >= 7199 ? "⏰" : "❌",
                         formatDuration(simpleResult.duration),
                         formatTokens(simpleResult.uncachedInputTokens, simpleResult.cachedInputTokens, simpleResult.outputTokens)));

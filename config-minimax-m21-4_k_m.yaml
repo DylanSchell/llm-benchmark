@@ -19,10 +19,10 @@ docker:
     - ANTHROPIC_AUTH_TOKEN: "your-secret-key"
     - ANTHROPIC_API_KEY: ""
 #    - ANTHROPIC_LOG: "debug"
-    - ANTHROPIC_MODEL: "minimax-m21-200b"
-    - ANTHROPIC_DEFAULT_HAIKU_MODEL: "nemotron-3-nano-30b"
-    - ANTHROPIC_DEFAULT_OPUS_MODEL: "minimax-m21-200b"
-    - ANTHROPIC_DEFAULT_SONNET_MODEL: "minimax-m21-200b"
+    - ANTHROPIC_MODEL: "minimax-m2-200b"
+    - ANTHROPIC_DEFAULT_HAIKU_MODEL: "minimax-m2-200b"
+    - ANTHROPIC_DEFAULT_OPUS_MODEL: "minimax-m2-200b"
+    - ANTHROPIC_DEFAULT_SONNET_MODEL: "minimax-m2-200b"
     - ANTHROPIC_BASE_URL: "http://host.docker.internal:8080"
     - CLAUDE_CODE_MAX_OUTPUT_TOKENS: "100000"
     - CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
@@ -34,7 +34,7 @@ docker:
 # Exercise configuration
 exercise:
   # Language to run (java, python, go, rust, cpp, javascript)
-  language: "java"
+  language: "java,go"
   # Specific exercise name (e.g., "series") - leave empty to run all
   name: "series"
   # Path to the exercise within the language directory
@@ -52,6 +52,6 @@ claude:
 # Output configuration
 output:
   # Directory for exercise outputs
-  results_dir: "../benchmark-results/minimax-m21-200b-Q4_K_M-r2"
+  results_dir: "../benchmark-results/minimax-m21-200b-r3"
   # Log level (DEBUG, INFO, WARN, ERROR)
   log_level: "INFO"

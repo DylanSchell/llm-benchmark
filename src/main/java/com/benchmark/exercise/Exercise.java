@@ -1,6 +1,7 @@
 package com.benchmark.exercise;
 
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Represents an exercise in the benchmark suite.
@@ -8,16 +9,14 @@ import java.nio.file.Path;
 public class Exercise {
     private final String name;
     private final String language;
-    private final Path sourcePath;
-    private final Path testPath;
-    private final Path referencePath;
+    private final ExerciseMetadata metadata;
+    private final Path exercisePath;
 
-    public Exercise(String name, String language, Path sourcePath, Path testPath, Path referencePath) {
+    public Exercise(String name, String language, Path exercisePath, ExerciseMetadata metadata) {
         this.name = name;
         this.language = language;
-        this.sourcePath = sourcePath;
-        this.testPath = testPath;
-        this.referencePath = referencePath;
+        this.exercisePath = exercisePath;
+        this.metadata = metadata;
     }
 
     public String getName() {
@@ -28,20 +27,35 @@ public class Exercise {
         return language;
     }
 
-    public Path getSourcePath() {
-        return sourcePath;
+    public Iterable<Path> getSourcePath() {
+        return metadata.getFiles().getSolution().stream().map(exercisePath::resolve).toList();
     }
 
-    public Path getTestPath() {
-        return testPath;
+    public Iterable<Path> getTestPath() {
+        return metadata.getFiles().getTest().stream().map(exercisePath::resolve).toList();
     }
 
-    public Path getReferencePath() {
-        return referencePath;
+    public Iterable<Path> getReferencePath() {
+        return metadata.getFiles().getSolution().stream().map(exercisePath::resolve).toList();
+    }
+
+    /**
+     * Returns the blurb from metadata, or null if not available.
+     */
+    public String getBlurb() {
+        return metadata != null ? metadata.getBlurb() : null;
     }
 
     @Override
     public String toString() {
-        return String.format("Exercise{name='%s', language='%s', path=%s}", name, language, sourcePath);
+        return String.format("Exercise{name='%s', language='%s', path=%s}", name, language, exercisePath);
+    }
+
+    public boolean hasReference() {
+        return metadata != null && !metadata.getFiles().getSolution().isEmpty();
+    }
+
+    public Iterable<? extends Path> getExamples() {
+        return metadata.getFiles().getExample().stream().map(exercisePath::resolve).toList();
     }
 }
