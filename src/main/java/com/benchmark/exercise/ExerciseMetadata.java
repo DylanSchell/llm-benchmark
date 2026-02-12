@@ -3,6 +3,7 @@ package com.benchmark.exercise;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Metadata for an exercise parsed from .meta/config.json
@@ -26,6 +27,30 @@ public class ExerciseMetadata {
 
     @JsonProperty("source_url")
     private String source_url;
+
+    @JsonProperty("custom")
+    private Map<String, Object> custom;
+
+    /**
+     * Custom property constants for exercise configuration.
+     */
+    public static final class CustomProperties {
+        // JavaScript/Jest properties
+        public static final String VERSION_TESTS_COMPATIBILITY = "version.tests.compatibility";
+        public static final String FLAG_TESTS_TASK_PER_DESCRIBE = "flag.tests.task-per-describe";
+        public static final String FLAG_TESTS_MAY_RUN_LONG = "flag.tests.may-run-long";
+        public static final String FLAG_TESTS_INCLUDES_OPTIONAL = "flag.tests.includes-optional";
+
+        // Rust properties
+        public static final String ALLOWED_TO_NOT_COMPILE = "allowed-to-not-compile";
+
+        // Generic test properties (used across languages)
+        public static final String TEST_IN_RELEASE_MODE = "test-in-release-mode";
+
+        private CustomProperties() {
+            // Prevent instantiation
+        }
+    }
 
     public List<String> getAuthors() {
         return authors;
@@ -73,6 +98,14 @@ public class ExerciseMetadata {
 
     public void setSource_url(String source_url) {
         this.source_url = source_url;
+    }
+
+    public Map<String, Object> getCustom() {
+        return custom;
+    }
+
+    public void setCustom(Map<String, Object> custom) {
+        this.custom = custom;
     }
 
     /**

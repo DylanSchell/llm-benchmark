@@ -277,7 +277,7 @@ public class ReferenceAgent {
                     }
                 });
             }
-        } else if ( "go".equals(exercise.getLanguage()) ) {
+        } else if ("go".equals(exercise.getLanguage())) {
             Iterable<Path> testPath = exercise.getTestPath();
             for (Path refPath : testPath) {
                 try {
@@ -287,6 +287,62 @@ public class ReferenceAgent {
                     logger.info("Copied test file: {}", fileName);
                 } catch (IOException e) {
                     logger.error("Failed to copy test file {}: {}", refPath, e.getMessage());
+                }
+            }
+        } else if ("javascript".equals(exercise.getLanguage())) {
+            Iterable<Path> testPath = exercise.getTestPath();
+            for (Path refPath : testPath) {
+                try {
+                    String fileName = refPath.getFileName().toString();
+                    Path destFile = destDir.resolve(fileName);
+                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Copied test file: {}", fileName);
+                } catch (IOException e) {
+                    logger.error("Failed to copy test file {}: {}", refPath, e.getMessage());
+                }
+            }
+        } else if ("python".equals(exercise.getLanguage())) {
+            Iterable<Path> testPath = exercise.getTestPath();
+            for (Path refPath : testPath) {
+                try {
+                    String fileName = refPath.getFileName().toString();
+                    Path destFile = destDir.resolve(fileName);
+                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Copied test file: {}", fileName);
+                } catch (IOException e) {
+                    logger.error("Failed to copy test file {}: {}", refPath, e.getMessage());
+                }
+            }
+        } else if ("rust".equals(exercise.getLanguage())) {
+            // For Rust, copy from tests/ directory
+            Path testsDir = sourceDir.resolve("tests");
+            if (Files.exists(testsDir)) {
+                try (Stream<Path> paths = Files.walk(testsDir)) {
+                    paths.forEach(sourcePath -> {
+                        try {
+                            if (Files.isRegularFile(sourcePath)) {
+                                Path relativePath = testsDir.relativize(sourcePath);
+                                Path destPath = destDir.resolve("tests").resolve(relativePath);
+                                Files.createDirectories(destPath.getParent());
+                                Files.copy(sourcePath, destPath, StandardCopyOption.REPLACE_EXISTING);
+                                logger.info("Copied Rust test file: {}", relativePath);
+                            }
+                        } catch (IOException e) {
+                            logger.error("Failed to copy Rust test file {}: {}", sourcePath, e.getMessage());
+                        }
+                    });
+                }
+            }
+        } else if ("cpp".equals(exercise.getLanguage())) {
+            Iterable<Path> testPath = exercise.getTestPath();
+            for (Path refPath : testPath) {
+                try {
+                    String fileName = refPath.getFileName().toString();
+                    Path destFile = destDir.resolve(fileName);
+                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Copied C++ test file: {}", fileName);
+                } catch (IOException e) {
+                    logger.error("Failed to copy C++ test file {}: {}", refPath, e.getMessage());
                 }
             }
         }
@@ -347,6 +403,42 @@ public class ReferenceAgent {
                 } catch (IOException e) {
                     logger.error("Failed to copy reference file {}: {}", refPath, e.getMessage());
                 }
+            } else if ("javascript".equals(exercise.getLanguage())) {
+                try {
+                    String fileName = refPath.getFileName().toString();
+                    Path destFile = tempDir.resolve(fileName);
+                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Copied JavaScript reference file: {}", fileName);
+                } catch (IOException e) {
+                    logger.error("Failed to copy JavaScript reference file {}: {}", refPath, e.getMessage());
+                }
+            } else if ("python".equals(exercise.getLanguage())) {
+                try {
+                    String fileName = refPath.getFileName().toString();
+                    Path destFile = tempDir.resolve(fileName);
+                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Copied Python reference file: {}", fileName);
+                } catch (IOException e) {
+                    logger.error("Failed to copy Python reference file {}: {}", refPath, e.getMessage());
+                }
+            } else if ("rust".equals(exercise.getLanguage())) {
+                try {
+                    String fileName = refPath.getFileName().toString();
+                    Path destFile = tempDir.resolve(fileName);
+                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Copied Rust reference file: {}", fileName);
+                } catch (IOException e) {
+                    logger.error("Failed to copy Rust reference file {}: {}", refPath, e.getMessage());
+                }
+            } else if ("cpp".equals(exercise.getLanguage())) {
+                try {
+                    String fileName = refPath.getFileName().toString();
+                    Path destFile = tempDir.resolve(fileName);
+                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Copied C++ reference file: {}", fileName);
+                } catch (IOException e) {
+                    logger.error("Failed to copy C++ reference file {}: {}", refPath, e.getMessage());
+                }
             }
         }
         for(Path examplePath: exercise.getExamples()) {
@@ -370,8 +462,20 @@ public class ReferenceAgent {
         // Mount the temp exercise directory as /workspace in the container
         String containerWorkDir = "/workspace";
 
-        // Determine the test command based on available build files
-        List<String> command = getTestCommand(exercise);
+        List<String> command;
+        if ("javascript".equals(exercise.getLanguage())) {
+            // For JavaScript, first run npm install to get dependencies, then run tests
+            command = List.of("sh", "-c", "npm install && npm run test");
+        } else if ("python".equals(exercise.getLanguage())) {
+            // For Python, use uv to create a venv and install pytest
+            // First check if .venv exists, if so activate it, otherwise create new venv
+            command = List.of("sh", "-c",
+                "if [ -d \".venv\" ]; then source .venv/bin/activate; else uv venv && source .venv/bin/activate; fi && " +
+                "uv pip install -q pytest && pytest");
+        } else {
+            // Determine the test command based on available build files
+            command = getTestCommand(exercise);
+        }
 
         logger.info("Running tests in Docker container at {} (mounted from: {})",
                 containerWorkDir, tempWorkDir);
@@ -455,6 +559,8 @@ public class ReferenceAgent {
             return List.of("go", "test");
         } else if (Files.exists(exerciseDir.resolve("package.json"))) {
             return List.of("npm", "run", "test");
+        } else if (Files.exists(exerciseDir.resolve("Cargo.toml"))) {
+            return List.of("cargo", "test");
         } else if (Files.exists(exerciseDir.resolve("CMakeLists.txt"))) {
             return List.of("mkdir", "-p", "build", "&&", "cd", "build", "&&", "cmake", "-DEXERCISM_RUN_ALL_TESTS=1", "-G", "\"Unix Makefiles\"", "..", "&&", "make");
         } else {

@@ -25,6 +25,21 @@ RUN npm install -g @anthropic-ai/claude-code
 RUN npm install -g claude-plugins
 RUN npx claude-plugins install @anthropics/claude-code-plugins/ralph-wiggum
 #RUN claude plugin install ralph-wiggum@anthropics
+
+# Install pytest for Python testing
+RUN pip3 install --no-cache-dir pytest
+
+# Install Jest and related packages for JavaScript testing
+RUN npm install -g jest \
+    @babel/core@7.25.2 \
+    @babel/preset-env@7.25.2 \
+    @exercism/babel-preset-javascript@0.2.1 \
+    @exercism/eslint-config-javascript@0.6.0 \
+    @types/jest@29.5.12 \
+    @types/node@20.12.12 \
+    babel-jest@29.6.4 \
+    core-js@3.37.1 \
+    eslint@8.49.0
 # Create non-privileged user
 RUN adduser -D -s /bin/bash -u 1000 runner && \
     chown -R runner:runner /home/runner
@@ -44,8 +59,6 @@ COPY gradle-8.7-bin.zip /opt/gradle/gradle-8.7-bin.zip
 
 # Ensure gradle daemon is disabled
 RUN mkdir -p /home/runner/.gradle && echo "org.gradle.daemon=false" >> /home/runner/.gradle/gradle.properties
-
-# TODO: Pre-Download gradle 8.7 that is used during many of these builds
 
 # Default command
 CMD ["/bin/bash"]

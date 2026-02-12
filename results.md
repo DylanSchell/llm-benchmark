@@ -2,104 +2,187 @@
 
 | Benchmark | Total Results | Success | Failed | Completion %% | Total Duration | Tokens |
 |-----------|---------------|---------|--------|---------------|----------------|--------|
-| [reference-r2](#reference-r2) | 86 | 86 | 0 | 100.0% | 0s | 0 / 0 / 0 |
 | [gpt-oss-120b-r8](#gpt-oss-120b-r8) | 86 | 75 | 11 | 87.2% | 3h 48m 4s | 27.2M / 24.7M / 1.3M |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | 86 | 73 | 13 | 84.9% | 5h 4m 7s | 21.5M / 44.0M / 739.8K |
 | [gpt-oss-120b-r7](#gpt-oss-120b-r7) | 86 | 73 | 13 | 84.9% | 4h 25m 30s | 28.3M / 25.5M / 1.5M |
 | [qwen3-coder-next-r10](#qwen3-coder-next-r10) | 86 | 71 | 15 | 82.6% | 5h 23m 54s | 15.2M / 27.4M / 564.1K |
+| [reference-r2](#reference-r2) | 169 | 138 | 31 | 81.7% | 0s | 0 / 0 / 0 |
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | 86 | 68 | 18 | 79.1% | 7h 24m 52s | 29.6M / 19.0M / 970.6K |
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | 86 | 59 | 27 | 68.6% | 7h 51m 45s | 24.7M / 15.8M / 942.3K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | 169 | 88 | 81 | 52.1% | 9h 21m 24s | 21.5M / 44.0M / 739.8K |
 
 # Success rates per exercise
 
 | Exercise | Total Results | Success | Failed | Completion %% | Total Duration | Tokens |
 |----------|---------------|---------|--------|---------------|----------------|--------|
+| [go-counting_javascript](#go-counting_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [two-bucket_javascript](#two-bucket_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [wordy_javascript](#wordy_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [kindergarten-garden_go](#kindergarten-garden_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [book-store_go](#book-store_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [meetup_javascript](#meetup_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [rest-api_javascript](#rest-api_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [robot-name_python](#robot-name_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [trinary_go](#trinary_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [food-chain_go](#food-chain_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [palindrome-products_go](#palindrome-products_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [change_java](#change_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [react_java](#react_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [transpose_javascript](#transpose_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [crypto-square_go](#crypto-square_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [protein-translation_java](#protein-translation_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [alphametics_java](#alphametics_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [ledger_javascript](#ledger_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [pov_java](#pov_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [dominoes_java](#dominoes_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [connect_go](#connect_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [two-bucket_go](#two-bucket_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [space-age_javascript](#space-age_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [queen-attack_java](#queen-attack_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [word-search_go](#word-search_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [phone-number_java](#phone-number_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [word-search_javascript](#word-search_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [triangle_javascript](#triangle_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [poker_java](#poker_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [simple-linked-list_javascript](#simple-linked-list_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [dominoes_python](#dominoes_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [rest-api_java](#rest-api_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [pig-latin_go](#pig-latin_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [pov_go](#pov_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [say_javascript](#say_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [two-bucket_java](#two-bucket_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [protein-translation_go](#protein-translation_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [zebra-puzzle_java](#zebra-puzzle_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [hangman_python](#hangman_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [paasio_go](#paasio_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [state-of-tic-tac-toe_java](#state-of-tic-tac-toe_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [counter_go](#counter_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [ledger_java](#ledger_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [go-counting_python](#go-counting_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [phone-number_python](#phone-number_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [variable-length-quantity_java](#variable-length-quantity_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [zipper_python](#zipper_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [error-handling_go](#error-handling_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [bottle-song_java](#bottle-song_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [phone-number_javascript](#phone-number_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [connect_javascript](#connect_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [bottle-song_javascript](#bottle-song_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [all-your-base_java](#all-your-base_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [list-ops_javascript](#list-ops_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [bottle-song_go](#bottle-song_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [sublist_go](#sublist_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [wordy_go](#wordy_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [twelve-days_java](#twelve-days_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [food-chain_java](#food-chain_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [bank-account_java](#bank-account_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [parallel-letter-frequency_javascript](#parallel-letter-frequency_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [house_javascript](#house_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [bottle-song_python](#bottle-song_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [grade-school_python](#grade-school_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [robot-simulator_go](#robot-simulator_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [mazy-mice_java](#mazy-mice_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [bowling_go](#bowling_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [sgf-parsing_python](#sgf-parsing_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [food-chain_python](#food-chain_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [connect_java](#connect_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [kindergarten-garden_java](#kindergarten-garden_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [forth_java](#forth_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [hexadecimal_go](#hexadecimal_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [circular-buffer_java](#circular-buffer_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [zebra-puzzle_go](#zebra-puzzle_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [forth_go](#forth_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [transpose_go](#transpose_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [resistor-color-trio_java](#resistor-color-trio_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [alphametics_javascript](#alphametics_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [ledger_go](#ledger_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [sgf-parsing_java](#sgf-parsing_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [resistor-color-trio_javascript](#resistor-color-trio_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [variable-length-quantity_go](#variable-length-quantity_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [rational-numbers_java](#rational-numbers_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [palindrome-products_java](#palindrome-products_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [scale-generator_go](#scale-generator_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [custom-set_java](#custom-set_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [beer-song_python](#beer-song_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [go-counting_java](#go-counting_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [transpose_java](#transpose_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [wordy_java](#wordy_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [markdown_go](#markdown_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [poker_go](#poker_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [react_go](#react_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [word-search_java](#word-search_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [series_java](#series_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [bowling_java](#bowling_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [forth_javascript](#forth_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [affine-cipher_javascript](#affine-cipher_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [pig-latin_python](#pig-latin_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [simple-linked-list_java](#simple-linked-list_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [tree-building_go](#tree-building_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [wordy_python](#wordy_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [affine-cipher_java](#affine-cipher_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [pig-latin_java](#pig-latin_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [satellite_java](#satellite_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [rest-api_python](#rest-api_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [simple-linked-list_go](#simple-linked-list_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [scale-generator_python](#scale-generator_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [alphametics_go](#alphametics_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [beer-song_go](#beer-song_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [bowling_python](#bowling_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [say_go](#say_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [hangman_java](#hangman_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [tree-building_java](#tree-building_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [pythagorean-triplet_java](#pythagorean-triplet_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [dnd-character_go](#dnd-character_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [matrix_go](#matrix_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [book-store_python](#book-store_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [ocr-numbers_java](#ocr-numbers_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [pig-latin_javascript](#pig-latin_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [simple-linked-list_python](#simple-linked-list_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [transpose_python](#transpose_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [dominoes_go](#dominoes_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [octal_go](#octal_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [zipper_java](#zipper_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [book-store_java](#book-store_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [house_java](#house_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [killer-sudoku-helper_javascript](#killer-sudoku-helper_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [react_python](#react_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [robot-name_javascript](#robot-name_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [zipper_javascript](#zipper_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [variable-length-quantity_python](#variable-length-quantity_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [food-chain_go](#food-chain_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [palindrome-products_go](#palindrome-products_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [react_java](#react_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [dominoes_java](#dominoes_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [connect_go](#connect_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [two-bucket_go](#two-bucket_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [food-chain_javascript](#food-chain_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [word-search_go](#word-search_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [phone-number_java](#phone-number_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [beer-song_javascript](#beer-song_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [complex-numbers_javascript](#complex-numbers_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [pov_go](#pov_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [dot-dsl_python](#dot-dsl_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [zebra-puzzle_java](#zebra-puzzle_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [state-of-tic-tac-toe_java](#state-of-tic-tac-toe_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [poker_python](#poker_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [counter_go](#counter_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [ledger_java](#ledger_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [state-of-tic-tac-toe_javascript](#state-of-tic-tac-toe_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [bottle-song_java](#bottle-song_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [palindrome-products_javascript](#palindrome-products_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [sublist_go](#sublist_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [wordy_go](#wordy_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [twelve-days_java](#twelve-days_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [food-chain_java](#food-chain_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [bank-account_java](#bank-account_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [tree-building_python](#tree-building_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [pov_python](#pov_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [connect_python](#connect_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [bowling_go](#bowling_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [kindergarten-garden_java](#kindergarten-garden_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [hexadecimal_go](#hexadecimal_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [proverb_python](#proverb_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [two-bucket_python](#two-bucket_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [grep_python](#grep_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [forth_go](#forth_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [ocr-numbers_javascript](#ocr-numbers_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [forth_python](#forth_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [transpose_go](#transpose_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [resistor-color-trio_java](#resistor-color-trio_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [promises_javascript](#promises_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [rectangles_javascript](#rectangles_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [twelve-days_javascript](#twelve-days_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [rational-numbers_javascript](#rational-numbers_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [sgf-parsing_java](#sgf-parsing_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [rational-numbers_java](#rational-numbers_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [palindrome-products_java](#palindrome-products_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [grade-school_javascript](#grade-school_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [scale-generator_go](#scale-generator_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [custom-set_java](#custom-set_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [scale-generator_javascript](#scale-generator_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [markdown_go](#markdown_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [grep_javascript](#grep_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [react_go](#react_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [word-search_java](#word-search_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [series_java](#series_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [bowling_java](#bowling_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [poker_javascript](#poker_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [pig-latin_java](#pig-latin_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [queen-attack_javascript](#queen-attack_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [satellite_java](#satellite_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [list-ops_python](#list-ops_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [beer-song_go](#beer-song_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [sum-of-multiples_javascript](#sum-of-multiples_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [tournament_javascript](#tournament_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [tree-building_java](#tree-building_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [zebra-puzzle_javascript](#zebra-puzzle_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [book-store_javascript](#book-store_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [bowling_javascript](#bowling_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [pythagorean-triplet_java](#pythagorean-triplet_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [binary_javascript](#binary_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [react_javascript](#react_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [zebra-puzzle_python](#zebra-puzzle_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [variable-length-quantity_javascript](#variable-length-quantity_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [paasio_python](#paasio_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [affine-cipher_python](#affine-cipher_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 
 # qwen3-coder-next-r10
 
@@ -283,6 +366,89 @@
 | [wordy_java](#wordy_java) | ✅ | 0s | 0 / 0 / 0 |
 | [zebra-puzzle_java](#zebra-puzzle_java) | ✅ | 0s | 0 / 0 / 0 |
 | [pov_java](#pov_java) | ✅ | 0s | 0 / 0 / 0 |
+| [meetup_javascript](#meetup_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [ocr-numbers_javascript](#ocr-numbers_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [parallel-letter-frequency_javascript](#parallel-letter-frequency_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [palindrome-products_javascript](#palindrome-products_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [pig-latin_javascript](#pig-latin_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [phone-number_javascript](#phone-number_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [queen-attack_javascript](#queen-attack_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [promises_javascript](#promises_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [rational-numbers_javascript](#rational-numbers_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [poker_javascript](#poker_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [rectangles_javascript](#rectangles_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [react_javascript](#react_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [resistor-color-trio_javascript](#resistor-color-trio_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [rest-api_javascript](#rest-api_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [simple-linked-list_javascript](#simple-linked-list_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [scale-generator_javascript](#scale-generator_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [say_javascript](#say_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [robot-name_javascript](#robot-name_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [space-age_javascript](#space-age_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [state-of-tic-tac-toe_javascript](#state-of-tic-tac-toe_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [sum-of-multiples_javascript](#sum-of-multiples_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [tournament_javascript](#tournament_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [two-bucket_javascript](#two-bucket_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [triangle_javascript](#triangle_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [twelve-days_javascript](#twelve-days_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [variable-length-quantity_javascript](#variable-length-quantity_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [transpose_javascript](#transpose_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [word-search_javascript](#word-search_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [zebra-puzzle_javascript](#zebra-puzzle_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [wordy_javascript](#wordy_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [zipper_javascript](#zipper_javascript) | ❌ | 0s | 0 / 0 / 0 |
+| [beer-song_javascript](#beer-song_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [bowling_javascript](#bowling_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [bottle-song_javascript](#bottle-song_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [book-store_javascript](#book-store_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [binary_javascript](#binary_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [alphametics_javascript](#alphametics_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [affine-cipher_javascript](#affine-cipher_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [complex-numbers_javascript](#complex-numbers_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [connect_javascript](#connect_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [go-counting_javascript](#go-counting_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [food-chain_javascript](#food-chain_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [grade-school_javascript](#grade-school_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [killer-sudoku-helper_javascript](#killer-sudoku-helper_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [forth_javascript](#forth_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [house_javascript](#house_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [grep_javascript](#grep_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [ledger_javascript](#ledger_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [list-ops_javascript](#list-ops_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [affine-cipher_python](#affine-cipher_python) | ✅ | 0s | 0 / 0 / 0 |
+| [beer-song_python](#beer-song_python) | ✅ | 0s | 0 / 0 / 0 |
+| [bowling_python](#bowling_python) | ✅ | 0s | 0 / 0 / 0 |
+| [bottle-song_python](#bottle-song_python) | ✅ | 0s | 0 / 0 / 0 |
+| [dominoes_python](#dominoes_python) | ✅ | 0s | 0 / 0 / 0 |
+| [dot-dsl_python](#dot-dsl_python) | ✅ | 0s | 0 / 0 / 0 |
+| [connect_python](#connect_python) | ✅ | 0s | 0 / 0 / 0 |
+| [book-store_python](#book-store_python) | ✅ | 0s | 0 / 0 / 0 |
+| [forth_python](#forth_python) | ✅ | 0s | 0 / 0 / 0 |
+| [list-ops_python](#list-ops_python) | ✅ | 0s | 0 / 0 / 0 |
+| [go-counting_python](#go-counting_python) | ✅ | 0s | 0 / 0 / 0 |
+| [grep_python](#grep_python) | ✅ | 0s | 0 / 0 / 0 |
+| [grade-school_python](#grade-school_python) | ✅ | 0s | 0 / 0 / 0 |
+| [hangman_python](#hangman_python) | ✅ | 0s | 0 / 0 / 0 |
+| [food-chain_python](#food-chain_python) | ✅ | 0s | 0 / 0 / 0 |
+| [paasio_python](#paasio_python) | ✅ | 0s | 0 / 0 / 0 |
+| [proverb_python](#proverb_python) | ✅ | 0s | 0 / 0 / 0 |
+| [phone-number_python](#phone-number_python) | ✅ | 0s | 0 / 0 / 0 |
+| [poker_python](#poker_python) | ✅ | 0s | 0 / 0 / 0 |
+| [pig-latin_python](#pig-latin_python) | ✅ | 0s | 0 / 0 / 0 |
+| [rest-api_python](#rest-api_python) | ✅ | 0s | 0 / 0 / 0 |
+| [robot-name_python](#robot-name_python) | ✅ | 0s | 0 / 0 / 0 |
+| [react_python](#react_python) | ✅ | 0s | 0 / 0 / 0 |
+| [scale-generator_python](#scale-generator_python) | ✅ | 0s | 0 / 0 / 0 |
+| [tree-building_python](#tree-building_python) | ✅ | 0s | 0 / 0 / 0 |
+| [two-bucket_python](#two-bucket_python) | ✅ | 0s | 0 / 0 / 0 |
+| [simple-linked-list_python](#simple-linked-list_python) | ✅ | 0s | 0 / 0 / 0 |
+| [sgf-parsing_python](#sgf-parsing_python) | ✅ | 0s | 0 / 0 / 0 |
+| [transpose_python](#transpose_python) | ✅ | 0s | 0 / 0 / 0 |
+| [variable-length-quantity_python](#variable-length-quantity_python) | ✅ | 0s | 0 / 0 / 0 |
+| [zebra-puzzle_python](#zebra-puzzle_python) | ✅ | 0s | 0 / 0 / 0 |
+| [wordy_python](#wordy_python) | ✅ | 0s | 0 / 0 / 0 |
+| [pov_python](#pov_python) | ✅ | 0s | 0 / 0 / 0 |
+| [zipper_python](#zipper_python) | ✅ | 0s | 0 / 0 / 0 |
 
 
 # qwen3-coder-next-r11
@@ -375,6 +541,89 @@
 | [zebra-puzzle_java](#zebra-puzzle_java) | ❌ | 3m 1s | 0 / 0 / 0 |
 | [zipper_java](#zipper_java) | ❌ | 2m 59s | 0 / 0 / 0 |
 | [pov_java](#pov_java) | ❌ | 2m 57s | 0 / 0 / 0 |
+| [affine-cipher_javascript](#affine-cipher_javascript) | ✅ | 2m 29s | 0 / 0 / 0 |
+| [alphametics_javascript](#alphametics_javascript) | ✅ | 2m 48s | 0 / 0 / 0 |
+| [beer-song_javascript](#beer-song_javascript) | ✅ | 1m 56s | 0 / 0 / 0 |
+| [binary_javascript](#binary_javascript) | ✅ | 1m 7s | 0 / 0 / 0 |
+| [book-store_javascript](#book-store_javascript) | ✅ | 2m 36s | 0 / 0 / 0 |
+| [bottle-song_javascript](#bottle-song_javascript) | ✅ | 2m 22s | 0 / 0 / 0 |
+| [bowling_javascript](#bowling_javascript) | ✅ | 5m 48s | 0 / 0 / 0 |
+| [complex-numbers_javascript](#complex-numbers_javascript) | ✅ | 1m 54s | 0 / 0 / 0 |
+| [connect_javascript](#connect_javascript) | ✅ | 1m 19s | 0 / 0 / 0 |
+| [food-chain_javascript](#food-chain_javascript) | ✅ | 4m 51s | 0 / 0 / 0 |
+| [forth_javascript](#forth_javascript) | ✅ | 16m 42s | 0 / 0 / 0 |
+| [go-counting_javascript](#go-counting_javascript) | ✅ | 3m 44s | 0 / 0 / 0 |
+| [grade-school_javascript](#grade-school_javascript) | ✅ | 1m 18s | 0 / 0 / 0 |
+| [grep_javascript](#grep_javascript) | ✅ | 2m 41s | 0 / 0 / 0 |
+| [house_javascript](#house_javascript) | ✅ | 1m 32s | 0 / 0 / 0 |
+| [ledger_javascript](#ledger_javascript) | ✅ | 2m 59s | 0 / 0 / 0 |
+| [killer-sudoku-helper_javascript](#killer-sudoku-helper_javascript) | ❌ | 3m 0s | 0 / 0 / 0 |
+| [list-ops_javascript](#list-ops_javascript) | ❌ | 2m 55s | 0 / 0 / 0 |
+| [meetup_javascript](#meetup_javascript) | ❌ | 2m 55s | 0 / 0 / 0 |
+| [ocr-numbers_javascript](#ocr-numbers_javascript) | ❌ | 3m 1s | 0 / 0 / 0 |
+| [palindrome-products_javascript](#palindrome-products_javascript) | ❌ | 2m 58s | 0 / 0 / 0 |
+| [parallel-letter-frequency_javascript](#parallel-letter-frequency_javascript) | ❌ | 2m 50s | 0 / 0 / 0 |
+| [phone-number_javascript](#phone-number_javascript) | ❌ | 2m 58s | 0 / 0 / 0 |
+| [pig-latin_javascript](#pig-latin_javascript) | ❌ | 3m 1s | 0 / 0 / 0 |
+| [poker_javascript](#poker_javascript) | ❌ | 3m 8s | 0 / 0 / 0 |
+| [promises_javascript](#promises_javascript) | ❌ | 3m 5s | 0 / 0 / 0 |
+| [queen-attack_javascript](#queen-attack_javascript) | ❌ | 2m 55s | 0 / 0 / 0 |
+| [rational-numbers_javascript](#rational-numbers_javascript) | ❌ | 2m 57s | 0 / 0 / 0 |
+| [react_javascript](#react_javascript) | ❌ | 2m 57s | 0 / 0 / 0 |
+| [rectangles_javascript](#rectangles_javascript) | ❌ | 3m 5s | 0 / 0 / 0 |
+| [resistor-color-trio_javascript](#resistor-color-trio_javascript) | ❌ | 2m 51s | 0 / 0 / 0 |
+| [rest-api_javascript](#rest-api_javascript) | ❌ | 2m 51s | 0 / 0 / 0 |
+| [robot-name_javascript](#robot-name_javascript) | ❌ | 3m 1s | 0 / 0 / 0 |
+| [say_javascript](#say_javascript) | ❌ | 2m 58s | 0 / 0 / 0 |
+| [scale-generator_javascript](#scale-generator_javascript) | ❌ | 3m 1s | 0 / 0 / 0 |
+| [simple-linked-list_javascript](#simple-linked-list_javascript) | ❌ | 3m 3s | 0 / 0 / 0 |
+| [space-age_javascript](#space-age_javascript) | ❌ | 2m 56s | 0 / 0 / 0 |
+| [state-of-tic-tac-toe_javascript](#state-of-tic-tac-toe_javascript) | ❌ | 3m 6s | 0 / 0 / 0 |
+| [sum-of-multiples_javascript](#sum-of-multiples_javascript) | ❌ | 3m 1s | 0 / 0 / 0 |
+| [tournament_javascript](#tournament_javascript) | ❌ | 3m 5s | 0 / 0 / 0 |
+| [transpose_javascript](#transpose_javascript) | ❌ | 2m 56s | 0 / 0 / 0 |
+| [triangle_javascript](#triangle_javascript) | ❌ | 3m 3s | 0 / 0 / 0 |
+| [twelve-days_javascript](#twelve-days_javascript) | ❌ | 3m 0s | 0 / 0 / 0 |
+| [two-bucket_javascript](#two-bucket_javascript) | ❌ | 2m 53s | 0 / 0 / 0 |
+| [variable-length-quantity_javascript](#variable-length-quantity_javascript) | ❌ | 2m 57s | 0 / 0 / 0 |
+| [word-search_javascript](#word-search_javascript) | ❌ | 3m 3s | 0 / 0 / 0 |
+| [wordy_javascript](#wordy_javascript) | ❌ | 3m 5s | 0 / 0 / 0 |
+| [zebra-puzzle_javascript](#zebra-puzzle_javascript) | ❌ | 2m 53s | 0 / 0 / 0 |
+| [zipper_javascript](#zipper_javascript) | ❌ | 2m 54s | 0 / 0 / 0 |
+| [affine-cipher_python](#affine-cipher_python) | ❌ | 2m 59s | 0 / 0 / 0 |
+| [beer-song_python](#beer-song_python) | ❌ | 2m 59s | 0 / 0 / 0 |
+| [book-store_python](#book-store_python) | ❌ | 2m 59s | 0 / 0 / 0 |
+| [bottle-song_python](#bottle-song_python) | ❌ | 3m 6s | 0 / 0 / 0 |
+| [bowling_python](#bowling_python) | ❌ | 2m 52s | 0 / 0 / 0 |
+| [connect_python](#connect_python) | ❌ | 3m 2s | 0 / 0 / 0 |
+| [dominoes_python](#dominoes_python) | ❌ | 2m 56s | 0 / 0 / 0 |
+| [dot-dsl_python](#dot-dsl_python) | ❌ | 3m 2s | 0 / 0 / 0 |
+| [food-chain_python](#food-chain_python) | ❌ | 2m 57s | 0 / 0 / 0 |
+| [forth_python](#forth_python) | ❌ | 2m 58s | 0 / 0 / 0 |
+| [go-counting_python](#go-counting_python) | ❌ | 2m 55s | 0 / 0 / 0 |
+| [grade-school_python](#grade-school_python) | ❌ | 3m 0s | 0 / 0 / 0 |
+| [grep_python](#grep_python) | ❌ | 3m 4s | 0 / 0 / 0 |
+| [hangman_python](#hangman_python) | ❌ | 3m 9s | 0 / 0 / 0 |
+| [list-ops_python](#list-ops_python) | ❌ | 2m 53s | 0 / 0 / 0 |
+| [paasio_python](#paasio_python) | ❌ | 2m 52s | 0 / 0 / 0 |
+| [phone-number_python](#phone-number_python) | ❌ | 3m 8s | 0 / 0 / 0 |
+| [pig-latin_python](#pig-latin_python) | ❌ | 3m 3s | 0 / 0 / 0 |
+| [poker_python](#poker_python) | ❌ | 3m 5s | 0 / 0 / 0 |
+| [proverb_python](#proverb_python) | ❌ | 3m 3s | 0 / 0 / 0 |
+| [react_python](#react_python) | ❌ | 3m 4s | 0 / 0 / 0 |
+| [rest-api_python](#rest-api_python) | ❌ | 3m 2s | 0 / 0 / 0 |
+| [robot-name_python](#robot-name_python) | ❌ | 3m 3s | 0 / 0 / 0 |
+| [scale-generator_python](#scale-generator_python) | ❌ | 2m 57s | 0 / 0 / 0 |
+| [sgf-parsing_python](#sgf-parsing_python) | ❌ | 3m 1s | 0 / 0 / 0 |
+| [simple-linked-list_python](#simple-linked-list_python) | ❌ | 3m 2s | 0 / 0 / 0 |
+| [transpose_python](#transpose_python) | ❌ | 3m 3s | 0 / 0 / 0 |
+| [tree-building_python](#tree-building_python) | ❌ | 2m 54s | 0 / 0 / 0 |
+| [two-bucket_python](#two-bucket_python) | ❌ | 3m 3s | 0 / 0 / 0 |
+| [variable-length-quantity_python](#variable-length-quantity_python) | ❌ | 2m 55s | 0 / 0 / 0 |
+| [wordy_python](#wordy_python) | ❌ | 3m 4s | 0 / 0 / 0 |
+| [zebra-puzzle_python](#zebra-puzzle_python) | ❌ | 3m 4s | 0 / 0 / 0 |
+| [zipper_python](#zipper_python) | ❌ | 2m 54s | 0 / 0 / 0 |
+| [pov_python](#pov_python) | ❌ | 3m 1s | 0 / 0 / 0 |
 
 
 # gpt-oss-120b-r7
@@ -745,6 +994,30 @@
 | [pov_java](#pov_java) | ✅ | 7m 46s | 401.9K / 227.2K / 19.2K |
 
 
+# go-counting_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 3m 44s | 0 / 0 / 0 |
+
+
+# wordy_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 5s | 0 / 0 / 0 |
+
+
+# two-bucket_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 53s | 0 / 0 / 0 |
+
+
 # kindergarten-garden_go
 
 | Model | Success | Duration | Tokens |
@@ -756,6 +1029,14 @@
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 51s | 148.4K / 89.0K / 4.2K |
 | [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 53s | 143.8K / 139.2K / 5.5K |
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 16s | 153.6K / 110.4K / 4.3K |
+
+
+# meetup_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 55s | 0 / 0 / 0 |
 
 
 # book-store_go
@@ -771,6 +1052,22 @@
 | [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 14m 52s | 519.3K / 979.7K / 27.9K |
 
 
+# rest-api_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 51s | 0 / 0 / 0 |
+
+
+# robot-name_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 3s | 0 / 0 / 0 |
+
+
 # trinary_go
 
 | Model | Success | Duration | Tokens |
@@ -784,17 +1081,12 @@
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 1s | 197.1K / 143.6K / 4.6K |
 
 
-# react_java
+# transpose_javascript
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 8m 11s | 456.6K / 780.8K / 19.7K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 8m 50s | 689.5K / 578.2K / 15.3K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ❌ | 10m 0s | 582.0K / 523.9K / 67.2K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 363.8K / 197.7K / 22.8K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 10m 0s | 587.5K / 524.3K / 64.6K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 14m 28s | 590.3K / 1.2M / 34.0K |
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 56s | 0 / 0 / 0 |
 
 
 # change_java
@@ -808,32 +1100,6 @@
 | [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 28s | 90.5K / 141.4K / 2.7K |
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 3m 16s | 132.2K / 64.7K / 4.0K |
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 35s | 173.6K / 119.3K / 2.3K |
-
-
-# palindrome-products_go
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 6s | 199.3K / 179.6K / 5.0K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 1m 21s | 158.8K / 120.9K / 2.3K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 21s | 236.4K / 216.7K / 4.7K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 39s | 139.5K / 101.9K / 2.7K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 6s | 118.3K / 227.9K / 3.0K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ❌ | 10m 0s | 35.2K / 50.2K / 274 |
-
-
-# food-chain_go
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 9s | 139.7K / 105.3K / 7.3K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 15s | 91.2K / 123.1K / 2.7K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 29s | 146.8K / 124.8K / 3.4K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 35s | 198.6K / 161.9K / 9.3K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 14s | 207.7K / 143.7K / 4.5K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 56s | 246.3K / 165.3K / 5.1K |
 
 
 # protein-translation_java
@@ -862,6 +1128,14 @@
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 137.6K / 80.7K / 9.9K |
 
 
+# ledger_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 59s | 0 / 0 / 0 |
+
+
 # alphametics_java
 
 | Model | Success | Duration | Tokens |
@@ -888,30 +1162,20 @@
 | [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 10m 0s | 490.6K / 709.2K / 24.3K |
 
 
-# dominoes_java
+# space-age_javascript
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 22s | 168.9K / 148.8K / 8.9K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 51s | 181.5K / 71.2K / 3.3K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 3m 15s | 150.2K / 222.2K / 3.3K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 5m 8s | 375.2K / 229.0K / 11.2K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 7m 10s | 503.0K / 466.3K / 45.0K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 11m 37s | 762.0K / 902.0K / 29.9K |
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 56s | 0 / 0 / 0 |
 
 
-# connect_go
+# word-search_javascript
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ❌ | 50s | 119.1K / 83.4K / 4.1K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 45s | 86.8K / 166.5K / 4.3K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 57s | 309.3K / 263.9K / 13.1K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 56s | 611.1K / 405.8K / 20.8K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 357.0K / 213.6K / 26.3K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ❌ | 10m 0s | 549.9K / 749.6K / 27.5K |
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 3s | 0 / 0 / 0 |
 
 
 # queen-attack_java
@@ -927,30 +1191,28 @@
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 50s | 166.9K / 98.4K / 3.0K |
 
 
-# two-bucket_go
+# triangle_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 3s | 0 / 0 / 0 |
+
+
+# dominoes_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 45s | 303.4K / 275.2K / 17.6K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 57s | 127.7K / 266.3K / 4.3K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 4m 24s | 656.9K / 616.4K / 26.7K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 57s | 195.4K / 130.0K / 8.5K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 5m 13s | 385.7K / 499.3K / 14.1K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 303.1K / 227.1K / 18.4K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 56s | 0 / 0 / 0 |
 
 
-# word-search_go
+# simple-linked-list_javascript
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 20s | 103.4K / 125.7K / 2.6K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 35s | 103.8K / 154.1K / 3.4K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 2m 12s | 271.4K / 249.3K / 12.4K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 32s | 191.7K / 145.8K / 3.6K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 39s | 274.0K / 231.3K / 11.4K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 3m 6s | 303.9K / 214.2K / 4.4K |
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 3s | 0 / 0 / 0 |
 
 
 # poker_java
@@ -964,19 +1226,6 @@
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 36s | 329.1K / 191.0K / 6.5K |
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 5m 23s | 316.0K / 175.9K / 11.6K |
 | [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ❌ | 7m 15s | 2.2M / 2.1M / 41.9K |
-
-
-# phone-number_java
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 7s | 74.7K / 100.5K / 2.0K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 38s | 173.8K / 155.2K / 9.8K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 17s | 192.8K / 205.5K / 5.8K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 46s | 362.0K / 334.6K / 16.9K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 48s | 273.6K / 182.9K / 3.8K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 48s | 201.7K / 125.7K / 4.4K |
 
 
 # rest-api_java
@@ -1005,6 +1254,14 @@
 | [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 3m 1s | 250.2K / 210.0K / 19.9K |
 
 
+# say_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 58s | 0 / 0 / 0 |
+
+
 # two-bucket_java
 
 | Model | Success | Duration | Tokens |
@@ -1016,19 +1273,6 @@
 | [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 0s | 0 / 0 / 0 |
 | [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 8s | 416.6K / 390.0K / 20.3K |
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 1s | 211.4K / 145.9K / 5.2K |
-
-
-# pov_go
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 7m 21s | 402.6K / 529.3K / 17.2K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 7m 36s | 796.7K / 751.2K / 47.7K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 218.5K / 141.8K / 8.2K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 222.6K / 141.2K / 11.8K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ❌ | 10m 0s | 540.5K / 794.9K / 28.3K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ❌ | 10m 0s | 974.2K / 910.9K / 47.5K |
 
 
 # protein-translation_go
@@ -1044,30 +1288,12 @@
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 34s | 578.7K / 362.9K / 24.7K |
 
 
-# zebra-puzzle_java
+# hangman_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 42s | 165.9K / 150.7K / 3.6K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 6s | 107.2K / 92.8K / 5.4K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 35s | 64.9K / 144.7K / 2.5K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 22s | 168.2K / 81.8K / 5.7K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 1s | 0 / 0 / 0 |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 385.6K / 192.3K / 28.0K |
-
-
-# state-of-tic-tac-toe_java
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 7s | 108.5K / 88.3K / 5.0K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 41s | 107.7K / 87.9K / 3.5K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 44s | 83.6K / 160.1K / 3.5K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 28s | 145.5K / 70.8K / 2.8K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 31s | 102.2K / 148.2K / 2.6K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 36s | 139.8K / 67.9K / 2.8K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 9s | 0 / 0 / 0 |
 
 
 # paasio_go
@@ -1083,30 +1309,28 @@
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 14s | 356.4K / 266.6K / 11.3K |
 
 
-# ledger_java
+# go-counting_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 32s | 238.8K / 208.9K / 15.8K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 56s | 177.0K / 181.6K / 5.6K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 3m 6s | 0 / 0 / 0 |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 20s | 227.6K / 132.9K / 5.6K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 3s | 463.2K / 314.7K / 21.2K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 8m 32s | 2.0M / 2.0M / 49.4K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 55s | 0 / 0 / 0 |
 
 
-# counter_go
+# phone-number_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 57s | 192.3K / 174.9K / 5.2K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 35s | 328.1K / 286.7K / 14.5K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 4m 20s | 258.0K / 443.0K / 14.1K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 8m 8s | 323.5K / 794.7K / 18.6K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 9m 9s | 1.0M / 616.9K / 48.1K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 10m 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 8s | 0 / 0 / 0 |
+
+
+# zipper_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 54s | 0 / 0 / 0 |
 
 
 # variable-length-quantity_java
@@ -1122,17 +1346,12 @@
 | [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 4s | 0 / 0 / 0 |
 
 
-# bottle-song_java
+# phone-number_javascript
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 26s | 119.3K / 148.9K / 2.4K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 33s | 102.9K / 187.9K / 2.4K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 37s | 219.8K / 197.8K / 8.0K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 4m 15s | 304.1K / 211.6K / 7.1K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 4m 25s | 516.0K / 490.8K / 21.2K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 44s | 284.9K / 214.4K / 5.7K |
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 58s | 0 / 0 / 0 |
 
 
 # error-handling_go
@@ -1146,6 +1365,30 @@
 | [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 40s | 183.5K / 144.6K / 9.0K |
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 38s | 336.7K / 239.3K / 6.1K |
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 853.3K / 507.3K / 28.7K |
+
+
+# connect_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 19s | 0 / 0 / 0 |
+
+
+# bottle-song_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 22s | 0 / 0 / 0 |
+
+
+# list-ops_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 55s | 0 / 0 / 0 |
 
 
 # all-your-base_java
@@ -1174,69 +1417,44 @@
 | [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ❌ | 10m 0s | 2.0M / 2.0M / 64.4K |
 
 
-# wordy_go
+# parallel-letter-frequency_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 50s | 0 / 0 / 0 |
+
+
+# house_javascript
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 24s | 93.1K / 121.0K / 3.0K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 25s | 381.0K / 334.2K / 6.5K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 34s | 92.5K / 138.8K / 1.9K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 59s | 298.9K / 278.7K / 5.9K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 29s | 218.0K / 155.8K / 4.7K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 4m 18s | 311.4K / 220.7K / 8.7K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 32s | 0 / 0 / 0 |
 
 
-# sublist_go
+# bottle-song_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 41s | 151.2K / 133.7K / 3.2K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 0s | 71.4K / 97.1K / 1.4K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 5s | 143.3K / 108.6K / 1.7K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 15s | 75.8K / 134.9K / 1.3K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 55s | 201.9K / 145.0K / 8.3K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 15s | 604.2K / 579.6K / 21.9K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 6s | 0 / 0 / 0 |
 
 
-# twelve-days_java
+# grade-school_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 48s | 95.0K / 75.6K / 2.8K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 9s | 184.9K / 261.8K / 3.5K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 20s | 130.8K / 90.1K / 1.8K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 41s | 174.5K / 132.1K / 2.5K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 54s | 0 / 0 / 0 |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 3m 7s | 258.7K / 238.3K / 19.7K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 0s | 0 / 0 / 0 |
 
 
-# food-chain_java
+# sgf-parsing_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 33s | 128.6K / 88.6K / 2.2K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 46s | 90.0K / 161.6K / 2.8K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 2m 40s | 241.1K / 214.5K / 13.8K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 3m 4s | 192.6K / 150.4K / 3.3K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 3m 25s | 247.2K / 326.2K / 8.5K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 59s | 710.3K / 674.3K / 24.9K |
-
-
-# bank-account_java
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 23s | 94.2K / 124.6K / 1.7K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 33s | 259.6K / 240.1K / 8.4K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 35s | 117.9K / 167.9K / 2.5K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 55s | 174.3K / 104.4K / 2.3K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 17s | 189.1K / 170.4K / 7.3K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 5m 20s | 152.8K / 66.7K / 2.6K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 1s | 0 / 0 / 0 |
 
 
 # mazy-mice_java
@@ -1265,30 +1483,12 @@
 | [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ⏰ | 20m 0s | 1.3M / 1.9M / 47.2K |
 
 
-# bowling_go
+# food-chain_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 47s | 173.2K / 148.2K / 9.8K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 55s | 92.2K / 114.5K / 4.5K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 7s | 114.6K / 135.3K / 3.9K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 3m 21s | 381.4K / 348.8K / 19.7K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 427.3K / 255.3K / 16.1K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 539.8K / 326.2K / 23.4K |
-
-
-# kindergarten-garden_java
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 55s | 140.9K / 120.7K / 4.5K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 13s | 204.8K / 184.1K / 5.7K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 15s | 78.2K / 154.7K / 1.6K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 43s | 58.2K / 155.0K / 2.1K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 20s | 191.6K / 84.8K / 6.6K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 51s | 213.1K / 122.4K / 4.2K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 57s | 0 / 0 / 0 |
 
 
 # connect_java
@@ -1330,19 +1530,6 @@
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 3m 0s | 237.0K / 181.1K / 2.9K |
 
 
-# hexadecimal_go
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ❌ | 25s | 55.8K / 26.4K / 2.9K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 46s | 115.2K / 83.3K / 3.3K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 1m 25s | 814.1K / 559.3K / 30.3K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 36s | 70.4K / 99.2K / 2.1K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 48s | 131.2K / 96.0K / 2.9K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 50s | 107.2K / 156.0K / 4.0K |
-
-
 # zebra-puzzle_go
 
 | Model | Success | Duration | Tokens |
@@ -1356,43 +1543,20 @@
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 201.0K / 101.7K / 28.2K |
 
 
-# forth_go
+# alphametics_javascript
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ❌ | 1m 52s | 140.8K / 92.3K / 11.3K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 4m 40s | 532.4K / 500.3K / 29.1K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 5m 34s | 253.6K / 383.3K / 10.4K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ❌ | 10m 0s | 281.3K / 391.3K / 7.7K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 10m 0s | 665.8K / 394.9K / 24.0K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 285.3K / 173.3K / 7.8K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 48s | 0 / 0 / 0 |
 
 
-# transpose_go
+# resistor-color-trio_javascript
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 59s | 68.5K / 79.2K / 1.5K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 28s | 110.6K / 156.6K / 2.1K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 14s | 144.7K / 109.2K / 1.5K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ❌ | 10m 0s | 588.2K / 529.6K / 57.0K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ❌ | 10m 0s | 723.3K / 660.6K / 71.2K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 503.5K / 310.7K / 32.1K |
-
-
-# resistor-color-trio_java
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 9s | 85.6K / 69.3K / 3.1K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 12s | 114.6K / 64.2K / 1.8K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 17s | 53.0K / 133.1K / 2.3K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 19s | 117.5K / 101.0K / 6.2K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 25s | 130.4K / 64.1K / 2.7K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 43s | 139.7K / 313.9K / 4.4K |
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 51s | 0 / 0 / 0 |
 
 
 # ledger_go
@@ -1408,32 +1572,6 @@
 | [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 16m 34s | 1.7M / 3.8M / 34.1K |
 
 
-# sgf-parsing_java
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 5m 46s | 238.4K / 372.9K / 16.9K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 6m 21s | 185.6K / 254.0K / 11.6K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ❌ | 10m 0s | 552.5K / 489.7K / 64.2K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 392.8K / 192.7K / 21.1K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 363.5K / 184.0K / 28.7K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 10m 0s | 420.0K / 366.7K / 68.8K |
-
-
-# rational-numbers_java
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 3m 13s | 328.8K / 301.1K / 17.1K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 23s | 382.0K / 354.0K / 20.1K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 35s | 303.1K / 170.8K / 5.2K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 4m 13s | 279.9K / 425.6K / 9.3K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 5m 7s | 297.6K / 445.9K / 8.8K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 8m 11s | 458.4K / 299.9K / 18.2K |
-
-
 # variable-length-quantity_go
 
 | Model | Success | Duration | Tokens |
@@ -1447,30 +1585,12 @@
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 298.6K / 203.9K / 12.8K |
 
 
-# palindrome-products_java
+# beer-song_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 38s | 88.0K / 70.9K / 3.1K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 46s | 88.3K / 71.0K / 2.3K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 26s | 79.4K / 178.5K / 2.2K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 33s | 79.4K / 178.5K / 2.3K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 51s | 119.0K / 67.1K / 1.5K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 10m 0s | 87.4K / 66.1K / 1.2K |
-
-
-# scale-generator_go
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 50s | 179.7K / 138.6K / 3.8K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 5s | 117.7K / 187.3K / 3.0K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 3m 0s | 156.8K / 322.0K / 4.1K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 17s | 336.6K / 311.9K / 22.6K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 4m 31s | 373.5K / 327.1K / 32.8K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 5m 39s | 390.3K / 254.0K / 16.5K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 59s | 0 / 0 / 0 |
 
 
 # transpose_java
@@ -1499,19 +1619,6 @@
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 252.1K / 161.5K / 16.0K |
 
 
-# custom-set_java
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 6s | 100.8K / 78.3K / 5.7K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 3m 35s | 224.6K / 282.5K / 8.9K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 4m 22s | 241.3K / 218.2K / 16.1K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 4m 29s | 356.5K / 241.6K / 9.3K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 5m 2s | 140.8K / 177.9K / 8.0K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 7m 56s | 206.3K / 120.8K / 18.4K |
-
-
 # wordy_java
 
 | Model | Success | Duration | Tokens |
@@ -1538,56 +1645,28 @@
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 772.3K / 565.8K / 13.7K |
 
 
-# markdown_go
+# forth_javascript
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 35s | 107.9K / 88.8K / 6.3K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 24s | 249.6K / 390.3K / 5.0K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 34s | 152.5K / 131.1K / 10.5K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 0s | 225.4K / 110.3K / 7.9K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 49s | 321.2K / 158.6K / 14.5K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 5m 26s | 386.0K / 667.9K / 12.4K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 16m 42s | 0 / 0 / 0 |
 
 
-# word-search_java
+# affine-cipher_javascript
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 57s | 146.1K / 117.9K / 3.6K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 46s | 172.6K / 144.7K / 4.1K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 56s | 144.8K / 210.2K / 2.3K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 57s | 0 / 0 / 0 |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 50s | 313.9K / 176.4K / 4.0K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 3m 53s | 299.8K / 122.2K / 4.5K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 29s | 0 / 0 / 0 |
 
 
-# react_go
+# pig-latin_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 32s | 123.3K / 81.3K / 9.1K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 3m 24s | 392.4K / 362.9K / 20.0K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 34s | 328.9K / 254.6K / 7.3K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 6m 5s | 163.7K / 237.7K / 8.1K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 7m 20s | 399.4K / 454.8K / 19.8K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 10m 0s | 400.2K / 288.3K / 14.9K |
-
-
-# series_java
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 46s | 175.6K / 159.0K / 4.0K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 5s | 70.0K / 135.2K / 1.3K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 9s | 97.9K / 82.1K / 2.1K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 17s | 111.9K / 63.1K / 1.6K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 48s | 104.7K / 117.7K / 2.9K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 5s | 111.6K / 63.0K / 1.3K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 3s | 0 / 0 / 0 |
 
 
 # simple-linked-list_java
@@ -1603,17 +1682,12 @@
 | [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 36s | 568.3K / 543.1K / 22.0K |
 
 
-# bowling_java
+# wordy_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 30s | 268.5K / 239.1K / 12.2K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ❌ | 10m 0s | 806.9K / 707.8K / 57.8K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ❌ | 10m 0s | 519.5K / 6.1M / 17.3K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 424.0K / 243.9K / 17.9K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 457.7K / 272.7K / 22.7K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 13m 35s | 803.7K / 966.4K / 29.9K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 4s | 0 / 0 / 0 |
 
 
 # tree-building_go
@@ -1642,30 +1716,20 @@
 | [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ❌ | 10m 0s | 722.0K / 652.7K / 63.9K |
 
 
-# pig-latin_java
+# rest-api_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 13s | 91.1K / 103.9K / 2.1K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 21s | 91.7K / 104.2K / 2.0K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 41s | 369.3K / 345.1K / 15.6K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 52s | 248.9K / 148.2K / 12.0K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 5m 23s | 309.1K / 284.4K / 31.7K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 5m 31s | 260.9K / 154.1K / 15.3K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 2s | 0 / 0 / 0 |
 
 
-# satellite_java
+# scale-generator_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 42s | 152.3K / 118.0K / 3.5K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 23s | 74.0K / 135.2K / 2.5K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 25s | 220.6K / 182.8K / 5.8K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 43s | 70.7K / 135.2K / 2.4K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 7s | 225.9K / 154.8K / 3.6K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 6m 2s | 202.3K / 133.3K / 3.3K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 57s | 0 / 0 / 0 |
 
 
 # simple-linked-list_go
@@ -1694,17 +1758,12 @@
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 7m 18s | 432.3K / 271.3K / 14.2K |
 
 
-# beer-song_go
+# bowling_python
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 5s | 162.0K / 118.3K / 3.2K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 13s | 139.2K / 177.2K / 3.7K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 43s | 336.3K / 290.8K / 17.4K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 3m 34s | 235.8K / 422.8K / 6.3K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 4m 14s | 641.6K / 612.8K / 27.4K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 10m 0s | 1.1M / 699.9K / 24.0K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 52s | 0 / 0 / 0 |
 
 
 # say_go
@@ -1720,19 +1779,6 @@
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 4m 9s | 150.2K / 112.7K / 2.0K |
 
 
-# tree-building_java
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 19s | 186.7K / 165.7K / 5.5K |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 46s | 171.4K / 149.2K / 5.9K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 3s | 127.7K / 219.6K / 2.4K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 3m 4s | 57.8K / 154.1K / 2.9K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 7s | 0 / 0 / 0 |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 385.1K / 167.8K / 31.6K |
-
-
 # hangman_java
 
 | Model | Success | Duration | Tokens |
@@ -1744,19 +1790,6 @@
 | [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ❌ | 10m 0s | 373.3K / 698.4K / 14.8K |
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 469.9K / 233.5K / 24.0K |
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 439.9K / 203.7K / 16.4K |
-
-
-# pythagorean-triplet_java
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 30s | 128.0K / 109.3K / 7.1K |
-| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 52s | 57.7K / 118.0K / 4.6K |
-| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 58s | 348.0K / 326.8K / 19.3K |
-| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 4m 1s | 287.2K / 353.1K / 7.8K |
-| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 4m 16s | 267.9K / 158.7K / 8.7K |
-| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 181.7K / 121.5K / 4.3K |
 
 
 # matrix_go
@@ -1783,6 +1816,38 @@
 | [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 34s | 95.3K / 142.8K / 1.9K |
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 13s | 269.5K / 190.8K / 5.0K |
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 7m 35s | 154.4K / 115.5K / 3.9K |
+
+
+# book-store_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 59s | 0 / 0 / 0 |
+
+
+# transpose_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 3s | 0 / 0 / 0 |
+
+
+# simple-linked-list_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 2s | 0 / 0 / 0 |
+
+
+# pig-latin_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 1s | 0 / 0 / 0 |
 
 
 # ocr-numbers_java
@@ -1861,6 +1926,854 @@
 | [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 42s | 81.3K / 110.4K / 4.3K |
 | [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 5m 2s | 411.6K / 294.2K / 11.6K |
 | [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 9m 34s | 626.2K / 510.6K / 20.8K |
+
+
+# killer-sudoku-helper_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 0s | 0 / 0 / 0 |
+
+
+# react_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 4s | 0 / 0 / 0 |
+
+
+# zipper_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 54s | 0 / 0 / 0 |
+
+
+# robot-name_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 1s | 0 / 0 / 0 |
+
+
+# variable-length-quantity_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 55s | 0 / 0 / 0 |
+
+
+# react_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 8m 11s | 456.6K / 780.8K / 19.7K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 8m 50s | 689.5K / 578.2K / 15.3K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ❌ | 10m 0s | 582.0K / 523.9K / 67.2K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 363.8K / 197.7K / 22.8K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 10m 0s | 587.5K / 524.3K / 64.6K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 14m 28s | 590.3K / 1.2M / 34.0K |
+
+
+# palindrome-products_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 6s | 199.3K / 179.6K / 5.0K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 1m 21s | 158.8K / 120.9K / 2.3K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 21s | 236.4K / 216.7K / 4.7K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 39s | 139.5K / 101.9K / 2.7K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 6s | 118.3K / 227.9K / 3.0K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ❌ | 10m 0s | 35.2K / 50.2K / 274 |
+
+
+# food-chain_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 9s | 139.7K / 105.3K / 7.3K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 15s | 91.2K / 123.1K / 2.7K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 29s | 146.8K / 124.8K / 3.4K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 35s | 198.6K / 161.9K / 9.3K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 14s | 207.7K / 143.7K / 4.5K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 56s | 246.3K / 165.3K / 5.1K |
+
+
+# dominoes_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 22s | 168.9K / 148.8K / 8.9K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 51s | 181.5K / 71.2K / 3.3K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 3m 15s | 150.2K / 222.2K / 3.3K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 5m 8s | 375.2K / 229.0K / 11.2K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 7m 10s | 503.0K / 466.3K / 45.0K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 11m 37s | 762.0K / 902.0K / 29.9K |
+
+
+# connect_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ❌ | 50s | 119.1K / 83.4K / 4.1K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 45s | 86.8K / 166.5K / 4.3K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 57s | 309.3K / 263.9K / 13.1K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 56s | 611.1K / 405.8K / 20.8K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 357.0K / 213.6K / 26.3K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ❌ | 10m 0s | 549.9K / 749.6K / 27.5K |
+
+
+# food-chain_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 4m 51s | 0 / 0 / 0 |
+
+
+# two-bucket_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 45s | 303.4K / 275.2K / 17.6K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 57s | 127.7K / 266.3K / 4.3K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 4m 24s | 656.9K / 616.4K / 26.7K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 57s | 195.4K / 130.0K / 8.5K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 5m 13s | 385.7K / 499.3K / 14.1K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 303.1K / 227.1K / 18.4K |
+
+
+# word-search_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 20s | 103.4K / 125.7K / 2.6K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 35s | 103.8K / 154.1K / 3.4K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 2m 12s | 271.4K / 249.3K / 12.4K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 32s | 191.7K / 145.8K / 3.6K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 39s | 274.0K / 231.3K / 11.4K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 3m 6s | 303.9K / 214.2K / 4.4K |
+
+
+# beer-song_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 56s | 0 / 0 / 0 |
+
+
+# phone-number_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 7s | 74.7K / 100.5K / 2.0K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 38s | 173.8K / 155.2K / 9.8K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 17s | 192.8K / 205.5K / 5.8K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 46s | 362.0K / 334.6K / 16.9K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 48s | 273.6K / 182.9K / 3.8K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 48s | 201.7K / 125.7K / 4.4K |
+
+
+# complex-numbers_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 54s | 0 / 0 / 0 |
+
+
+# dot-dsl_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 2s | 0 / 0 / 0 |
+
+
+# pov_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 7m 21s | 402.6K / 529.3K / 17.2K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 7m 36s | 796.7K / 751.2K / 47.7K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 218.5K / 141.8K / 8.2K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 222.6K / 141.2K / 11.8K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ❌ | 10m 0s | 540.5K / 794.9K / 28.3K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ❌ | 10m 0s | 974.2K / 910.9K / 47.5K |
+
+
+# zebra-puzzle_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 42s | 165.9K / 150.7K / 3.6K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 6s | 107.2K / 92.8K / 5.4K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 35s | 64.9K / 144.7K / 2.5K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 22s | 168.2K / 81.8K / 5.7K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 1s | 0 / 0 / 0 |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 385.6K / 192.3K / 28.0K |
+
+
+# state-of-tic-tac-toe_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 7s | 108.5K / 88.3K / 5.0K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 41s | 107.7K / 87.9K / 3.5K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 44s | 83.6K / 160.1K / 3.5K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 28s | 145.5K / 70.8K / 2.8K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 31s | 102.2K / 148.2K / 2.6K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 36s | 139.8K / 67.9K / 2.8K |
+
+
+# poker_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 5s | 0 / 0 / 0 |
+
+
+# ledger_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 32s | 238.8K / 208.9K / 15.8K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 56s | 177.0K / 181.6K / 5.6K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 3m 6s | 0 / 0 / 0 |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 20s | 227.6K / 132.9K / 5.6K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 3s | 463.2K / 314.7K / 21.2K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 8m 32s | 2.0M / 2.0M / 49.4K |
+
+
+# counter_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 57s | 192.3K / 174.9K / 5.2K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 35s | 328.1K / 286.7K / 14.5K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 4m 20s | 258.0K / 443.0K / 14.1K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 8m 8s | 323.5K / 794.7K / 18.6K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 9m 9s | 1.0M / 616.9K / 48.1K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 10m 0s | 0 / 0 / 0 |
+
+
+# state-of-tic-tac-toe_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 6s | 0 / 0 / 0 |
+
+
+# bottle-song_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 26s | 119.3K / 148.9K / 2.4K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 33s | 102.9K / 187.9K / 2.4K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 37s | 219.8K / 197.8K / 8.0K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 4m 15s | 304.1K / 211.6K / 7.1K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 4m 25s | 516.0K / 490.8K / 21.2K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 44s | 284.9K / 214.4K / 5.7K |
+
+
+# palindrome-products_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 58s | 0 / 0 / 0 |
+
+
+# wordy_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 24s | 93.1K / 121.0K / 3.0K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 25s | 381.0K / 334.2K / 6.5K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 34s | 92.5K / 138.8K / 1.9K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 59s | 298.9K / 278.7K / 5.9K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 29s | 218.0K / 155.8K / 4.7K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 4m 18s | 311.4K / 220.7K / 8.7K |
+
+
+# sublist_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 41s | 151.2K / 133.7K / 3.2K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 0s | 71.4K / 97.1K / 1.4K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 5s | 143.3K / 108.6K / 1.7K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 15s | 75.8K / 134.9K / 1.3K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 55s | 201.9K / 145.0K / 8.3K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 15s | 604.2K / 579.6K / 21.9K |
+
+
+# twelve-days_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 48s | 95.0K / 75.6K / 2.8K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 9s | 184.9K / 261.8K / 3.5K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 20s | 130.8K / 90.1K / 1.8K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 41s | 174.5K / 132.1K / 2.5K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 54s | 0 / 0 / 0 |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 3m 7s | 258.7K / 238.3K / 19.7K |
+
+
+# food-chain_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 33s | 128.6K / 88.6K / 2.2K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 46s | 90.0K / 161.6K / 2.8K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 2m 40s | 241.1K / 214.5K / 13.8K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 3m 4s | 192.6K / 150.4K / 3.3K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 3m 25s | 247.2K / 326.2K / 8.5K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 59s | 710.3K / 674.3K / 24.9K |
+
+
+# bank-account_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 23s | 94.2K / 124.6K / 1.7K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 33s | 259.6K / 240.1K / 8.4K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 35s | 117.9K / 167.9K / 2.5K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 55s | 174.3K / 104.4K / 2.3K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 17s | 189.1K / 170.4K / 7.3K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 5m 20s | 152.8K / 66.7K / 2.6K |
+
+
+# pov_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 1s | 0 / 0 / 0 |
+
+
+# tree-building_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 54s | 0 / 0 / 0 |
+
+
+# connect_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 2s | 0 / 0 / 0 |
+
+
+# bowling_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 47s | 173.2K / 148.2K / 9.8K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 55s | 92.2K / 114.5K / 4.5K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 7s | 114.6K / 135.3K / 3.9K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 3m 21s | 381.4K / 348.8K / 19.7K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 427.3K / 255.3K / 16.1K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 539.8K / 326.2K / 23.4K |
+
+
+# kindergarten-garden_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 55s | 140.9K / 120.7K / 4.5K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 13s | 204.8K / 184.1K / 5.7K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 15s | 78.2K / 154.7K / 1.6K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 43s | 58.2K / 155.0K / 2.1K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 20s | 191.6K / 84.8K / 6.6K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 51s | 213.1K / 122.4K / 4.2K |
+
+
+# two-bucket_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 3s | 0 / 0 / 0 |
+
+
+# proverb_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 3s | 0 / 0 / 0 |
+
+
+# hexadecimal_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ❌ | 25s | 55.8K / 26.4K / 2.9K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 46s | 115.2K / 83.3K / 3.3K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 1m 25s | 814.1K / 559.3K / 30.3K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 36s | 70.4K / 99.2K / 2.1K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 48s | 131.2K / 96.0K / 2.9K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 50s | 107.2K / 156.0K / 4.0K |
+
+
+# grep_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 4s | 0 / 0 / 0 |
+
+
+# ocr-numbers_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 1s | 0 / 0 / 0 |
+
+
+# forth_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ❌ | 1m 52s | 140.8K / 92.3K / 11.3K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 4m 40s | 532.4K / 500.3K / 29.1K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 5m 34s | 253.6K / 383.3K / 10.4K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ❌ | 10m 0s | 281.3K / 391.3K / 7.7K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 10m 0s | 665.8K / 394.9K / 24.0K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 285.3K / 173.3K / 7.8K |
+
+
+# forth_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 58s | 0 / 0 / 0 |
+
+
+# transpose_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 59s | 68.5K / 79.2K / 1.5K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 28s | 110.6K / 156.6K / 2.1K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 14s | 144.7K / 109.2K / 1.5K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ❌ | 10m 0s | 588.2K / 529.6K / 57.0K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ❌ | 10m 0s | 723.3K / 660.6K / 71.2K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 503.5K / 310.7K / 32.1K |
+
+
+# resistor-color-trio_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 9s | 85.6K / 69.3K / 3.1K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 12s | 114.6K / 64.2K / 1.8K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 17s | 53.0K / 133.1K / 2.3K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 19s | 117.5K / 101.0K / 6.2K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 25s | 130.4K / 64.1K / 2.7K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 43s | 139.7K / 313.9K / 4.4K |
+
+
+# twelve-days_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 0s | 0 / 0 / 0 |
+
+
+# rectangles_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 5s | 0 / 0 / 0 |
+
+
+# promises_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 5s | 0 / 0 / 0 |
+
+
+# rational-numbers_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 57s | 0 / 0 / 0 |
+
+
+# sgf-parsing_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 5m 46s | 238.4K / 372.9K / 16.9K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 6m 21s | 185.6K / 254.0K / 11.6K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ❌ | 10m 0s | 552.5K / 489.7K / 64.2K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 392.8K / 192.7K / 21.1K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 363.5K / 184.0K / 28.7K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 10m 0s | 420.0K / 366.7K / 68.8K |
+
+
+# rational-numbers_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 3m 13s | 328.8K / 301.1K / 17.1K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 23s | 382.0K / 354.0K / 20.1K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 35s | 303.1K / 170.8K / 5.2K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 4m 13s | 279.9K / 425.6K / 9.3K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 5m 7s | 297.6K / 445.9K / 8.8K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 8m 11s | 458.4K / 299.9K / 18.2K |
+
+
+# grade-school_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 18s | 0 / 0 / 0 |
+
+
+# palindrome-products_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 38s | 88.0K / 70.9K / 3.1K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 46s | 88.3K / 71.0K / 2.3K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 26s | 79.4K / 178.5K / 2.2K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 33s | 79.4K / 178.5K / 2.3K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 51s | 119.0K / 67.1K / 1.5K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 10m 0s | 87.4K / 66.1K / 1.2K |
+
+
+# scale-generator_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 50s | 179.7K / 138.6K / 3.8K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 5s | 117.7K / 187.3K / 3.0K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 3m 0s | 156.8K / 322.0K / 4.1K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 17s | 336.6K / 311.9K / 22.6K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 4m 31s | 373.5K / 327.1K / 32.8K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 5m 39s | 390.3K / 254.0K / 16.5K |
+
+
+# custom-set_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 6s | 100.8K / 78.3K / 5.7K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 3m 35s | 224.6K / 282.5K / 8.9K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 4m 22s | 241.3K / 218.2K / 16.1K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 4m 29s | 356.5K / 241.6K / 9.3K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 5m 2s | 140.8K / 177.9K / 8.0K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 7m 56s | 206.3K / 120.8K / 18.4K |
+
+
+# scale-generator_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 1s | 0 / 0 / 0 |
+
+
+# markdown_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 35s | 107.9K / 88.8K / 6.3K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 24s | 249.6K / 390.3K / 5.0K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 34s | 152.5K / 131.1K / 10.5K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 0s | 225.4K / 110.3K / 7.9K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 49s | 321.2K / 158.6K / 14.5K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 5m 26s | 386.0K / 667.9K / 12.4K |
+
+
+# grep_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 41s | 0 / 0 / 0 |
+
+
+# word-search_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 57s | 146.1K / 117.9K / 3.6K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 46s | 172.6K / 144.7K / 4.1K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 56s | 144.8K / 210.2K / 2.3K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 57s | 0 / 0 / 0 |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 50s | 313.9K / 176.4K / 4.0K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 3m 53s | 299.8K / 122.2K / 4.5K |
+
+
+# react_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 32s | 123.3K / 81.3K / 9.1K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 3m 24s | 392.4K / 362.9K / 20.0K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 34s | 328.9K / 254.6K / 7.3K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 6m 5s | 163.7K / 237.7K / 8.1K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 7m 20s | 399.4K / 454.8K / 19.8K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 10m 0s | 400.2K / 288.3K / 14.9K |
+
+
+# series_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 46s | 175.6K / 159.0K / 4.0K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 5s | 70.0K / 135.2K / 1.3K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 9s | 97.9K / 82.1K / 2.1K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 1m 17s | 111.9K / 63.1K / 1.6K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 48s | 104.7K / 117.7K / 2.9K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 2m 5s | 111.6K / 63.0K / 1.3K |
+
+
+# bowling_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 3m 30s | 268.5K / 239.1K / 12.2K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ❌ | 10m 0s | 806.9K / 707.8K / 57.8K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ❌ | 10m 0s | 519.5K / 6.1M / 17.3K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 424.0K / 243.9K / 17.9K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 457.7K / 272.7K / 22.7K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 13m 35s | 803.7K / 966.4K / 29.9K |
+
+
+# poker_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 8s | 0 / 0 / 0 |
+
+
+# queen-attack_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 55s | 0 / 0 / 0 |
+
+
+# pig-latin_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 13s | 91.1K / 103.9K / 2.1K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 21s | 91.7K / 104.2K / 2.0K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 41s | 369.3K / 345.1K / 15.6K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 52s | 248.9K / 148.2K / 12.0K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 5m 23s | 309.1K / 284.4K / 31.7K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 5m 31s | 260.9K / 154.1K / 15.3K |
+
+
+# satellite_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 42s | 152.3K / 118.0K / 3.5K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 23s | 74.0K / 135.2K / 2.5K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 25s | 220.6K / 182.8K / 5.8K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 1m 43s | 70.7K / 135.2K / 2.4K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 3m 7s | 225.9K / 154.8K / 3.6K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 6m 2s | 202.3K / 133.3K / 3.3K |
+
+
+# list-ops_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 53s | 0 / 0 / 0 |
+
+
+# sum-of-multiples_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 1s | 0 / 0 / 0 |
+
+
+# beer-song_go
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 2m 5s | 162.0K / 118.3K / 3.2K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 13s | 139.2K / 177.2K / 3.7K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 43s | 336.3K / 290.8K / 17.4K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 3m 34s | 235.8K / 422.8K / 6.3K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 4m 14s | 641.6K / 612.8K / 27.4K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 10m 0s | 1.1M / 699.9K / 24.0K |
+
+
+# tournament_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 5s | 0 / 0 / 0 |
+
+
+# book-store_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 2m 36s | 0 / 0 / 0 |
+
+
+# zebra-puzzle_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 53s | 0 / 0 / 0 |
+
+
+# tree-building_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 1m 19s | 186.7K / 165.7K / 5.5K |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 46s | 171.4K / 149.2K / 5.9K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 2m 3s | 127.7K / 219.6K / 2.4K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 3m 4s | 57.8K / 154.1K / 2.9K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ✅ | 4m 7s | 0 / 0 / 0 |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ❌ | 10m 0s | 385.1K / 167.8K / 31.6K |
+
+
+# bowling_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 5m 48s | 0 / 0 / 0 |
+
+
+# pythagorean-triplet_java
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r7](#gpt-oss-120b-r7) | ✅ | 1m 30s | 128.0K / 109.3K / 7.1K |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 52s | 57.7K / 118.0K / 4.6K |
+| [gpt-oss-120b-r8](#gpt-oss-120b-r8) | ✅ | 2m 58s | 348.0K / 326.8K / 19.3K |
+| [qwen3-coder-next-r10](#qwen3-coder-next-r10) | ✅ | 4m 1s | 287.2K / 353.1K / 7.8K |
+| [minimax-m21-200b-r2](#minimax-m21-200b-r2) | ✅ | 4m 16s | 267.9K / 158.7K / 8.7K |
+| [minimax-m21-200b-r3](#minimax-m21-200b-r3) | ❌ | 10m 0s | 181.7K / 121.5K / 4.3K |
+
+
+# binary_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ✅ | 1m 7s | 0 / 0 / 0 |
+
+
+# zebra-puzzle_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 3m 4s | 0 / 0 / 0 |
+
+
+# react_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 57s | 0 / 0 / 0 |
+
+
+# variable-length-quantity_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 57s | 0 / 0 / 0 |
+
+
+# paasio_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 52s | 0 / 0 / 0 |
+
+
+# affine-cipher_python
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen3-coder-next-r11](#qwen3-coder-next-r11) | ❌ | 2m 59s | 0 / 0 / 0 |
 
 
 *Generated by BenchmarkResultAnalyzer*

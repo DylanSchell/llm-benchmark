@@ -34,7 +34,7 @@ public class BenchmarkRunner {
     private final Config config;
     private final DockerClient dockerClient;
     private final ExerciseRunner exerciseRunner;
-    private static final Set<String> supportedLanguages = Set.of("java", "go");
+    private static final Set<String> supportedLanguages = Set.of("java", "go", "javascript", "python", "rust", "cpp");
 
     public BenchmarkRunner(Path configPath) throws Exception {
         this.config = ConfigLoader.load(configPath);

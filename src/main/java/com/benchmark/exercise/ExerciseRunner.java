@@ -215,10 +215,10 @@ public class ExerciseRunner {
     }
 
     /**
-     * Checks if a directory is an exercise directory (contains src/main/java or similar).
+     * Checks if a directory is an exercise directory (contains .meta subdirectory).
      */
     private boolean isExerciseDirectory(Path dir) {
-        return Files.exists(dir.resolve("build.gradle")) || Files.exists(dir.resolve("go.mod"));
+        return Files.exists(dir.resolve(".meta"));
     }
 
     /**
