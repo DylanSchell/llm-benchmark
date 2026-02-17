@@ -77,7 +77,9 @@ public class DockerClient {
         String containerName = "bench-" + java.util.UUID.randomUUID().toString().replaceAll("-", "").substring(0, 12);
         fullCommand.add("--name");
         fullCommand.add(containerName);
-        fullCommand.add("--rm");
+        // Note: not using --rm flag because it doesn't work properly when the
+        // docker CLI process is killed (e.g., on timeout). We explicitly clean up
+        // after execution instead.
         fullCommand.add("-w");
         fullCommand.add(work);
         fullCommand.add("-m");
@@ -116,13 +118,34 @@ public class DockerClient {
         readerThread.start();
         boolean completed = waitForProcess(process, timeout);
         readerThread.join();
-//        String output = readOutput(process.getInputStream(), outputCallback);
+
+        // Always clean up the container, regardless of timeout or normal exit
+        cleanupContainer(containerName);
+
         int exitCode = -1;
         if (completed) {
             // if we cancelled, the process might not have exited
             exitCode = process.exitValue();
         }
         return new ProcessResult(exitCode, sb.toString(), completed, containerName);
+    }
+
+    /**
+     * Removes a Docker container by name.
+     */
+    private void cleanupContainer(String containerName) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("docker", "rm", "-f", containerName);
+            pb.redirectErrorStream(true);
+            Process rmProcess = pb.start();
+            // Wait briefly for cleanup to complete
+            if (!rmProcess.waitFor(5, TimeUnit.SECONDS)) {
+                rmProcess.destroyForcibly();
+                logger.warn("Forcefully removed container {} after cleanup timeout", containerName);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to cleanup container {}: {}", containerName, e.getMessage());
+        }
     }
 
     private String getCurrentDir() {

@@ -61,6 +61,12 @@ public class Usage {
     @JsonProperty("cache_creation")
     private CacheCreation cacheCreation;
 
+    @JsonProperty("inference_geo")
+    private String inferenceGeo;
+
+    @JsonProperty("iterations")
+    private int iterations;
+
     public long getInputTokens() {
         return inputTokens;
     }
@@ -83,5 +89,21 @@ public class Usage {
 
     public void setCacheCreation(CacheCreation cacheCreation) {
         this.cacheCreation = cacheCreation;
+    }
+
+    public String getInferenceGeo() {
+        return inferenceGeo;
+    }
+
+    public void setInferenceGeo(String inferenceGeo) {
+        this.inferenceGeo = inferenceGeo;
+    }
+
+    public int getIterations() {
+        return iterations;
+    }
+
+    public void setIterations(int iterations) {
+        this.iterations = iterations;
     }
 }

@@ -232,7 +232,7 @@ public class ReferenceAgent {
                     Path relativePath = sourceDir.relativize(sourcePath);
 
                     // Skip reference implementation directory
-                    if (relativePath.toString().contains(".meta/src/reference")) {
+                    if (relativePath.toString().contains(".meta/")) {
                         logger.debug("Skipping reference file: {}", relativePath);
                         return;
                     }

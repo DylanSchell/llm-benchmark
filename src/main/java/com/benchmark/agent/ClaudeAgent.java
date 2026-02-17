@@ -158,7 +158,7 @@ public class ClaudeAgent extends ReferenceAgent {
             prompt.append("3. The tests are validated to be correct, never assume the test to be wrong!\n\n");
             prompt.append("4. Do not run tests in the background, run them synchronously in the forground, so you do not need to poll for results\n");
         }
-        for(Path testPath: exercise.getTestPath()) {
+        for (Path testPath : exercise.getTestPath()) {
             if (exercise.getTestPath() != null && Files.exists(testPath)) {
                 String needle = "../polyglot-benchmark/" + exercise.getLanguage() + "/exercises/practice/" + exercise.getName();
                 String fixedTestPath = exercise.getTestPath().toString().replaceAll(needle, "/workspace");
@@ -179,15 +179,16 @@ public class ClaudeAgent extends ReferenceAgent {
             prompt.append("4. Run tests: pytest\n");
         } else if ("rust".equals(exercise.getLanguage())) {
             prompt.append("\nRun tests with: cargo test\n");
-            prompt.append("This exercise uses Cargo as the build system.\n");
+            prompt.append("Use cargo test to validate all tests succeed.\n");
         } else if ("cpp".equals(exercise.getLanguage())) {
             prompt.append("\nBuild with: mkdir -p build && cd build && cmake -DEXERCISM_RUN_ALL_TESTS=1 -G \"Unix Makefiles\" .. && make\n");
             prompt.append("Run tests with: ./build/tests or the test executable in the build directory.\n");
         }
+        prompt.append("<important>Check that no tests are skipped, enable any tests that shows as skipped in the test results! Any skipped tests will result in failure!</important>\n");
         return prompt.toString();
     }
 
-    private class MessageProcessor implements Consumer<String> {
+    public static class MessageProcessor implements Consumer<String> {
         private final ObjectMapper objectMapper = new ObjectMapper();
 
         @Override
@@ -208,35 +209,34 @@ public class ClaudeAgent extends ReferenceAgent {
                                             for (JsonNode item : content) {
                                                 String contentType = item.get("type").asText();
                                                 if (contentType.equals("thinking")) {
-                                                    System.out.print(item.get("thinking").asText());
-                                                    return;
+                                                    print(item.get("thinking").asText());
                                                 } else if (contentType.equals("text")) {
-                                                    System.out.print(item.get("text").asText());
-                                                    return;
+                                                    print(item.get("text").asText());
                                                 } else {
-                                                    System.out.print(s);
-                                                    return;
+                                                    print(s);
                                                 }
                                             }
+                                            return;
                                         } else {
                                             String contentType = content.get("type").asText();
                                             if (contentType.equals("thinking")) {
-                                                System.out.print(content.get("thinking"));
+                                                print(content.get("thinking").asText());
                                                 return;
                                             } else if (contentType.equals("message")) {
-                                                // System.out.print(content.get("message"));
+                                                // print(content.get("message"));
                                                 // JsonNode messageContent = content.get("content");
                                                 // for now ignore these, they seem to be empty most of the time
                                                 return;
                                             } else {
-                                                System.out.println(s);
+                                                println(s);
                                                 return;
                                             }
                                         }
                                     }
                                     case "message_delta" -> {
                                         JsonNode delta = event.get("delta");
-                                        System.out.println(delta.get("delta"));
+                                        // stop_reason=tool_use?
+                                        // println(delta.get("delta").asText());
                                         return;
                                     }
                                     case "content_block_delta" -> {
@@ -245,11 +245,11 @@ public class ClaudeAgent extends ReferenceAgent {
                                         String deltaType = delta.get("type").asText();
                                         switch (deltaType) {
                                             case "thinking_delta" -> {
-                                                System.out.print(delta.get("thinking").asText());
+                                                print(delta.get("thinking").asText());
                                                 return;
                                             }
                                             case "input_json_delta" -> {
-                                                System.out.print(delta.get("partial_json").asText());
+                                                // print(delta.get("partial_json").asText());
                                                 return;
                                             }
                                             case "signature_delta" -> {
@@ -257,11 +257,11 @@ public class ClaudeAgent extends ReferenceAgent {
                                                 return;
                                             }
                                             case "text_delta" -> {
-                                                System.out.print(delta.get("text").asText());
+                                                print(delta.get("text").asText());
                                                 return;
                                             }
                                             default -> {
-                                                System.out.println(s);
+                                                println(s);
                                                 return;
                                             }
                                         }
@@ -277,49 +277,46 @@ public class ClaudeAgent extends ReferenceAgent {
                                     case "message_stop" -> {
                                         // ignore
                                         // TODO: this is probably where we want to put in the newlines
-                                        System.out.println();
+                                        println("");
                                         return;
                                     }
                                     default -> {
-                                        //System.out.println(s);
+                                        print(s);
                                         return;
                                     }
                                 }
                             } else {
-                                //System.out.println(s);
+                                println(s);
                                 return;
                             }
                         }
                         case "assistant" -> {
                             JsonNode message = jsonNode.get("message");
                             JsonNode content = message.get("content");
-                            if ( content.isArray()) {
-                                for(JsonNode item : content) {
+                            if (content.isArray()) {
+                                for (JsonNode item : content) {
                                     String itemType = item.get("type").asText();
                                     switch (itemType) {
                                         case "thinking" -> {
-                                            System.out.print(item.get("thinking").asText());
-                                            return;
+                                            print(item.get("thinking").asText());
                                         }
                                         case "tool_use" -> {
                                             render_tool_use(item);
-                                            return;
                                         }
                                         case "text" -> {
-                                            System.out.print(item.get("text").asText());
-                                            return;
+                                            print(item.get("text").asText());
                                         }
                                         default -> {
-                                            // System.out.println(s);
-                                            return;
+                                            print(s);
                                         }
                                     }
                                 }
+                                return;
                             } else {
                                 String itemType = content.get("type").asText();
                                 switch (itemType) {
                                     case "thinking" -> {
-                                        System.out.print(content.get("thinking").asText());
+                                        print(content.get("thinking").asText());
                                         return;
                                     }
                                     case "tool_use" -> {
@@ -327,11 +324,11 @@ public class ClaudeAgent extends ReferenceAgent {
                                         return;
                                     }
                                     case "text" -> {
-                                        System.out.print(content.get("text").asText());
+                                        print(content.get("text").asText());
                                         return;
                                     }
                                     default -> {
-                                        System.out.println(s);
+                                        println(s);
                                         return;
                                     }
                                 }
@@ -340,29 +337,29 @@ public class ClaudeAgent extends ReferenceAgent {
                         case "user" -> {
                             JsonNode message = jsonNode.get("message");
                             JsonNode content = message.get("content");
-                            if ( content.isArray()) {
-                                for(JsonNode item : content) {
+                            if (content.isArray()) {
+                                for (JsonNode item : content) {
                                     String itemType = item.get("type").asText();
                                     switch (itemType) {
                                         case "text" -> {
-                                            System.out.println(item.get("text").asText());
+                                            println(item.get("text").asText());
                                             return;
                                         }
                                         case "tool_result" -> {
-                                            if ( item.has("content")) {
+                                            if (item.has("content")) {
                                                 JsonNode tool_result_content = item.get("content");
                                                 if (tool_result_content.isTextual()) {
                                                     String tool_result_string = tool_result_content.asText();
-                                                    String tool_result_with_newlines = tool_result_string.replaceAll("\\n","\n");
-                                                    System.out.println("tool_result:\n" + tool_result_with_newlines);
+                                                    String tool_result_with_newlines = tool_result_string.replaceAll("\\n", "\n");
+                                                    println("tool_result:\n" + tool_result_with_newlines);
                                                     return;
                                                 }
                                             }
-                                            System.out.println(s);
+                                            println(s);
                                             return;
                                         }
                                         default -> {
-                                            System.out.println(s);
+                                            println(s);
                                             return;
                                         }
                                     }
@@ -371,25 +368,25 @@ public class ClaudeAgent extends ReferenceAgent {
                                 String itemType = content.get("type").asText();
                                 switch (itemType) {
                                     case "text" -> {
-                                        System.out.println(content.get("text").asText());
+                                        println(content.get("text").asText());
                                         return;
                                     }
                                     case "tool_result" -> {
-                                        System.out.println("tool_result: "+content.get("content").toString());
+                                        println("tool_result: " + content.get("content").toString());
                                         return;
                                     }
                                     default -> {
-                                        System.out.println(s);
+                                        println(s);
                                         return;
                                     }
                                 }
                             }
-                            System.out.println(s);
+                            println(s);
                             return;
                         }
                         case "system" -> {
                             // ignore system message for now
-                            System.out.println(s);
+                            println(s);
                             return;
                         }
                         case "result" -> {
@@ -405,10 +402,10 @@ public class ClaudeAgent extends ReferenceAgent {
 //                            long output_tokens = usage.get("output_tokens").asLong();
 //                            JsonNode modelUsage = jsonNode.get("modelUsage");
 //                            String permission_denials = jsonNode.get("permission_denials").asText();
-                            System.out.println("Result: "+ jsonNode.toPrettyString());
+                            println("Result: " + jsonNode.toPrettyString());
                         }
                         default -> {
-                            System.out.println(s);
+                            println(s);
                             return;
                         }
                     }
@@ -416,7 +413,7 @@ public class ClaudeAgent extends ReferenceAgent {
             } catch (JsonProcessingException e) {
                 // not a json log, probably a warning from claude, so we just output it
             }
-            System.out.println(s);
+            println(s);
         }
 
         private void render_tool_use(JsonNode item) {
@@ -429,64 +426,69 @@ public class ClaudeAgent extends ReferenceAgent {
                         String file_path = input.get("file_path").asText();
                         String old_string = input.get("old_string").asText();
                         String new_string = input.get("new_string").asText();
-                        System.out.println("Edit " + file_path);
-                        System.out.println("Old");
-                        System.out.println(old_string.replaceAll("\\n","\n"));
-                        System.out.println("New");
-                        System.out.println(new_string.replaceAll("\\n","\n"));
+                        println("Edit " + file_path);
+                        println("Old");
+                        println(old_string.replaceAll("\\n", "\n"));
+                        println("New");
+                        println(new_string.replaceAll("\\n", "\n"));
                     }
                     case "Glob" -> {
                         String pattern = item.get("input").get("pattern").asText();
-                        System.out.println("\ntool_use: Glob " + pattern);
+                        println("\ntool_use: Glob " + pattern);
                     }
                     case "Read" -> {
                         String file_path = item.get("input").get("file_path").asText();
-                        System.out.println("\ntool_use: Read " + file_path);
+                        println("\ntool_use: Read " + file_path);
                     }
                     case "Write" -> {
                         String file_path = item.get("input").get("file_path").asText();
-                        String content = item.get("input").get("content").asText();
-                        System.out.println("\ntool_use: Write " + file_path);
-                        System.out.println("Content: ");
-                        content = content.replaceAll("\\n", "\n");
-                        System.out.println(content);
+                        var input = item.get("input");
+
+                        if (input.has("content")) {
+                            var content = input.get("content").asText();
+                            println("\ntool_use: Write " + file_path);
+                            println("Content: ");
+                            content = content.replaceAll("\\n", "\n");
+                            println(content);
+                        }
+
                     }
                     case "Bash" -> {
                         boolean run_in_background = false;
-                        if ( item.get("input").has("run_in_background") ) {
+                        if (item.get("input").has("run_in_background")) {
                             run_in_background = item.get("input").get("run_in_background").asBoolean();
                         }
                         String description = "";
-                        if ( item.get("input").has("description") ) {
+                        if (item.get("input").has("description")) {
                             description = item.get("input").get("description").asText();
                         }
                         String command = item.get("input").get("command").asText();
-                        System.out.println("\ntool_use: Bash " + (run_in_background ? "(in background) " : " ") + description);
-                        System.out.println("Command: " + command);
+                        println("\ntool_use: Bash " + (run_in_background ? "(in background) " : " ") + description);
+                        println("Command: " + command);
                     }
                     case "TaskOutput" -> {
                         String input = item.get("input").toString();
-                        System.out.println("\ntool_use: " + name + " " + input);
+                        println("\ntool_use: " + name + " " + input);
                     }
                     case "TodoWrite" -> {
-                        System.out.println("\ntool_use: TodoWrite");
+                        println("\ntool_use: TodoWrite");
                         JsonNode input = item.get("input");
                         JsonNode todos = input.get("todos");
-                        for(JsonNode todo: todos) {
+                        for (JsonNode todo : todos) {
                             String content = todo.get("content").asText();
                             String status = todo.get("status").asText();
                             switch (status) {
                                 case "in_progress" -> {
-                                    System.out.println(String.format("[⟳] %s", content));
+                                    println(String.format("[⟳] %s", content));
                                 }
                                 case "pending" -> {
-                                    System.out.println(String.format("[⌛] %s", content));
+                                    println(String.format("[⌛] %s", content));
                                 }
                                 case "completed" -> {
-                                    System.out.println(String.format("[✅] %s", content));
+                                    println(String.format("[✅] %s", content));
                                 }
                                 default -> {
-                                    System.out.println(String.format("[ ] %s", content));
+                                    println(String.format("[ ] %s", content));
                                 }
                             }
 
@@ -494,12 +496,20 @@ public class ClaudeAgent extends ReferenceAgent {
                     }
                     default -> {
                         String input = item.get("input").toString();
-                        System.out.println("\ntool_use: " + name + " " + input);
+                        println("\ntool_use: " + name + " " + input);
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        private void print(String s) {
+            System.out.print(s);
+        }
+
+        private void println(String s) {
+            System.out.println(s);
         }
     }
 }

@@ -11,12 +11,23 @@ public class UserEntry extends LogEntry {
     @JsonProperty("sourceToolAssistantUUID")
     private String sourceToolAssistantUUID;
 
+    @JsonProperty("permissionMode")
+    private String permissionMode;
+
     public String getSourceToolAssistantUUID() {
         return sourceToolAssistantUUID;
     }
 
     public void setSourceToolAssistantUUID(String sourceToolAssistantUUID) {
         this.sourceToolAssistantUUID = sourceToolAssistantUUID;
+    }
+
+    public String getPermissionMode() {
+        return permissionMode;
+    }
+
+    public void setPermissionMode(String permissionMode) {
+        this.permissionMode = permissionMode;
     }
     @JsonProperty("toolUseResult")
     private JsonNode toolUseResult;

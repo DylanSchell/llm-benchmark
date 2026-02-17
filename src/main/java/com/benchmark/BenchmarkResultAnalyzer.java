@@ -214,14 +214,14 @@ public class BenchmarkResultAnalyzer {
         // Generate markdown output
         StringBuilder markdown = new StringBuilder();
         markdown.append("# Benchmark Results Summary\n\n");
-        markdown.append("| Benchmark | Total Results | Success | Failed | Completion %% | Total Duration | Tokens |\n");
+        markdown.append("| Benchmark | Total Results | Success | Failed | Completion % | Total Duration | Tokens |\n");
         markdown.append("|-----------|---------------|---------|--------|---------------|----------------|--------|\n");
 
         dumpSortedStats(sortedStats, markdown);
 
         markdown.append("\n");
         markdown.append("# Success rates per exercise\n\n");
-        markdown.append("| Exercise | Total Results | Success | Failed | Completion %% | Total Duration | Tokens |\n");
+        markdown.append("| Exercise | Total Results | Success | Failed | Completion % | Total Duration | Tokens |\n");
         markdown.append("|----------|---------------|---------|--------|---------------|----------------|--------|\n");
         List<BenchmarkStats> exerciseStats = new ArrayList<>();
         for (String exerciseName : allExercises) {
@@ -275,7 +275,7 @@ public class BenchmarkResultAnalyzer {
                 markdown.append(String.format("| [%s](#%s) | %s | %s | %s |\n",
                         simpleResult.model.replace(".","_"),
                         simpleResult.model.replace(".","_"),
-                        simpleResult.success ? "✅" : isLikelyTimeout(simpleResult.duration) ? "⏰" : "❌",
+                        simpleResult.success ? "✅" : "❌",
                         formatDuration(simpleResult.duration),
                         formatTokens(simpleResult.uncachedInputTokens, simpleResult.cachedInputTokens, simpleResult.outputTokens)));
             }
@@ -304,14 +304,6 @@ public class BenchmarkResultAnalyzer {
                     durationStr,
                     formatTokens(stats.uncachedInputTokens, stats.cachedInputTokens, stats.outputTokens)));
         }
-    }
-
-    /**
-     * Determines if a benchmark run likely timed out.
-     * The benchmark uses different timeout thresholds (20 min, 30 min, or a generic 7199 s).
-     */
-    private boolean isLikelyTimeout(double duration) {
-        return duration >= 7199 || (duration > 1799 && duration < 1801) || (duration > 1199 && duration < 1201);
     }
 
     private int sortByPercentage(BenchmarkStats statsA, BenchmarkStats statsB) {
