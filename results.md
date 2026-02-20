@@ -2,11 +2,11 @@
 
 | Benchmark | Total Results | Success | Failed | Completion % | Total Duration | Tokens |
 |-----------|---------------|---------|--------|---------------|----------------|--------|
-| [reference-r2](#reference-r2) | 199 | 197 | 2 | 99.0% | 0s | 0 / 0 / 0 |
-| [qwen35-r2](#qwen35-r2) | 173 | 170 | 3 | 98.3% | 16h 41m 27s | 24.9M / 54.0M / 0 |
+| [qwen35-r2](#qwen35-r2) | 225 | 222 | 3 | 98.7% | 20h 43m 39s | 30.7M / 68.2M / 0 |
 | [qwen35-r1](#qwen35-r1) | 169 | 166 | 3 | 98.2% | 1d 56m 20s | 32.6M / 53.1M / 2.5K |
 | [qwen3-coder-next-r14](#qwen3-coder-next-r14) | 169 | 163 | 6 | 96.4% | 6h 51m 27s | 47.6M / 76.0M / 29.6K |
 | [gpt-oss-120b-r9](#gpt-oss-120b-r9) | 169 | 162 | 7 | 95.9% | 7h 31m 39s | 57.6M / 52.9M / 2.2K |
+| [reference-r2](#reference-r2) | 225 | 197 | 28 | 87.6% | 0s | 0 / 0 / 0 |
 | [minimax-m25-r1](#minimax-m25-r1) | 169 | 137 | 32 | 81.1% | 20h 47m 52s | 80.8M / 55.2M / 0 |
 
 # Success rates per exercise
@@ -16,12 +16,14 @@
 | [go-counting_javascript](#go-counting_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [kindergarten-garden_go](#kindergarten-garden_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [meetup_javascript](#meetup_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [zebra-puzzle_cpp](#zebra-puzzle_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [rest-api_javascript](#rest-api_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [gigasecond_rust](#gigasecond_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [trinary_go](#trinary_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [change_java](#change_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [protein-translation_java](#protein-translation_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [crypto-square_go](#crypto-square_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [dnd-character_cpp](#dnd-character_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [pov_java](#pov_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [space-age_javascript](#space-age_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [queen-attack_java](#queen-attack_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
@@ -33,17 +35,20 @@
 | [pig-latin_rust](#pig-latin_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [hangman_python](#hangman_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [scale-generator_rust](#scale-generator_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [circular-buffer_cpp](#circular-buffer_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [phone-number_python](#phone-number_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [variable-length-quantity_java](#variable-length-quantity_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [error-handling_go](#error-handling_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [bottle-song_javascript](#bottle-song_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [all-your-base_java](#all-your-base_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [robot-name_cpp](#robot-name_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [bottle-song_go](#bottle-song_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [parallel-letter-frequency_javascript](#parallel-letter-frequency_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [nucleotide-codons_rust](#nucleotide-codons_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [house_javascript](#house_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [bottle-song_python](#bottle-song_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [grade-school_python](#grade-school_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [knapsack_cpp](#knapsack_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [robot-simulator_go](#robot-simulator_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [connect_java](#connect_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [forth_java](#forth_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
@@ -66,16 +71,20 @@
 | [book-store_python](#book-store_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [simple-linked-list_python](#simple-linked-list_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [dominoes_go](#dominoes_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [sublist_cpp](#sublist_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [zipper_java](#zipper_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [book-store_java](#book-store_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [killer-sudoku-helper_javascript](#killer-sudoku-helper_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [binary-search-tree_cpp](#binary-search-tree_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [react_python](#react_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [zipper_javascript](#zipper_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [variable-length-quantity_python](#variable-length-quantity_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [react_java](#react_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [food-chain_go](#food-chain_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [crypto-square_cpp](#crypto-square_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [food-chain_javascript](#food-chain_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [wordy_rust](#wordy_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [complex-numbers_cpp](#complex-numbers_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [beer-song_javascript](#beer-song_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [grep_rust](#grep_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [dot-dsl_python](#dot-dsl_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
@@ -84,6 +93,7 @@
 | [counter_go](#counter_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [fizzy_rust](#fizzy_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [bottle-song_java](#bottle-song_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [perfect-numbers_cpp](#perfect-numbers_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [sublist_go](#sublist_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [food-chain_java](#food-chain_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [luhn-from_rust](#luhn-from_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
@@ -105,6 +115,7 @@
 | [scale-generator_javascript](#scale-generator_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [markdown_go](#markdown_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [word-search_java](#word-search_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [spiral-matrix_cpp](#spiral-matrix_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [series_java](#series_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [satellite_java](#satellite_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [list-ops_python](#list-ops_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
@@ -113,10 +124,12 @@
 | [binary_javascript](#binary_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [react_javascript](#react_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [say_rust](#say_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [linked-list_cpp](#linked-list_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [paasio_python](#paasio_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [affine-cipher_python](#affine-cipher_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [two-bucket_javascript](#two-bucket_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [wordy_javascript](#wordy_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [kindergarten-garden_cpp](#kindergarten-garden_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [book-store_go](#book-store_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [robot-name_python](#robot-name_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [transpose_javascript](#transpose_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
@@ -131,10 +144,14 @@
 | [go-counting_python](#go-counting_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [zipper_python](#zipper_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [phone-number_javascript](#phone-number_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [queen-attack_cpp](#queen-attack_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [connect_javascript](#connect_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [list-ops_javascript](#list-ops_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [phone-number_cpp](#phone-number_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [grade-school_cpp](#grade-school_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [sgf-parsing_python](#sgf-parsing_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [mazy-mice_java](#mazy-mice_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [diamond_cpp](#diamond_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [food-chain_python](#food-chain_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [circular-buffer_java](#circular-buffer_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [zebra-puzzle_go](#zebra-puzzle_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
@@ -149,9 +166,14 @@
 | [pig-latin_python](#pig-latin_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [wordy_python](#wordy_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [tree-building_go](#tree-building_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [allergies_cpp](#allergies_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [simple-cipher_rust](#simple-cipher_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [bank-account_cpp](#bank-account_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [meetup_cpp](#meetup_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [alphametics_go](#alphametics_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [bowling_python](#bowling_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [space-age_cpp](#space-age_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [all-your-base_cpp](#all-your-base_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [hangman_java](#hangman_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [dnd-character_go](#dnd-character_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [transpose_python](#transpose_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
@@ -175,12 +197,15 @@
 | [bowling_rust](#bowling_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [ledger_java](#ledger_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [state-of-tic-tac-toe_javascript](#state-of-tic-tac-toe_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [yacht_cpp](#yacht_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [palindrome-products_javascript](#palindrome-products_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [wordy_go](#wordy_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [book-store_rust](#book-store_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [twelve-days_java](#twelve-days_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [clock_cpp](#clock_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [bank-account_java](#bank-account_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [tree-building_python](#tree-building_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [parallel-letter-frequency_cpp](#parallel-letter-frequency_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [grep_python](#grep_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [forth_go](#forth_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [transpose_go](#transpose_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
@@ -209,6 +234,7 @@
 | [pythagorean-triplet_java](#pythagorean-triplet_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [zebra-puzzle_python](#zebra-puzzle_python) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [variable-length-quantity_javascript](#variable-length-quantity_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [gigasecond_cpp](#gigasecond_cpp) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [doubly-linked-list_rust](#doubly-linked-list_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [grade-school_rust](#grade-school_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [decimal_rust](#decimal_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
@@ -416,6 +442,32 @@
 | [poker_rust](#poker_rust) | ✅ | 0s | 0 / 0 / 0 |
 | [grep_rust](#grep_rust) | ✅ | 0s | 0 / 0 / 0 |
 | [pig-latin_rust](#pig-latin_rust) | ✅ | 0s | 0 / 0 / 0 |
+| [all-your-base_cpp](#all-your-base_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [allergies_cpp](#allergies_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [bank-account_cpp](#bank-account_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [binary-search-tree_cpp](#binary-search-tree_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [circular-buffer_cpp](#circular-buffer_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [clock_cpp](#clock_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [complex-numbers_cpp](#complex-numbers_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [crypto-square_cpp](#crypto-square_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [diamond_cpp](#diamond_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [dnd-character_cpp](#dnd-character_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [gigasecond_cpp](#gigasecond_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [grade-school_cpp](#grade-school_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [kindergarten-garden_cpp](#kindergarten-garden_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [knapsack_cpp](#knapsack_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [linked-list_cpp](#linked-list_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [meetup_cpp](#meetup_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [parallel-letter-frequency_cpp](#parallel-letter-frequency_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [perfect-numbers_cpp](#perfect-numbers_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [phone-number_cpp](#phone-number_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [queen-attack_cpp](#queen-attack_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [robot-name_cpp](#robot-name_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [space-age_cpp](#space-age_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [spiral-matrix_cpp](#spiral-matrix_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [sublist_cpp](#sublist_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [yacht_cpp](#yacht_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [zebra-puzzle_cpp](#zebra-puzzle_cpp) | ❌ | 0s | 0 / 0 / 0 |
 
 
 # gpt-oss-120b-r9
@@ -1295,6 +1347,58 @@
 | [acronym_rust](#acronym_rust) | ✅ | 1m 57s | 52.0K / 165.3K / 0 |
 | [alphametics_rust](#alphametics_rust) | ✅ | 6m 4s | 0 / 0 / 0 |
 | [book-store_rust](#book-store_rust) | ✅ | 3m 1s | 38.0K / 180.1K / 0 |
+| [bowling_rust](#bowling_rust) | ✅ | 8m 18s | 238.1K / 369.6K / 0 |
+| [decimal_rust](#decimal_rust) | ✅ | 19m 11s | 245.4K / 442.0K / 0 |
+| [dot-dsl_rust](#dot-dsl_rust) | ✅ | 3m 39s | 76.7K / 204.7K / 0 |
+| [doubly-linked-list_rust](#doubly-linked-list_rust) | ✅ | 7m 25s | 134.4K / 333.2K / 0 |
+| [fizzy_rust](#fizzy_rust) | ✅ | 3m 47s | 84.1K / 168.7K / 0 |
+| [forth_rust](#forth_rust) | ✅ | 7m 7s | 142.6K / 345.6K / 0 |
+| [gigasecond_rust](#gigasecond_rust) | ✅ | 1m 58s | 33.1K / 110.4K / 0 |
+| [grade-school_rust](#grade-school_rust) | ✅ | 1m 24s | 52.9K / 150.3K / 0 |
+| [grep_rust](#grep_rust) | ✅ | 3m 8s | 97.3K / 133.9K / 0 |
+| [luhn-from_rust](#luhn-from_rust) | ✅ | 1m 19s | 34.5K / 115.2K / 0 |
+| [macros_rust](#macros_rust) | ✅ | 1m 15s | 37.5K / 124.3K / 0 |
+| [nucleotide-codons_rust](#nucleotide-codons_rust) | ✅ | 2m 51s | 57.6K / 214.2K / 0 |
+| [ocr-numbers_rust](#ocr-numbers_rust) | ✅ | 2m 35s | 75.1K / 124.3K / 0 |
+| [parallel-letter-frequency_rust](#parallel-letter-frequency_rust) | ✅ | 3m 44s | 55.9K / 191.6K / 0 |
+| [pig-latin_rust](#pig-latin_rust) | ✅ | 2m 31s | 54.4K / 122.9K / 0 |
+| [poker_rust](#poker_rust) | ✅ | 6m 31s | 194.0K / 346.6K / 0 |
+| [react_rust](#react_rust) | ✅ | 20m 48s | 625.9K / 1.4M / 0 |
+| [robot-name_rust](#robot-name_rust) | ✅ | 3m 26s | 92.7K / 237.3K / 0 |
+| [say_rust](#say_rust) | ✅ | 2m 46s | 53.7K / 138.9K / 0 |
+| [scale-generator_rust](#scale-generator_rust) | ✅ | 4m 23s | 102.1K / 237.0K / 0 |
+| [simple-cipher_rust](#simple-cipher_rust) | ✅ | 3m 56s | 145.7K / 194.3K / 0 |
+| [two-bucket_rust](#two-bucket_rust) | ✅ | 4m 13s | 93.0K / 204.1K / 0 |
+| [variable-length-quantity_rust](#variable-length-quantity_rust) | ✅ | 2m 51s | 78.4K / 150.1K / 0 |
+| [word-count_rust](#word-count_rust) | ✅ | 2m 19s | 74.0K / 87.7K / 0 |
+| [wordy_rust](#wordy_rust) | ✅ | 4m 17s | 151.5K / 285.5K / 0 |
+| [xorcism_rust](#xorcism_rust) | ✅ | 19m 14s | 708.8K / 1.4M / 0 |
+| [all-your-base_cpp](#all-your-base_cpp) | ✅ | 7m 28s | 51.5K / 241.0K / 0 |
+| [allergies_cpp](#allergies_cpp) | ✅ | 3m 29s | 101.5K / 252.1K / 0 |
+| [bank-account_cpp](#bank-account_cpp) | ✅ | 3m 1s | 37.3K / 189.8K / 0 |
+| [binary-search-tree_cpp](#binary-search-tree_cpp) | ✅ | 3m 57s | 98.1K / 230.8K / 0 |
+| [circular-buffer_cpp](#circular-buffer_cpp) | ✅ | 2m 58s | 61.2K / 235.0K / 0 |
+| [clock_cpp](#clock_cpp) | ✅ | 3m 52s | 84.2K / 282.5K / 0 |
+| [complex-numbers_cpp](#complex-numbers_cpp) | ✅ | 4m 1s | 128.0K / 270.2K / 0 |
+| [crypto-square_cpp](#crypto-square_cpp) | ✅ | 2m 52s | 51.8K / 194.8K / 0 |
+| [diamond_cpp](#diamond_cpp) | ✅ | 2m 50s | 72.3K / 218.9K / 0 |
+| [dnd-character_cpp](#dnd-character_cpp) | ✅ | 3m 0s | 36.6K / 204.7K / 0 |
+| [grade-school_cpp](#grade-school_cpp) | ✅ | 2m 52s | 0 / 0 / 0 |
+| [kindergarten-garden_cpp](#kindergarten-garden_cpp) | ✅ | 3m 20s | 128.9K / 418.9K / 0 |
+| [knapsack_cpp](#knapsack_cpp) | ✅ | 2m 54s | 53.4K / 196.8K / 0 |
+| [linked-list_cpp](#linked-list_cpp) | ✅ | 3m 15s | 39.0K / 197.4K / 0 |
+| [gigasecond_cpp](#gigasecond_cpp) | ✅ | 3m 3s | 50.0K / 196.9K / 0 |
+| [meetup_cpp](#meetup_cpp) | ✅ | 8m 49s | 307.5K / 767.5K / 0 |
+| [parallel-letter-frequency_cpp](#parallel-letter-frequency_cpp) | ✅ | 4m 12s | 185.6K / 278.9K / 0 |
+| [perfect-numbers_cpp](#perfect-numbers_cpp) | ✅ | 3m 1s | 35.2K / 216.3K / 0 |
+| [phone-number_cpp](#phone-number_cpp) | ✅ | 3m 4s | 71.0K / 206.5K / 0 |
+| [queen-attack_cpp](#queen-attack_cpp) | ✅ | 2m 57s | 53.9K / 183.3K / 0 |
+| [robot-name_cpp](#robot-name_cpp) | ✅ | 2m 57s | 54.9K / 216.7K / 0 |
+| [space-age_cpp](#space-age_cpp) | ✅ | 3m 55s | 50.4K / 237.0K / 0 |
+| [spiral-matrix_cpp](#spiral-matrix_cpp) | ✅ | 2m 53s | 34.8K / 213.9K / 0 |
+| [sublist_cpp](#sublist_cpp) | ✅ | 3m 14s | 94.7K / 226.7K / 0 |
+| [yacht_cpp](#yacht_cpp) | ✅ | 4m 11s | 62.0K / 299.9K / 0 |
+| [zebra-puzzle_cpp](#zebra-puzzle_cpp) | ✅ | 4m 43s | 58.8K / 257.2K / 0 |
 
 
 # go-counting_javascript
@@ -1319,6 +1423,14 @@
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 3m 24s | 237.7K / 126.9K / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 28s | 83.7K / 157.8K / 0 |
 | [qwen35-r1](#qwen35-r1) | ✅ | 4m 51s | 135.4K / 202.0K / 0 |
+
+
+# zebra-puzzle_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 4m 43s | 58.8K / 257.2K / 0 |
 
 
 # meetup_javascript
@@ -1350,6 +1462,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 1m 58s | 33.1K / 110.4K / 0 |
 
 
 # trinary_go
@@ -1398,6 +1511,14 @@
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 3m 16s | 178.9K / 120.4K / 0 |
 | [gpt-oss-120b-r9](#gpt-oss-120b-r9) | ✅ | 3m 16s | 478.9K / 451.9K / 0 |
 | [qwen35-r1](#qwen35-r1) | ✅ | 4m 2s | 106.5K / 108.3K / 0 |
+
+
+# dnd-character_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 0s | 36.6K / 204.7K / 0 |
 
 
 # pov_java
@@ -1501,6 +1622,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 31s | 54.4K / 122.9K / 0 |
 
 
 # hangman_python
@@ -1520,6 +1642,15 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 4m 23s | 102.1K / 237.0K / 0 |
+
+
+# circular-buffer_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 58s | 61.2K / 235.0K / 0 |
 
 
 # phone-number_python
@@ -1570,6 +1701,14 @@
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 5m 28s | 409.0K / 365.2K / 0 |
 
 
+# robot-name_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 57s | 54.9K / 216.7K / 0 |
+
+
 # all-your-base_java
 
 | Model | Success | Duration | Tokens |
@@ -1599,6 +1738,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 51s | 57.6K / 214.2K / 0 |
 
 
 # parallel-letter-frequency_javascript
@@ -1647,6 +1787,14 @@
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 3m 31s | 191.3K / 136.9K / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 39s | 78.6K / 242.1K / 0 |
 | [qwen35-r1](#qwen35-r1) | ✅ | 7m 12s | 110.0K / 182.9K / 0 |
+
+
+# knapsack_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 54s | 53.4K / 196.8K / 0 |
 
 
 # robot-simulator_go
@@ -1702,6 +1850,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 26s | 92.7K / 237.3K / 0 |
 
 
 # beer-song_python
@@ -1733,6 +1882,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 19m 14s | 708.8K / 1.4M / 0 |
 
 
 # poker_go
@@ -1752,6 +1902,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 4m 13s | 93.0K / 204.1K / 0 |
 
 
 # affine-cipher_javascript
@@ -1831,6 +1982,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 51s | 78.4K / 150.1K / 0 |
 
 
 # say_go
@@ -1893,6 +2045,14 @@
 | [qwen35-r1](#qwen35-r1) | ✅ | 5m 54s | 133.6K / 206.4K / 0 |
 
 
+# sublist_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 14s | 94.7K / 226.7K / 0 |
+
+
 # zipper_java
 
 | Model | Success | Duration | Tokens |
@@ -1927,6 +2087,14 @@
 | [qwen35-r2](#qwen35-r2) | ✅ | 4m 27s | 96.4K / 383.7K / 0 |
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 5m 33s | 447.2K / 354.9K / 0 |
 | [qwen35-r1](#qwen35-r1) | ✅ | 7m 1s | 148.9K / 336.7K / 0 |
+
+
+# binary-search-tree_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 57s | 98.1K / 230.8K / 0 |
 
 
 # react_python
@@ -1989,6 +2157,14 @@
 | [qwen35-r1](#qwen35-r1) | ✅ | 9m 8s | 215.0K / 286.7K / 0 |
 
 
+# crypto-square_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 52s | 51.8K / 194.8K / 0 |
+
+
 # food-chain_javascript
 
 | Model | Success | Duration | Tokens |
@@ -2001,11 +2177,20 @@
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 10m 25s | 496.2K / 311.1K / 0 |
 
 
+# complex-numbers_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 4m 1s | 128.0K / 270.2K / 0 |
+
+
 # wordy_rust
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 4m 17s | 151.5K / 285.5K / 0 |
 
 
 # beer-song_javascript
@@ -2025,6 +2210,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 8s | 97.3K / 133.9K / 0 |
 
 
 # pov_go
@@ -2064,6 +2250,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 47s | 84.1K / 168.7K / 0 |
 
 
 # counter_go
@@ -2088,6 +2275,14 @@
 | [qwen35-r1](#qwen35-r1) | ✅ | 3m 52s | 71.4K / 105.6K / 0 |
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 4m 10s | 303.3K / 212.2K / 0 |
 | [gpt-oss-120b-r9](#gpt-oss-120b-r9) | ✅ | 7m 37s | 1.1M / 1.1M / 0 |
+
+
+# perfect-numbers_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 1s | 35.2K / 216.3K / 0 |
 
 
 # sublist_go
@@ -2119,6 +2314,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 1m 19s | 34.5K / 115.2K / 0 |
 
 
 # pov_python
@@ -2254,6 +2450,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 20m 48s | 625.9K / 1.4M / 0 |
 
 
 # palindrome-products_java
@@ -2314,6 +2511,14 @@
 | [qwen35-r2](#qwen35-r2) | ✅ | 2m 57s | 97.9K / 187.2K / 0 |
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 4m 46s | 290.0K / 164.7K / 0 |
 | [qwen35-r1](#qwen35-r1) | ✅ | 6m 19s | 280.3K / 326.6K / 0 |
+
+
+# spiral-matrix_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 53s | 34.8K / 213.9K / 0 |
 
 
 # word-search_java
@@ -2405,6 +2610,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 46s | 53.7K / 138.9K / 0 |
 
 
 # react_javascript
@@ -2417,6 +2623,14 @@
 | [gpt-oss-120b-r9](#gpt-oss-120b-r9) | ✅ | 11m 11s | 764.2K / 731.6K / 0 |
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 20m 0s | 1.4M / 1.1M / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 2h 0s | 1.1M / 2.6M / 0 |
+
+
+# linked-list_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 15s | 39.0K / 197.4K / 0 |
 
 
 # paasio_python
@@ -2465,6 +2679,14 @@
 | [qwen3-coder-next-r14](#qwen3-coder-next-r14) | ✅ | 4m 32s | 335.5K / 410.7K / 979 |
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 5m 9s | 290.6K / 247.0K / 0 |
 | [qwen35-r1](#qwen35-r1) | ✅ | 8m 15s | 226.0K / 365.7K / 0 |
+
+
+# kindergarten-garden_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 20s | 128.9K / 418.9K / 0 |
 
 
 # book-store_go
@@ -2623,6 +2845,14 @@
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 13m 46s | 724.0K / 512.6K / 0 |
 
 
+# queen-attack_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 57s | 53.9K / 183.3K / 0 |
+
+
 # phone-number_javascript
 
 | Model | Success | Duration | Tokens |
@@ -2647,6 +2877,14 @@
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 20m 0s | 1.0M / 680.5K / 0 |
 
 
+# phone-number_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 4s | 71.0K / 206.5K / 0 |
+
+
 # list-ops_javascript
 
 | Model | Success | Duration | Tokens |
@@ -2657,6 +2895,22 @@
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 4m 5s | 191.5K / 135.7K / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 7m 17s | 177.3K / 415.8K / 0 |
 | [qwen35-r1](#qwen35-r1) | ✅ | 8m 9s | 151.6K / 400.2K / 0 |
+
+
+# grade-school_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 52s | 0 / 0 / 0 |
+
+
+# diamond_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 50s | 72.3K / 218.9K / 0 |
 
 
 # mazy-mice_java
@@ -2712,6 +2966,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 35s | 75.1K / 124.3K / 0 |
 
 
 # zebra-puzzle_go
@@ -2818,6 +3073,14 @@
 | [qwen35-r1](#qwen35-r1) | ✅ | 8m 56s | 51.3K / 187.1K / 0 |
 
 
+# allergies_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 29s | 101.5K / 252.1K / 0 |
+
+
 # tree-building_go
 
 | Model | Success | Duration | Tokens |
@@ -2842,11 +3105,28 @@
 | [qwen35-r1](#qwen35-r1) | ✅ | 7m 15s | 73.5K / 215.7K / 0 |
 
 
+# bank-account_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 1s | 37.3K / 189.8K / 0 |
+
+
 # simple-cipher_rust
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 56s | 145.7K / 194.3K / 0 |
+
+
+# meetup_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 8m 49s | 307.5K / 767.5K / 0 |
 
 
 # alphametics_go
@@ -2861,6 +3141,14 @@
 | [qwen35-r1](#qwen35-r1) | ✅ | 9m 15s | 254.6K / 302.0K / 0 |
 
 
+# space-age_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 55s | 50.4K / 237.0K / 0 |
+
+
 # bowling_python
 
 | Model | Success | Duration | Tokens |
@@ -2871,6 +3159,14 @@
 | [qwen3-coder-next-r14](#qwen3-coder-next-r14) | ✅ | 7m 58s | 730.9K / 1.2M / 1.3K |
 | [qwen35-r1](#qwen35-r1) | ✅ | 9m 20s | 106.6K / 229.9K / 0 |
 | [minimax-m25-r1](#minimax-m25-r1) | ❌ | 20m 0s | 949.0K / 551.1K / 0 |
+
+
+# all-your-base_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 7m 28s | 51.5K / 241.0K / 0 |
 
 
 # hangman_java
@@ -2974,6 +3270,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 1m 15s | 37.5K / 124.3K / 0 |
 
 
 # palindrome-products_go
@@ -2993,6 +3290,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 7m 7s | 142.6K / 345.6K / 0 |
 
 
 # dominoes_java
@@ -3096,6 +3394,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 8m 18s | 238.1K / 369.6K / 0 |
 
 
 # poker_python
@@ -3132,6 +3431,14 @@
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 35s | 87.6K / 177.8K / 0 |
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 4m 28s | 252.2K / 188.4K / 0 |
 | [qwen35-r1](#qwen35-r1) | ✅ | 12m 19s | 209.9K / 372.9K / 54 |
+
+
+# yacht_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 4m 11s | 62.0K / 299.9K / 0 |
 
 
 # palindrome-products_javascript
@@ -3178,6 +3485,14 @@
 | [qwen35-r1](#qwen35-r1) | ✅ | 4m 11s | 95.5K / 113.9K / 0 |
 
 
+# clock_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 52s | 84.2K / 282.5K / 0 |
+
+
 # bank-account_java
 
 | Model | Success | Duration | Tokens |
@@ -3200,6 +3515,14 @@
 | [qwen35-r2](#qwen35-r2) | ✅ | 4m 22s | 129.7K / 304.0K / 0 |
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 6m 20s | 267.4K / 142.0K / 0 |
 | [qwen35-r1](#qwen35-r1) | ✅ | 6m 27s | 96.4K / 252.1K / 0 |
+
+
+# parallel-letter-frequency_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 4m 12s | 185.6K / 278.9K / 0 |
 
 
 # grep_python
@@ -3243,6 +3566,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 39s | 76.7K / 204.7K / 0 |
 
 
 # resistor-color-trio_java
@@ -3262,6 +3586,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 2m 19s | 74.0K / 87.7K / 0 |
 
 
 # parallel-letter-frequency_rust
@@ -3269,6 +3594,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 44s | 55.9K / 191.6K / 0 |
 
 
 # twelve-days_javascript
@@ -3312,6 +3638,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 6m 31s | 194.0K / 346.6K / 0 |
 
 
 # sgf-parsing_java
@@ -3506,6 +3833,14 @@
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 17m 47s | 429.5K / 241.8K / 0 |
 
 
+# gigasecond_cpp
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 3m 3s | 50.0K / 196.9K / 0 |
+
+
 # variable-length-quantity_javascript
 
 | Model | Success | Duration | Tokens |
@@ -3523,6 +3858,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 1m 24s | 52.9K / 150.3K / 0 |
 
 
 # doubly-linked-list_rust
@@ -3530,6 +3866,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 7m 25s | 134.4K / 333.2K / 0 |
 
 
 # decimal_rust
@@ -3537,6 +3874,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [qwen35-r2](#qwen35-r2) | ✅ | 19m 11s | 245.4K / 442.0K / 0 |
 
 
 *Generated by BenchmarkResultAnalyzer*

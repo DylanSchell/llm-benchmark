@@ -222,9 +222,19 @@ public class ReferenceAgent {
 
     /**
      * Copies exercise files to the temporary directory, excluding reference implementation files.
+     * For C++ exercises, files are placed in a subdirectory named after the exercise.
      */
     private void copyExerciseFiles(Exercise exercise, Path sourceDir, Path destDir) throws IOException {
         logger.info("Copying exercise files from {} to {}", sourceDir, destDir);
+
+        // For C++, create a subdirectory named after the exercise
+        final Path actualDestDir;
+        if ("cpp".equals(exercise.getLanguage())) {
+            actualDestDir = destDir.resolve(exercise.getName());
+            Files.createDirectories(actualDestDir);
+        } else {
+            actualDestDir = destDir;
+        }
 
         try (Stream<Path> paths = Files.walk(sourceDir)) {
             paths.forEach(sourcePath -> {
@@ -237,7 +247,7 @@ public class ReferenceAgent {
                         return;
                     }
 
-                    Path destPath = destDir.resolve(relativePath);
+                    Path destPath = actualDestDir.resolve(relativePath);
 
                     if (Files.isDirectory(sourcePath)) {
                         Files.createDirectories(destPath);
@@ -495,7 +505,13 @@ public class ReferenceAgent {
      */
     private ReferenceResult runTestsInDocker(Exercise exercise, Path hostExerciseDir, Path tempWorkDir, Instant startTime) {
         // Mount the temp exercise directory as /workspace in the container
-        String containerWorkDir = "/workspace";
+        // For C++, files are in a subdirectory named after the exercise
+        String containerWorkDir;
+        if ("cpp".equals(exercise.getLanguage())) {
+            containerWorkDir = "/workspace/" + exercise.getName();
+        } else {
+            containerWorkDir = "/workspace";
+        }
 
         List<String> command;
         if ("javascript".equals(exercise.getLanguage())) {
@@ -600,7 +616,7 @@ public class ReferenceAgent {
         } else if (Files.exists(exerciseDir.resolve("Cargo.toml"))) {
             return List.of("cargo", "test");
         } else if (Files.exists(exerciseDir.resolve("CMakeLists.txt"))) {
-            return List.of("mkdir", "-p", "build", "&&", "cd", "build", "&&", "cmake", "-DEXERCISM_RUN_ALL_TESTS=1", "-G", "\"Unix Makefiles\"", "..", "&&", "make");
+            return List.of("sh", "-c", "mkdir -p build && cd build && cmake -DEXERCISM_RUN_ALL_TESTS=1 -G \"Unix Makefiles\" .. && make");
         } else {
             logger.error("Unable to determine test command for exercise {}", exercise.getName());
             return List.of("false");

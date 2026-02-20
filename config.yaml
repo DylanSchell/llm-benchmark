@@ -3,7 +3,7 @@
 
 # Path to the polyglot-benchmark repository
 benchmark_path: "../polyglot-benchmark"
-parallelism: 8
+parallelism: 1
 # Docker configuration
 docker:
   # Name of the custom Docker image with build tools

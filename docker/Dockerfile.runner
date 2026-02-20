@@ -18,7 +18,9 @@ RUN apk add --no-cache \
     curl \
     wget \
     uv \
-    libgcc
+    libgcc \
+    cmake \
+    boost-dev
 
 # Install Claude Code CLI
 RUN npm install -g @anthropic-ai/claude-code
@@ -39,6 +41,7 @@ RUN npm install -g jest \
     babel-jest@29.6.4 \
     core-js@3.37.1 \
     eslint@8.49.0
+
 # Create non-privileged user
 RUN adduser -D -s /bin/bash -u 1000 runner && \
     chown -R runner:runner /home/runner
