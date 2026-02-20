@@ -11,23 +11,22 @@ RUN apk add --no-cache \
     nodejs \
     npm \
     go \
-    cargo \
     clang \
     clang-dev \
     make \
     g++ \
     curl \
     wget \
-    uv
+    uv \
+    libgcc
 
 # Install Claude Code CLI
 RUN npm install -g @anthropic-ai/claude-code
 RUN npm install -g claude-plugins
-RUN npx claude-plugins install @anthropics/claude-code-plugins/ralph-wiggum
-#RUN claude plugin install ralph-wiggum@anthropics
+#RUN npx claude-plugins install @anthropics/claude-code-plugins/ralph-wiggum
 
 # Install pytest for Python testing
-RUN pip3 install --no-cache-dir pytest
+#RUN pip3 install --no-cache-dir pytest
 
 # Install Jest and related packages for JavaScript testing
 RUN npm install -g jest \
@@ -52,6 +51,11 @@ WORKDIR /workspace
 
 # Switch to non-root user
 USER runner
+
+# Install rust toolchain
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/home/runner/.cargo/bin:$PATH"
+ENV PATH="/home/runner/.local/bin:$PATH"
 
 # Install claude code transcript extraction tool
 RUN uv tool install claude-code-transcripts

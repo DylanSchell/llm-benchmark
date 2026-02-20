@@ -423,8 +423,18 @@ public class ReferenceAgent {
                 }
             } else if ("rust".equals(exercise.getLanguage())) {
                 try {
+                    // For Rust, maintain directory structure: src/lib.rs -> src/lib.rs, Cargo.toml -> Cargo.toml
                     String fileName = refPath.getFileName().toString();
-                    Path destFile = tempDir.resolve(fileName);
+                    Path destFile;
+                    if ("src".equals(refPath.getParent().getFileName().toString())) {
+                        // File is in src/ directory, maintain that structure
+                        Path srcDir = tempDir.resolve("src");
+                        Files.createDirectories(srcDir);
+                        destFile = srcDir.resolve(fileName);
+                    } else {
+                        // File is at root level (e.g., Cargo.toml)
+                        destFile = tempDir.resolve(fileName);
+                    }
                     Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
                     logger.info("Copied Rust reference file: {}", fileName);
                 } catch (IOException e) {
@@ -444,13 +454,38 @@ public class ReferenceAgent {
         for(Path examplePath: exercise.getExamples()) {
             try {
                 String fileName = examplePath.getFileName().toString();
-                // copy this over the "reference"?
-                String destFileName = exercise.getReferencePath().iterator().next().getFileName().toString();
-                Path destFile = tempDir.resolve(destFileName);
+                // Determine destination based on language
+                Path destFile;
+                if ("rust".equals(exercise.getLanguage())) {
+                    // For Rust examples:
+                    // - .meta/example.rs -> src/lib.rs
+                    String destFileName = exercise.getReferencePath().iterator().next().getFileName().toString();
+                    Path referencePath = exercise.getReferencePath().iterator().next();
+                    if ("src".equals(referencePath.getParent().getFileName().toString())) {
+                        // Reference is in src/, so example should go to src/
+                        Path srcDir = tempDir.resolve("src");
+                        Files.createDirectories(srcDir);
+                        destFile = srcDir.resolve(destFileName);
+                    } else {
+                        destFile = tempDir.resolve(destFileName);
+                    }
+
+                } else {
+                    String destFileName = exercise.getReferencePath().iterator().next().getFileName().toString();
+                    destFile = tempDir.resolve(destFileName);
+                }
                 Files.copy(examplePath, destFile, StandardCopyOption.REPLACE_EXISTING);
                 logger.info("Copied reference file: {}", fileName);
             } catch (IOException e) {
                 logger.error("Failed to copy reference file {}: {}", examplePath, e.getMessage());
+            }
+        }
+        if ( "rust".equals(exercise.getLanguage())) {
+            var cargoFile = exercise.getExercisePath().resolve(".meta").resolve("Cargo-example.toml");
+            if (Files.exists(cargoFile)) {
+                var destFile = tempDir.resolve("Cargo.toml");
+                Files.copy(cargoFile, destFile, StandardCopyOption.REPLACE_EXISTING);
+                logger.info("Copied Rust reference file: {}", cargoFile);
             }
         }
     }
@@ -497,8 +532,11 @@ public class ReferenceAgent {
             Instant endTime = Instant.now();
             Duration duration = Duration.between(startTime, endTime);
 
+            // For Rust, the exit code from cargo test is reliable, so skip containsTestFailures check
+            // which can produce false positives from "0 failed" in test output
+            boolean skipFailureCheck = "rust".equals(exercise.getLanguage());
             boolean success = result.isSuccess() && result.exitCode() == 0
-                    && !containsTestFailures(result.output());
+                    && (skipFailureCheck || !containsTestFailures(result.output()));
 
             if (success) {
                 logger.info("Tests passed for exercise: {}. Duration: {}",
@@ -572,28 +610,24 @@ public class ReferenceAgent {
     /**
      * Checks if the test output contains failure indicators.
      * This catches cases where the test command returns exit code 0 but tests actually failed.
+     * Note: This is primarily used for Java/Gradle/Maven output. For Rust, the exit code
+     * from cargo test is reliable, so this check is skipped.
      */
     protected static boolean containsTestFailures(String output) {
         if (output == null || output.isEmpty()) {
             return false;
         }
-        // Common failure patterns from various test frameworks
+        // Common failure patterns from Java test frameworks (Gradle/Maven)
         String[] failurePatterns = {
-                "FAILED",
-                "FAILURE",
                 "BUILD FAILED",
                 "BUILD FAILURE",
                 "Tests FAILED",
                 "Test FAILED",
-                "Error:",
-                "Exception",
-                "failed",
-                "FAIL"
+                "FAILED",
+                "FAILURE"
         };
-        // Check each pattern (case-insensitive)
-        String lowerOutput = output.toLowerCase();
         for (String pattern : failurePatterns) {
-            if (lowerOutput.contains(pattern.toLowerCase())) {
+            if (output.contains(pattern)) {
                 return true;
             }
         }
@@ -644,6 +678,33 @@ public class ReferenceAgent {
                 });
             } catch (IOException e) {
                 logger.error("There was an error while removing test annotations.", e);
+            }
+        } else if ("rust".equals(exercise.getLanguage())) {
+            logger.info("Ensuring no Rust tests are ignored (removing #[ignore] annotations)");
+            // patch all rust test files under tests/ to remove #[ignore] annotations
+            Path testsDir = tempWorkDir.resolve("tests");
+            if (Files.exists(testsDir)) {
+                try {
+                    Files.walkFileTree(testsDir, new SimpleFileVisitor<>() {
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                            if (file.toString().endsWith(".rs")) {
+                                try {
+                                    String testCode = Files.readString(file);
+                                    // Remove #[ignore] annotations (with or without arguments)
+                                    String updatedCode = testCode.replaceAll("#\\[ignore]", "");
+                                    updatedCode = updatedCode.replaceAll("#\\[ignore[(].*[)]", "");
+                                    Files.writeString(file, updatedCode);
+                                } catch (IOException e) {
+                                    logger.error("Error reading file {}", file);
+                                }
+                            }
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+                } catch (IOException e) {
+                    logger.error("There was an error while removing #[ignore] annotations.", e);
+                }
             }
         }
     }

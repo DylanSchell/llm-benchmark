@@ -58,4 +58,8 @@ public class Exercise {
     public Iterable<? extends Path> getExamples() {
         return metadata.getFiles().getExample().stream().map(exercisePath::resolve).toList();
     }
+
+    public Path getExercisePath() {
+        return exercisePath;
+    }
 }
