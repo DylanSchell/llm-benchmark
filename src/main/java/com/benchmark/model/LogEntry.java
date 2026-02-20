@@ -14,7 +14,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
         @JsonSubTypes.Type(value = QueueOperationEntry.class, name = "queue-operation"),
         @JsonSubTypes.Type(value = UserEntry.class, name = "user"),
         @JsonSubTypes.Type(value = AssistantEntry.class, name = "assistant"),
-        @JsonSubTypes.Type(value = SystemEntry.class, name = "system")
+        @JsonSubTypes.Type(value = SystemEntry.class, name = "system"),
+        @JsonSubTypes.Type(value = Progress.class, name = "progress")
 })
 public abstract class LogEntry {
     @JsonProperty("uuid")
