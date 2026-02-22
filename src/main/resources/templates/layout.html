@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - Claude Benchmark'">Claude Benchmark</title>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- HTMX SSE extension -->
+    <script src="https://unpkg.com/htmx.org@1.9.10/dist/ext/sse.js"></script>
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        /* Inline critical CSS for faster loading */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { background: #2c3e50; color: white; padding: 1rem 0; margin-bottom: 2rem; }
+        header h1 { margin: 0; }
+        nav a { color: white; text-decoration: none; margin-right: 1rem; }
+        nav a:hover { text-decoration: underline; }
+        .card { background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn { display: inline-block; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 1rem; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn:hover { opacity: 0.9; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        .form-group select, .form-group input { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; }
+        .status-badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem; font-weight: bold; }
+        .status-pending { background: #f39c12; color: white; }
+        .status-running { background: #3498db; color: white; }
+        .status-completed { background: #27ae60; color: white; }
+        .status-failed { background: #e74c3c; color: white; }
+        .status-cancelled { background: #95a5a6; color: white; }
+        .output-console { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 4px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.875rem; max-height: 400px; overflow-y: auto; white-space: pre-wrap; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .stat-card { text-align: center; padding: 1.5rem; background: #ecf0f1; border-radius: 8px; }
+        .stat-value { font-size: 2rem; font-weight: bold; color: #2c3e50; }
+        .stat-label { color: #7f8c8d; font-size: 0.875rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #ecf0f1; font-weight: bold; }
+        tr:hover { background: #f5f5f5; }
+        .progress-bar { height: 8px; background: #ecf0f1; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #27ae60; transition: width 0.3s ease; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Claude Benchmark Runner</h1>
+            <nav style="margin-top: 0.5rem;">
+                <a th:href="@{/}">Dashboard</a>
+                <a th:href="@{/run}">Run Benchmark</a>
+                <a th:href="@{/results}">Results</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <th:block th:replace="${content}"></th:block>
+    </main>
+
+    <footer style="text-align: center; padding: 2rem; color: #7f8c8d; font-size: 0.875rem;">
+        <p>Claude Benchmark Runner - Web Interface</p>
+    </footer>
+
+    <script>
+        // Helper function to format timestamps
+        function formatTimestamp(isoString) {
+            if (!isoString) return 'N/A';
+            return new Date(isoString).toLocaleString();
+        }
+
+        // Auto-scroll console to bottom
+        function autoScrollConsole(element) {
+            if (element) {
+                element.scrollTop = element.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>

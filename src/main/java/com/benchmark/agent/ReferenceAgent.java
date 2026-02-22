@@ -267,18 +267,26 @@ public class ReferenceAgent {
     }
 
     protected void copyFreshTests(Exercise exercise, Path sourceDir, Path destDir) throws IOException {
+        // For C++, create a subdirectory named after the exercise
+        final Path actualDestDir;
+        if ("cpp".equals(exercise.getLanguage())) {
+            actualDestDir = destDir.resolve(exercise.getName());
+            Files.createDirectories(actualDestDir);
+        } else {
+            actualDestDir = destDir;
+        }
         if ("java".equals(exercise.getLanguage())) {
             try (Stream<Path> paths = Files.walk(sourceDir)) {
                 paths.forEach(sourcePath -> {
                     try {
                         Path relativePath = sourceDir.relativize(sourcePath);
-                        Path destPath = destDir.resolve(relativePath);
+                        Path destPath = actualDestDir.resolve(relativePath);
                         if (Files.isDirectory(sourcePath)) {
                             Files.createDirectories(destPath);
                         } else {
                             // Skip reference implementation directory
                             if (relativePath.toString().contains("src/test/java") && relativePath.endsWith(".java")) {
-                                logger.info("Copying fresh tests from {} to {}", sourceDir, destDir);
+                                logger.info("Copying fresh tests from {} to {}", sourceDir, actualDestDir);
                                 Files.copy(sourcePath, destPath, StandardCopyOption.REPLACE_EXISTING);
                             }
                         }
@@ -292,7 +300,7 @@ public class ReferenceAgent {
             for (Path refPath : testPath) {
                 try {
                     String fileName = refPath.getFileName().toString();
-                    Path destFile = destDir.resolve(fileName);
+                    Path destFile = actualDestDir.resolve(fileName);
                     Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
                     logger.info("Copied test file: {}", fileName);
                 } catch (IOException e) {
@@ -304,7 +312,7 @@ public class ReferenceAgent {
             for (Path refPath : testPath) {
                 try {
                     String fileName = refPath.getFileName().toString();
-                    Path destFile = destDir.resolve(fileName);
+                    Path destFile = actualDestDir.resolve(fileName);
                     Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
                     logger.info("Copied test file: {}", fileName);
                 } catch (IOException e) {
@@ -316,7 +324,7 @@ public class ReferenceAgent {
             for (Path refPath : testPath) {
                 try {
                     String fileName = refPath.getFileName().toString();
-                    Path destFile = destDir.resolve(fileName);
+                    Path destFile = actualDestDir.resolve(fileName);
                     Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
                     logger.info("Copied test file: {}", fileName);
                 } catch (IOException e) {
@@ -332,7 +340,7 @@ public class ReferenceAgent {
                         try {
                             if (Files.isRegularFile(sourcePath)) {
                                 Path relativePath = testsDir.relativize(sourcePath);
-                                Path destPath = destDir.resolve("tests").resolve(relativePath);
+                                Path destPath = actualDestDir.resolve("tests").resolve(relativePath);
                                 Files.createDirectories(destPath.getParent());
                                 Files.copy(sourcePath, destPath, StandardCopyOption.REPLACE_EXISTING);
                                 logger.info("Copied Rust test file: {}", relativePath);
@@ -348,7 +356,7 @@ public class ReferenceAgent {
             for (Path refPath : testPath) {
                 try {
                     String fileName = refPath.getFileName().toString();
-                    Path destFile = destDir.resolve(fileName);
+                    Path destFile = actualDestDir.resolve(fileName);
                     Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
                     logger.info("Copied C++ test file: {}", fileName);
                 } catch (IOException e) {
@@ -362,6 +370,10 @@ public class ReferenceAgent {
      * Copies the reference implementation Java files to the main source directory.
      */
     private void copyReferenceImplementation(Exercise exercise, Path tempDir) throws IOException {
+        if ("cpp".equals(exercise.getLanguage())) {
+            tempDir = tempDir.resolve(exercise.getName());
+            Files.createDirectories(tempDir);
+        }
         Iterable<Path> refDirs = exercise.getReferencePath();
         if (refDirs == null) {
             return;
@@ -451,14 +463,9 @@ public class ReferenceAgent {
                     logger.error("Failed to copy Rust reference file {}: {}", refPath, e.getMessage());
                 }
             } else if ("cpp".equals(exercise.getLanguage())) {
-                try {
-                    String fileName = refPath.getFileName().toString();
-                    Path destFile = tempDir.resolve(fileName);
-                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Copied C++ reference file: {}", fileName);
-                } catch (IOException e) {
-                    logger.error("Failed to copy C++ reference file {}: {}", refPath, e.getMessage());
-                }
+                // For C++, skip copying the stub files from getReferencePath()
+                // The example solution files will be copied below and renamed appropriately
+                logger.debug("Skipping C++ stub file: {}", refPath.getFileName());
             }
         }
         for(Path examplePath: exercise.getExamples()) {
@@ -479,6 +486,30 @@ public class ReferenceAgent {
                     } else {
                         destFile = tempDir.resolve(destFileName);
                     }
+
+                } else if ("cpp".equals(exercise.getLanguage())) {
+                    // For C++, rename example files to match the stub file names
+                    // e.g., example.cpp -> all_your_base.cpp, example.h -> all_your_base.h
+                    String exampleExtension = fileName.substring(fileName.lastIndexOf('.'));
+
+                    // Find the solution file with the same extension as this example
+                    String stubFileName = null;
+                    for (Path refPath : exercise.getReferencePath()) {
+                        String refExt = refPath.getFileName().toString().substring(refPath.getFileName().toString().lastIndexOf('.'));
+                        if (refExt.equals(exampleExtension)) {
+                            stubFileName = refPath.getFileName().toString();
+                            break;
+                        }
+                    }
+
+                    if (stubFileName != null) {
+                        destFile = tempDir.resolve(stubFileName);
+                        Files.copy(examplePath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                        logger.info("Copied C++ example file as: {}", stubFileName);
+                    } else {
+                        logger.warn("Could not find matching solution file for C++ example: {}", fileName);
+                    }
+                    continue; // Skip the regular copy logic below
 
                 } else {
                     String destFileName = exercise.getReferencePath().iterator().next().getFileName().toString();

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Run Benchmark - Claude Benchmark</title>
+</head>
+<body>
+    <div th:replace="layout :: layout(title='Run Benchmark', content=~{::main})">
+        <main>
+            <h2 style="margin-bottom: 1.5rem;">Run Benchmark</h2>
+
+            <div class="card">
+                <form id="benchmark-form" style="max-width: 500px;">
+                    <div class="form-group">
+                        <label for="agent">Agent</label>
+                        <select id="agent" name="agent" required>
+                            <option value="reference">Reference Agent</option>
+                            <option value="claude">Claude Agent</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="language">Language</label>
+                        <select id="language" name="language" required>
+                            <option value="">Select a language...</option>
+                            <option value="java">Java</option>
+                            <option value="go">Go</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                            <option value="rust">Rust</option>
+                            <option value="cpp">C++</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exercise">Exercise (optional, leave blank for all)</label>
+                        <input type="text" id="exercise" name="exercise" placeholder="e.g., series">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Start Benchmark</button>
+                </form>
+            </div>
+
+            <!-- Session Status -->
+            <div id="session-status" style="margin-top: 1rem; display: none;" class="card">
+                <h3>Benchmark Running</h3>
+                <div style="margin-bottom: 1rem;">
+                    <strong>Status:</strong> <span id="status-badge" class="status-badge status-pending">PENDING</span>
+                </div>
+                <div class="progress-bar" style="margin-bottom: 1rem;">
+                    <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <div id="progress-text" style="margin-bottom: 1rem;">0%</div>
+
+                <!-- Live Output -->
+                <div class="output-console" id="output-console" style="margin-top: 1rem;">
+                    <div>Waiting for output...</div>
+                </div>
+
+                <button id="cancel-btn" class="btn btn-danger" style="margin-top: 1rem;" onclick="cancelBenchmark()">Cancel Run</button>
+            </div>
+
+            <script>
+                let currentSessionId = null;
+                let statusInterval = null;
+
+                document.getElementById('benchmark-form').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+                    const response = await fetch('/api/benchmark/run', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    currentSessionId = data.sessionId;
+
+                    // Show status panel
+                    document.getElementById('session-status').style.display = 'block';
+
+                    // Start polling status
+                    startStatusPolling(currentSessionId);
+
+                    // Connect to SSE stream
+                    connectSSE(currentSessionId);
+                });
+
+                function startStatusPolling(sessionId) {
+                    statusInterval = setInterval(async () => {
+                        const response = await fetch(`/api/benchmark/${sessionId}/status`);
+                        const data = await response.json();
+
+                        updateStatusDisplay(data);
+                    }, 1000);
+                }
+
+                function updateStatusDisplay(data) {
+                    const badge = document.getElementById('status-badge');
+                    const progressFill = document.getElementById('progress-fill');
+                    const progressText = document.getElementById('progress-text');
+
+                    // Update status badge
+                    badge.className = `status-badge status-${data.status.toLowerCase()}`;
+                    badge.textContent = data.status;
+
+                    // Update progress
+                    if (data.progress !== undefined) {
+                        progressFill.style.width = `${data.progress}%`;
+                        progressText.textContent = `${Math.round(data.progress)}% (${data.completedExercises || 0}/${data.totalExercises || 0})`;
+                    }
+
+                    // Stop polling if completed
+                    if (['COMPLETED', 'FAILED', 'CANCELLED'].includes(data.status)) {
+                        clearInterval(statusInterval);
+                    }
+                }
+
+                function connectSSE(sessionId) {
+                    const eventSource = new EventSource(`/api/benchmark/${sessionId}/stream`);
+                    const console = document.getElementById('output-console');
+
+                    eventSource.onmessage = (event) => {
+                        // Clear waiting message if present
+                        if (console.children.length === 1 && console.children[0].textContent === 'Waiting for output...') {
+                            console.innerHTML = '';
+                        }
+
+                        const line = document.createElement('div');
+                        line.textContent = event.data;
+                        console.appendChild(line);
+
+                        // Auto-scroll
+                        console.scrollTop = console.scrollHeight;
+                    };
+
+                    eventSource.onerror = () => {
+                        eventSource.close();
+                    };
+                }
+
+                async function cancelBenchmark() {
+                    if (!currentSessionId) return;
+
+                    const response = await fetch(`/api/benchmark/${currentSessionId}/cancel`, {
+                        method: 'POST'
+                    });
+                    const data = await response.json();
+
+                    if (data.status === 'cancelled') {
+                        alert('Benchmark cancelled');
+                    }
+                }
+            </script>
+        </main>
+    </div>
+</body>
+</html>

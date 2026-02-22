@@ -1,0 +1,35 @@
+<!-- Run Status Indicator Component -->
+<div th:fragment="status-badge(status)"
+     th:class="'status-badge status-' + ${status.toLowerCase()}"
+     th:text="${status}">
+    PENDING
+</div>
+
+<!-- Progress Bar Component -->
+<div th:fragment="progress-bar(progress, completed, total)" style="margin: 1rem 0;">
+    <div class="progress-bar">
+        <div class="progress-fill" th:style="'width: ' + ${progress} + '%'"></div>
+    </div>
+    <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #7f8c8d;">
+        <span th:text="${completed}">0</span> / <span th:text="${total}">0</span> completed (<span th:text="${#numbers.formatDecimal(progress, 1, 1)}">0.0</span>%)
+    </div>
+</div>
+
+<!-- Output Console Component -->
+<div th:fragment="output-console(output, id)"
+     th:id="${id}"
+     class="output-console"
+     style="max-height: 400px; overflow-y: auto;">
+    <pre th:text="${output}" style="margin: 0; white-space: pre-wrap;"></pre>
+</div>
+
+<!-- SSE Stream Connection Component -->
+<div th:fragment="sse-stream(session-id)"
+     hx-ext="sse"
+     th:attr="data-session-id=${session-id}">
+    <div sse-connect="/api/benchmark/${session-id}/stream"
+         sse-swap="message"
+         hx-trigger="sse-message">
+        <!-- Live output will be swapped here -->
+    </div>
+</div>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Results - Claude Benchmark</title>
+</head>
+<body>
+    <div th:replace="~{layout :: layout(title='Results', content=~{::main})}">
+        <main>
+            <h2 style="margin-bottom: 1.5rem;">Results</h2>
+
+            <!-- Statistics Summary -->
+            <div class="card" style="margin-bottom: 1rem;">
+                <h3 style="margin-bottom: 1rem;">Overall Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" th:text="${stats['total_runs'] ?: 0}">0</div>
+                        <div class="stat-label">Total Runs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" th:text="${stats['total_exercises'] ?: 0}">0</div>
+                        <div class="stat-label">Exercises Run</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" th:text="${stats['successful_exercises'] ?: 0}">0</div>
+                        <div class="stat-label">Successful</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">
+                            <span th:text="${#numbers.formatDecimal(stats['success_rate'] != null ? stats['success_rate'] : 0, 1, 1)}">0.0</span>%
+                        </div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card" style="margin-bottom: 1rem;">
+                <form id="filter-form" hx-get="/results/table-fragment" hx-target="#results-body" hx-swap="innerHTML" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+                    <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+                        <label for="filter-language">Language</label>
+                        <select id="filter-language" name="language">
+                            <option value="">All Languages</option>
+                            <option value="java" th:selected="${filterLanguage == 'java'}">Java</option>
+                            <option value="go" th:selected="${filterLanguage == 'go'}">Go</option>
+                            <option value="javascript" th:selected="${filterLanguage == 'javascript'}">JavaScript</option>
+                            <option value="python" th:selected="${filterLanguage == 'python'}">Python</option>
+                            <option value="rust" th:selected="${filterLanguage == 'rust'}">Rust</option>
+                            <option value="cpp" th:selected="${filterLanguage == 'cpp'}">C++</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+                        <label for="filter-agent">Agent</label>
+                        <select id="filter-agent" name="agent">
+                            <option value="">All Agents</option>
+                            <option value="reference" th:selected="${filterAgent == 'reference'}">Reference</option>
+                            <option value="claude" th:selected="${filterAgent == 'claude'}">Claude</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+                        <label for="filter-model">Model</label>
+                        <select id="filter-model" name="model">
+                            <option value="">All Models</option>
+                            <option th:each="m : ${models}" th:value="${m}" th:text="${m}" th:selected="${filterModel == m}">reference-r2</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="/results" class="btn">Clear</a>
+                </form>
+            </div>
+
+            <!-- Results Table -->
+            <div class="card">
+                <style>
+                    .timestamp-cell { white-space: nowrap; }
+                    .sortable-table th { cursor: pointer; user-select: none; }
+                    .sortable-table th:hover { background-color: #f0f0f0; }
+                </style>
+                <table class="sortable-table">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable('results-body', 0)" style="cursor: pointer;">Timestamp &#x2195;</th>
+                            <th onclick="sortTable('results-body', 1)" style="cursor: pointer;">Agent &#x2195;</th>
+                            <th onclick="sortTable('results-body', 2)" style="cursor: pointer;">Language &#x2195;</th>
+                            <th onclick="sortTable('results-body', 3)" style="cursor: pointer;">Total &#x2195;</th>
+                            <th onclick="sortTable('results-body', 4)" style="cursor: pointer;">Successful &#x2195;</th>
+                            <th onclick="sortTable('results-body', 5)" style="cursor: pointer;">Failed &#x2195;</th>
+                            <th onclick="sortTable('results-body', 6)" style="cursor: pointer;">Success Rate &#x2195;</th>
+                            <th onclick="sortTable('results-body', 7)" style="cursor: pointer;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body">
+                        <tr th:if="${#lists.isEmpty(results)}">
+                            <td colspan="8" style="text-align: center; color: #7f8c8d;">No results found</td>
+                        </tr>
+                        <tr th:each="result : ${results}"
+                            th:if="${(result['successful'] != null and result['successful'] > 0) or (result['failed'] != null and result['failed'] > 0)}">
+                            <td class="timestamp-cell" th:text="${result['timestamp'] != null ? result['timestamp'].replace('T', ' ').substring(0, 16) : ''}">2024-01-01 00:00</td>
+                            <td th:text="${result['agent']}">reference</td>
+                            <td th:text="${result['language']}">java</td>
+                            <td th:text="${result['total_exercises']}">10</td>
+                            <td th:text="${result['successful']}">8</td>
+                            <td th:text="${result['failed']}">2</td>
+                            <td th:text="${result['success_rate']}">80.0%</td>
+                            <td>
+                                <a th:href="@{/results/{filename}(filename=${result['filename']})}" class="btn btn-primary" style="font-size: 0.875rem; padding: 0.25rem 0.5rem;">View Details</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <script>
+                // Table sorting function for results page
+                let sortDirections = {};
+
+                function sortTable(tableId, columnIdx) {
+                    const table = document.getElementById(tableId).querySelector('table');
+                    const tbody = table.querySelector('tbody');
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    const isNumeric = columnIdx !== 0 && columnIdx !== 1 && columnIdx !== 2; // timestamp, agent, language are strings
+                    const isTimestamp = columnIdx === 0;
+
+                    // Initialize or toggle sort direction
+                    if (!sortDirections[tableId]) {
+                        sortDirections[tableId] = [];
+                    }
+                    sortDirections[tableId][columnIdx] = !sortDirections[tableId][columnIdx];
+                    const ascending = sortDirections[tableId][columnIdx];
+
+                    rows.sort((a, b) => {
+                        let aVal = a.children[columnIdx].textContent.trim();
+                        let bVal = b.children[columnIdx].textContent.trim();
+
+                        if (isTimestamp) {
+                            // Parse timestamp format "YYYY-MM-DD HH:mm"
+                            aVal = new Date(aVal.replace(' ', 'T'));
+                            bVal = new Date(bVal.replace(' ', 'T'));
+                        } else if (isNumeric) {
+                            // Remove '%', 's' suffixes for numeric comparison
+                            aVal = parseFloat(aVal.replace(/[^0-9.]/g, '')) || 0;
+                            bVal = parseFloat(bVal.replace(/[^0-9.]/g, '')) || 0;
+                        } else {
+                            aVal = aVal.toLowerCase();
+                            bVal = bVal.toLowerCase();
+                        }
+
+                        if (aVal < bVal) return ascending ? -1 : 1;
+                        if (aVal > bVal) return ascending ? 1 : -1;
+                        return 0;
+                    });
+
+                    // Reorder rows
+                    rows.forEach(row => tbody.appendChild(row));
+                }
+            </script>
+
+            <!-- Language Stats -->
+            <div class="card" style="margin-top: 1rem;">
+                <h3 style="margin-bottom: 1rem;">By Language</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Language</th>
+                            <th>Total Exercises</th>
+                            <th>Successful</th>
+                            <th>Success Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="lang : ${stats['by_language']}">
+                            <td th:text="${lang.key}">java</td>
+                            <td th:text="${lang.value}">10</td>
+                            <td th:text="${stats['success_by_language'][lang.key] ?: 0}">8</td>
+                            <td>
+                                <span th:with="total=${stats['by_language'][lang.key]}, success=${stats['success_by_language'][lang.key]}"
+                                      th:text="${total != null && total > 0 ? #numbers.formatDecimal((success != null ? success : 0) * 100.0 / total, 1, 1) + '%' : '0.0%'}">80.0%</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

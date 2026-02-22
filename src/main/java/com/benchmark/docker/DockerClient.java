@@ -115,6 +115,7 @@ public class DockerClient {
                 throw new RuntimeException(e);
             }
         });
+        readerThread.setDaemon(true);
         readerThread.start();
         boolean completed = waitForProcess(process, timeout);
         readerThread.join();

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Fragment for recent results table rows -->
+    <style>
+        .timestamp-cell { white-space: nowrap; }
+    </style>
+    <table th:fragment="recentResultsRows">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Agent</th>
+                <th>Language</th>
+                <th>Exercises</th>
+                <th>Success Rate</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(results)}">
+                <td colspan="6" style="text-align: center; color: #7f8c8d;">No results yet</td>
+            </tr>
+            <tr th:each="result : ${results}">
+                <td class="timestamp-cell" th:text="${result['timestamp'] != null ? result['timestamp'].replace('T', ' ').substring(0, 16) : ''}">2024-01-01 00:00</td>
+                <td th:text="${result['agent']}">reference</td>
+                <td th:text="${result['language']}">java</td>
+                <td th:text="${result['total_exercises']} + ' / ' + ${result['successful']}">10 / 8</td>
+                <td th:text="${result['success_rate']}">80.0%</td>
+                <td>
+                    <a th:href="@{/results/{filename}(filename=${result['filename']})}" class="btn btn-primary" style="font-size: 0.875rem; padding: 0.25rem 0.5rem;">View</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Claude Benchmark</title>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .sortable-table th { cursor: pointer; user-select: none; }
+        .sortable-table th:hover { background-color: #f0f0f0; }
+        .nowrap { white-space: nowrap; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Claude Benchmark Runner</h1>
+            <nav style="margin-top: 0.5rem;">
+                <a th:href="@{/}">Dashboard</a>
+                <a th:href="@{/run}">Run Benchmark</a>
+                <a th:href="@{/results}">Results</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2 style="margin-bottom: 1.5rem;">Dashboard</h2>
+
+        <!-- Statistics Grid -->
+        <div class="stats-grid" style="margin-bottom: 2rem;">
+            <div class="stat-card">
+                <div class="stat-value" th:text="${stats['total_runs'] ?: 0}">0</div>
+                <div class="stat-label">Total Runs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" th:text="${stats['total_exercises'] ?: 0}">0</div>
+                <div class="stat-label">Exercises Run</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" th:text="${stats['successful_exercises'] ?: 0}">0</div>
+                <div class="stat-label">Successful</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">
+                    <span th:text="${#numbers.formatDecimal(stats['success_rate'] != null ? stats['success_rate'] : 0, 1, 1)}">0.0</span>%
+                </div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+        </div>
+
+        <!-- Active Runs -->
+        <div class="card" style="margin-bottom: 1rem;">
+            <h3 style="margin-bottom: 1rem;">Active Runs</h3>
+            <div th:if="${activeRuns == 0}" style="color: #7f8c8d;">
+                No active benchmark runs
+            </div>
+            <table th:unless="${activeRuns == 0}" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
+                        <th style="padding: 0.5rem; text-align: left;">Agent</th>
+                        <th style="padding: 0.5rem; text-align: left;">Language</th>
+                        <th style="padding: 0.5rem; text-align: left;">Exercise</th>
+                        <th style="padding: 0.5rem; text-align: left;">Status</th>
+                        <th style="padding: 0.5rem; text-align: left;">Progress</th>
+                        <th style="padding: 0.5rem; text-align: left;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="session : ${activeSessions}" style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 0.5rem;" th:text="${session.agentName}">reference</td>
+                        <td style="padding: 0.5rem;" th:text="${session.language}">java</td>
+                        <td style="padding: 0.5rem;" th:text="${session.exerciseName != null ? session.exerciseName : 'All'}">exercise1</td>
+                        <td style="padding: 0.5rem;">
+                            <span class="status-badge"
+                                  th:classappend="${session.status.name() == 'RUNNING'} ? 'status-completed' : 'status-pending'"
+                                  th:text="${session.status.name()}">RUNNING</span>
+                        </td>
+                        <td style="padding: 0.5rem;" th:text="${session.completedExercises} + ' / ' + ${session.totalExercises}">0 / 10</td>
+                        <td style="padding: 0.5rem;">
+                            <a th:href="@{/run(session=${session.id})}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">View</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card" style="margin-top: 1rem;">
+            <h3 style="margin-bottom: 1rem;">Quick Actions</h3>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a th:href="@{/run}" class="btn btn-primary">New Benchmark Run</a>
+                <a th:href="@{/results}" class="btn btn-primary">View Results</a>
+            </div>
+        </div>
+
+        <!-- By Language -->
+        <div class="card" style="margin-top: 1rem;" id="by-language-table">
+            <h3 style="margin-bottom: 1rem;">By Language</h3>
+            <table class="sortable-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('by-language-table', 0)" style="cursor: pointer;">Language &#x2195;</th>
+                        <th onclick="sortTable('by-language-table', 1)" style="cursor: pointer;">Total &#x2195;</th>
+                        <th onclick="sortTable('by-language-table', 2)" style="cursor: pointer;">Successful &#x2195;</th>
+                        <th onclick="sortTable('by-language-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
+                        <th onclick="sortTable('by-language-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="entry : ${stats['by_language'] != null ? stats['by_language'].entrySet() : {}}"
+                        th:if="${entry.value != null && entry.value > 0}">
+                        <td><a th:href="@{/results(language=${entry.key})}" th:text="${entry.key}" style="color: #3498db; text-decoration: none;">java</a></td>
+                        <td th:text="${entry.value}">10</td>
+                        <td th:text="${stats['success_by_language'][entry.key] != null ? stats['success_by_language'][entry.key] : 0}">8</td>
+                        <td th:text="${stats['duration_by_language_formatted'][entry.key] != null ? stats['duration_by_language_formatted'][entry.key] : '0s'}">2m 30s</td>
+                        <td th:text="${#numbers.formatDecimal(entry.value > 0 ? (stats['success_by_language'][entry.key] != null ? stats['success_by_language'][entry.key] : 0) * 100.0 / entry.value : 0, 1, 1)} + '%'">80.0%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- By Agent -->
+        <div class="card" style="margin-top: 1rem;" id="by-agent-table">
+            <h3 style="margin-bottom: 1rem;">By Agent</h3>
+            <table class="sortable-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('by-agent-table', 0)" style="cursor: pointer;">Agent &#x2195;</th>
+                        <th onclick="sortTable('by-agent-table', 1)" style="cursor: pointer;">Total &#x2195;</th>
+                        <th onclick="sortTable('by-agent-table', 2)" style="cursor: pointer;">Successful &#x2195;</th>
+                        <th onclick="sortTable('by-agent-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
+                        <th onclick="sortTable('by-agent-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="entry : ${stats['by_agent'] != null ? stats['by_agent'].entrySet() : {}}"
+                        th:if="${entry.value != null && entry.value > 0}">
+                        <td><a th:href="@{/results(agent=${entry.key})}" th:text="${entry.key}" style="color: #3498db; text-decoration: none;">reference</a></td>
+                        <td th:text="${entry.value}">10</td>
+                        <td th:text="${stats['success_by_agent'][entry.key] != null ? stats['success_by_agent'][entry.key] : 0}">8</td>
+                        <td th:text="${stats['duration_by_agent_formatted'][entry.key] != null ? stats['duration_by_agent_formatted'][entry.key] : '0s'}">2m 30s</td>
+                        <td th:text="${#numbers.formatDecimal(entry.value > 0 ? (stats['success_by_agent'][entry.key] != null ? stats['success_by_agent'][entry.key] : 0) * 100.0 / entry.value : 0, 1, 1)} + '%'">80.0%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- By Model -->
+        <div class="card" style="margin-top: 1rem;" id="by-model-table">
+            <h3 style="margin-bottom: 1rem;">By Model</h3>
+            <table class="sortable-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('by-model-table', 0)" style="cursor: pointer;">Model &#x2195;</th>
+                        <th onclick="sortTable('by-model-table', 1)" style="cursor: pointer;">Total &#x2195;</th>
+                        <th onclick="sortTable('by-model-table', 2)" style="cursor: pointer;">Successful &#x2195;</th>
+                        <th onclick="sortTable('by-model-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
+                        <th onclick="sortTable('by-model-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="entry : ${stats['by_model'] != null ? stats['by_model'].entrySet() : {}}"
+                        th:if="${entry.value != null && entry.value > 0}">
+                        <td><a th:href="@{/results(model=${entry.key})}" th:text="${entry.key}" style="color: #3498db; text-decoration: none;">reference-r2</a></td>
+                        <td th:text="${entry.value}">10</td>
+                        <td th:text="${stats['success_by_model'][entry.key] != null ? stats['success_by_model'][entry.key] : 0}">8</td>
+                        <td th:text="${stats['duration_by_model_formatted'][entry.key] != null ? stats['duration_by_model_formatted'][entry.key] : '0s'}">2m 30s</td>
+                        <td th:text="${#numbers.formatDecimal(entry.value > 0 ? (stats['success_by_model'][entry.key] != null ? stats['success_by_model'][entry.key] : 0) * 100.0 / entry.value : 0, 1, 1)} + '%'">80.0%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer style="text-align: center; padding: 2rem; color: #7f8c8d; font-size: 0.875rem;">
+        <p>Claude Benchmark Runner - Web Interface</p>
+    </footer>
+
+    <script>
+        // Table sorting function
+        let sortDirections = {};
+
+        function sortTable(tableId, columnIdx) {
+            const table = document.getElementById(tableId).querySelector('table');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const isNumeric = columnIdx !== 0; // First column (name) is string, others are numeric
+
+            // Initialize or toggle sort direction
+            if (!sortDirections[tableId]) {
+                sortDirections[tableId] = [];
+            }
+            sortDirections[tableId][columnIdx] = !sortDirections[tableId][columnIdx];
+            const ascending = sortDirections[tableId][columnIdx];
+
+            rows.sort((a, b) => {
+                let aVal = a.children[columnIdx].textContent.trim();
+                let bVal = b.children[columnIdx].textContent.trim();
+
+                if (isNumeric) {
+                    // Remove 's', '%' suffixes for numeric comparison
+                    aVal = parseFloat(aVal.replace(/[^0-9.]/g, '')) || 0;
+                    bVal = parseFloat(bVal.replace(/[^0-9.]/g, '')) || 0;
+                } else {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+
+                if (aVal < bVal) return ascending ? -1 : 1;
+                if (aVal > bVal) return ascending ? 1 : -1;
+                return 0;
+            });
+
+            // Reorder rows
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    </script>
+</body>
+</html>

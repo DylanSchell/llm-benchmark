@@ -33,13 +33,38 @@ public class BenchmarkRunner {
 
     private final Config config;
     private final DockerClient dockerClient;
-    private final ExerciseRunner exerciseRunner;
+    private ExerciseRunner exerciseRunner;
     private static final Set<String> supportedLanguages = Set.of("java", "go", "javascript", "python", "rust", "cpp");
 
     public BenchmarkRunner(Path configPath) throws Exception {
-        this.config = ConfigLoader.load(configPath);
-        this.dockerClient = new DockerClient(config.getDocker());
-        this.exerciseRunner = new ExerciseRunner(config, dockerClient, this);
+        this(ConfigLoader.load(configPath), new DockerClient(ConfigLoader.load(configPath).getDocker()));
+    }
+
+    /**
+     * Constructor for Spring DI - accepts Config and DockerClient directly.
+     * Note: ExerciseRunner is created lazily to avoid circular dependency.
+     */
+    public BenchmarkRunner(Config config, DockerClient dockerClient) throws Exception {
+        this.config = config;
+        this.dockerClient = dockerClient;
+        this.exerciseRunner = null; // Will be set via setter or created lazily
+    }
+
+    /**
+     * Sets the ExerciseRunner - used by Spring for proper wiring.
+     */
+    public void setExerciseRunner(ExerciseRunner exerciseRunner) {
+        this.exerciseRunner = exerciseRunner;
+    }
+
+    /**
+     * Gets or creates the ExerciseRunner lazily.
+     */
+    private ExerciseRunner getExerciseRunner() {
+        if (exerciseRunner == null) {
+            return new ExerciseRunner(config, dockerClient, this);
+        }
+        return exerciseRunner;
     }
 
     /**
@@ -51,7 +76,7 @@ public class BenchmarkRunner {
      * @return Result of the exercise execution
      */
     public ExerciseResult runReferenceExercise(ReferenceAgent agent, String language, String exerciseName) {
-        return exerciseRunner.runReferenceExercise(agent, language, exerciseName);
+        return getExerciseRunner().runReferenceExercise(agent, language, exerciseName);
     }
 
     /**
@@ -66,7 +91,7 @@ public class BenchmarkRunner {
         for (String language : split) {
             String trimmedLanguage = language.trim().toLowerCase();
             if (supportedLanguages.contains(trimmedLanguage)) {
-                List<ExerciseResult> languageResults = exerciseRunner.runAllReferenceExercises(agent, language.trim(), agentName);
+                List<ExerciseResult> languageResults = getExerciseRunner().runAllReferenceExercises(agent, language.trim(), agentName);
                 result.addAll(languageResults);
             }
         }
@@ -227,12 +252,33 @@ public class BenchmarkRunner {
 
     public static void main(String[] args) {
         String configFile = "config.yaml";
+        boolean webMode = false;
+        int webPort = 8080;
+
         try {
             for (int i = 0; i < args.length; i++) {
                 if (args[i].equals("--config") && i + 1 < args.length) {
                     configFile = args[++i];
+                } else if (args[i].equals("--web")) {
+                    webMode = true;
+                    // Check if port is specified as next argument (must be a number)
+                    if (i + 1 < args.length) {
+                        try {
+                            int potentialPort = Integer.parseInt(args[++i]);
+                            if (potentialPort > 0 && potentialPort < 65536) {
+                                webPort = potentialPort;
+                            } else {
+                                i--; // Not a valid port, step back
+                            }
+                        } catch (NumberFormatException e) {
+                            i--; // Not a number, step back
+                        }
+                    }
+                } else if (args[i].equals("--port") && i + 1 < args.length) {
+                    webPort = Integer.parseInt(args[++i]);
                 }
             }
+
             Path configPath = Paths.get(configFile);
             if (!configPath.toFile().exists()) {
                 System.err.printf("%s not found in current directory", configFile);
@@ -240,6 +286,14 @@ public class BenchmarkRunner {
             }
 
             BenchmarkRunner runner = new BenchmarkRunner(configPath);
+
+            // Check for web mode - only when --web flag is explicitly passed
+            if (webMode) {
+                // Start web interface
+                System.out.println("Starting web interface on port " + webPort + "...");
+                startWebMode(args, configPath, runner, webPort);
+                return;
+            }
 
             if (!runner.isDockerAvailable()) {
                 System.err.println("Docker is not available. Please ensure Docker is running.");
@@ -325,5 +379,33 @@ public class BenchmarkRunner {
             }
         }
         return false;
+    }
+
+    /**
+     * Starts the web interface mode.
+     * This method is called when --web flag is passed or when no arguments are provided.
+     * All beans are now managed by Spring - no manual passing needed.
+     */
+    private static void startWebMode(String[] args, Path configPath, BenchmarkRunner runner, int port) {
+        try {
+            // Import and start Spring Boot application
+            Class<?> webRunnerClass = Class.forName("com.benchmark.web.WebBenchmarkRunner");
+            var method = webRunnerClass.getDeclaredMethod("runWebMode", String[].class);
+            method.invoke(null, (Object) args);
+        } catch (Exception e) {
+            System.err.println("Failed to start web interface: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    // Package-private getter for config access in web mode
+    Config getConfig() {
+        return config;
+    }
+
+    // Package-private getter for dockerClient access in web mode
+    DockerClient getDockerClient() {
+        return dockerClient;
     }
 }

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Result Detail - Claude Benchmark</title>
+</head>
+<body>
+    <div th:replace="~{layout :: layout(title='Result Detail', content=~{::main})}">
+        <main>
+            <nav style="margin-bottom: 1rem;">
+                <a href="/results" class="btn">&larr; Back to Results</a>
+            </nav>
+
+            <h2 style="margin-bottom: 0.5rem;">Result Details</h2>
+
+            <div th:if="${error != null}" style="color: #e74c3c; margin-bottom: 1rem;">
+                <p th:text="${error}">Error message...</p>
+            </div>
+
+            <div th:if="${result != null}" class="card">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <strong>Timestamp:</strong>
+                        <div th:text="${result['timestamp'] != null ? result['timestamp'].replace('T', ' ').substring(0, 16) : ''}">2024-01-01 00:00</div>
+                    </div>
+                    <div>
+                        <strong>Agent:</strong>
+                        <div th:text="${result['agent']}">reference</div>
+                    </div>
+                    <div>
+                        <strong>Language:</strong>
+                        <div th:text="${result['language']}">java</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    <div class="stat-card">
+                        <div class="stat-value" th:text="${result['total_exercises']}">0</div>
+                        <div class="stat-label">Total Exercises</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" th:text="${result['successful']}">0</div>
+                        <div class="stat-label">Successful</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" th:text="${result['failed']}">0</div>
+                        <div class="stat-label">Failed</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <strong>Success Rate:</strong>
+                    <div th:class="'status-badge ' + (${#strings.contains(result['success_rate'], '100')} ? 'status-completed' : 'status-failed')"
+                         th:text="${result['success_rate']}">80.0%</div>
+                </div>
+
+                <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Individual Results</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Exercise</th>
+                            <th>Language</th>
+                            <th>Success</th>
+                            <th>Duration</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${result['results']}">
+                            <td th:text="${r['exerciseName']}">exercise1</td>
+                            <td th:text="${r['language']}">java</td>
+                            <td>
+                                <span th:class="'status-badge ' + (${r['success']} ? 'status-completed' : 'status-failed')"
+                                      th:text="${r['success']} ? 'PASSED' : 'FAILED'">PASSED</span>
+                            </td>
+                            <td th:text="${r['durationFormatted']}">1s</td>
+                            <td>
+                                <button th:if="${r['trace'] != null and r['trace'] != ''}"
+                                        class="btn btn-primary view-trace-btn"
+                                        style="font-size: 0.75rem; padding: 0.125rem 0.5rem;"
+                                        th:data-exercise="${r['exerciseName']}"
+                                        th:data-language="${r['language']}">View Trace</button>
+                                <span th:unless="${r['trace'] != null and r['trace'] != ''}"
+                                      style="color: #7f8c8d; font-size: 0.75rem;">No trace</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Trace Modal -->
+                <div id="trace-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+                    <div style="background: white; margin: 2rem auto; padding: 0; max-width: 90%; height: calc(100% - 4rem); border-radius: 4px; display: flex; flex-direction: column;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid #ddd; flex-shrink: 0;">
+                            <h3 id="trace-title" style="margin: 0;">Trace</h3>
+                            <button onclick="document.getElementById('trace-modal').style.display='none'"
+                                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer; line-height: 1;">&times;</button>
+                        </div>
+                        <div id="trace-content" style="background: #f5f5f5; padding: 1rem; flex: 1; overflow: auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script th:inline="javascript">
+        const resultFilename = [[${result['filename']}]];
+
+        // Event delegation for View Trace buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.view-trace-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const exerciseName = btn.getAttribute('data-exercise');
+                    const language = btn.getAttribute('data-language');
+                    openTrace(exerciseName, language);
+                });
+            });
+        });
+
+        function openTrace(exerciseName, language) {
+            // Fetch the full result data to get the trace
+            fetch('/results/api/' + encodeURIComponent(resultFilename))
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.results) {
+                        const exercise = data.results.find(r => r.exerciseName === exerciseName);
+                        if (exercise && exercise.trace) {
+                            document.getElementById('trace-title').textContent = 'Trace: ' + exerciseName + ' (' + language + ')';
+                            document.getElementById('trace-content').innerHTML = exercise.trace;
+                            document.getElementById('trace-modal').style.display = 'block';
+                        } else {
+                            alert('No trace available for this exercise');
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to load trace:', err);
+                    alert('Failed to load trace');
+                });
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('trace-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
