@@ -1,5 +1,6 @@
 package com.benchmark.web.domain;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.Instant;
@@ -119,7 +120,8 @@ public class BenchmarkSession {
             accumulatedOutput.add(line);
         }
         try {
-            sseEmitter.send(SseEmitter.event().name("message").data(line));
+            // Send using the standard SseEmitter approach
+            sseEmitter.send(SseEmitter.event().data(line));
         } catch (Exception e) {
             // Ignore - client may have disconnected
         }
@@ -127,10 +129,15 @@ public class BenchmarkSession {
 
     /**
      * Returns the accumulated output so far.
+     * Concatenates all tokens without separators to preserve original formatting.
      */
     public String getAccumulatedOutput() {
         synchronized (accumulatedOutput) {
-            return String.join("\n", accumulatedOutput);
+            StringBuilder sb = new StringBuilder();
+            for (String token : accumulatedOutput) {
+                sb.append(token);
+            }
+            return sb.toString();
         }
     }
 

@@ -151,38 +151,41 @@
 
                 function connectSSE(sessionId) {
                     const eventSource = new EventSource(`/api/benchmark/${sessionId}/stream`);
-                    const console = document.getElementById('output-console');
-                    let lastLine = null;
+                    const outputConsole = document.getElementById('output-console');
+                    let currentLine = null;
 
                     eventSource.onmessage = (event) => {
                         // Clear waiting message if present
-                        if (console.children.length === 1 && console.children[0].textContent === 'Waiting for output...') {
-                            console.innerHTML = '';
+                        if (outputConsole.children.length === 1 && outputConsole.children[0].textContent === 'Waiting for output...') {
+                            outputConsole.innerHTML = '';
+                            currentLine = null;
                         }
 
                         const data = event.data;
 
-                        // If the data ends with newline, create a new div
-                        // Otherwise, append to the last div
+                        // If the data ends with newline, finalize current line
+                        // Otherwise, append token to current line
                         if (data.endsWith('\n')) {
+                            // Create a new div for the complete line
                             const line = document.createElement('div');
+                            line.style.whiteSpace = 'pre-wrap';
                             line.textContent = data;
-                            console.appendChild(line);
-                            lastLine = line;
-                        } else if (data.trim()) {
-                            // Check if last line exists and is a text node (not empty)
-                            if (lastLine && lastLine.lastChild && lastLine.lastChild.nodeType === Node.TEXT_NODE) {
-                                lastLine.lastChild.textContent += data;
+                            outputConsole.appendChild(line);
+                            currentLine = null;
+                        } else if (data) {
+                            // Append to or create current line
+                            if (currentLine) {
+                                currentLine.textContent += data;
                             } else {
-                                const line = document.createElement('div');
-                                line.textContent = data;
-                                console.appendChild(line);
-                                lastLine = line;
+                                currentLine = document.createElement('div');
+                                currentLine.style.whiteSpace = 'pre-wrap';
+                                currentLine.textContent = data;
+                                outputConsole.appendChild(currentLine);
                             }
                         }
 
                         // Auto-scroll
-                        console.scrollTop = console.scrollHeight;
+                        outputConsole.scrollTop = outputConsole.scrollHeight;
                     };
 
                     eventSource.onerror = () => {
@@ -231,18 +234,16 @@
                     progressFill.style.width = progress + '%';
                     progressText.textContent = Math.round(progress) + '% (' + completed + '/' + total + ')';
 
-                    // Populate accumulated output
+                    // Populate accumulated output - render as preformatted text
                     const output = document.getElementById('output-console');
                     const accumulatedOutput = [[${sessionOutput}]];
                     if (accumulatedOutput && accumulatedOutput.length > 0) {
                         output.innerHTML = '';
-                        accumulatedOutput.split('\n').forEach(line => {
-                            if (line.trim()) {
-                                const div = document.createElement('div');
-                                div.textContent = line;
-                                output.appendChild(div);
-                            }
-                        });
+                        const pre = document.createElement('pre');
+                        pre.style.whiteSpace = 'pre-wrap';
+                        pre.style.wordWrap = 'break-word';
+                        pre.textContent = accumulatedOutput;
+                        output.appendChild(pre);
                         output.scrollTop = output.scrollHeight;
                     }
 
@@ -287,38 +288,41 @@
 
                 function connectSSE(sessionId) {
                     const eventSource = new EventSource(`/api/benchmark/${sessionId}/stream`);
-                    const console = document.getElementById('output-console');
-                    let lastLine = null;
+                    const outputConsole = document.getElementById('output-console');
+                    let currentLine = null;
 
                     eventSource.onmessage = (event) => {
                         // Clear waiting message if present
-                        if (console.children.length === 1 && console.children[0].textContent === 'Waiting for output...') {
-                            console.innerHTML = '';
+                        if (outputConsole.children.length === 1 && outputConsole.children[0].textContent === 'Waiting for output...') {
+                            outputConsole.innerHTML = '';
+                            currentLine = null;
                         }
 
                         const data = event.data;
 
-                        // If the data ends with newline, create a new div
-                        // Otherwise, append to the last div
+                        // If the data ends with newline, finalize current line
+                        // Otherwise, append token to current line
                         if (data.endsWith('\n')) {
+                            // Create a new div for the complete line
                             const line = document.createElement('div');
+                            line.style.whiteSpace = 'pre-wrap';
                             line.textContent = data;
-                            console.appendChild(line);
-                            lastLine = line;
-                        } else if (data.trim()) {
-                            // Check if last line exists and is a text node (not empty)
-                            if (lastLine && lastLine.lastChild && lastLine.lastChild.nodeType === Node.TEXT_NODE) {
-                                lastLine.lastChild.textContent += data;
+                            outputConsole.appendChild(line);
+                            currentLine = null;
+                        } else if (data) {
+                            // Append to or create current line
+                            if (currentLine) {
+                                currentLine.textContent += data;
                             } else {
-                                const line = document.createElement('div');
-                                line.textContent = data;
-                                console.appendChild(line);
-                                lastLine = line;
+                                currentLine = document.createElement('div');
+                                currentLine.style.whiteSpace = 'pre-wrap';
+                                currentLine.textContent = data;
+                                outputConsole.appendChild(currentLine);
                             }
                         }
 
                         // Auto-scroll
-                        console.scrollTop = console.scrollHeight;
+                        outputConsole.scrollTop = outputConsole.scrollHeight;
                     };
 
                     eventSource.onerror = () => {

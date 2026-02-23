@@ -89,6 +89,12 @@ public class BenchmarkService {
                 // Single exercise across all selected languages
                 session.setTotalExercises(languages.length);
                 for (String language : languages) {
+                    // Check for cancellation
+                    if (session.getStatus() == RunStatus.CANCELLED) {
+                        session.emitOutput("Benchmark cancelled");
+                        return;
+                    }
+
                     session.emitOutput("Running exercise: " + exerciseName + " for language: " + language);
                     ExerciseResult result = benchmarkRunner.runReferenceExercise(agent, language, exerciseName, effectiveModel, languages);
                     session.emitOutput(result.getOutput());
@@ -114,6 +120,12 @@ public class BenchmarkService {
                 int successfulExercises = 0;
 
                 for (String language : languages) {
+                    // Check for cancellation
+                    if (session.getStatus() == RunStatus.CANCELLED) {
+                        session.emitOutput("Benchmark cancelled");
+                        return;
+                    }
+
                     session.emitOutput("Running all exercises for language: " + language);
                     List<ExerciseResult> results = benchmarkRunner.runAllReferenceExercises(agent, language, agentName, effectiveModel, languages);
                     totalExercises += results.size();

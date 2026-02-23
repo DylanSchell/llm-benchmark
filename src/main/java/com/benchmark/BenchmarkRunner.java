@@ -120,7 +120,9 @@ public class BenchmarkRunner {
      * @return Result of the exercise execution
      */
     public ExerciseResult runReferenceExercise(ReferenceAgent agent, String language, String exerciseName, String model, String[] languages) {
-        getExerciseRunner().setRunParams("reference", model, languages);
+        // Treat empty strings as null for proper directory naming
+        String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
+        getExerciseRunner().setRunParams("reference", effectiveModel, languages);
         return getExerciseRunner().runReferenceExercise(agent, language, exerciseName);
     }
 
@@ -150,7 +152,9 @@ public class BenchmarkRunner {
             String trimmedLanguage = language.trim().toLowerCase();
             if (supportedLanguages.contains(trimmedLanguage)) {
                 // Set run parameters for result directory computation
-                getExerciseRunner().setRunParams(agentName, model, languagesArray);
+                // Treat empty strings as null for proper directory naming
+                String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
+                getExerciseRunner().setRunParams(agentName, effectiveModel, languagesArray);
                 List<ExerciseResult> languageResults = getExerciseRunner().runAllReferenceExercises(agent, language.trim(), agentName);
                 result.addAll(languageResults);
             }

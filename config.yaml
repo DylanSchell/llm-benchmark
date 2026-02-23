@@ -33,7 +33,7 @@ docker:
     - DISABLE_TELEMETRY: "1"
 # Exercise configuration
 exercise:
-  # Language to run (java, python, go, rust, cpp, javascript)
+  # Language to run (java, python, go, rust, cpp, JavaScript)
   language: "javascript,python,java,go,rust,cpp"
   # Specific exercise name (e.g., "series") - leave empty to run all
   name: "series"
