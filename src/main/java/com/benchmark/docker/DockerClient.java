@@ -31,6 +31,19 @@ public class DockerClient {
     }
 
     /**
+     * Updates the model environment variables in the Docker config.
+     * This allows dynamic model selection at runtime.
+     *
+     * @param modelName The model name to use
+     */
+    public void setModel(String modelName) {
+        if (modelName != null && !modelName.isEmpty()) {
+            config.updateModelEnvironment(modelName);
+            logger.info("Updated Docker environment to use model: {}", modelName);
+        }
+    }
+
+    /**
      * Checks if Docker is available and running.
      *
      * @return true if Docker is available

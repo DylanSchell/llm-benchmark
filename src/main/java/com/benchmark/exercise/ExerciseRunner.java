@@ -34,16 +34,60 @@ public class ExerciseRunner {
     private final Path benchmarkPath;
     private final BenchmarkRunner benchmarkRunner;
 
+    // Run-time parameters for result directory computation
+    private String runAgentName;
+    private String runModel;
+    private String[] runLanguages;
+
     public ExerciseRunner(Config config, DockerClient dockerClient, BenchmarkRunner benchmarkRunner) {
         this.config = config;
         this.dockerClient = dockerClient;
         this.benchmarkPath = config.getBenchmarkPath();
         this.benchmarkRunner = benchmarkRunner;
+        this.runAgentName = null;
+        this.runModel = null;
+        this.runLanguages = new String[]{};
+    }
+
+    /**
+     * Sets run parameters for result directory computation.
+     */
+    public void setRunParams(String agentName, String model, String[] languages) {
+        this.runAgentName = agentName;
+        // Treat empty strings as null for proper directory naming
+        this.runModel = (model != null && !model.isEmpty()) ? model : null;
+        this.runLanguages = languages != null ? languages : new String[]{};
+        // Update Docker environment with the selected model
+        if (this.runModel != null) {
+            dockerClient.setModel(this.runModel);
+        }
+    }
+
+    /**
+     * Gets the current run agent name.
+     */
+    public String getRunAgentName() {
+        return runAgentName;
+    }
+
+    /**
+     * Gets the current run model.
+     */
+    public String getRunModel() {
+        return runModel;
+    }
+
+    /**
+     * Gets the current run languages.
+     */
+    public String[] getRunLanguages() {
+        return runLanguages != null ? runLanguages : new String[]{};
     }
 
     /**
      * Runs a single exercise using the reference agent (copies reference implementation and runs tests).
      *
+     * @param agent        Agent to use
      * @param language     Programming language
      * @param exerciseName Name of the exercise
      * @return ExerciseResult with the outcome
@@ -72,6 +116,7 @@ public class ExerciseRunner {
                     .errorMessage("Exercise directory not found: " + exerciseHostDir)
                     .build();
         }
+
         Path resultDir = getResultsDir();
         return runReferenceAgent(agent, exercise, exerciseHostDir, resultDir);
     }
@@ -116,8 +161,8 @@ public class ExerciseRunner {
             tasks.add(() -> {
                 logger.info("Running reference for exercise {}/{}", language, exercise.getName());
                 ExerciseResult result = runReferenceAgent(agent, exercise, exerciseHostDir, getResultsDir());
-                // Save result immediately after completion
-                benchmarkRunner.saveResult(result, agentName);
+                // Save result immediately after completion using stored run parameters
+                benchmarkRunner.saveResult(result, runAgentName, runModel, runLanguages);
                 return result;
             });
         }
@@ -287,8 +332,11 @@ public class ExerciseRunner {
         return null;
     }
 
+    /**
+     * Gets the results directory for the current run parameters.
+     */
     private Path getResultsDir() {
-        String resultsDir = config.getOutput().getResultsDir();
+        String resultsDir = config.getOutput().getResultsDir(runAgentName, runModel, runLanguages);
         Path resultsPath = Paths.get(resultsDir);
         if (!Files.exists(resultsPath)) {
             try {

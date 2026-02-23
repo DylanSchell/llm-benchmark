@@ -49,20 +49,21 @@ public class BenchmarkService {
      * Creates a new benchmark session and starts execution asynchronously.
      *
      * @param agentName    The agent to use ("reference" or "claude")
-     * @param language     The programming language
+     * @param languages    The programming languages (can be multiple)
+     * @param model        The model to use (optional, uses config default if null)
      * @param exerciseName The exercise name, or null for all exercises
      * @return The session ID
      */
-    public String startBenchmark(String agentName, String language, String exerciseName) {
+    public String startBenchmark(String agentName, String[] languages, String model, String exerciseName) {
         String sessionId = UUID.randomUUID().toString();
-        BenchmarkSession session = new BenchmarkSession(sessionId, agentName, language, exerciseName);
+        BenchmarkSession session = new BenchmarkSession(sessionId, agentName, languages, model, exerciseName);
         sessions.put(sessionId, session);
 
-        logger.info("Starting benchmark session: {} for {}/{}", sessionId, language,
-                exerciseName != null ? exerciseName : "all");
+        logger.info("Starting benchmark session: {} for {}/{} (model: {})", sessionId, String.join(",", languages),
+                exerciseName != null ? exerciseName : "all", model);
 
         // Run asynchronously
-        CompletableFuture.runAsync(() -> runBenchmark(session, agentName, language, exerciseName), executor);
+        CompletableFuture.runAsync(() -> runBenchmark(session, agentName, languages, model, exerciseName), executor);
 
         return sessionId;
     }
@@ -70,42 +71,73 @@ public class BenchmarkService {
     /**
      * Runs the benchmark synchronously.
      */
-    private void runBenchmark(BenchmarkSession session, String agentName, String language, String exerciseName) {
+    private void runBenchmark(BenchmarkSession session, String agentName, String[] languages, String model, String exerciseName) {
         try {
             session.setStatus(RunStatus.RUNNING);
+
+            // Set run parameters for result directory computation
+            // Treat empty string as null for proper directory naming
+            String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
+            benchmarkRunner.getExerciseRunner().setRunParams(agentName, effectiveModel, languages);
+
             ReferenceAgent agent = createAgent(agentName);
 
+            // Set up output consumer for live streaming to web UI
+            agent.setOutputConsumer(line -> session.emitOutput(line));
+
             if (exerciseName != null && !exerciseName.isEmpty()) {
-                // Single exercise
-                session.setTotalExercises(1);
-                session.emitOutput("Running exercise: " + exerciseName);
-                ExerciseResult result = benchmarkRunner.runReferenceExercise(agent, language, exerciseName);
-                session.emitOutput(result.getOutput());
-                session.incrementCompletedExercises();
+                // Single exercise across all selected languages
+                session.setTotalExercises(languages.length);
+                for (String language : languages) {
+                    session.emitOutput("Running exercise: " + exerciseName + " for language: " + language);
+                    ExerciseResult result = benchmarkRunner.runReferenceExercise(agent, language, exerciseName, effectiveModel, languages);
+                    session.emitOutput(result.getOutput());
 
-                if (result.isSuccess()) {
-                    session.setStatus(RunStatus.COMPLETED);
-                    session.emitOutput("Exercise completed successfully!");
-                } else {
-                    session.setStatus(RunStatus.FAILED);
-                    session.setErrorMessage(result.getErrorMessage());
-                    session.emitOutput("Exercise failed: " + result.getErrorMessage());
+                    // Save result to file (saveResult also saves trace if available)
+                    benchmarkRunner.saveResult(result, agentName, effectiveModel, languages);
+
+                    session.incrementCompletedExercises();
+
+                    if (!result.isSuccess()) {
+                        session.setStatus(RunStatus.FAILED);
+                        session.setErrorMessage("Exercise failed for language " + language + ": " + result.getErrorMessage());
+                        session.emitOutput("Exercise failed for " + language + ": " + result.getErrorMessage());
+                    }
                 }
-            } else {
-                // All exercises for language
-                session.emitOutput("Running all exercises for language: " + language);
-                List<ExerciseResult> results = benchmarkRunner.runAllReferenceExercises(agent, language, agentName);
-                session.setTotalExercises(results.size());
-                session.setCompletedExercises((int) results.stream().filter(ExerciseResult::isSuccess).count());
-
-                long failed = results.stream().filter(r -> !r.isSuccess()).count();
-                if (failed == 0) {
+                if (session.getStatus() != RunStatus.FAILED) {
                     session.setStatus(RunStatus.COMPLETED);
                     session.emitOutput("All exercises completed successfully!");
+                }
+            } else {
+                // All exercises for all selected languages
+                int totalExercises = 0;
+                int successfulExercises = 0;
+
+                for (String language : languages) {
+                    session.emitOutput("Running all exercises for language: " + language);
+                    List<ExerciseResult> results = benchmarkRunner.runAllReferenceExercises(agent, language, agentName, effectiveModel, languages);
+                    totalExercises += results.size();
+
+                    long languageSuccessful = results.stream().filter(ExerciseResult::isSuccess).count();
+                    successfulExercises += (int) languageSuccessful;
+
+                    long failed = results.size() - languageSuccessful;
+                    if (failed > 0) {
+                        session.setStatus(RunStatus.FAILED);
+                        session.emitOutput(failed + " exercises failed for language " + language + " out of " + results.size());
+                    } else {
+                        session.emitOutput("All exercises completed successfully for language: " + language);
+                    }
+                }
+
+                session.setTotalExercises(totalExercises);
+                session.setCompletedExercises(successfulExercises);
+
+                if (session.getStatus() != RunStatus.FAILED) {
+                    session.setStatus(RunStatus.COMPLETED);
+                    session.emitOutput("All exercises in all languages completed successfully!");
                 } else {
-                    session.setStatus(RunStatus.FAILED);
-                    session.setErrorMessage(failed + " exercises failed");
-                    session.emitOutput(failed + " exercises failed out of " + results.size());
+                    session.setErrorMessage("Some exercises failed");
                 }
             }
 

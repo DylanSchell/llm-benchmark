@@ -86,18 +86,9 @@ public class ResultService {
         cachedModels.clear();
 
         Path configuredResultsDir = Paths.get(config.getOutput().getResultsDir());
-        Path parentDir = configuredResultsDir.getParent();
-        if (parentDir == null || !Files.exists(parentDir)) {
-            parentDir = configuredResultsDir;
-        }
-
-        if (!Files.exists(parentDir)) {
-            logger.warn("Results directory does not exist: {}", parentDir);
-            return;
-        }
 
         int count = 0;
-        try (Stream<Path> paths = Files.walk(parentDir)) {
+        try (Stream<Path> paths = Files.walk(configuredResultsDir)) {
             List<Path> resultFiles = paths.filter(Files::isRegularFile)
                     .filter(p -> p.toString().endsWith(".json"))
                     .filter(p -> p.getFileName().toString().startsWith("results_"))

@@ -80,4 +80,28 @@ public class DockerConfig {
     public void setEnvironment(List<Map<String, String>> environment) {
         this.environment = environment;
     }
+
+    /**
+     * Updates environment variables with the model name.
+     * Sets ANTHROPIC_MODEL and all ANTHROPIC_DEFAULT_*_MODEL variables.
+     */
+    public void updateModelEnvironment(String modelName) {
+        if (environment == null) {
+            return;
+        }
+        for (Map<String, String> envEntry : environment) {
+            if (envEntry.containsKey("ANTHROPIC_MODEL")) {
+                envEntry.put("ANTHROPIC_MODEL", modelName);
+            }
+            if (envEntry.containsKey("ANTHROPIC_DEFAULT_HAIKU_MODEL")) {
+                envEntry.put("ANTHROPIC_DEFAULT_HAIKU_MODEL", modelName);
+            }
+            if (envEntry.containsKey("ANTHROPIC_DEFAULT_OPUS_MODEL")) {
+                envEntry.put("ANTHROPIC_DEFAULT_OPUS_MODEL", modelName);
+            }
+            if (envEntry.containsKey("ANTHROPIC_DEFAULT_SONNET_MODEL")) {
+                envEntry.put("ANTHROPIC_DEFAULT_SONNET_MODEL", modelName);
+            }
+        }
+    }
 }

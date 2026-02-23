@@ -34,7 +34,7 @@ public class ClaudeAgent extends ReferenceAgent {
 
         try {
             logger.info("Starting exercise: {} at {}", exercise.getName(), startTime);
-            MessageProcessor processor = new MessageProcessor();
+            MessageProcessor processor = new MessageProcessor(getOutputConsumer());
             // Create exercise prompt for Claude Code
             String prompt = createExercisePrompt(exercise, tempWorkDir);
             patchTests(exercise, tempWorkDir);
@@ -190,6 +190,11 @@ public class ClaudeAgent extends ReferenceAgent {
 
     public static class MessageProcessor implements Consumer<String> {
         private final ObjectMapper objectMapper = new ObjectMapper();
+        private final Consumer<String> outputConsumer;
+
+        public MessageProcessor(Consumer<String> outputConsumer) {
+            this.outputConsumer = outputConsumer;
+        }
 
         @Override
         public void accept(String s) {
@@ -506,10 +511,16 @@ public class ClaudeAgent extends ReferenceAgent {
 
         private void print(String s) {
             System.out.print(s);
+            if (outputConsumer != null) {
+                outputConsumer.accept(s);
+            }
         }
 
         private void println(String s) {
             System.out.println(s);
+            if (outputConsumer != null) {
+                outputConsumer.accept(s + "\n");
+            }
         }
     }
 }

@@ -4,6 +4,8 @@ import com.benchmark.web.domain.BenchmarkSession;
 import com.benchmark.web.domain.RunStatus;
 import com.benchmark.web.service.BenchmarkService;
 import com.benchmark.web.service.ResultService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -13,9 +15,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Controller for benchmark execution endpoints.
@@ -27,10 +35,16 @@ public class BenchmarkController {
 
     private final BenchmarkService benchmarkService;
     private final ResultService resultService;
+    private final ObjectMapper objectMapper;
+
+    // Inference endpoint URL from config
+    private final String inferenceEndpoint;
 
     public BenchmarkController(BenchmarkService benchmarkService, ResultService resultService) {
         this.benchmarkService = benchmarkService;
         this.resultService = resultService;
+        this.objectMapper = new ObjectMapper();
+        this.inferenceEndpoint = "http://localhost:8080";
     }
 
    /**
@@ -57,13 +71,94 @@ public class BenchmarkController {
     }
 
     /**
+     * Get available models from inference endpoint (API).
+     */
+    @GetMapping("/api/models")
+    @ResponseBody
+    public List<String> getModels() {
+        try {
+            return fetchModels();
+        } catch (Exception e) {
+            logger.warn("Could not fetch models: {}", e.getMessage());
+            return resultService.getModels();
+        }
+    }
+
+    /**
      * Run benchmark form page.
      */
     @GetMapping("/run")
-    public String runForm(Model model) {
+    public String runForm(@RequestParam(required = false) String session, Model model) {
         model.addAttribute("agents", new String[]{"reference", "claude"});
         model.addAttribute("languages", new String[]{"java", "go", "javascript", "python", "rust", "cpp"});
+
+        // If session ID provided, load session details
+        if (session != null && !session.isEmpty()) {
+            BenchmarkSession benchmarkSession = benchmarkService.getSession(session);
+            if (benchmarkSession != null) {
+                model.addAttribute("sessionId", session);
+                model.addAttribute("sessionAgent", benchmarkSession.getAgentName());
+                model.addAttribute("sessionLanguage", benchmarkSession.getLanguage());
+                model.addAttribute("sessionExercise", benchmarkSession.getExerciseName());
+                model.addAttribute("sessionStatus", benchmarkSession.getStatus().name());
+                model.addAttribute("sessionCompleted", benchmarkSession.getCompletedExercises());
+                model.addAttribute("sessionTotal", benchmarkSession.getTotalExercises());
+                model.addAttribute("sessionProgress", benchmarkSession.getProgress());
+                model.addAttribute("sessionOutput", benchmarkSession.getAccumulatedOutput());
+            }
+        }
+
+        // Fetch models from inference endpoint
+        try {
+            List<String> models = fetchModels();
+            model.addAttribute("models", models);
+        } catch (Exception e) {
+            logger.warn("Could not fetch models from inference endpoint: {}", e.getMessage());
+            model.addAttribute("models", Arrays.asList("sonnet", "qwen3-coder-next"));
+        }
+
         return "run";
+    }
+
+    /**
+     * Fetch available models from the inference endpoint.
+     */
+    private List<String> fetchModels() throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        String url = inferenceEndpoint + "/v1/models";
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 200) {
+            // Parse JSON response to extract model IDs
+            String body = response.body();
+            logger.info("Models response: {}", body);
+            JsonNode rootNode = objectMapper.readTree(body);
+            JsonNode dataNode = rootNode.get("data");
+
+            if (dataNode != null && dataNode.isArray()) {
+                List<String> models = new java.util.ArrayList<>();
+                for (JsonNode modelNode : dataNode) {
+                    JsonNode idNode = modelNode.get("id");
+                    if (idNode != null && idNode.isTextual()) {
+                        models.add(idNode.asText());
+                    }
+                }
+                logger.info("Found {} models: {}", models.size(), models);
+                return models;
+            } else {
+                logger.warn("'data' field not found or not an array in response");
+            }
+        } else {
+            logger.warn("Failed to fetch models, status code: {}", response.statusCode());
+        }
+
+        return Arrays.asList("sonnet", "qwen3-coder-next");
     }
 
     /**
@@ -73,12 +168,20 @@ public class BenchmarkController {
     @ResponseBody
     public Map<String, Object> startBenchmark(
             @RequestParam("agent") String agent,
-            @RequestParam("language") String language,
+            @RequestParam("language") String[] languages,
+            @RequestParam(value = "model", required = false) String model,
             @RequestParam(value = "exercise", required = false) String exercise) {
 
-        logger.info("Starting benchmark: agent={}, language={}, exercise={}", agent, language, exercise);
+        // Validate at least one language selected
+        if (languages == null || languages.length == 0) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "At least one language must be selected");
+            return response;
+        }
 
-        String sessionId = benchmarkService.startBenchmark(agent, language, exercise);
+        logger.info("Starting benchmark: agent={}, model={}, languages={}, exercise={}", agent, model, String.join(",", languages), exercise);
+
+        String sessionId = benchmarkService.startBenchmark(agent, languages, model, exercise);
 
         Map<String, Object> response = new HashMap<>();
         response.put("sessionId", sessionId);

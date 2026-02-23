@@ -14,7 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BenchmarkSession {
     private final String id;
     private final String agentName;
-    private final String language;
+    private final String[] languages;
+    private final String model;
     private final String exerciseName; // null for "all exercises" runs
     private final Instant startTime;
     private RunStatus status;
@@ -25,10 +26,11 @@ public class BenchmarkSession {
     private Instant endTime;
     private String errorMessage;
 
-    public BenchmarkSession(String id, String agentName, String language, String exerciseName) {
+    public BenchmarkSession(String id, String agentName, String[] languages, String model, String exerciseName) {
         this.id = id;
         this.agentName = agentName;
-        this.language = language;
+        this.languages = languages;
+        this.model = model;
         this.exerciseName = exerciseName;
         this.startTime = Instant.now();
         this.status = RunStatus.PENDING;
@@ -46,12 +48,20 @@ public class BenchmarkSession {
         return agentName;
     }
 
+    public String[] getLanguages() {
+        return languages;
+    }
+
     public String getLanguage() {
-        return language;
+        return languages != null && languages.length > 0 ? languages[0] : null;
     }
 
     public String getExerciseName() {
         return exerciseName;
+    }
+
+    public String getModel() {
+        return model;
     }
 
     public Instant getStartTime() {

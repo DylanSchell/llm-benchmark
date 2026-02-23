@@ -2,11 +2,13 @@
 
 | Benchmark | Total Results | Success | Failed | Completion % | Total Duration | Tokens |
 |-----------|---------------|---------|--------|---------------|----------------|--------|
+| [claude-kimi-linear-javascript](#claude-kimi-linear-javascript) | 1 | 1 | 0 | 100.0% | 9m 10s | 0 / 0 / 0 |
+| [claude-kimi-linear-java](#claude-kimi-linear-java) | 1 | 1 | 0 | 100.0% | 1m 49s | 0 / 0 / 0 |
+| [reference-r2](#reference-r2) | 199 | 199 | 0 | 100.0% | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | 225 | 222 | 3 | 98.7% | 20h 43m 39s | 30.7M / 68.2M / 0 |
 | [qwen35-r1](#qwen35-r1) | 169 | 166 | 3 | 98.2% | 1d 56m 20s | 32.6M / 53.1M / 2.5K |
 | [qwen3-coder-next-r14](#qwen3-coder-next-r14) | 169 | 163 | 6 | 96.4% | 6h 51m 27s | 47.6M / 76.0M / 29.6K |
 | [gpt-oss-120b-r9](#gpt-oss-120b-r9) | 169 | 162 | 7 | 95.9% | 7h 31m 39s | 57.6M / 52.9M / 2.2K |
-| [reference-r2](#reference-r2) | 225 | 197 | 28 | 87.6% | 0s | 0 / 0 / 0 |
 | [minimax-m25-r1](#minimax-m25-r1) | 169 | 137 | 32 | 81.1% | 20h 47m 52s | 80.8M / 55.2M / 0 |
 
 # Success rates per exercise
@@ -211,11 +213,11 @@
 | [transpose_go](#transpose_go) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [resistor-color-trio_java](#resistor-color-trio_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [dot-dsl_rust](#dot-dsl_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
-| [promises_javascript](#promises_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [rectangles_javascript](#rectangles_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [twelve-days_javascript](#twelve-days_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [parallel-letter-frequency_rust](#parallel-letter-frequency_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [word-count_rust](#word-count_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
+| [promises_javascript](#promises_javascript) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [sgf-parsing_java](#sgf-parsing_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [poker_rust](#poker_rust) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
 | [rational-numbers_java](#rational-numbers_java) | 0 | 0 | 0 | NaN% | 0s | 0 / 0 / 0 |
@@ -302,7 +304,6 @@
 | [pig-latin_javascript](#pig-latin_javascript) | ✅ | 0s | 0 / 0 / 0 |
 | [palindrome-products_javascript](#palindrome-products_javascript) | ✅ | 0s | 0 / 0 / 0 |
 | [poker_javascript](#poker_javascript) | ✅ | 0s | 0 / 0 / 0 |
-| [promises_javascript](#promises_javascript) | ❌ | 0s | 0 / 0 / 0 |
 | [queen-attack_javascript](#queen-attack_javascript) | ✅ | 0s | 0 / 0 / 0 |
 | [rectangles_javascript](#rectangles_javascript) | ✅ | 0s | 0 / 0 / 0 |
 | [resistor-color-trio_javascript](#resistor-color-trio_javascript) | ✅ | 0s | 0 / 0 / 0 |
@@ -322,7 +323,6 @@
 | [twelve-days_javascript](#twelve-days_javascript) | ✅ | 0s | 0 / 0 / 0 |
 | [two-bucket_javascript](#two-bucket_javascript) | ✅ | 0s | 0 / 0 / 0 |
 | [variable-length-quantity_javascript](#variable-length-quantity_javascript) | ✅ | 0s | 0 / 0 / 0 |
-| [word-search_javascript](#word-search_javascript) | ❌ | 0s | 0 / 0 / 0 |
 | [wordy_javascript](#wordy_javascript) | ✅ | 0s | 0 / 0 / 0 |
 | [zebra-puzzle_javascript](#zebra-puzzle_javascript) | ✅ | 0s | 0 / 0 / 0 |
 | [zipper_javascript](#zipper_javascript) | ✅ | 0s | 0 / 0 / 0 |
@@ -442,32 +442,8 @@
 | [poker_rust](#poker_rust) | ✅ | 0s | 0 / 0 / 0 |
 | [grep_rust](#grep_rust) | ✅ | 0s | 0 / 0 / 0 |
 | [pig-latin_rust](#pig-latin_rust) | ✅ | 0s | 0 / 0 / 0 |
-| [all-your-base_cpp](#all-your-base_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [allergies_cpp](#allergies_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [bank-account_cpp](#bank-account_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [binary-search-tree_cpp](#binary-search-tree_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [circular-buffer_cpp](#circular-buffer_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [clock_cpp](#clock_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [complex-numbers_cpp](#complex-numbers_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [crypto-square_cpp](#crypto-square_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [diamond_cpp](#diamond_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [dnd-character_cpp](#dnd-character_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [gigasecond_cpp](#gigasecond_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [grade-school_cpp](#grade-school_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [kindergarten-garden_cpp](#kindergarten-garden_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [knapsack_cpp](#knapsack_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [linked-list_cpp](#linked-list_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [meetup_cpp](#meetup_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [parallel-letter-frequency_cpp](#parallel-letter-frequency_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [perfect-numbers_cpp](#perfect-numbers_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [phone-number_cpp](#phone-number_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [queen-attack_cpp](#queen-attack_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [robot-name_cpp](#robot-name_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [space-age_cpp](#space-age_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [spiral-matrix_cpp](#spiral-matrix_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [sublist_cpp](#sublist_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [yacht_cpp](#yacht_cpp) | ❌ | 0s | 0 / 0 / 0 |
-| [zebra-puzzle_cpp](#zebra-puzzle_cpp) | ❌ | 0s | 0 / 0 / 0 |
+| [promises_javascript](#promises_javascript) | ✅ | 0s | 0 / 0 / 0 |
+| [word-search_javascript](#word-search_javascript) | ✅ | 0s | 0 / 0 / 0 |
 
 
 # gpt-oss-120b-r9
@@ -820,6 +796,13 @@
 | [pov_python](#pov_python) | ✅ | 29m 1s | 760.9K / 1.2M / 0 |
 
 
+# claude-kimi-linear-java
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [all-your-base_java](#all-your-base_java) | ✅ | 1m 49s | 0 / 0 / 0 |
+
+
 # qwen3-coder-next-r14
 
 | Exercise | Success | Duration | Tokens |
@@ -1170,6 +1153,13 @@
 | [pov_go](#pov_go) | ❌ | 20m 0s | 922.4K / 528.7K / 0 |
 
 
+# claude-kimi-linear-javascript
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [alphametics_javascript](#alphametics_javascript) | ✅ | 9m 10s | 0 / 0 / 0 |
+
+
 # qwen35-r2
 
 | Exercise | Success | Duration | Tokens |
@@ -1429,7 +1419,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 4m 43s | 58.8K / 257.2K / 0 |
 
 
@@ -1517,7 +1506,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 0s | 36.6K / 204.7K / 0 |
 
 
@@ -1649,7 +1637,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 2m 58s | 61.2K / 235.0K / 0 |
 
 
@@ -1705,7 +1692,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 2m 57s | 54.9K / 216.7K / 0 |
 
 
@@ -1715,6 +1701,7 @@
 |-------|---------|----------|--------|
 | [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
 | [qwen3-coder-next-r14](#qwen3-coder-next-r14) | ✅ | 1m 12s | 37.6K / 123.5K / 536 |
+| [claude-kimi-linear-java](#claude-kimi-linear-java) | ✅ | 1m 49s | 0 / 0 / 0 |
 | [gpt-oss-120b-r9](#gpt-oss-120b-r9) | ✅ | 2m 19s | 257.2K / 238.0K / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 2m 38s | 73.5K / 104.9K / 0 |
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 2m 41s | 220.2K / 136.3K / 0 |
@@ -1793,7 +1780,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 2m 54s | 53.4K / 196.8K / 0 |
 
 
@@ -1842,6 +1828,7 @@
 | [qwen3-coder-next-r14](#qwen3-coder-next-r14) | ✅ | 2m 36s | 224.0K / 295.7K / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 4m 27s | 117.1K / 328.1K / 0 |
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 4m 34s | 310.8K / 252.5K / 0 |
+| [claude-kimi-linear-javascript](#claude-kimi-linear-javascript) | ✅ | 9m 10s | 0 / 0 / 0 |
 | [qwen35-r1](#qwen35-r1) | ✅ | 10m 48s | 233.4K / 518.7K / 0 |
 
 
@@ -2049,7 +2036,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 14s | 94.7K / 226.7K / 0 |
 
 
@@ -2093,7 +2079,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 57s | 98.1K / 230.8K / 0 |
 
 
@@ -2161,7 +2146,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 2m 52s | 51.8K / 194.8K / 0 |
 
 
@@ -2181,7 +2165,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 4m 1s | 128.0K / 270.2K / 0 |
 
 
@@ -2281,7 +2264,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 1s | 35.2K / 216.3K / 0 |
 
 
@@ -2517,7 +2499,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 2m 53s | 34.8K / 213.9K / 0 |
 
 
@@ -2629,7 +2610,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 15s | 39.0K / 197.4K / 0 |
 
 
@@ -2685,7 +2665,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 20s | 128.9K / 418.9K / 0 |
 
 
@@ -2753,7 +2732,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
 | [qwen3-coder-next-r14](#qwen3-coder-next-r14) | ❌ | 2m 1s | 247.9K / 300.6K / 0 |
 | [gpt-oss-120b-r9](#gpt-oss-120b-r9) | ❌ | 2m 12s | 259.5K / 227.1K / 0 |
 | [qwen35-r2](#qwen35-r2) | ❌ | 4m 43s | 211.5K / 267.5K / 0 |
@@ -2849,7 +2828,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 2m 57s | 53.9K / 183.3K / 0 |
 
 
@@ -2881,7 +2859,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 4s | 71.0K / 206.5K / 0 |
 
 
@@ -2901,7 +2878,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 2m 52s | 0 / 0 / 0 |
 
 
@@ -2909,7 +2885,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 2m 50s | 72.3K / 218.9K / 0 |
 
 
@@ -3077,7 +3052,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 29s | 101.5K / 252.1K / 0 |
 
 
@@ -3109,7 +3083,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 1s | 37.3K / 189.8K / 0 |
 
 
@@ -3125,7 +3098,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 8m 49s | 307.5K / 767.5K / 0 |
 
 
@@ -3145,7 +3117,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 55s | 50.4K / 237.0K / 0 |
 
 
@@ -3165,7 +3136,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 7m 28s | 51.5K / 241.0K / 0 |
 
 
@@ -3437,7 +3407,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 4m 11s | 62.0K / 299.9K / 0 |
 
 
@@ -3489,7 +3458,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 52s | 84.2K / 282.5K / 0 |
 
 
@@ -3521,7 +3489,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 4m 12s | 185.6K / 278.9K / 0 |
 
 
@@ -3581,6 +3548,18 @@
 | [qwen35-r1](#qwen35-r1) | ✅ | 4m 40s | 99.1K / 117.0K / 0 |
 
 
+# promises_javascript
+
+| Model | Success | Duration | Tokens |
+|-------|---------|----------|--------|
+| [reference-r2](#reference-r2) | ✅ | 0s | 0 / 0 / 0 |
+| [gpt-oss-120b-r9](#gpt-oss-120b-r9) | ❌ | 1m 43s | 190.3K / 171.4K / 0 |
+| [qwen3-coder-next-r14](#qwen3-coder-next-r14) | ❌ | 3m 27s | 1.4M / 2.4M / 2.0K |
+| [minimax-m25-r1](#minimax-m25-r1) | ❌ | 5m 29s | 380.9K / 295.2K / 0 |
+| [qwen35-r2](#qwen35-r2) | ❌ | 7m 8s | 152.8K / 385.6K / 0 |
+| [qwen35-r1](#qwen35-r1) | ❌ | 9m 58s | 151.7K / 435.9K / 0 |
+
+
 # word-count_rust
 
 | Model | Success | Duration | Tokens |
@@ -3619,18 +3598,6 @@
 | [qwen35-r2](#qwen35-r2) | ✅ | 5m 28s | 100.9K / 426.5K / 0 |
 | [minimax-m25-r1](#minimax-m25-r1) | ✅ | 5m 36s | 191.6K / 153.3K / 0 |
 | [qwen35-r1](#qwen35-r1) | ✅ | 7m 1s | 142.5K / 368.8K / 0 |
-
-
-# promises_javascript
-
-| Model | Success | Duration | Tokens |
-|-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
-| [gpt-oss-120b-r9](#gpt-oss-120b-r9) | ❌ | 1m 43s | 190.3K / 171.4K / 0 |
-| [qwen3-coder-next-r14](#qwen3-coder-next-r14) | ❌ | 3m 27s | 1.4M / 2.4M / 2.0K |
-| [minimax-m25-r1](#minimax-m25-r1) | ❌ | 5m 29s | 380.9K / 295.2K / 0 |
-| [qwen35-r2](#qwen35-r2) | ❌ | 7m 8s | 152.8K / 385.6K / 0 |
-| [qwen35-r1](#qwen35-r1) | ❌ | 9m 58s | 151.7K / 435.9K / 0 |
 
 
 # poker_rust
@@ -3837,7 +3804,6 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [reference-r2](#reference-r2) | ❌ | 0s | 0 / 0 / 0 |
 | [qwen35-r2](#qwen35-r2) | ✅ | 3m 3s | 50.0K / 196.9K / 0 |
 
 

@@ -71,18 +71,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="session : ${activeSessions}" style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 0.5rem;" th:text="${session.agentName}">reference</td>
-                        <td style="padding: 0.5rem;" th:text="${session.language}">java</td>
-                        <td style="padding: 0.5rem;" th:text="${session.exerciseName != null ? session.exerciseName : 'All'}">exercise1</td>
+                    <tr th:each="run : ${activeSessions}" style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 0.5rem;" th:text="${run.agentName}">reference</td>
+                        <td style="padding: 0.5rem;" th:text="${run.language}">java</td>
+                        <td style="padding: 0.5rem;" th:text="${run.exerciseName != null ? run.exerciseName : 'All'}">exercise1</td>
                         <td style="padding: 0.5rem;">
                             <span class="status-badge"
-                                  th:classappend="${session.status.name() == 'RUNNING'} ? 'status-completed' : 'status-pending'"
-                                  th:text="${session.status.name()}">RUNNING</span>
+                                  th:classappend="${run.status.name() == 'RUNNING'} ? 'status-completed' : 'status-pending'"
+                                  th:text="${run.status.name()}">RUNNING</span>
                         </td>
-                        <td style="padding: 0.5rem;" th:text="${session.completedExercises} + ' / ' + ${session.totalExercises}">0 / 10</td>
+                        <td style="padding: 0.5rem;" th:text="${run.completedExercises} + ' / ' + ${run.totalExercises}">0 / 10</td>
                         <td style="padding: 0.5rem;">
-                            <a th:href="@{/run(session=${session.id})}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">View</a>
+                            <a th:href="@{/run(session=${run.id})}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">View</a>
                         </td>
                     </tr>
                 </tbody>

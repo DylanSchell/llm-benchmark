@@ -24,6 +24,7 @@ public class ReferenceAgent {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceAgent.class);
 
     private final DockerClient dockerClient;
+    private java.util.function.Consumer<String> outputConsumer;
 
     public ReferenceAgent(DockerClient dockerClient) {
         this.dockerClient = dockerClient;
@@ -31,6 +32,28 @@ public class ReferenceAgent {
 
     protected DockerClient getDockerClient() {
         return dockerClient;
+    }
+
+    /**
+     * Sets an output consumer to receive live output during exercise execution.
+     * This is used by the web UI to stream output in real-time via SSE.
+     */
+    public void setOutputConsumer(java.util.function.Consumer<String> outputConsumer) {
+        this.outputConsumer = outputConsumer;
+    }
+
+    /**
+     * Returns the output consumer, if set.
+     */
+    protected java.util.function.Consumer<String> getOutputConsumer() {
+        return outputConsumer;
+    }
+
+    /**
+     * Returns the output callback for Docker commands, using outputConsumer if set.
+     */
+    protected java.util.function.Consumer<String> getOutputCallback() {
+        return outputConsumer != null ? outputConsumer : System.out::println;
     }
 
     /**
@@ -573,7 +596,7 @@ public class ReferenceAgent {
                     -1,    // use default timeout from config
                     null,  // use default memory from config
                     tempWorkDir.toAbsolutePath().toString(),  // mount temp dir as /workspace
-                    System.out::println  // stream output to stdout
+                    getOutputCallback()  // stream output to stdout or custom consumer
             );
 
             Instant endTime = Instant.now();
