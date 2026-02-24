@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Controller for benchmark execution endpoints.
@@ -88,26 +87,7 @@ public class BenchmarkController {
      * Run benchmark form page.
      */
     @GetMapping("/run")
-    public String runForm(@RequestParam(required = false) String session, Model model) {
-        model.addAttribute("agents", new String[]{"reference", "claude"});
-        model.addAttribute("languages", new String[]{"java", "go", "javascript", "python", "rust", "cpp"});
-
-        // If session ID provided, load session details
-        if (session != null && !session.isEmpty()) {
-            BenchmarkSession benchmarkSession = benchmarkService.getSession(session);
-            if (benchmarkSession != null) {
-                model.addAttribute("sessionId", session);
-                model.addAttribute("sessionAgent", benchmarkSession.getAgentName());
-                model.addAttribute("sessionLanguage", benchmarkSession.getLanguage());
-                model.addAttribute("sessionExercise", benchmarkSession.getExerciseName());
-                model.addAttribute("sessionStatus", benchmarkSession.getStatus().name());
-                model.addAttribute("sessionCompleted", benchmarkSession.getCompletedExercises());
-                model.addAttribute("sessionTotal", benchmarkSession.getTotalExercises());
-                model.addAttribute("sessionProgress", benchmarkSession.getProgress());
-                model.addAttribute("sessionOutput", benchmarkSession.getAccumulatedOutput());
-            }
-        }
-
+    public String runForm(Model model) {
         // Fetch models from inference endpoint
         try {
             List<String> models = fetchModels();
@@ -186,9 +166,30 @@ public class BenchmarkController {
         Map<String, Object> response = new HashMap<>();
         response.put("sessionId", sessionId);
         response.put("status", "started");
-        response.put("redirectUrl", "/run?session=" + sessionId);
+        response.put("redirectUrl", "/benchmark/" + sessionId);
 
         return response;
+    }
+
+    /**
+     * View a benchmark session (running or completed).
+     */
+    @GetMapping("/benchmark/{id}")
+    public String viewBenchmark(@PathVariable String id, Model model) {
+        BenchmarkSession session = benchmarkService.getSession(id);
+
+        if (session == null) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("sessionId", id);
+        model.addAttribute("sessionStatus", session.getStatus().name());
+        model.addAttribute("sessionProgress", session.getProgress());
+        model.addAttribute("sessionCompleted", session.getCompletedExercises());
+        model.addAttribute("sessionTotal", session.getTotalExercises());
+        model.addAttribute("sessionOutput", session.getAccumulatedOutput());
+
+        return "view_benchmark";
     }
 
     /**

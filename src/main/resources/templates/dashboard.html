@@ -82,7 +82,7 @@
                         </td>
                         <td style="padding: 0.5rem;" th:text="${run.completedExercises} + ' / ' + ${run.totalExercises}">0 / 10</td>
                         <td style="padding: 0.5rem;">
-                            <a th:href="@{/run(session=${run.id})}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">View</a>
+                            <a th:href="@{/benchmark/{id}(id=${run.id})}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">View</a>
                         </td>
                     </tr>
                 </tbody>

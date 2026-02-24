@@ -120,11 +120,27 @@ public class BenchmarkSession {
             accumulatedOutput.add(line);
         }
         try {
-            // Send using the standard SseEmitter approach
-            sseEmitter.send(SseEmitter.event().data(line));
+            // Wrap data in JSON to preserve leading/trailing whitespace
+            // EventSource may trim whitespace from raw SSE data fields
+            String jsonPayload = "{\"data\":\"" + escapeJson(line) + "\"}";
+            sseEmitter.send(SseEmitter.event()
+                .data(jsonPayload, MediaType.APPLICATION_JSON));
         } catch (Exception e) {
             // Ignore - client may have disconnected
         }
+    }
+
+    /**
+     * Escapes special characters for JSON string values.
+     */
+    private String escapeJson(String value) {
+        if (value == null) return "";
+        return value
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t");
     }
 
     /**

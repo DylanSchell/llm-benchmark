@@ -7,9 +7,9 @@
 <body>
     <div th:replace="~{layout :: layout(title='Run Benchmark', content=~{::main})}">
         <main>
-            <h2 style="margin-bottom: 1.5rem;">Run Benchmark</h2>
+            <h2 style="margin-bottom: 1.5rem;">Start New Benchmark</h2>
 
-            <div id="benchmark-form-container" class="card" th:style="${sessionId != null} ? 'display: none;' : ''">
+            <div class="card">
                 <form id="benchmark-form" style="max-width: 500px;">
                     <div class="form-group">
                         <label for="agent">Agent</label>
@@ -69,34 +69,9 @@
                 </form>
             </div>
 
-            <!-- Session Status -->
-            <div id="session-status" style="margin-top: 1rem; display: none;" class="card">
-                <h3>Benchmark Running</h3>
-                <div style="margin-bottom: 1rem;">
-                    <strong>Status:</strong> <span id="status-badge" class="status-badge status-pending">PENDING</span>
-                </div>
-                <div class="progress-bar" style="margin-bottom: 1rem;">
-                    <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
-                </div>
-                <div id="progress-text" style="margin-bottom: 1rem;">0%</div>
-
-                <!-- Live Output -->
-                <div class="output-console" id="output-console" style="margin-top: 1rem;">
-                    <div>Waiting for output...</div>
-                </div>
-
-                <button id="cancel-btn" class="btn btn-danger" style="margin-top: 1rem;" onclick="cancelBenchmark()">Cancel Run</button>
-            </div>
-
-            <script th:if="${sessionId == null}">
-                let currentSessionId = null;
-                let statusInterval = null;
-
+            <script>
                 document.getElementById('benchmark-form').addEventListener('submit', async function(e) {
                     e.preventDefault();
-
-                    // Hide the form container
-                    document.getElementById('benchmark-form-container').style.display = 'none';
 
                     const formData = new FormData(this);
                     const response = await fetch('/api/benchmark/run', {
@@ -105,243 +80,9 @@
                     });
 
                     const data = await response.json();
-                    currentSessionId = data.sessionId;
-
-                    // Show status panel
-                    document.getElementById('session-status').style.display = 'block';
-
-                    // Start polling status
-                    startStatusPolling(currentSessionId);
-
-                    // Connect to SSE stream
-                    connectSSE(currentSessionId);
+                    // Redirect to the view page for this session
+                    window.location.href = '/benchmark/' + data.sessionId;
                 });
-
-                function startStatusPolling(sessionId) {
-                    statusInterval = setInterval(async () => {
-                        const response = await fetch(`/api/benchmark/${sessionId}/status`);
-                        const data = await response.json();
-
-                        updateStatusDisplay(data);
-                    }, 1000);
-                }
-
-                function updateStatusDisplay(data) {
-                    const badge = document.getElementById('status-badge');
-                    const progressFill = document.getElementById('progress-fill');
-                    const progressText = document.getElementById('progress-text');
-
-                    // Update status badge
-                    badge.className = `status-badge status-${data.status.toLowerCase()}`;
-                    badge.textContent = data.status;
-
-                    // Update progress
-                    if (data.progress !== undefined) {
-                        progressFill.style.width = `${data.progress}%`;
-                        progressText.textContent = `${Math.round(data.progress)}% (${data.completedExercises || 0}/${data.totalExercises || 0})`;
-                    }
-
-                    // Stop polling if completed
-                    if (['COMPLETED', 'FAILED', 'CANCELLED'].includes(data.status)) {
-                        clearInterval(statusInterval);
-                        // Hide cancel button when done
-                        document.getElementById('cancel-btn').style.display = 'none';
-                    }
-                }
-
-                function connectSSE(sessionId) {
-                    const eventSource = new EventSource(`/api/benchmark/${sessionId}/stream`);
-                    const outputConsole = document.getElementById('output-console');
-                    let currentLine = null;
-
-                    eventSource.onmessage = (event) => {
-                        // Clear waiting message if present
-                        if (outputConsole.children.length === 1 && outputConsole.children[0].textContent === 'Waiting for output...') {
-                            outputConsole.innerHTML = '';
-                            currentLine = null;
-                        }
-
-                        const data = event.data;
-
-                        // If the data ends with newline, finalize current line
-                        // Otherwise, append token to current line
-                        if (data.endsWith('\n')) {
-                            // Create a new div for the complete line
-                            const line = document.createElement('div');
-                            line.style.whiteSpace = 'pre-wrap';
-                            line.textContent = data;
-                            outputConsole.appendChild(line);
-                            currentLine = null;
-                        } else if (data) {
-                            // Append to or create current line
-                            if (currentLine) {
-                                currentLine.textContent += data;
-                            } else {
-                                currentLine = document.createElement('div');
-                                currentLine.style.whiteSpace = 'pre-wrap';
-                                currentLine.textContent = data;
-                                outputConsole.appendChild(currentLine);
-                            }
-                        }
-
-                        // Auto-scroll
-                        outputConsole.scrollTop = outputConsole.scrollHeight;
-                    };
-
-                    eventSource.onerror = () => {
-                        eventSource.close();
-                    };
-                }
-
-                async function cancelBenchmark() {
-                    if (!currentSessionId) return;
-
-                    const response = await fetch(`/api/benchmark/${currentSessionId}/cancel`, {
-                        method: 'POST'
-                    });
-                    const data = await response.json();
-
-                    if (data.status === 'cancelled') {
-                        alert('Benchmark cancelled');
-                    }
-                }
-            </script>
-
-            <!-- Script for viewing existing session -->
-            <script th:if="${sessionId != null}" th:inline="javascript">
-                let currentSessionId = null;
-                let statusInterval = null;
-
-                // Initialize with session data from server
-                (function() {
-                    currentSessionId = [[${sessionId}]];
-
-                    // Show status panel
-                    document.getElementById('session-status').style.display = 'block';
-
-                    // Set initial values from server-side data
-                    const status = '[[${sessionStatus}]]';
-                    const progress = [[${sessionProgress}]];
-                    const completed = [[${sessionCompleted}]];
-                    const total = [[${sessionTotal}]];
-
-                    const badge = document.getElementById('status-badge');
-                    const progressFill = document.getElementById('progress-fill');
-                    const progressText = document.getElementById('progress-text');
-
-                    badge.className = 'status-badge status-' + status.toLowerCase();
-                    badge.textContent = status;
-                    progressFill.style.width = progress + '%';
-                    progressText.textContent = Math.round(progress) + '% (' + completed + '/' + total + ')';
-
-                    // Populate accumulated output - render as preformatted text
-                    const output = document.getElementById('output-console');
-                    const accumulatedOutput = [[${sessionOutput}]];
-                    if (accumulatedOutput && accumulatedOutput.length > 0) {
-                        output.innerHTML = '';
-                        const pre = document.createElement('pre');
-                        pre.style.whiteSpace = 'pre-wrap';
-                        pre.style.wordWrap = 'break-word';
-                        pre.textContent = accumulatedOutput;
-                        output.appendChild(pre);
-                        output.scrollTop = output.scrollHeight;
-                    }
-
-                    // Start polling if not completed
-                    if (!['COMPLETED', 'FAILED', 'CANCELLED'].includes(status)) {
-                        startStatusPolling(currentSessionId);
-                        connectSSE(currentSessionId);
-                    }
-                })();
-
-                function startStatusPolling(sessionId) {
-                    statusInterval = setInterval(async () => {
-                        const response = await fetch(`/api/benchmark/${sessionId}/status`);
-                        const data = await response.json();
-
-                        updateStatusDisplay(data);
-                    }, 1000);
-                }
-
-                function updateStatusDisplay(data) {
-                    const badge = document.getElementById('status-badge');
-                    const progressFill = document.getElementById('progress-fill');
-                    const progressText = document.getElementById('progress-text');
-
-                    // Update status badge
-                    badge.className = 'status-badge status-' + data.status.toLowerCase();
-                    badge.textContent = data.status;
-
-                    // Update progress
-                    if (data.progress !== undefined) {
-                        progressFill.style.width = data.progress + '%';
-                        progressText.textContent = Math.round(data.progress) + '% (' + (data.completedExercises || 0) + '/' + (data.totalExercises || 0) + ')';
-                    }
-
-                    // Stop polling if completed
-                    if (['COMPLETED', 'FAILED', 'CANCELLED'].includes(data.status)) {
-                        clearInterval(statusInterval);
-                        // Hide cancel button when done
-                        document.getElementById('cancel-btn').style.display = 'none';
-                    }
-                }
-
-                function connectSSE(sessionId) {
-                    const eventSource = new EventSource(`/api/benchmark/${sessionId}/stream`);
-                    const outputConsole = document.getElementById('output-console');
-                    let currentLine = null;
-
-                    eventSource.onmessage = (event) => {
-                        // Clear waiting message if present
-                        if (outputConsole.children.length === 1 && outputConsole.children[0].textContent === 'Waiting for output...') {
-                            outputConsole.innerHTML = '';
-                            currentLine = null;
-                        }
-
-                        const data = event.data;
-
-                        // If the data ends with newline, finalize current line
-                        // Otherwise, append token to current line
-                        if (data.endsWith('\n')) {
-                            // Create a new div for the complete line
-                            const line = document.createElement('div');
-                            line.style.whiteSpace = 'pre-wrap';
-                            line.textContent = data;
-                            outputConsole.appendChild(line);
-                            currentLine = null;
-                        } else if (data) {
-                            // Append to or create current line
-                            if (currentLine) {
-                                currentLine.textContent += data;
-                            } else {
-                                currentLine = document.createElement('div');
-                                currentLine.style.whiteSpace = 'pre-wrap';
-                                currentLine.textContent = data;
-                                outputConsole.appendChild(currentLine);
-                            }
-                        }
-
-                        // Auto-scroll
-                        outputConsole.scrollTop = outputConsole.scrollHeight;
-                    };
-
-                    eventSource.onerror = () => {
-                        eventSource.close();
-                    };
-                }
-
-                async function cancelBenchmark() {
-                    if (!currentSessionId) return;
-
-                    const response = await fetch(`/api/benchmark/${currentSessionId}/cancel`, {
-                        method: 'POST'
-                    });
-                    const data = await response.json();
-
-                    if (data.status === 'cancelled') {
-                        alert('Benchmark cancelled');
-                    }
-                }
             </script>
         </main>
     </div>
