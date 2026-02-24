@@ -64,14 +64,15 @@ public class WebBenchmarkRunner {
             }
         }
 
+        SpringApplication app = new SpringApplication(WebBenchmarkRunner.class);
+        var context = app.run(argList.toArray(new String[0]));
+
+        logger.info("Web interface started successfully on port " + webPort);
+
         // Register shutdown hook to ensure clean termination
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.info("Shutting down web interface...");
+            context.close();
         }));
-
-        SpringApplication app = new SpringApplication(WebBenchmarkRunner.class);
-        app.run(argList.toArray(new String[0]));
-
-        logger.info("Web interface started successfully on port " + webPort);
     }
 }

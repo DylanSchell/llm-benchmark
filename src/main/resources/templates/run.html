@@ -3,6 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <title>Run Benchmark - Claude Benchmark</title>
+    <style>
+        .exercise-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .exercise-item {
+            display: flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+        }
+        .exercise-item:hover {
+            background-color: #f5f5f5;
+        }
+        .exercise-item label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            flex: 1;
+        }
+        .exercise-item input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+        .select-all-row {
+            padding: 0.25rem 0.5rem;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 0.5rem;
+        }
+    </style>
 </head>
 <body>
     <div th:replace="~{layout :: layout(title='Run Benchmark', content=~{::main})}">
@@ -10,7 +42,7 @@
             <h2 style="margin-bottom: 1.5rem;">Start New Benchmark</h2>
 
             <div class="card">
-                <form id="benchmark-form" style="max-width: 500px;">
+                <form id="benchmark-form" style="max-width: 600px;">
                     <div class="form-group">
                         <label for="agent">Agent</label>
                         <select id="agent" name="agent" required>
@@ -61,27 +93,221 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="exercise">Exercise (optional, leave blank for all)</label>
-                        <input type="text" id="exercise" name="exercise" placeholder="e.g., series">
+                        <label>Execution Mode</label>
+                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="mode" value="single" checked onchange="toggleExerciseMode()">
+                                <span style="margin-left: 0.25rem;">Single exercise per language</span>
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="mode" value="all" onchange="toggleExerciseMode()">
+                                <span style="margin-left: 0.25rem;">All exercises per language</span>
+                            </label>
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Start Benchmark</button>
+                    <div class="form-group" id="single-exercise-group">
+                        <label for="exercise-select">Select Exercises</label>
+                        <div id="language-exercises" style="display: none;">
+                            <!-- Exercise lists will be populated here -->
+                        </div>
+                        <small style="color: #666;">Select exercises to run for each language</small>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-primary">Start Benchmark</button>
+                    </div>
                 </form>
             </div>
 
             <script>
+                let availableExercises = {};
+                let selectedExercises = {};
+
+                // Load available exercises on page load
+                document.addEventListener('DOMContentLoaded', async function() {
+                    try {
+                        const response = await fetch('/api/exercises');
+                        availableExercises = await response.json();
+                        console.log('Loaded exercises:', availableExercises);
+                    } catch (e) {
+                        console.error('Failed to load exercises:', e);
+                    }
+
+                    // Add listeners to language checkboxes
+                    document.querySelectorAll('input[name="language"]').forEach(cb => {
+                        cb.addEventListener('change', updateExerciseList);
+                    });
+
+                    // Update exercise list initially
+                    updateExerciseList();
+                });
+
+                function toggleExerciseMode() {
+                    const mode = document.querySelector('input[name="mode"]:checked').value;
+                    const singleGroup = document.getElementById('single-exercise-group');
+                    if (mode === 'single') {
+                        singleGroup.style.display = 'block';
+                        updateExerciseList();
+                    } else {
+                        singleGroup.style.display = 'none';
+                    }
+                }
+
+                function updateExerciseList() {
+                    const mode = document.querySelector('input[name="mode"]:checked').value;
+                    if (mode !== 'single') return;
+
+                    const container = document.getElementById('language-exercises');
+                    container.innerHTML = '';
+
+                    const selectedLanguages = Array.from(document.querySelectorAll('input[name="language"]:checked'))
+                        .map(cb => cb.value);
+
+                    if (selectedLanguages.length === 0) {
+                        container.style.display = 'none';
+                        return;
+                    }
+
+                    container.style.display = 'block';
+
+                    selectedLanguages.forEach(lang => {
+                        const exercises = availableExercises[lang] || [];
+                        if (!selectedExercises[lang]) {
+                            selectedExercises[lang] = new Set();
+                        }
+
+                        const langDiv = document.createElement('div');
+                        langDiv.style.marginBottom = '1rem';
+                        langDiv.innerHTML = `<strong style="text-transform: capitalize;">${lang}:</strong>`;
+
+                        const exerciseList = document.createElement('div');
+                        exerciseList.className = 'exercise-list';
+
+                        // Select all row
+                        const selectAllRow = document.createElement('div');
+                        selectAllRow.className = 'select-all-row';
+                        selectAllRow.innerHTML = `
+                            <label style="font-weight: 500;">
+                                <input type="checkbox" onchange="toggleSelectAll('${lang}', this.checked)">
+                                Select all (${exercises.length})
+                            </label>
+                        `;
+                        exerciseList.appendChild(selectAllRow);
+
+                        exercises.forEach(ex => {
+                            const item = document.createElement('div');
+                            item.className = 'exercise-item';
+                            const isChecked = selectedExercises[lang].has(ex) ? 'checked' : '';
+                            item.innerHTML = `
+                                <label>
+                                    <input type="checkbox" value="${ex}" ${isChecked}
+                                           onchange="toggleExercise('${lang}', '${ex}', this.checked)">
+                                    ${ex}
+                                </label>
+                            `;
+                            exerciseList.appendChild(item);
+                        });
+
+                        langDiv.appendChild(exerciseList);
+                        container.appendChild(langDiv);
+                    });
+                }
+
+                function toggleSelectAll(language, checked) {
+                    const exercises = availableExercises[language] || [];
+                    if (checked) {
+                        selectedExercises[language] = new Set(exercises);
+                    } else {
+                        selectedExercises[language] = new Set();
+                    }
+                    updateExerciseList();
+                }
+
+                function toggleExercise(language, exercise, checked) {
+                    if (!selectedExercises[language]) {
+                        selectedExercises[language] = new Set();
+                    }
+                    if (checked) {
+                        selectedExercises[language].add(exercise);
+                    } else {
+                        selectedExercises[language].delete(exercise);
+                    }
+                }
+
                 document.getElementById('benchmark-form').addEventListener('submit', async function(e) {
                     e.preventDefault();
 
-                    const formData = new FormData(this);
+                    const agent = document.getElementById('agent').value;
+                    const model = document.getElementById('model').value || null;
+                    const mode = document.querySelector('input[name="mode"]:checked').value;
+                    const languages = Array.from(document.querySelectorAll('input[name="language"]:checked'))
+                        .map(cb => cb.value);
+
+                    if (languages.length === 0) {
+                        alert('Please select at least one language');
+                        return;
+                    }
+
+                    if (mode === 'single') {
+                        // Build queue items from selected exercises
+                        const items = [];
+                        languages.forEach(lang => {
+                            const exercises = selectedExercises[lang] ? Array.from(selectedExercises[lang]) : [];
+                            if (exercises.length === 0) {
+                                alert('Please select at least one exercise');
+                                return;
+                            }
+                            exercises.forEach(ex => {
+                                items.push({
+                                    agentName: agent,
+                                    model: model,
+                                    language: lang,
+                                    exercise: ex
+                                });
+                            });
+                        });
+
+                        if (items.length === 0) {
+                            return;
+                        }
+
+                        // Schedule each item individually
+                        for (const item of items) {
+                            const formData = new FormData();
+                            formData.append('agent', item.agentName);
+                            if (item.model) formData.append('model', item.model);
+                            formData.append('language', item.language);
+                            formData.append('exercise', item.exercise);
+
+                            await fetch('/api/benchmark/queue/schedule', {
+                                method: 'POST',
+                                body: formData
+                            });
+                        }
+
+                        window.location.href = '/';
+                        return;
+                    }
+
+                    // For "all exercises" mode
+                    const formData = new FormData();
+                    formData.append('agent', agent);
+                    if (model) formData.append('model', model);
+                    languages.forEach(lang => formData.append('language', lang));
+                    // exercise is null for "all exercises"
+
                     const response = await fetch('/api/benchmark/run', {
                         method: 'POST',
                         body: formData
                     });
 
                     const data = await response.json();
-                    // Redirect to the view page for this session
-                    window.location.href = '/benchmark/' + data.sessionId;
+                    if (data.sessionId) {
+                        window.location.href = '/benchmark/' + data.sessionId;
+                    } else if (data.items) {
+                        window.location.href = '/';
+                    }
                 });
             </script>
         </main>

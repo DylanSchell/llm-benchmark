@@ -5,6 +5,8 @@ import com.benchmark.agent.ReferenceAgent;
 import com.benchmark.config.Config;
 import com.benchmark.docker.DockerClient;
 import com.benchmark.exercise.ExerciseResult;
+import com.benchmark.web.domain.BenchmarkQueue;
+import com.benchmark.web.domain.BenchmarkQueueItem;
 import com.benchmark.web.domain.BenchmarkSession;
 import com.benchmark.web.domain.RunStatus;
 import org.slf4j.Logger;
@@ -34,6 +36,8 @@ public class BenchmarkService {
     private final ResultService resultService;
     private final Map<String, BenchmarkSession> sessions;
     private final ExecutorService executor;
+    private final BenchmarkQueue queue;
+    private volatile boolean processingItem = false;
 
     public BenchmarkService(Config config, DockerClient dockerClient, BenchmarkRunner benchmarkRunner,
                             ResultService resultService, ExecutorService executor) {
@@ -43,6 +47,10 @@ public class BenchmarkService {
         this.resultService = resultService;
         this.sessions = new ConcurrentHashMap<>();
         this.executor = executor;
+        this.queue = new BenchmarkQueue();
+
+        // Start queue worker
+        startQueueWorker();
     }
 
     /**
@@ -218,5 +226,168 @@ public class BenchmarkService {
      */
     public void removeSession(String sessionId) {
         sessions.remove(sessionId);
+    }
+
+    // =============================================================================
+    // Queue Management
+    // =============================================================================
+
+    /**
+     * Starts the queue worker that processes items sequentially.
+     */
+    private void startQueueWorker() {
+        CompletableFuture.runAsync(() -> {
+            while (true) {
+                try {
+                    // Check for next item in queue - only if not already processing
+                    if (!processingItem) {
+                        BenchmarkQueueItem item = queue.pollNext();
+                        if (item != null) {
+                            processingItem = true;
+                            logger.info("Processing queue item: {} - {}/{}",
+                                    item.getId(), item.getLanguage(), item.getExercise());
+                            processQueueItem(item);
+                            processingItem = false;
+                        } else {
+                            // No items pending, wait before checking again
+                            Thread.sleep(1000);
+                        }
+                    } else {
+                        // Wait for current item to complete before checking for more
+                        Thread.sleep(500);
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                } catch (Exception e) {
+                    logger.error("Error processing queue item: {}", e.getMessage(), e);
+                    processingItem = false;
+                }
+            }
+        }, executor);
+    }
+
+    /**
+     * Process a single queue item.
+     */
+    private void processQueueItem(BenchmarkQueueItem item) {
+        String sessionId = null;
+        try {
+            // Create session for this queue item
+            sessionId = startBenchmark(
+                    item.getAgentName(),
+                    new String[]{item.getLanguage()},
+                    item.getModel(),
+                    item.getExercise()
+            );
+            item.setSessionId(sessionId);
+
+            // Wait for session to complete
+            BenchmarkSession session = sessions.get(sessionId);
+            while (session != null &&
+                   (session.getStatus() == RunStatus.PENDING ||
+                    session.getStatus() == RunStatus.RUNNING)) {
+                Thread.sleep(500);
+            }
+
+            if (session != null) {
+                if (session.getStatus() == RunStatus.COMPLETED) {
+                    queue.completeCurrent();
+                } else if (session.getStatus() == RunStatus.FAILED ||
+                           session.getStatus() == RunStatus.CANCELLED) {
+                    queue.failCurrent();
+                }
+            } else {
+                queue.failCurrent();
+            }
+
+        } catch (Exception e) {
+            logger.error("Queue item failed: {}", e.getMessage(), e);
+            if (sessionId != null) {
+                BenchmarkSession session = sessions.get(sessionId);
+                if (session != null && session.getStatus() == RunStatus.RUNNING) {
+                    session.setStatus(RunStatus.FAILED);
+                    session.setErrorMessage(e.getMessage());
+                }
+            }
+            queue.failCurrent();
+        } finally {
+            processingItem = false;
+        }
+    }
+
+    /**
+     * Schedule a batch of benchmark runs.
+     * All items will share the same target directory.
+     *
+     * @param agentName   The agent to use
+     * @param model       The model to use (can be null)
+     * @param languages   Array of languages
+     * @param exercise    Exercise name, or null for all exercises per language
+     * @return List of queue items created
+     */
+    public List<BenchmarkQueueItem> scheduleBatch(String agentName, String[] languages,
+                                                   String model, String exercise) {
+        // Compute target directory once for the entire batch
+        String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
+
+        if (exercise != null && !exercise.isEmpty()) {
+            // Single exercise for each language - create one item per language
+            List<BenchmarkQueueItem> items = new java.util.ArrayList<>();
+            for (String language : languages) {
+                String targetDir = config.getOutput().getResultsDir(agentName, effectiveModel, new String[]{language});
+                BenchmarkQueueItem item = new BenchmarkQueueItem(targetDir, agentName, model, language, exercise);
+                items.add(item);
+            }
+            queue.addAll(items);
+            logger.info("Scheduled {} queue items for batch run", items.size());
+            return items;
+        } else {
+            // All exercises for each language - create one item per language with null exercise
+            List<BenchmarkQueueItem> items = new java.util.ArrayList<>();
+            for (String language : languages) {
+                String targetDir = config.getOutput().getResultsDir(agentName, effectiveModel, new String[]{language});
+                BenchmarkQueueItem item = new BenchmarkQueueItem(targetDir, agentName, model, language, null);
+                items.add(item);
+            }
+            queue.addAll(items);
+            logger.info("Scheduled {} queue items for all exercises", items.size());
+            return items;
+        }
+    }
+
+    /**
+     * Get the benchmark queue.
+     */
+    public BenchmarkQueue getQueue() {
+        return queue;
+    }
+
+    /**
+     * Cancel a queue item.
+     */
+    public boolean cancelQueueItem(String itemId) {
+        return queue.cancelItem(itemId);
+    }
+
+    /**
+     * Get all queue items (pending, running, completed).
+     */
+    public List<BenchmarkQueueItem> getQueueItems() {
+        return queue.getAllItems();
+    }
+
+    /**
+     * Clear pending items from queue.
+     */
+    public void clearPendingQueue() {
+        queue.clearPending();
+    }
+
+    /**
+     * Get the ExerciseRunner for discovering exercises.
+     */
+    public com.benchmark.exercise.ExerciseRunner getExerciseRunner() {
+        return benchmarkRunner.getExerciseRunner();
     }
 }

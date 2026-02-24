@@ -284,6 +284,86 @@ public class ExerciseRunner {
     }
 
     /**
+     * Gets all available languages that have exercises.
+     *
+     * @return List of language names
+     */
+    public List<String> getAvailableLanguages() {
+        List<String> languages = new ArrayList<>();
+        Path benchmarkDir = benchmarkPath;
+
+        if (!Files.exists(benchmarkDir)) {
+            logger.warn("Benchmark path does not exist: {}", benchmarkPath);
+            return languages;
+        }
+
+        try (Stream<Path> paths = Files.list(benchmarkDir)) {
+            paths.filter(Files::isDirectory)
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .filter(name -> !name.startsWith("."))
+                    .forEach(languages::add);
+        } catch (IOException e) {
+            logger.error("Failed to list languages: {}", e.getMessage(), e);
+        }
+
+        languages.sort(String.CASE_INSENSITIVE_ORDER);
+        return languages;
+    }
+
+    /**
+     * Gets all exercises for a specific language.
+     *
+     * @param language The programming language
+     * @return List of exercise names
+     */
+    public List<String> getExercisesForLanguage(String language) {
+        List<String> exerciseNames = new ArrayList<>();
+        List<Exercise> exercises = findAllExercises(language);
+        for (Exercise exercise : exercises) {
+            exerciseNames.add(exercise.getName());
+        }
+        return exerciseNames;
+    }
+
+    /**
+     * Gets all language/exercise combinations.
+     *
+     * @return List of LanguageExercise pairs
+     */
+    public List<LanguageExercise> getAllLanguageExercises() {
+        List<LanguageExercise> result = new ArrayList<>();
+        for (String language : getAvailableLanguages()) {
+            List<String> exercises = getExercisesForLanguage(language);
+            for (String exercise : exercises) {
+                result.add(new LanguageExercise(language, exercise));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Represents a language/exercise pair.
+     */
+    public static class LanguageExercise {
+        private final String language;
+        private final String exercise;
+
+        public LanguageExercise(String language, String exercise) {
+            this.language = language;
+            this.exercise = exercise;
+        }
+
+        public String getLanguage() {
+            return language;
+        }
+
+        public String getExercise() {
+            return exercise;
+        }
+    }
+
+    /**
      * Runs the reference agent for an exercise.
      */
     private ExerciseResult runReferenceAgent(ReferenceAgent agent, Exercise exercise, Path exerciseHostDir, Path resultDir) {

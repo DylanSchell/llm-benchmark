@@ -110,7 +110,7 @@
                     });
                     const data = await response.json();
                     if (data.status === 'cancelled') {
-                        alert('Benchmark cancelled');
+                        window.location.href = '/';
                     }
                 }
 

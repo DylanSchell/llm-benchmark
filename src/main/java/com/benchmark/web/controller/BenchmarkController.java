@@ -1,5 +1,6 @@
 package com.benchmark.web.controller;
 
+import com.benchmark.web.domain.BenchmarkQueueItem;
 import com.benchmark.web.domain.BenchmarkSession;
 import com.benchmark.web.domain.RunStatus;
 import com.benchmark.web.service.BenchmarkService;
@@ -66,6 +67,7 @@ public class BenchmarkController {
                 .toList();
         model.addAttribute("activeRuns", activeSessions.size());
         model.addAttribute("activeSessions", activeSessions);
+        model.addAttribute("queueItems", benchmarkService.getQueueItems());
         return "dashboard";
     }
 
@@ -325,5 +327,100 @@ public class BenchmarkController {
     @ResponseBody
     public Map<String, Object> getStats() {
         return resultService.getStatistics();
+    }
+
+    /**
+     * API endpoint to get available languages and exercises.
+     */
+    @GetMapping("/api/exercises")
+    @ResponseBody
+    public Map<String, List<String>> getExercises() {
+        Map<String, List<String>> result = new java.util.HashMap<>();
+        var exerciseRunner = benchmarkService.getExerciseRunner();
+        for (String language : exerciseRunner.getAvailableLanguages()) {
+            result.put(language, exerciseRunner.getExercisesForLanguage(language));
+        }
+        return result;
+    }
+
+    /**
+     * API endpoint to get available languages only.
+     */
+    @GetMapping("/api/languages")
+    @ResponseBody
+    public List<String> getLanguages() {
+        return benchmarkService.getExerciseRunner().getAvailableLanguages();
+    }
+
+    // =============================================================================
+    // Queue Management Endpoints
+    // =============================================================================
+
+    /**
+     * Get the current benchmark queue.
+     */
+    @GetMapping("/api/benchmark/queue")
+    @ResponseBody
+    public List<BenchmarkQueueItem> getQueue() {
+        return benchmarkService.getQueueItems();
+    }
+
+    /**
+     * Schedule a batch of benchmark runs.
+     */
+    @PostMapping("/api/benchmark/queue/schedule")
+    @ResponseBody
+    public Map<String, Object> scheduleBatch(
+            @RequestParam("agent") String agent,
+            @RequestParam("language") String[] languages,
+            @RequestParam(value = "model", required = false) String model,
+            @RequestParam(value = "exercise", required = false) String exercise) {
+
+        logger.info("Scheduling batch benchmark: agent={}, model={}, languages={}, exercise={}",
+                agent, model, String.join(",", languages), exercise);
+
+        List<BenchmarkQueueItem> items = benchmarkService.scheduleBatch(agent, languages, model, exercise);
+
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("status", "scheduled");
+        response.put("items", items);
+        response.put("count", items.size());
+
+        return response;
+    }
+
+    /**
+     * Cancel a queue item.
+     */
+    @PostMapping("/api/benchmark/queue/cancel/{itemId}")
+    @ResponseBody
+    public Map<String, Object> cancelQueueItem(@PathVariable String itemId) {
+        Map<String, Object> response = new java.util.HashMap<>();
+        boolean cancelled = benchmarkService.cancelQueueItem(itemId);
+
+        if (cancelled) {
+            response.put("status", "cancelled");
+            response.put("itemId", itemId);
+        } else {
+            response.put("status", "error");
+            response.put("message", "Could not cancel - item not found or already completed");
+        }
+
+        return response;
+    }
+
+    /**
+     * Clear pending items from queue.
+     */
+    @PostMapping("/api/benchmark/queue/clear")
+    @ResponseBody
+    public Map<String, Object> clearPendingQueue() {
+        benchmarkService.clearPendingQueue();
+
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("status", "ok");
+        response.put("message", "Pending queue items cleared");
+
+        return response;
     }
 }
