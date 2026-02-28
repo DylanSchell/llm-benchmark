@@ -13,6 +13,9 @@ public class Usage {
     @JsonProperty("service_tier")
     private ServiceTier serviceTier;
 
+    @JsonProperty("speed")
+    private String speed;
+
     public ServiceTier getServiceTier() {
         return serviceTier;
     }
@@ -65,7 +68,7 @@ public class Usage {
     private String inferenceGeo;
 
     @JsonProperty("iterations")
-    private int iterations;
+    private int[] iterations;
 
     public long getInputTokens() {
         return inputTokens;
@@ -99,11 +102,19 @@ public class Usage {
         this.inferenceGeo = inferenceGeo;
     }
 
-    public int getIterations() {
+    public int[] getIterations() {
         return iterations;
     }
 
-    public void setIterations(int iterations) {
+    public void setIterations(int[] iterations) {
         this.iterations = iterations;
+    }
+
+    public String getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(String speed) {
+        this.speed = speed;
     }
 }

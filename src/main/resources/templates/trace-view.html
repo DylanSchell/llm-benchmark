@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Trace - Claude Benchmark</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        .trace-content {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.5rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 80vh;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #3498db;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{layout :: layout(title='Trace Viewer', content=~{::main})}">
+        <main class="container">
+            <a href="javascript:history.back()" class="back-link">&larr; Back to Results</a>
+
+            <div class="card">
+                <h1>Trace Content</h1>
+
+                <div class="trace-content" th:utext="${traceContent}">
+                    <!-- Trace content will be displayed here -->
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

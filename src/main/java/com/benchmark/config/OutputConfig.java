@@ -67,7 +67,8 @@ public class OutputConfig {
         String modelPart = model != null ? model : "default";
 
         // Construct the subdirectory name
-        String subdir = String.format("%s-%s-%s", agentPart, modelPart, languagesPart);
+        // for now exclude the languages part, don't think we need it any more
+        String subdir = String.format("%s-%s", agentPart, modelPart);
 
         // Check existing subdirectories to find the next run number
         int nextRunNumber = getNextRunNumber(subdir);

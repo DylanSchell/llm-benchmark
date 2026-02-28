@@ -6,4 +6,22 @@ package com.benchmark.model;
  */
 public class ServiceTier {
     // TODO: add concrete fields when the JSON structure is known
+    private String serviceTier;
+
+    public ServiceTier(String serviceTier) {
+        this.serviceTier = serviceTier;
+    }
+
+    public String getServiceTier() {
+        return serviceTier;
+    }
+
+    public void setServiceTier(String serviceTier) {
+        this.serviceTier = serviceTier;
+    }
+
+    @Override
+    public String toString() {
+        return serviceTier;
+    }
 }

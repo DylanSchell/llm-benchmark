@@ -39,7 +39,11 @@ public class ResultsController {
         Map<String, Object> stats = resultService.getStatistics(language, agent, model);
         List<String> models = resultService.getModels();
 
+        // Also get individual results for the selected filters
+        List<Map<String, Object>> individualResults = resultService.listIndividualResults(language, agent, model);
+
         modelAttr.addAttribute("results", results);
+        modelAttr.addAttribute("individualResults", individualResults);
         modelAttr.addAttribute("stats", stats);
         modelAttr.addAttribute("models", models);
         modelAttr.addAttribute("filterLanguage", language != null ? language : "");
@@ -62,7 +66,7 @@ public class ResultsController {
     }
 
     /**
-     * Result detail view by timestamp.
+     * Result detail view by filename.
      */
     @GetMapping("/{filename}")
     public String resultDetail(@PathVariable String filename, Model model) {
@@ -78,6 +82,27 @@ public class ResultsController {
             model.addAttribute("error", "Failed to load result: " + e.getMessage());
         }
         return "result-detail";
+    }
+
+    /**
+     * View trace HTML content for a result.
+     */
+    @GetMapping("/{filename}/trace")
+    public String viewTrace(@PathVariable String filename, Model model) {
+        try {
+            String traceContent = resultService.getTraceContent(filename);
+            if (traceContent != null) {
+                model.addAttribute("traceContent", traceContent);
+                return "trace-view";
+            } else {
+                model.addAttribute("error", "Trace not found");
+                return "error";
+            }
+        } catch (IOException e) {
+            logger.error("Failed to load trace: {}", e.getMessage());
+            model.addAttribute("error", "Failed to load trace: " + e.getMessage());
+            return "error";
+        }
     }
 
     /**
@@ -154,7 +179,9 @@ public class ResultsController {
                                         @RequestParam(value = "model", required = false) String model,
                                         Model modelAttr) {
         List<Map<String, Object>> results = resultService.listResults(language, agent, model);
+        List<Map<String, Object>> individualResults = resultService.listIndividualResults(language, agent, model);
         modelAttr.addAttribute("results", results);
+        modelAttr.addAttribute("individualResults", individualResults);
         return "fragments/results-table :: resultsTableRows";
     }
 }

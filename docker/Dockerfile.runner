@@ -26,6 +26,7 @@ RUN apk add --no-cache \
 RUN npm install -g @anthropic-ai/claude-code
 RUN npm install -g claude-plugins
 #RUN npx claude-plugins install @anthropics/claude-code-plugins/ralph-wiggum
+RUN npm install -g @mariozechner/pi-coding-agent
 
 # Install pytest for Python testing
 #RUN pip3 install --no-cache-dir pytest

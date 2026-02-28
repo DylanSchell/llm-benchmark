@@ -4,6 +4,8 @@
 # Path to the polyglot-benchmark repository
 benchmark_path: "../polyglot-benchmark"
 
+model: "qwen35"
+
 # Docker configuration
 docker:
   # Name of the custom Docker image with build tools
@@ -44,13 +46,13 @@ claude:
   # Path to claude CLI binary
   cli_path: "/usr/local/bin/claude"
   # Model to use for solving exercises
-  model: "sonnet"
+  model: "qwen35"
   # Additional arguments to pass to claude
   extra_args: []
 
 # Output configuration
 output:
   # Directory for exercise outputs
-  results_dir: "../benchmark-results/qwen35-r2"
+  results_dir: "../benchmark-results"
   # Log level (DEBUG, INFO, WARN, ERROR)
   log_level: "INFO"

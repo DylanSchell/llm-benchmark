@@ -52,6 +52,7 @@ public class ResultService {
         int failed;
         String successRate;
         List<Map<String, Object>> results;
+        String tracePath; // Path to separate trace HTML file if it exists
 
         // Computed fields for statistics
         Map<String, Integer> exerciseCountByLanguage = new HashMap<>();
@@ -91,7 +92,11 @@ public class ResultService {
         try (Stream<Path> paths = Files.walk(configuredResultsDir)) {
             List<Path> resultFiles = paths.filter(Files::isRegularFile)
                     .filter(p -> p.toString().endsWith(".json"))
-                    .filter(p -> p.getFileName().toString().startsWith("results_"))
+                    .filter(p -> {
+                        String filename = p.getFileName().toString();
+                        // Load both results_* (batch) and result_* (individual exercise) files
+                        return filename.startsWith("results_") || filename.startsWith("result_");
+                    })
                     .toList();
 
             for (Path p : resultFiles) {
@@ -115,47 +120,150 @@ public class ResultService {
 
     /**
      * Loads a single cachedResult file into a CachedResult object.
+     * Handles both batch result files (results_*.json with results array)
+     * and individual exercise result files (result_*.json serialized ExerciseResult).
      */
     private CachedResult loadCachedResult(Path resultFile) throws IOException {
         JsonNode node = objectMapper.readTree(resultFile.toFile());
-        if (!node.has("results") || !node.get("results").isArray()) {
+
+        // Check if this is a batch result file (has "results" array) or individual exercise result
+        boolean isBatchResult = node.has("results") && node.get("results").isArray();
+        boolean isIndividualResult = node.has("exerciseName") && node.has("language");
+
+        if (!isBatchResult && !isIndividualResult) {
             return null;
         }
 
         CachedResult cached = new CachedResult();
         cached.filename = resultFile.getFileName().toString();
         cached.path = resultFile.toString();
-        cached.model = resultFile.getParent().getFileName().toString();
+
+        // Extract model from file path or from embedded field
+        if (node.has("model")) {
+            cached.model = node.get("model").asText();
+        } else {
+            // Derive from directory structure
+            cached.model = resultFile.getParent().getFileName().toString();
+        }
+
         cached.timestamp = node.has("timestamp") ? node.get("timestamp").asText() : null;
-        cached.agent = node.has("agent") ? node.get("agent").asText() : "unknown";
-        cached.language = node.has("language") ? node.get("language").asText() : "unknown";
-        cached.totalExercises = node.has("total_exercises") ? node.get("total_exercises").asInt() : 0;
-        cached.successful = node.has("successful") ? node.get("successful").asInt() : 0;
-        cached.failed = node.has("failed") ? node.get("failed").asInt() : 0;
-        cached.successRate = node.has("success_rate") ? node.get("success_rate").asText() : "0.0%";
 
-        // Parse results array
-        if (node.has("results") && node.get("results").isArray()) {
-            cached.results = objectMapper.readValue(node.get("results").toString(), List.class);
+        // Extract agent from embedded field or derive from filename
+        if (node.has("agent")) {
+            cached.agent = node.get("agent").asText();
+        } else if (isIndividualResult) {
+            // Derive agent from filename pattern: result_<agent>_<language>_<exercise>.json
+            String filename = resultFile.getFileName().toString();
+            if (filename.startsWith("result_")) {
+                // Extract agent from filename
+                String[] parts = filename.split("_");
+                if (parts.length >= 2) {
+                    cached.agent = parts[1]; // Second part after "result"
+                } else {
+                    cached.agent = "unknown";
+                }
+            } else {
+                cached.agent = "unknown";
+            }
+        } else {
+            cached.agent = "unknown";
+        }
 
-            // Compute per-language statistics
-            for (Map<String, Object> result : cached.results) {
-                String lang = (String) result.get("language");
-                if (lang == null) lang = "unknown";
+        // For individual results, extract language and exercise from embedded fields
+        if (isIndividualResult) {
+            cached.language = node.has("language") ? node.get("language").asText() : "unknown";
+            String exercise = node.has("exerciseName") ? node.get("exerciseName").asText() : "unknown";
 
-                Boolean success = (Boolean) result.get("success");
-                Number duration = (Number) result.get("duration");
-                double dur = duration != null ? duration.doubleValue() : 0.0;
+            // Create a single-item results list for individual result files
+            Map<String, Object> singleResult = new HashMap<>();
+            singleResult.put("language", cached.language);
+            singleResult.put("exercise", exercise);
+            singleResult.put("success", node.has("success") ? node.get("success").asBoolean() : false);
+            singleResult.put("duration", node.has("duration") ? node.get("duration").toString() : "0");
+            singleResult.put("output", node.has("output") ? node.get("output").asText() : "");
+            singleResult.put("trace", node.has("trace") ? node.get("trace").asText() : "");
 
-                cached.exerciseCountByLanguage.putIfAbsent(lang, 0);
-                cached.exerciseCountByLanguage.put(lang, cached.exerciseCountByLanguage.get(lang) + 1);
+            cached.results = List.of(singleResult);
+            cached.totalExercises = 1;
+            cached.successful = singleResult.get("success") == Boolean.TRUE ? 1 : 0;
+            cached.failed = singleResult.get("success") == Boolean.FALSE ? 1 : 0;
+            cached.successRate = cached.successful > 0 ? "100.0%" : "0.0%";
 
-                cached.durationByLanguage.putIfAbsent(lang, 0.0);
-                cached.durationByLanguage.put(lang, cached.durationByLanguage.get(lang) + dur);
+            // Compute per-language statistics for this single result
+            String lang = cached.language != null ? cached.language : "unknown";
+            cached.exerciseCountByLanguage.put(lang, 1);
 
-                if (success != null && success) {
-                    cached.successCountByLanguage.putIfAbsent(lang, 0);
-                    cached.successCountByLanguage.put(lang, cached.successCountByLanguage.get(lang) + 1);
+            if (singleResult.get("success") == Boolean.TRUE) {
+                cached.successCountByLanguage.put(lang, 1);
+            }
+
+            // Parse duration if available
+            try {
+                String durStr = singleResult.get("duration").toString();
+                if (durStr != null && !durStr.isEmpty() && !durStr.equals("null")) {
+                    // Try to parse duration string (e.g., "PT1.5S" or "100ms")
+                    double dur = 0.0;
+                    if (durStr.endsWith("ms")) {
+                        dur = Double.parseDouble(durStr.substring(0, durStr.length() - 2)) / 1000.0;
+                    } else if (durStr.endsWith("s")) {
+                        dur = Double.parseDouble(durStr.substring(0, durStr.length() - 1));
+                    } else {
+                        try {
+                            dur = Double.parseDouble(durStr);
+                        } catch (NumberFormatException ignored) {}
+                    }
+                    cached.durationByLanguage.put(lang, dur);
+                }
+            } catch (Exception e) {
+                logger.debug("Failed to parse duration: {}", e.getMessage());
+            }
+        }
+
+        if (isBatchResult) {
+            // Parse batch results array
+            cached.language = node.has("language") ? node.get("language").asText() : "unknown";
+            cached.totalExercises = node.has("total_exercises") ? node.get("total_exercises").asInt() : 0;
+            cached.successful = node.has("successful") ? node.get("successful").asInt() : 0;
+            cached.failed = node.has("failed") ? node.get("failed").asInt() : 0;
+            cached.successRate = node.has("success_rate") ? node.get("success_rate").asText() : "0.0%";
+
+            // Parse results array
+            if (node.has("results") && node.get("results").isArray()) {
+                cached.results = objectMapper.readValue(node.get("results").toString(), List.class);
+
+                // Compute per-language statistics
+                for (Map<String, Object> result : cached.results) {
+                    String lang = (String) result.get("language");
+                    if (lang == null) lang = "unknown";
+
+                    Boolean success = (Boolean) result.get("success");
+                    Number duration = (Number) result.get("duration");
+                    double dur = duration != null ? duration.doubleValue() : 0.0;
+
+                    cached.exerciseCountByLanguage.putIfAbsent(lang, 0);
+                    cached.exerciseCountByLanguage.put(lang, cached.exerciseCountByLanguage.get(lang) + 1);
+
+                    cached.durationByLanguage.putIfAbsent(lang, 0.0);
+                    cached.durationByLanguage.put(lang, cached.durationByLanguage.get(lang) + dur);
+
+                    if (success != null && success) {
+                        cached.successCountByLanguage.putIfAbsent(lang, 0);
+                        cached.successCountByLanguage.put(lang, cached.successCountByLanguage.get(lang) + 1);
+                    }
+                }
+            }
+        }
+
+        // Check for separate trace HTML file (trace_<agent>_<language>_<exercise>.html)
+        // For individual results, look for a corresponding .html trace file
+        if (isIndividualResult) {
+            String filename = resultFile.getFileName().toString();
+            if (filename.startsWith("result_")) {
+                // Replace result_ with trace_ and .json with .html
+                String traceFilename = filename.replace("result_", "trace_").replace(".json", ".html");
+                Path traceFilePath = resultFile.getParent().resolve(traceFilename);
+                if (Files.exists(traceFilePath)) {
+                    cached.tracePath = traceFilePath.toString();
                 }
             }
         }
@@ -171,7 +279,7 @@ public class ResultService {
 
         for (CachedResult cached : cachedResults.values()) {
             boolean matchesLanguage = language == null || language.isEmpty() ||
-                    (cached.filename != null && cached.filename.contains(language));
+                    (cached.language != null && cached.language.equals(language));
             boolean matchesAgent = agent == null || agent.isEmpty() ||
                     (cached.agent != null && cached.agent.contains(agent));
             boolean matchesModel = model == null || model.isEmpty() ||
@@ -203,6 +311,93 @@ public class ResultService {
     }
 
     /**
+     * Lists individual result files (result_*.json) filtered by agent, language, and model.
+     * These are the detailed runs for each exercise.
+     */
+    public List<Map<String, Object>> listIndividualResults(String language, String agent, String model) {
+        List<Map<String, Object>> results = new ArrayList<>();
+        Path configuredResultsDir = Paths.get(config.getOutput().getResultsDir());
+
+        try (Stream<Path> paths = Files.walk(configuredResultsDir)) {
+            List<Path> individualResultFiles = paths.filter(Files::isRegularFile)
+                    .filter(p -> p.toString().endsWith(".json"))
+                    .filter(p -> p.getFileName().toString().startsWith("result_"))
+                    .toList();
+
+            for (Path p : individualResultFiles) {
+                try {
+                    JsonNode node = objectMapper.readTree(p.toFile());
+
+                    // Extract fields from the individual result file
+                    String fileAgent = node.has("agent") ? node.get("agent").asText() :
+                            extractAgentFromFilename(p.getFileName().toString());
+                    String fileLanguage = node.has("language") ? node.get("language").asText() : "unknown";
+                    String fileModel = node.has("model") ? node.get("model").asText() : p.getParent().getFileName().toString();
+                    String exerciseName = node.has("exerciseName") ? node.get("exerciseName").asText() : "unknown";
+
+                    // Apply filters
+                    boolean matchesLanguage = language == null || language.isEmpty() || fileLanguage.equals(language);
+                    boolean matchesAgent = agent == null || agent.isEmpty() || fileAgent.equals(agent);
+                    boolean matchesModel = model == null || model.isEmpty() || fileModel.equals(model);
+
+                    if (matchesLanguage && matchesAgent && matchesModel) {
+                        Map<String, Object> individualResult = new HashMap<>();
+                        individualResult.put("filename", p.getFileName().toString());
+                        individualResult.put("path", p.toString());
+                        individualResult.put("agent", fileAgent);
+                        individualResult.put("language", fileLanguage);
+                        individualResult.put("model", fileModel);
+                        individualResult.put("exercise", exerciseName);
+                        individualResult.put("success", node.has("success") ? node.get("success").asBoolean() : false);
+                        individualResult.put("timestamp", node.has("timestamp") ? node.get("timestamp").asText() : null);
+
+                        // Check for separate trace HTML file
+                        String traceFilename = p.getFileName().toString().replace("result_", "trace_").replace(".json", ".html");
+                        Path traceFile = p.getParent().resolve(traceFilename);
+                        if (Files.exists(traceFile)) {
+                            individualResult.put("hasTraceFile", true);
+                        } else {
+                            individualResult.put("hasTraceFile", node.has("trace") && !node.get("trace").asText().isEmpty());
+                        }
+
+                        results.add(individualResult);
+                    }
+                } catch (IOException e) {
+                    logger.warn("Failed to read individual result file {}: {}", p, e.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            logger.error("Failed to list individual results: {}", e.getMessage(), e);
+        }
+
+        // Sort by timestamp descending
+        results.sort((a, b) -> {
+            String tsA = (String) a.get("timestamp");
+            String tsB = (String) b.get("timestamp");
+            if (tsA == null && tsB == null) return 0;
+            if (tsA == null) return 1;
+            if (tsB == null) return -1;
+            return tsB.compareTo(tsA);
+        });
+
+        return results;
+    }
+
+    /**
+     * Extracts agent from filename pattern: result_<agent>_<language>_<exercise>.json
+     */
+    private String extractAgentFromFilename(String filename) {
+        if (filename.startsWith("result_")) {
+            String withoutPrefix = filename.substring(7); // Remove "result_"
+            String[] parts = withoutPrefix.split("_");
+            if (parts.length >= 1) {
+                return parts[0];
+            }
+        }
+        return "unknown";
+    }
+
+    /**
      * Reads a specific cachedResult file by filename.
      */
     public Map<String, Object> getResultByFilename(String filename) throws IOException {
@@ -211,6 +406,46 @@ public class ResultService {
             return null;
         }
         return toMetadataMap(cached);
+    }
+
+    /**
+     * Reads the trace HTML content for a result.
+     * Returns the embedded trace from the JSON or reads from a separate .html file.
+     */
+    public String getTraceContent(String filename) throws IOException {
+        CachedResult cached = cachedResults.get(filename);
+        if (cached != null) {
+            // First try to get trace from embedded data in results (batch results)
+            if (cached.results != null && !cached.results.isEmpty()) {
+                Object traceObj = cached.results.get(0).get("trace");
+                if (traceObj != null && !traceObj.toString().isEmpty()) {
+                    return traceObj.toString();
+                }
+            }
+            // Next, try to get trace directly from the JSON file for individual results
+            Path resultFile = Paths.get(config.getOutput().getResultsDir()).resolve(filename);
+            if (Files.exists(resultFile)) {
+                try {
+                    JsonNode node = objectMapper.readTree(resultFile.toFile());
+                    if (node.has("trace")) {
+                        String trace = node.get("trace").asText();
+                        if (!trace.isEmpty()) {
+                            return trace;
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.debug("Failed to parse trace from JSON file {}: {}", filename, e.getMessage());
+                }
+            }
+            // Then try separate HTML file
+            if (cached.tracePath != null) {
+                Path traceFile = Paths.get(cached.tracePath);
+                if (Files.exists(traceFile)) {
+                    return Files.readString(traceFile);
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -369,11 +604,15 @@ public class ResultService {
         metadata.put("timestamp", cached.timestamp);
         metadata.put("agent", cached.agent);
         metadata.put("language", cached.language);
+        metadata.put("model", cached.model);
         metadata.put("total_exercises", cached.totalExercises);
         metadata.put("successful", cached.successful);
         metadata.put("failed", cached.failed);
         metadata.put("success_rate", cached.successRate);
         metadata.put("results", cached.results);
+        if (cached.tracePath != null) {
+            metadata.put("tracePath", cached.tracePath);
+        }
         return metadata;
     }
 

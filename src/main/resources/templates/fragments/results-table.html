@@ -3,6 +3,7 @@
 <body>
     <!-- Fragment for results table rows -->
     <div th:fragment="resultsTableRows" th:remove="tag">
+        <!-- Main Results Table -->
         <tr th:if="${#lists.isEmpty(results)}">
             <td colspan="8" style="text-align: center; color: #7f8c8d;">No results found</td>
         </tr>
@@ -19,6 +20,40 @@
                 <a th:href="@{/results/{filename}(filename=${result['filename']})}" class="btn btn-primary" style="font-size: 0.875rem; padding: 0.25rem 0.5rem;">View Details</a>
             </td>
         </tr>
+
+        <!-- Individual Results Section (shown when filtering) -->
+        <div th:if="${!#lists.isEmpty(individualResults)}" style="margin-top: 2rem;">
+            <h3>Individual Runs</h3>
+            <p style="color: #7f8c8d; margin-bottom: 1rem;">Detailed results for each exercise matching the current filters</p>
+            <table class="sortable-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('individual-body', 0)" style="cursor: pointer;">Timestamp &#x2195;</th>
+                        <th onclick="sortTable('individual-body', 1)" style="cursor: pointer;">Agent &#x2195;</th>
+                        <th onclick="sortTable('individual-body', 2)" style="cursor: pointer;">Language &#x2195;</th>
+                        <th onclick="sortTable('individual-body', 3)" style="cursor: pointer;">Exercise &#x2195;</th>
+                        <th onclick="sortTable('individual-body', 4)" style="cursor: pointer;">Success &#x2195;</th>
+                        <th onclick="sortTable('individual-body', 5)" style="cursor: pointer;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="individual-body">
+                    <tr th:each="indResult : ${individualResults}">
+                        <td th:text="${indResult['timestamp'] != null ? indResult['timestamp'].replace('T', ' ').substring(0, 16) : ''}">2024-01-01 00:00</td>
+                        <td th:text="${indResult['agent']}">reference</td>
+                        <td th:text="${indResult['language']}">java</td>
+                        <td th:text="${indResult['exercise']}">exercise_name</td>
+                        <td th:text="${indResult['success'] ? '✓' : '✗'}">✓</td>
+                        <td>
+                            <a th:href="@{/results/{filename}(filename=${indResult['filename']})}" class="btn btn-primary" style="font-size: 0.875rem; padding: 0.25rem 0.5rem;">View Details</a>
+                            <a th:if="${indResult['hasTraceFile']}"
+                               th:href="@{/results/{filename}/trace(filename=${indResult['filename']})}"
+                               class="btn btn-secondary"
+                               style="font-size: 0.875rem; padding: 0.25rem 0.5rem; margin-left: 0.5rem;">View Trace</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>

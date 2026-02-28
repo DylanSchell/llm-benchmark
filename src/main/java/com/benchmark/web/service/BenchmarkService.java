@@ -95,7 +95,9 @@ public class BenchmarkService {
 
             if (exerciseName != null && !exerciseName.isEmpty()) {
                 // Single exercise across all selected languages
-                session.setTotalExercises(languages.length);
+                int totalExercises = 0;
+                int successfulExercises = 0;
+
                 for (String language : languages) {
                     // Check for cancellation
                     if (session.getStatus() == RunStatus.CANCELLED) {
@@ -103,21 +105,33 @@ public class BenchmarkService {
                         return;
                     }
 
+                    // Skip if result already exists and was successful
+                    if (benchmarkRunner.resultFileSuccess(exerciseName, agentName, effectiveModel, language, languages)) {
+                        session.emitOutput("Skipping exercise: " + exerciseName + " for language: " + language + " (already completed successfully)");
+                        totalExercises++;
+                        successfulExercises++;
+                        continue;
+                    }
+
                     session.emitOutput("Running exercise: " + exerciseName + " for language: " + language);
                     ExerciseResult result = benchmarkRunner.runReferenceExercise(agent, language, exerciseName, effectiveModel, languages);
                     session.emitOutput(result.getOutput());
 
                     // Save result to file (saveResult also saves trace if available)
-                    benchmarkRunner.saveResult(result, agentName, effectiveModel, languages);
+                    benchmarkRunner.saveResult(result, agentName, effectiveModel, language, languages);
 
+                    totalExercises++;
                     session.incrementCompletedExercises();
 
-                    if (!result.isSuccess()) {
+                    if (result.isSuccess()) {
+                        successfulExercises++;
+                    } else {
                         session.setStatus(RunStatus.FAILED);
                         session.setErrorMessage("Exercise failed for language " + language + ": " + result.getErrorMessage());
                         session.emitOutput("Exercise failed for " + language + ": " + result.getErrorMessage());
                     }
                 }
+
                 if (session.getStatus() != RunStatus.FAILED) {
                     session.setStatus(RunStatus.COMPLETED);
                     session.emitOutput("All exercises completed successfully!");
@@ -318,7 +332,8 @@ public class BenchmarkService {
 
     /**
      * Schedule a batch of benchmark runs.
-     * All items will share the same target directory.
+     * Creates individual queue items for each language/exercise combination.
+     * Never uses "all" exercises - always expands to individual exercise items.
      *
      * @param agentName   The agent to use
      * @param model       The model to use (can be null)
@@ -331,29 +346,36 @@ public class BenchmarkService {
         // Compute target directory once for the entire batch
         String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
 
+        List<BenchmarkQueueItem> items = new java.util.ArrayList<>();
+
         if (exercise != null && !exercise.isEmpty()) {
-            // Single exercise for each language - create one item per language
-            List<BenchmarkQueueItem> items = new java.util.ArrayList<>();
+            // Single exercise specified - create one item per language for that exercise
             for (String language : languages) {
                 String targetDir = config.getOutput().getResultsDir(agentName, effectiveModel, new String[]{language});
                 BenchmarkQueueItem item = new BenchmarkQueueItem(targetDir, agentName, model, language, exercise);
                 items.add(item);
             }
-            queue.addAll(items);
-            logger.info("Scheduled {} queue items for batch run", items.size());
-            return items;
         } else {
-            // All exercises for each language - create one item per language with null exercise
-            List<BenchmarkQueueItem> items = new java.util.ArrayList<>();
+            // No specific exercise - expand to individual items for each language/exercise combination
+            // Never create bulk "all exercises" items - always schedule individually
             for (String language : languages) {
-                String targetDir = config.getOutput().getResultsDir(agentName, effectiveModel, new String[]{language});
-                BenchmarkQueueItem item = new BenchmarkQueueItem(targetDir, agentName, model, language, null);
-                items.add(item);
+                try {
+                    List<String> exercises = benchmarkRunner.getExerciseRunner().getExercisesForLanguage(language);
+                    String targetDir = config.getOutput().getResultsDir(agentName, effectiveModel, new String[]{language});
+                    for (String exerciseName : exercises) {
+                        BenchmarkQueueItem item = new BenchmarkQueueItem(targetDir, agentName, model, language, exerciseName);
+                        items.add(item);
+                    }
+                    logger.info("Scheduled {} individual items for language: {}", exercises.size(), language);
+                } catch (Exception e) {
+                    logger.error("Failed to get exercises for language {}: {}", language, e.getMessage());
+                }
             }
-            queue.addAll(items);
-            logger.info("Scheduled {} queue items for all exercises", items.size());
-            return items;
         }
+
+        queue.addAll(items);
+        logger.info("Scheduled {} queue items total", items.size());
+        return items;
     }
 
     /**

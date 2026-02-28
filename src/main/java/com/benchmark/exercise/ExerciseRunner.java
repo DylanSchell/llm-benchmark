@@ -92,7 +92,7 @@ public class ExerciseRunner {
      * @param exerciseName Name of the exercise
      * @return ExerciseResult with the outcome
      */
-    public ExerciseResult runReferenceExercise(ReferenceAgent agent, String language, String exerciseName) {
+    public ExerciseResult runReferenceExercise(ReferenceAgent agent, String model, String language, String exerciseName) {
         logger.info("Running reference agent for exercise: {} for language: {}", exerciseName, language);
 
         Exercise exercise = findExercise(language, exerciseName);
@@ -101,6 +101,7 @@ public class ExerciseRunner {
             return ExerciseResult.builder()
                     .exerciseName(exerciseName)
                     .language(language)
+                    .model(model)
                     .success(false)
                     .errorMessage("Exercise not found")
                     .build();
@@ -112,13 +113,14 @@ public class ExerciseRunner {
             return ExerciseResult.builder()
                     .exerciseName(exerciseName)
                     .language(language)
+                    .model(model)
                     .success(false)
                     .errorMessage("Exercise directory not found: " + exerciseHostDir)
                     .build();
         }
 
         Path resultDir = getResultsDir();
-        return runReferenceAgent(agent, exercise, exerciseHostDir, resultDir);
+        return runReferenceAgent(agent, exercise, model, exerciseHostDir, resultDir);
     }
 
     /**
@@ -129,7 +131,7 @@ public class ExerciseRunner {
      * @param agentName Name of the agent (for result file naming)
      * @return List of ExerciseResult for all exercises
      */
-    public List<ExerciseResult> runAllReferenceExercises(ReferenceAgent agent, String language, String agentName) {
+    public List<ExerciseResult> runAllReferenceExercises(ReferenceAgent agent, String model, String language, String agentName, String[] languages) {
         logger.info("Running all reference exercises for language: {}", language);
 
         List<Exercise> exercises = findAllExercises(language);
@@ -148,7 +150,7 @@ public class ExerciseRunner {
             logger.info("=============================================================================");
             logger.info("Running {} exercise {} ({}/{})", language, exercise.getName(), ++counter, total);
             // Skip if result already exists
-            if (benchmarkRunner.resultFileSuccess(exercise.getName(), agentName, language)) {
+            if (benchmarkRunner.resultFileSuccess(exercise.getName(), agentName, model, language, languages)) {
                 continue;
             }
             // Verify exercise directory
@@ -160,9 +162,9 @@ public class ExerciseRunner {
             // Create task for parallel execution
             tasks.add(() -> {
                 logger.info("Running reference for exercise {}/{}", language, exercise.getName());
-                ExerciseResult result = runReferenceAgent(agent, exercise, exerciseHostDir, getResultsDir());
+                ExerciseResult result = runReferenceAgent(agent, exercise, model, exerciseHostDir, getResultsDir());
                 // Save result immediately after completion using stored run parameters
-                benchmarkRunner.saveResult(result, runAgentName, runModel, runLanguages);
+                benchmarkRunner.saveResult(result, agentName, model, language, languages);
                 return result;
             });
         }
@@ -366,7 +368,7 @@ public class ExerciseRunner {
     /**
      * Runs the reference agent for an exercise.
      */
-    private ExerciseResult runReferenceAgent(ReferenceAgent agent, Exercise exercise, Path exerciseHostDir, Path resultDir) {
+    private ExerciseResult runReferenceAgent(ReferenceAgent agent, Exercise exercise, String model, Path exerciseHostDir, Path resultDir) {
         try {
             ReferenceAgent.ReferenceResult refResult = agent.runReferenceSolution(exercise, exerciseHostDir, resultDir);
 
@@ -380,6 +382,7 @@ public class ExerciseRunner {
                     .startTime(refResult.startTime())
                     .endTime(refResult.endTime())
                     .trace(refResult.trace())
+                    .model(model)
                     .errorMessage(refResult.success() ? null : refResult.errorMessage())
                     .build();
 
@@ -389,6 +392,7 @@ public class ExerciseRunner {
             return ExerciseResult.builder()
                     .exerciseName(exercise.getName())
                     .language(exercise.getLanguage())
+                    .model(model)
                     .success(false)
                     .errorMessage(e.getMessage())
                     .build();

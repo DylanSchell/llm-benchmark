@@ -28,6 +28,9 @@ public class Config {
     @JsonProperty("output")
     private OutputConfig output;
 
+    @JsonProperty("model")
+    private String model;
+
     public Path getBenchmarkPath() {
         return Paths.get(benchmarkPath);
     }
@@ -63,6 +66,23 @@ public class Config {
 
     public void setDocker(DockerConfig docker) {
         this.docker = docker;
+        if ( model != null ) {
+            docker.updateModelEnvironment(model);
+        }
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+        if ( docker != null ) {
+            docker.updateModelEnvironment(model);
+        }
+        if ( claude != null ) {
+            claude.setModel(model);
+        }
+    }
+
+    public String getModel() {
+        return model;
     }
 
     public void setExercise(ExerciseConfig exercise) {
@@ -71,6 +91,9 @@ public class Config {
 
     public void setClaude(ClaudeConfig claude) {
         this.claude = claude;
+        if ( model != null ) {
+            this.claude.setModel(model);
+        }
     }
 
     public void setOutput(OutputConfig output) {

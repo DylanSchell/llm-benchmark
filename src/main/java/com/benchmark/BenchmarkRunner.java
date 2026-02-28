@@ -63,7 +63,7 @@ public class BenchmarkRunner {
      */
     public ExerciseRunner getExerciseRunner() {
         if (exerciseRunner == null) {
-            return new ExerciseRunner(config, dockerClient, this);
+            exerciseRunner = new ExerciseRunner(config, dockerClient, this);
         }
         return exerciseRunner;
     }
@@ -122,8 +122,8 @@ public class BenchmarkRunner {
     public ExerciseResult runReferenceExercise(ReferenceAgent agent, String language, String exerciseName, String model, String[] languages) {
         // Treat empty strings as null for proper directory naming
         String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
-        getExerciseRunner().setRunParams("reference", effectiveModel, languages);
-        return getExerciseRunner().runReferenceExercise(agent, language, exerciseName);
+        getExerciseRunner().setRunParams(agent.getName(), effectiveModel, languages);
+        return getExerciseRunner().runReferenceExercise(agent, model, language, exerciseName);
     }
 
     /**
@@ -133,7 +133,8 @@ public class BenchmarkRunner {
      * @return List of results for all exercises
      */
     public List<ExerciseResult> runAllReferenceExercises(ReferenceAgent agent, String languages, String agentName) {
-        return runAllReferenceExercises(agent, languages, agentName, null, null);
+
+        return runAllReferenceExercises(agent, languages, agentName, config.getModel(), null);
     }
 
     /**
@@ -155,7 +156,7 @@ public class BenchmarkRunner {
                 // Treat empty strings as null for proper directory naming
                 String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
                 getExerciseRunner().setRunParams(agentName, effectiveModel, languagesArray);
-                List<ExerciseResult> languageResults = getExerciseRunner().runAllReferenceExercises(agent, language.trim(), agentName);
+                List<ExerciseResult> languageResults = getExerciseRunner().runAllReferenceExercises(agent, model, language.trim(), agentName, languagesArray);
                 result.addAll(languageResults);
             }
         }
@@ -278,8 +279,8 @@ public class BenchmarkRunner {
      * @param agentName Name of the agent used
      * @return Path to the saved result file, or null if save failed
      */
-    public Path saveResult(ExerciseResult result, String agentName) {
-        return saveResult(result, agentName, config.getOutput().getResultsDir());
+    public Path saveResult(ExerciseResult result, String agentName, String language) {
+        return saveResult(result, agentName, language, config.getOutput().getResultsDir());
     }
 
     /**
@@ -291,9 +292,12 @@ public class BenchmarkRunner {
      * @param languages Array of languages (for subdirectory naming)
      * @return Path to the saved result file, or null if save failed
      */
-    public Path saveResult(ExerciseResult result, String agentName, String model, String[] languages) {
+    public Path saveResult(ExerciseResult result, String agentName, String model, String language, String[] languages) {
+        if ( languages == null ) {
+            languages = new String[] { language };
+        }
         String resultsDir = config.getOutput().getResultsDir(agentName, model, languages);
-        return saveResult(result, agentName, resultsDir);
+        return saveResult(result, agentName, language, resultsDir);
     }
 
     /**
@@ -304,7 +308,7 @@ public class BenchmarkRunner {
      * @param resultsDir   Results directory path
      * @return Path to the saved result file, or null if save failed
      */
-    public Path saveResult(ExerciseResult result, String agentName, String resultsDir) {
+    public Path saveResult(ExerciseResult result, String agentName, String language, String resultsDir) {
         Path resultsPath = Paths.get(resultsDir);
 
         try {
@@ -477,7 +481,7 @@ public class BenchmarkRunner {
                 }
 
                 // Save result
-                runner.saveResult(result, agentName);
+                runner.saveResult(result, agentName, language);
                 System.exit(result.isSuccess() ? 0 : 1);
             } else {
                 // Run all exercises
@@ -498,8 +502,8 @@ public class BenchmarkRunner {
         }
     }
 
-    public boolean resultFileSuccess(String name, String agentName, String language) {
-        String resultsDir = config.getOutput().getResultsDir(agentName, null, new String[]{language});
+    public boolean resultFileSuccess(String name, String agentName, String model, String language, String[] languages) {
+        String resultsDir = config.getOutput().getResultsDir(agentName, model, languages);
         Path resultsPath = Paths.get(resultsDir);
         String filename = String.format("result_%s_%s_%s.json", agentName, language, name);
         var p = resultsPath.resolve(filename);

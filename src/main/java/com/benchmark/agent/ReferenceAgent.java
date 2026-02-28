@@ -61,7 +61,7 @@ public class ReferenceAgent {
      */
     public record ReferenceResult(String exerciseName, String language, boolean success, int exitCode, String output,
                                   Duration duration, Instant startTime, Instant endTime, String errorMessage,
-                                  String trace, String containerId) {
+                                  String trace, String containerId, String model, String agent) {
 
         public static Builder builder() {
             return new Builder();
@@ -80,6 +80,8 @@ public class ReferenceAgent {
             private String errorMessage;
             private String trace;
             private String containerId;
+            private String model;
+            private String agent;
 
             public Builder containerId(String containerId) {
                 this.containerId = containerId;
@@ -136,9 +138,19 @@ public class ReferenceAgent {
                 return this;
             }
 
+            public Builder model(String model) {
+                this.model = model;
+                return this;
+            }
+
+            public Builder agent(String agent) {
+                this.agent = agent;
+                return this;
+            }
+
             public ReferenceResult build() {
                 return new ReferenceResult(exerciseName, language, success, exitCode, output,
-                        duration, startTime, endTime, errorMessage, trace, containerId);
+                        duration, startTime, endTime, errorMessage, trace, containerId, model, agent);
             }
         }
     }
@@ -182,6 +194,7 @@ public class ReferenceAgent {
                     .output(agentResult.output + "\n" + testResult.output)
                     .language(agentResult.language)
                     .trace(agentResult.trace)
+                    .agent(agentResult.agent)
                     .build();
         } catch (Exception e) {
             Instant endTime = Instant.now();
@@ -196,6 +209,7 @@ public class ReferenceAgent {
                     .startTime(startTime)
                     .endTime(endTime)
                     .errorMessage(e.getMessage())
+                    .agent("reference")
                     .build();
         }
     }
@@ -227,6 +241,7 @@ public class ReferenceAgent {
                 .exitCode(0)
                 .output("")
                 .success(true)
+                .agent("reference")
                 .build();
     }
 
@@ -780,4 +795,7 @@ public class ReferenceAgent {
         }
     }
 
+    public String getName() {
+        return "reference";
+    }
 }

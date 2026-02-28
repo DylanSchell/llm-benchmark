@@ -17,8 +17,10 @@ public class ExerciseResult {
     private final Instant endTime;
     private final String errorMessage;
     private final String trace;
+    private final String model;
 
     private ExerciseResult(Builder builder) {
+        this.model = builder.model;
         this.exerciseName = builder.exerciseName;
         this.language = builder.language;
         this.success = builder.success;
@@ -75,6 +77,10 @@ public class ExerciseResult {
         return trace;
     }
 
+    public String getModel() {
+        return model;
+    }
+
     @Override
     public String toString() {
         return String.format("ExerciseResult{name='%s', language='%s', success=%s, duration=%s}",
@@ -92,6 +98,7 @@ public class ExerciseResult {
         private Instant endTime;
         private String errorMessage;
         private String trace;
+        private String model;
 
         public Builder exerciseName(String exerciseName) {
             this.exerciseName = exerciseName;
@@ -140,6 +147,11 @@ public class ExerciseResult {
 
         public Builder errorMessage(String errorMessage) {
             this.errorMessage = errorMessage;
+            return this;
+        }
+
+        public Builder model(String model) {
+            this.model = model;
             return this;
         }
 

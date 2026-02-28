@@ -5,6 +5,8 @@ public class BashProgress extends ProgressData {
     private String fullOutput;
     private int elapsedTimeSeconds;
     private int totalLines;
+    private int totalBytes;
+    private String taskId;
 
     public String getOutput() {
         return output;
@@ -40,5 +42,19 @@ public class BashProgress extends ProgressData {
         this.totalLines = totalLines;
     }
 
+    public int getTotalBytes() {
+        return totalBytes;
+    }
 
+    public void setTotalBytes(int totalBytes) {
+        this.totalBytes = totalBytes;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
 }
