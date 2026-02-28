@@ -144,54 +144,6 @@ public class ClaudeAgent extends ReferenceAgent {
         }
     }
 
-    /**
-     * Creates a prompt for Claude Code to solve the exercise.
-     */
-    private String createExercisePrompt(Exercise exercise, Path tempWorkDir) throws IOException {
-        StringBuilder prompt = new StringBuilder();
-        Path instructionsPath = tempWorkDir.resolve(".docs").resolve("instructions.md");
-        if (Files.exists(instructionsPath)) {
-            prompt.append(Files.readString(instructionsPath));
-        } else {
-            prompt.append("Please solve the following programming exercise.\n\n");
-            prompt.append("Exercise: ").append(exercise.getName()).append("\n");
-            prompt.append("Language: ").append(exercise.getLanguage()).append("\n\n");
-            prompt.append("Instructions:\n");
-            prompt.append("1. Implement the solution in the source files only, do not touch the test files.\n");
-            prompt.append("2. Run the tests to verify your solution\n\n");
-            prompt.append("3. The tests are validated to be correct, never assume the test to be wrong!\n\n");
-            prompt.append("4. Do not run tests in the background, run them synchronously in the forground, so you do not need to poll for results\n");
-        }
-        for (Path testPath : exercise.getTestPath()) {
-            if (exercise.getTestPath() != null && Files.exists(testPath)) {
-                String needle = "../polyglot-benchmark/" + exercise.getLanguage() + "/exercises/practice/" + exercise.getName();
-                String fixedTestPath = exercise.getTestPath().toString().replaceAll(needle, "/workspace");
-                prompt.append("Test file location: ").append(fixedTestPath).append("\n");
-            }
-        }
-        prompt.append("\nImplement the solution directly, do not ask me to review.\n");
-        if ("java".equals(exercise.getLanguage())) {
-            prompt.append("\nDo not stop working until you have executed the test suite (./gradlew test --no-daemon) and you have validated that the tests succeed!\n");
-        } else if ("javascript".equals(exercise.getLanguage())) {
-            prompt.append("\nRun tests with: npm install && npm run test\n");
-            prompt.append("This exercise uses Jest as the test framework.\n");
-        } else if ("python".equals(exercise.getLanguage())) {
-            prompt.append("\nUse uv to create a virtual environment and run tests:\n");
-            prompt.append("1. Create venv: uv venv (or use existing .venv)\n");
-            prompt.append("2. Activate: source .venv/bin/activate\n");
-            prompt.append("3. Install pytest: uv pip install pytest\n");
-            prompt.append("4. Run tests: pytest\n");
-        } else if ("rust".equals(exercise.getLanguage())) {
-            prompt.append("\nRun tests with: cargo test\n");
-            prompt.append("Use cargo test to validate all tests succeed.\n");
-        } else if ("cpp".equals(exercise.getLanguage())) {
-            prompt.append("\nBuild with: mkdir -p build && cd build && cmake -DEXERCISM_RUN_ALL_TESTS=1 -G \"Unix Makefiles\" .. && make\n");
-            prompt.append("Run tests with: ./build/tests or the test executable in the build directory.\n");
-        }
-        prompt.append("<important>Check that no tests are skipped, enable any tests that shows as skipped in the test results! Any skipped tests will result in failure!</important>\n");
-        return prompt.toString();
-    }
-
     public String getName() {
         return "claude";
     }

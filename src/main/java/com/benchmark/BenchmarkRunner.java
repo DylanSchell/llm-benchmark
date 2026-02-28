@@ -1,6 +1,7 @@
 package com.benchmark;
 
 import com.benchmark.agent.ClaudeAgent;
+import com.benchmark.agent.PiAgent;
 import com.benchmark.agent.ReferenceAgent;
 import com.benchmark.config.Config;
 import com.benchmark.config.ConfigLoader;
@@ -459,8 +460,10 @@ public class BenchmarkRunner {
                 agent = new ReferenceAgent(runner.dockerClient);
             } else if (agentName.equals("claude")) {
                 agent = new ClaudeAgent(runner.dockerClient);
+            } else if (agentName.equals("pi")) {
+                agent = new PiAgent(runner.dockerClient);
             } else {
-                System.err.println("agent must be either 'reference' or 'claude'");
+                System.err.println("agent must be either 'reference', 'claude', or 'pi'");
                 System.exit(1);
             }
 

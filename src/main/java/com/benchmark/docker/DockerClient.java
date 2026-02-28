@@ -44,6 +44,14 @@ public class DockerClient {
     }
 
     /**
+     * Returns the DockerConfig instance.
+     * Used by agents that need access to configuration (e.g., PiAgent for models.json).
+     */
+    public DockerConfig getConfig() {
+        return config;
+    }
+
+    /**
      * Checks if Docker is available and running.
      *
      * @return true if Docker is available
@@ -75,6 +83,28 @@ public class DockerClient {
                                                        int timeoutSeconds, String memoryLimit, String volumeHostDir,
                                                        Consumer<String> outputCallback)
             throws IOException, InterruptedException {
+        return runCommandWithLimitsAndVolume(containerImage, workDir, command, timeoutSeconds, memoryLimit, volumeHostDir, outputCallback, false);
+    }
+
+    /**
+     * Runs a command with memory limits and custom volume mounts, streaming output to a callback.
+     *
+     * @param containerImage Docker image to use (uses config default if null)
+     * @param workDir        Working directory inside the container (uses config default if null)
+     * @param command        Command to execute
+     * @param timeoutSeconds Timeout in seconds (uses config default if <= 0)
+     * @param memoryLimit    Memory limit (uses config default if null)
+     * @param volumeHostDir  Host directory to mount as /workspace (uses current dir if null)
+     * @param outputCallback Optional callback to receive output lines in real-time
+     * @param enablePiVolume If true, also mounts .pi directory for pi agent session data
+     * @return ProcessResult with exit code and output
+     * @throws IOException          if execution fails
+     * @throws InterruptedException if execution is interrupted
+     */
+    public ProcessResult runCommandWithLimitsAndVolume(String containerImage, String workDir, List<String> command,
+                                                       int timeoutSeconds, String memoryLimit, String volumeHostDir,
+                                                       Consumer<String> outputCallback, boolean enablePiVolume)
+            throws IOException, InterruptedException {
 
         String image = containerImage != null ? containerImage : config.getImage();
         String work = workDir != null ? workDir : config.getWorkDir();
@@ -83,6 +113,9 @@ public class DockerClient {
         String hostDir = volumeHostDir != null ? volumeHostDir : getCurrentDir();
 
         Files.createDirectories(Paths.get(hostDir).resolve(".claude"));
+        if (enablePiVolume) {
+            Files.createDirectories(Paths.get(hostDir).resolve(".pi"));
+        }
         List<String> fullCommand = new ArrayList<>();
         fullCommand.add("docker");
         fullCommand.add("run");
@@ -102,6 +135,10 @@ public class DockerClient {
         fullCommand.add(hostDir + ":/workspace");
         fullCommand.add("-v");
         fullCommand.add(hostDir + "/.claude" + ":/home/runner/.claude");
+        if (enablePiVolume) {
+            fullCommand.add("-v");
+            fullCommand.add(hostDir + "/.pi" + ":/home/runner/.pi");
+        }
         fullCommand.add(image);
         fullCommand.addAll(command);
 

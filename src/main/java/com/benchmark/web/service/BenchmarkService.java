@@ -203,6 +203,16 @@ public class BenchmarkService {
                 logger.error("Failed to create Claude agent: {}", e.getMessage());
                 throw new RuntimeException("Failed to create Claude agent", e);
             }
+        } else if ("pi".equals(agentName)) {
+            try {
+                // Use reflection to create PiAgent
+                Class<?> piAgentClass = Class.forName("com.benchmark.agent.PiAgent");
+                var constructor = piAgentClass.getConstructor(DockerClient.class);
+                return (ReferenceAgent) constructor.newInstance(dockerClient);
+            } catch (Exception e) {
+                logger.error("Failed to create Pi agent: {}", e.getMessage());
+                throw new RuntimeException("Failed to create Pi agent", e);
+            }
         }
         return new ReferenceAgent(dockerClient);
     }
