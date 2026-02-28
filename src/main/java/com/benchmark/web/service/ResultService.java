@@ -229,7 +229,12 @@ public class ResultService {
 
             // Parse results array
             if (node.has("results") && node.get("results").isArray()) {
-                cached.results = objectMapper.readValue(node.get("results").toString(), List.class);
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> resultsList = objectMapper.readValue(
+                    node.get("results").toString(), 
+                    new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, Object>>>() {}
+                );
+                cached.results = resultsList;
 
                 // Compute per-language statistics
                 for (Map<String, Object> result : cached.results) {

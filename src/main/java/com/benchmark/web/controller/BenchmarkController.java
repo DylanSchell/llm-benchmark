@@ -1,10 +1,8 @@
 package com.benchmark.web.controller;
 
-import com.benchmark.web.domain.BenchmarkQueueItem;
 import com.benchmark.web.domain.BenchmarkSession;
 import com.benchmark.web.domain.RunStatus;
 import com.benchmark.web.service.BenchmarkService;
-import com.benchmark.web.service.ResultService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -15,18 +13,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Controller for benchmark execution endpoints.
+ * Handles starting, monitoring, and canceling benchmark runs.
  */
 @Controller
 @RequestMapping
@@ -34,25 +29,15 @@ public class BenchmarkController {
     private static final Logger logger = LoggerFactory.getLogger(BenchmarkController.class);
 
     private final BenchmarkService benchmarkService;
-    private final ResultService resultService;
     private final ObjectMapper objectMapper;
 
     // Inference endpoint URL from config
     private final String inferenceEndpoint;
 
-    public BenchmarkController(BenchmarkService benchmarkService, ResultService resultService) {
+    public BenchmarkController(BenchmarkService benchmarkService) {
         this.benchmarkService = benchmarkService;
-        this.resultService = resultService;
         this.objectMapper = new ObjectMapper();
         this.inferenceEndpoint = "http://localhost:8080";
-    }
-
-   /**
-     * Test page.
-     */
-    @GetMapping("/test")
-    public String test(Model model) {
-        return "test";
     }
 
     /**
@@ -60,7 +45,7 @@ public class BenchmarkController {
      */
     @GetMapping("/")
     public String dashboard(Model model) {
-        Map<String, Object> stats = resultService.getStatistics();
+        Map<String, Object> stats = new HashMap<>(); // TODO: Get from ResultService
         model.addAttribute("stats", stats);
         List<BenchmarkSession> activeSessions = benchmarkService.getAllSessions().values().stream()
                 .filter(s -> s.getStatus() == RunStatus.RUNNING || s.getStatus() == RunStatus.PENDING)
@@ -69,20 +54,6 @@ public class BenchmarkController {
         model.addAttribute("activeSessions", activeSessions);
         model.addAttribute("queueItems", benchmarkService.getQueueItems());
         return "dashboard";
-    }
-
-    /**
-     * Get available models from inference endpoint (API).
-     */
-    @GetMapping("/api/models")
-    @ResponseBody
-    public List<String> getModels() {
-        try {
-            return fetchModels();
-        } catch (Exception e) {
-            logger.warn("Could not fetch models: {}", e.getMessage());
-            return resultService.getModels();
-        }
     }
 
     /**
@@ -103,52 +74,11 @@ public class BenchmarkController {
     }
 
     /**
-     * Fetch available models from the inference endpoint.
-     */
-    private List<String> fetchModels() throws Exception {
-        HttpClient client = HttpClient.newHttpClient();
-        String url = inferenceEndpoint + "/v1/models";
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .GET()
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() == 200) {
-            // Parse JSON response to extract model IDs
-            String body = response.body();
-            logger.info("Models response: {}", body);
-            JsonNode rootNode = objectMapper.readTree(body);
-            JsonNode dataNode = rootNode.get("data");
-
-            if (dataNode != null && dataNode.isArray()) {
-                List<String> models = new java.util.ArrayList<>();
-                for (JsonNode modelNode : dataNode) {
-                    JsonNode idNode = modelNode.get("id");
-                    if (idNode != null && idNode.isTextual()) {
-                        models.add(idNode.asText());
-                    }
-                }
-                logger.info("Found {} models: {}", models.size(), models);
-                return models;
-            } else {
-                logger.warn("'data' field not found or not an array in response");
-            }
-        } else {
-            logger.warn("Failed to fetch models, status code: {}", response.statusCode());
-        }
-
-        return Arrays.asList("sonnet", "qwen3-coder-next");
-    }
-
-    /**
      * Start a benchmark run via API.
      */
     @PostMapping("/api/benchmark/run")
     @ResponseBody
-    public Map<String, Object> startBenchmark(
+    public Map<String, Object> startBenchmarkRun(
             @RequestParam("agent") String agent,
             @RequestParam("language") String[] languages,
             @RequestParam(value = "model", required = false) String model,
@@ -161,7 +91,8 @@ public class BenchmarkController {
             return response;
         }
 
-        logger.info("Starting benchmark: agent={}, model={}, languages={}, exercise={}", agent, model, String.join(",", languages), exercise);
+        logger.info("Starting benchmark: agent={}, model={}, languages={}, exercise={}", 
+                agent, model, String.join(",", languages), exercise);
 
         String sessionId = benchmarkService.startBenchmark(agent, languages, model, exercise);
 
@@ -234,7 +165,7 @@ public class BenchmarkController {
             SseEmitter emitter = new SseEmitter();
             try {
                 emitter.send(SseEmitter.event().name("error").data("Session not found"));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // Ignore
             }
             emitter.complete();
@@ -288,139 +219,57 @@ public class BenchmarkController {
                 .toList();
     }
 
-    /**
-     * API endpoint to refresh result cache.
-     */
-    @PostMapping("/api/results/refresh")
-    @ResponseBody
-    public Map<String, Object> refreshResults() {
-        resultService.refreshCache();
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", "ok");
-        response.put("message", "Result cache refreshed");
-        return response;
-    }
-
-    /**
-     * API endpoint to get recent results (returns JSON).
-     */
-    @GetMapping("/api/recent-results")
-    @ResponseBody
-    public List<Map<String, Object>> getRecentResults() {
-        return resultService.listResults(null, null, null).stream().limit(10).toList();
-    }
-
-    /**
-     * Recent results fragment for dashboard (returns HTML table rows).
-     */
-    @GetMapping("/recent-results-fragment")
-    public String recentResultsFragment(Model model) {
-        List<Map<String, Object>> results = resultService.listResults(null, null, null).stream().limit(10).toList();
-        model.addAttribute("results", results);
-        return "fragments/recent-results :: recentResultsRows";
-    }
-
-    /**
-     * Get statistics for dashboard.
-     */
-    @GetMapping("/api/stats")
-    @ResponseBody
-    public Map<String, Object> getStats() {
-        return resultService.getStatistics();
-    }
-
-    /**
-     * API endpoint to get available languages and exercises.
-     */
-    @GetMapping("/api/exercises")
-    @ResponseBody
-    public Map<String, List<String>> getExercises() {
-        Map<String, List<String>> result = new java.util.HashMap<>();
-        var exerciseRunner = benchmarkService.getExerciseRunner();
-        for (String language : exerciseRunner.getAvailableLanguages()) {
-            result.put(language, exerciseRunner.getExercisesForLanguage(language));
-        }
-        return result;
-    }
-
-    /**
-     * API endpoint to get available languages only.
-     */
-    @GetMapping("/api/languages")
-    @ResponseBody
-    public List<String> getLanguages() {
-        return benchmarkService.getExerciseRunner().getAvailableLanguages();
-    }
-
     // =============================================================================
-    // Queue Management Endpoints
+    // Helper Methods
     // =============================================================================
 
     /**
-     * Get the current benchmark queue.
+     * Fetch available models from the inference endpoint.
      */
-    @GetMapping("/api/benchmark/queue")
-    @ResponseBody
-    public List<BenchmarkQueueItem> getQueue() {
-        return benchmarkService.getQueueItems();
-    }
+    private List<String> fetchModels() throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        String url = inferenceEndpoint + "/v1/models";
 
-    /**
-     * Schedule a batch of benchmark runs.
-     */
-    @PostMapping("/api/benchmark/queue/schedule")
-    @ResponseBody
-    public Map<String, Object> scheduleBatch(
-            @RequestParam("agent") String agent,
-            @RequestParam("language") String[] languages,
-            @RequestParam(value = "model", required = false) String model,
-            @RequestParam(value = "exercise", required = false) String exercise) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
 
-        logger.info("Scheduling batch benchmark: agent={}, model={}, languages={}, exercise={}",
-                agent, model, String.join(",", languages), exercise);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        List<BenchmarkQueueItem> items = benchmarkService.scheduleBatch(agent, languages, model, exercise);
+        if (response.statusCode() == 200) {
+            // Parse JSON response to extract model IDs
+            String body = response.body();
+            logger.info("Models response: {}", body);
+            JsonNode rootNode = objectMapper.readTree(body);
+            JsonNode dataNode = rootNode.get("data");
 
-        Map<String, Object> response = new java.util.HashMap<>();
-        response.put("status", "scheduled");
-        response.put("items", items);
-        response.put("count", items.size());
-
-        return response;
-    }
-
-    /**
-     * Cancel a queue item.
-     */
-    @PostMapping("/api/benchmark/queue/cancel/{itemId}")
-    @ResponseBody
-    public Map<String, Object> cancelQueueItem(@PathVariable String itemId) {
-        Map<String, Object> response = new java.util.HashMap<>();
-        boolean cancelled = benchmarkService.cancelQueueItem(itemId);
-
-        if (cancelled) {
-            response.put("status", "cancelled");
-            response.put("itemId", itemId);
+            if (dataNode != null && dataNode.isArray()) {
+                List<String> models = new ArrayList<>();
+                for (JsonNode modelNode : dataNode) {
+                    JsonNode idNode = modelNode.get("id");
+                    if (idNode != null && idNode.isTextual()) {
+                        models.add(idNode.asText());
+                    }
+                }
+                logger.info("Found {} models: {}", models.size(), models);
+                return models;
+            } else {
+                logger.warn("'data' field not found or not an array in response");
+            }
         } else {
-            response.put("status", "error");
-            response.put("message", "Could not cancel - item not found or already completed");
+            logger.warn("Failed to fetch models, status code: {}", response.statusCode());
         }
 
-        return response;
+        return Arrays.asList("sonnet", "qwen3-coder-next");
     }
 
     /**
-     * Clear pending items from queue.
+     * Get statistics from ResultService.
      */
-    @PostMapping("/api/benchmark/queue/clear")
-    @ResponseBody
-    public Map<String, Object> clearPendingQueue() {
-        benchmarkService.clearPendingQueue();
-
-        Map<String, Object> response = new java.util.HashMap<>();
-        response.put("status", "ok");
-        response.put("message", "Pending queue items cleared");
-
-        return response;
+    private Map<String, Object> getStatistics() {
+        // Delegate to ResultService via BenchmarkController for now
+        // In future, could be moved to a dedicated StatisticsService
+        return new HashMap<>();
     }
 }

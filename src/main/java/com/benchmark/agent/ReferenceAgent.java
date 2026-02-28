@@ -24,10 +24,12 @@ public class ReferenceAgent {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceAgent.class);
 
     private final DockerClient dockerClient;
+    private final LanguageHandlerRegistry handlerRegistry;
     private java.util.function.Consumer<String> outputConsumer;
 
     public ReferenceAgent(DockerClient dockerClient) {
         this.dockerClient = dockerClient;
+        this.handlerRegistry = new LanguageHandlerRegistry();
     }
 
     protected DockerClient getDockerClient() {

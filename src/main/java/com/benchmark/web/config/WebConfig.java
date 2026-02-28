@@ -5,8 +5,12 @@ import com.benchmark.config.Config;
 import com.benchmark.config.ConfigLoader;
 import com.benchmark.docker.DockerClient;
 import com.benchmark.exercise.ExerciseRunner;
+import com.benchmark.web.service.BenchmarkExecutor;
+import com.benchmark.web.service.QueueProcessor;
+import com.benchmark.web.service.SessionManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -19,6 +23,7 @@ import java.util.concurrent.ThreadFactory;
  * Web configuration for static resources and executors.
  */
 @Configuration
+@EnableAsync
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
@@ -68,6 +73,56 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public ExecutorService benchmarkExecutor() {
         return Executors.newCachedThreadPool(new DaemonThreadFactory());
+    }
+
+    /**
+     * ResultService bean - depends on Config.
+     */
+    @Bean
+    public com.benchmark.web.service.ResultService resultService(Config config) {
+        return new com.benchmark.web.service.ResultService(config);
+    }
+
+    /**
+     * SessionManager bean.
+     */
+    @Bean
+    public SessionManager sessionManager() {
+        return new SessionManager();
+    }
+
+    /**
+     * BenchmarkExecutor bean - depends on BenchmarkRunner and DockerClient.
+     */
+    @Bean
+    public BenchmarkExecutor benchmarkExecutor(BenchmarkRunner benchmarkRunner, DockerClient dockerClient) {
+        return new BenchmarkExecutor(benchmarkRunner, dockerClient);
+    }
+
+    /**
+     * QueueProcessor bean - depends on other services.
+     */
+    @Bean
+    public QueueProcessor queueProcessor(SessionManager sessionManager, 
+                                        com.benchmark.web.service.ResultService resultService,
+                                        ExerciseRunner exerciseRunner,
+                                        Config config,
+                                        ExecutorService benchmarkExecutor) {
+        return new QueueProcessor(sessionManager, resultService, exerciseRunner, config, benchmarkExecutor);
+    }
+
+    /**
+     * BenchmarkService bean - facade for all benchmark operations.
+     */
+    @Bean
+    public com.benchmark.web.service.BenchmarkService benchmarkService(
+            SessionManager sessionManager,
+            BenchmarkExecutor benchmarkExecutor,
+            QueueProcessor queueProcessor,
+            com.benchmark.web.service.ResultService resultService,
+            ExerciseRunner exerciseRunner) {
+        return new com.benchmark.web.service.BenchmarkService(
+                sessionManager, benchmarkExecutor, queueProcessor, resultService, exerciseRunner);
     }
 
     /**

@@ -4,6 +4,7 @@ import com.benchmark.BenchmarkRunner;
 import com.benchmark.agent.ReferenceAgent;
 import com.benchmark.config.Config;
 import com.benchmark.docker.DockerClient;
+import com.benchmark.exception.ExerciseNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,25 +99,13 @@ public class ExerciseRunner {
         Exercise exercise = findExercise(language, exerciseName);
         if (exercise == null) {
             logger.error("Exercise not found: {}/{}", language, exerciseName);
-            return ExerciseResult.builder()
-                    .exerciseName(exerciseName)
-                    .language(language)
-                    .model(model)
-                    .success(false)
-                    .errorMessage("Exercise not found")
-                    .build();
+            throw new ExerciseNotFoundException(language, exerciseName);
         }
 
         Path exerciseHostDir = findExerciseHostDir(language, exerciseName);
         if (exerciseHostDir == null || !Files.exists(exerciseHostDir)) {
             logger.error("Exercise directory not found: {}", exerciseHostDir);
-            return ExerciseResult.builder()
-                    .exerciseName(exerciseName)
-                    .language(language)
-                    .model(model)
-                    .success(false)
-                    .errorMessage("Exercise directory not found: " + exerciseHostDir)
-                    .build();
+            throw new ExerciseNotFoundException(language, exerciseName);
         }
 
         Path resultDir = getResultsDir();

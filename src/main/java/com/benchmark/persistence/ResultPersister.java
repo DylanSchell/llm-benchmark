@@ -1,6 +1,7 @@
 package com.benchmark.persistence;
 
 import com.benchmark.config.OutputConfig;
+import com.benchmark.exception.BenchmarkException;
 import com.benchmark.exercise.ExerciseResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -57,7 +58,8 @@ public class ResultPersister {
      * @param agentName    Name of the agent used
      * @param language     Programming language
      * @param resultsDir   Results directory path
-     * @return Path to the saved result file, or null if save failed
+     * @return Path to the saved result file
+     * @throws BenchmarkException if save fails
      */
     public Path saveResult(ExerciseResult result, String agentName, String language, String resultsDir) {
         Path resultsPath = Path.of(resultsDir);
@@ -78,8 +80,9 @@ public class ResultPersister {
             return resultFile;
 
         } catch (IOException e) {
-            logger.error("Failed to save result to {}: {}", resultsPath, e.getMessage());
-            return null;
+            String errorMsg = String.format("Failed to save result to %s: %s", resultsPath, e.getMessage());
+            logger.error(errorMsg, e);
+            throw new BenchmarkException(errorMsg, e);
         }
     }
 
@@ -121,7 +124,8 @@ public class ResultPersister {
      * @param agentName Name of the agent used
      * @param model     Model name (for subdirectory naming)
      * @param languages Array of languages (for subdirectory naming)
-     * @return Path to the saved results file, or null if save failed
+     * @return Path to the saved results file
+     * @throws BenchmarkException if save fails
      */
     public Path saveResults(List<ExerciseResult> results, String agentName, String model, String[] languages) {
         String resultsDir = outputConfig.getResultsDir(agentName, model, languages);
@@ -165,8 +169,9 @@ public class ResultPersister {
             return resultFile;
 
         } catch (IOException e) {
-            logger.error("Failed to save results to {}: {}", resultsPath, e.getMessage());
-            return null;
+            String errorMsg = String.format("Failed to save results to %s: %s", resultsPath, e.getMessage());
+            logger.error(errorMsg, e);
+            throw new BenchmarkException(errorMsg, e);
         }
     }
 

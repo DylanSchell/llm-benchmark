@@ -279,158 +279,17 @@ public class BenchmarkRunner {
         return results.stream().filter(r -> !r.isSuccess()).toList();
     }
 
+    /**
+     * @deprecated Use {@link CliEntryPoint#main(String[])} instead.
+     * This method is retained for backward compatibility only.
+     */
+    @Deprecated(since = "1.1", forRemoval = true)
     public static void main(String[] args) {
-        String configFile = "config.yaml";
-        boolean webMode = false;
-        int webPort = 8080;
-        String model = null;  // Override for claude.model
-        String resultsDir = null;  // Override for output.results_dir
-
-        try {
-            for (int i = 0; i < args.length; i++) {
-                if (args[i].equals("--config") && i + 1 < args.length) {
-                    configFile = args[++i];
-                } else if (args[i].equals("--web")) {
-                    webMode = true;
-                    // Check if port is specified as next argument (must be a number)
-                    if (i + 1 < args.length) {
-                        try {
-                            int potentialPort = Integer.parseInt(args[++i]);
-                            if (potentialPort > 0 && potentialPort < 65536) {
-                                webPort = potentialPort;
-                            } else {
-                                i--; // Not a valid port, step back
-                            }
-                        } catch (NumberFormatException e) {
-                            i--; // Not a number, step back
-                        }
-                    }
-                } else if (args[i].equals("--port") && i + 1 < args.length) {
-                    webPort = Integer.parseInt(args[++i]);
-                } else if (args[i].equals("--model") && i + 1 < args.length) {
-                    model = args[++i];
-                } else if (args[i].equals("--results-dir") && i + 1 < args.length) {
-                    resultsDir = args[++i];
-                }
-            }
-
-            Path configPath = Paths.get(configFile);
-            if (!configPath.toFile().exists()) {
-                System.err.printf("%s not found in current directory", configFile);
-                System.exit(1);
-            }
-
-            // Load config first
-            Config config = ConfigLoader.load(configPath);
-
-            // Apply command-line overrides
-            if (model != null) {
-                config.getClaude().setModel(model);
-                config.getDocker().updateModelEnvironment(model);
-                logger.info("Overriding model from config with: {}", model);
-            }
-            if (resultsDir != null) {
-                config.getOutput().setResultsDir(resultsDir);
-                logger.info("Overriding results_dir from config with: {}", resultsDir);
-            }
-
-            BenchmarkRunner runner = new BenchmarkRunner(config, new DockerClient(config.getDocker()));
-
-            // Check for web mode - only when --web flag is explicitly passed
-            if (webMode) {
-                // Start web interface
-                System.out.println("Starting web interface on port " + webPort + "...");
-                startWebMode(args, configPath, runner, webPort);
-                return;
-            }
-
-            if (!runner.isDockerAvailable()) {
-                System.err.println("Docker is not available. Please ensure Docker is running.");
-                System.exit(1);
-            }
-
-            String language = "java";
-            String exerciseName = null;
-            String agentName = "reference";
-
-            // Parse command line arguments
-            for (int i = 0; i < args.length; i++) {
-                if (args[i].equals("--language") && i + 1 < args.length) {
-                    language = args[++i];
-                } else if (args[i].equals("--exercise") && i + 1 < args.length) {
-                    exerciseName = args[++i];
-                } else if (args[i].equals("--agent") && i + 1 < args.length) {
-                    agentName = args[++i];
-                }
-            }
-
-            ReferenceAgent agent;
-            try {
-                agent = AgentFactory.createAgent(agentName, runner.dockerClient);
-            } catch (IllegalArgumentException e) {
-                System.err.println(e.getMessage());
-                System.exit(1);
-                return; // Never reached, but required for compilation
-            }
-
-            if (exerciseName != null) {
-                // Run single exercise
-                ExerciseResult result;
-
-                System.out.println("Running with " + agentName + " agent ...");
-                result = runner.runReferenceExercise(agent, language, exerciseName);
-                System.out.println("\n=== Exercise Result ===");
-                System.out.println("Exercise: " + result.getExerciseName());
-                System.out.println("Language: " + result.getLanguage());
-                System.out.println("Success: " + result.isSuccess());
-                System.out.println("Duration: " + result.getDuration());
-                if (!result.isSuccess()) {
-                    System.out.println("\nOutput:");
-                    printOutput(result.getOutput(), "  ");
-                }
-
-                // Save result
-                runner.saveResult(result, agentName, language);
-                System.exit(result.isSuccess() ? 0 : 1);
-            } else {
-                // Run all exercises
-                System.out.println("Running all exercises with " + agentName + " agent ...");
-
-                List<ExerciseResult> results = runner.runAllReferenceExercises(agent, language, agentName);
-                runner.printSummary(results);
-
-                // Save results
-                runner.saveResults(results, agentName, language);
-
-                long failed = results.stream().filter(r -> !r.isSuccess()).count();
-                System.exit(failed > 0 ? 1 : 0);
-            }
-        } catch (Exception e) {
-            logger.error("Failed to run benchmark: {}", e.getMessage(), e);
-            System.exit(1);
-        }
+        CliEntryPoint.main(args);
     }
 
     public boolean resultFileSuccess(String name, String agentName, String model, String language, String[] languages) {
         return resultPersister.resultFileSuccess(name, agentName, model, language, languages);
-    }
-
-    /**
-     * Starts the web interface mode.
-     * This method is called when --web flag is passed or when no arguments are provided.
-     * All beans are now managed by Spring - no manual passing needed.
-     */
-    private static void startWebMode(String[] args, Path configPath, BenchmarkRunner runner, int port) {
-        try {
-            // Import and start Spring Boot application
-            Class<?> webRunnerClass = Class.forName("com.benchmark.web.WebBenchmarkRunner");
-            var method = webRunnerClass.getDeclaredMethod("runWebMode", String[].class);
-            method.invoke(null, (Object) args);
-        } catch (Exception e) {
-            System.err.println("Failed to start web interface: " + e.getMessage());
-            e.printStackTrace();
-            System.exit(1);
-        }
     }
 
     // Package-private getter for config access in web mode

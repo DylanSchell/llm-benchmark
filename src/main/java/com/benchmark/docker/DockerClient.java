@@ -1,6 +1,8 @@
 package com.benchmark.docker;
 
 import com.benchmark.config.DockerConfig;
+import com.benchmark.exception.BenchmarkException;
+import com.benchmark.exception.DockerExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,7 +180,14 @@ public class DockerClient {
             // if we cancelled, the process might not have exited
             exitCode = process.exitValue();
         }
-        return new ProcessResult(exitCode, sb.toString(), completed, containerName);
+        ProcessResult result = new ProcessResult(exitCode, sb.toString(), completed, containerName);
+        
+        // Log errors but don't throw here - let caller decide how to handle
+        if (!result.isSuccess()) {
+            logger.error("Docker command failed with exit code {}: {}", exitCode, result.output().substring(0, Math.min(200, result.output().length())));
+        }
+        
+        return result;
     }
 
     /**
