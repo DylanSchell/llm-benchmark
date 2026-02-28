@@ -1,6 +1,7 @@
 package com.benchmark.web.service;
 
 import com.benchmark.BenchmarkRunner;
+import com.benchmark.agent.AgentFactory;
 import com.benchmark.agent.ReferenceAgent;
 import com.benchmark.config.Config;
 import com.benchmark.docker.DockerClient;
@@ -191,30 +192,15 @@ public class BenchmarkService {
 
     /**
      * Creates an agent instance based on name.
+     * Uses AgentFactory instead of reflection for better type safety and testability.
      */
     private ReferenceAgent createAgent(String agentName) {
-        if ("claude".equals(agentName)) {
-            try {
-                // Use reflection to create ClaudeAgent
-                Class<?> claudeAgentClass = Class.forName("com.benchmark.agent.ClaudeAgent");
-                var constructor = claudeAgentClass.getConstructor(DockerClient.class);
-                return (ReferenceAgent) constructor.newInstance(dockerClient);
-            } catch (Exception e) {
-                logger.error("Failed to create Claude agent: {}", e.getMessage());
-                throw new RuntimeException("Failed to create Claude agent", e);
-            }
-        } else if ("pi".equals(agentName)) {
-            try {
-                // Use reflection to create PiAgent
-                Class<?> piAgentClass = Class.forName("com.benchmark.agent.PiAgent");
-                var constructor = piAgentClass.getConstructor(DockerClient.class);
-                return (ReferenceAgent) constructor.newInstance(dockerClient);
-            } catch (Exception e) {
-                logger.error("Failed to create Pi agent: {}", e.getMessage());
-                throw new RuntimeException("Failed to create Pi agent", e);
-            }
+        try {
+            return AgentFactory.createAgent(agentName, dockerClient);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to create agent: {}", e.getMessage());
+            throw new RuntimeException("Failed to create agent: " + agentName, e);
         }
-        return new ReferenceAgent(dockerClient);
     }
 
     /**

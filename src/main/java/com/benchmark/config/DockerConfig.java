@@ -104,4 +104,23 @@ public class DockerConfig {
             }
         }
     }
+
+    /**
+     * Validates the Docker configuration.
+     *
+     * @throws ConfigurationException if validation fails
+     */
+    public void validate() throws ConfigurationException {
+        if (image == null || image.isBlank()) {
+            throw new ConfigurationException("docker.image is required");
+        }
+
+        if (timeout < 10) {
+            throw new ConfigurationException("docker.timeout must be at least 10 seconds, got: " + timeout);
+        }
+
+        if (memory == null || memory.isBlank()) {
+            throw new ConfigurationException("docker.memory is required");
+        }
+    }
 }

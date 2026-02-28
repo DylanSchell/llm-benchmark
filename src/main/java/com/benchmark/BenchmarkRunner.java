@@ -1,29 +1,21 @@
 package com.benchmark;
 
-import com.benchmark.agent.ClaudeAgent;
-import com.benchmark.agent.PiAgent;
+import com.benchmark.agent.AgentFactory;
 import com.benchmark.agent.ReferenceAgent;
 import com.benchmark.config.Config;
 import com.benchmark.config.ConfigLoader;
 import com.benchmark.docker.DockerClient;
 import com.benchmark.exercise.ExerciseResult;
 import com.benchmark.exercise.ExerciseRunner;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.benchmark.persistence.ResultPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Main entry point for the benchmark runner.
@@ -34,6 +26,7 @@ public class BenchmarkRunner {
 
     private final Config config;
     private final DockerClient dockerClient;
+    private final ResultPersister resultPersister;
     private ExerciseRunner exerciseRunner;
 
     private static final Set<String> supportedLanguages = Set.of("java", "go", "javascript", "python", "rust", "cpp");
@@ -49,6 +42,7 @@ public class BenchmarkRunner {
     public BenchmarkRunner(Config config, DockerClient dockerClient) throws Exception {
         this.config = config;
         this.dockerClient = dockerClient;
+        this.resultPersister = new ResultPersister(config.getOutput());
         this.exerciseRunner = null; // Will be set via setter or created lazily
     }
 
@@ -96,6 +90,13 @@ public class BenchmarkRunner {
      */
     public String[] getRunLanguages() {
         return exerciseRunner != null ? exerciseRunner.getRunLanguages() : new String[]{};
+    }
+
+    /**
+     * Gets the ResultPersister for result persistence operations.
+     */
+    public ResultPersister getResultPersister() {
+        return resultPersister;
     }
 
     /**
@@ -178,6 +179,7 @@ public class BenchmarkRunner {
 
     /**
      * Saves results to the configured results directory.
+     * Delegates to ResultPersister.
      *
      * @param results   List of exercise results to save
      * @param agentName Name of the agent used (for filename)
@@ -185,11 +187,12 @@ public class BenchmarkRunner {
      * @return Path to the saved results file, or null if save failed
      */
     public Path saveResults(List<ExerciseResult> results, String agentName, String language) {
-        return saveResults(results, agentName, new String[]{language});
+        return resultPersister.saveResults(results, agentName, new String[]{language});
     }
 
     /**
      * Saves results to the configured results directory.
+     * Delegates to ResultPersister.
      *
      * @param results   List of exercise results to save
      * @param agentName Name of the agent used (for subdirectory naming)
@@ -198,68 +201,39 @@ public class BenchmarkRunner {
      * @return Path to the saved results file, or null if save failed
      */
     public Path saveResults(List<ExerciseResult> results, String agentName, String model, String[] languages) {
-        String resultsDir = config.getOutput().getResultsDir(agentName, model, languages);
-        Path resultsPath = Paths.get(resultsDir);
-        try {
-            // Create results directory if it doesn't exist
-            Files.createDirectories(resultsPath);
-
-            // Generate timestamped filename
-            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-            String langPart = languages != null && languages.length > 0 ? String.join("-", languages) : "unknown";
-            String filename = String.format("results_%s_%s_%s.json", agentName, langPart, timestamp);
-            Path resultFile = resultsPath.resolve(filename);
-            // Create summary object
-            long successful = results.stream().filter(ExerciseResult::isSuccess).count();
-            double successRate = results.isEmpty() ? 0.0 : (successful * 100.0 / results.size());
-
-            var summary = new java.util.HashMap<String, Object>();
-            summary.put("timestamp", LocalDateTime.now().toString());
-            summary.put("agent", agentName);
-            summary.put("language", String.join(",", languages));
-            summary.put("total_exercises", results.size());
-            summary.put("successful", successful);
-            summary.put("failed", results.size() - successful);
-            summary.put("success_rate", String.format("%.1f%%", successRate));
-            summary.put("results", results);
-
-            // Write JSON file
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            mapper.writeValue(resultFile.toFile(), summary);
-
-            System.out.println("\nResults saved to: " + resultFile.toAbsolutePath());
-            for (ExerciseResult result : results) {
-                String traceFileName = String.format("trace_%s_%s_%s.html", agentName, langPart, timestamp);
-                Path traceFile = resultsPath.resolve(traceFileName);
-                if (result.getTrace() != null && !result.getTrace().isEmpty()) {
-                    Files.writeString(traceFile, result.getTrace());
-                }
-            }
-            return resultFile;
-
-        } catch (IOException e) {
-            logger.error("Failed to save results to {}: {}", resultsPath, e.getMessage());
-            return null;
-        }
+        return resultPersister.saveResults(results, agentName, model, languages);
     }
 
     /**
-     * Saves results to the configured results directory.
+     * Saves a single exercise result to the results directory.
+     * Delegates to ResultPersister.
      *
-     * @param results   List of exercise results to save
-     * @param agentName Name of the agent used (for filename)
-     * @param languages Array of languages (for filename)
-     * @return Path to the saved results file, or null if save failed
+     * @param result    Exercise result to save
+     * @param agentName Name of the agent used
+     * @return Path to the saved result file, or null if save failed
      */
-    public Path saveResults(List<ExerciseResult> results, String agentName, String[] languages) {
-        String resultsDir = config.getOutput().getResultsDir(agentName, null, languages);
-        return saveResults(results, agentName, null, languages);
+    public Path saveResult(ExerciseResult result, String agentName, String language) {
+        return resultPersister.saveResult(result, agentName, language);
+    }
+
+    /**
+     * Saves a single exercise result with model information.
+     * Delegates to ResultPersister.
+     *
+     * @param result    Exercise result to save
+     * @param agentName Name of the agent used
+     * @param model     Model name (for subdirectory naming)
+     * @param language  Programming language
+     * @param languages Array of languages (for subdirectory naming)
+     * @return Path to the saved result file, or null if save failed
+     */
+    public Path saveResult(ExerciseResult result, String agentName, String model, String language, String[] languages) {
+        return resultPersister.saveResult(result, agentName, model, language, languages);
     }
 
     /**
      * Checks if a result file already exists for the given exercise.
+     * Delegates to ResultPersister.
      *
      * @param exerciseName Name of the exercise
      * @param agentName    Name of the agent used
@@ -267,72 +241,7 @@ public class BenchmarkRunner {
      * @return true if result file exists, false otherwise
      */
     public boolean resultFileExists(String exerciseName, String agentName, String language) {
-        String resultsDir = config.getOutput().getResultsDir(agentName, null, new String[]{language});
-        Path resultsPath = Paths.get(resultsDir);
-        String filename = String.format("result_%s_%s_%s.json", agentName, language, exerciseName);
-        return resultsPath.resolve(filename).toFile().exists();
-    }
-
-    /**
-     * Saves a single exercise result to the results directory.
-     *
-     * @param result    Exercise result to save
-     * @param agentName Name of the agent used
-     * @return Path to the saved result file, or null if save failed
-     */
-    public Path saveResult(ExerciseResult result, String agentName, String language) {
-        return saveResult(result, agentName, language, config.getOutput().getResultsDir());
-    }
-
-    /**
-     * Saves a single exercise result to the results directory.
-     *
-     * @param result    Exercise result to save
-     * @param agentName Name of the agent used
-     * @param model     Model name (for subdirectory naming)
-     * @param languages Array of languages (for subdirectory naming)
-     * @return Path to the saved result file, or null if save failed
-     */
-    public Path saveResult(ExerciseResult result, String agentName, String model, String language, String[] languages) {
-        if ( languages == null ) {
-            languages = new String[] { language };
-        }
-        String resultsDir = config.getOutput().getResultsDir(agentName, model, languages);
-        return saveResult(result, agentName, language, resultsDir);
-    }
-
-    /**
-     * Saves a single exercise result to the specified results directory.
-     *
-     * @param result       Exercise result to save
-     * @param agentName    Name of the agent used
-     * @param resultsDir   Results directory path
-     * @return Path to the saved result file, or null if save failed
-     */
-    public Path saveResult(ExerciseResult result, String agentName, String language, String resultsDir) {
-        Path resultsPath = Paths.get(resultsDir);
-
-        try {
-            // Create results directory if it doesn't exist
-            Files.createDirectories(resultsPath);
-            // Generate filename with exercise name
-            String filename = String.format("result_%s_%s_%s.json", agentName, result.getLanguage(), result.getExerciseName());
-            Path resultFile = resultsPath.resolve(filename);
-            Path traceFile = resultsPath.resolve(String.format("trace_%s_%s_%s.html", agentName, result.getLanguage(), result.getExerciseName()));
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            mapper.writeValue(resultFile.toFile(), result);
-            System.out.println("\nResult saved to: " + resultFile.toAbsolutePath());
-            if (result.getTrace() != null && !result.getTrace().isEmpty()) {
-                Files.writeString(traceFile, result.getTrace());
-            }
-            return resultFile;
-
-        } catch (IOException e) {
-            logger.error("Failed to save result to {}: {}", resultsPath, e.getMessage());
-            return null;
-        }
+        return resultPersister.resultFileExists(exerciseName, agentName, language);
     }
 
     /**
@@ -455,16 +364,13 @@ public class BenchmarkRunner {
                 }
             }
 
-            ReferenceAgent agent = null;
-            if (agentName.equals("reference")) {
-                agent = new ReferenceAgent(runner.dockerClient);
-            } else if (agentName.equals("claude")) {
-                agent = new ClaudeAgent(runner.dockerClient);
-            } else if (agentName.equals("pi")) {
-                agent = new PiAgent(runner.dockerClient);
-            } else {
-                System.err.println("agent must be either 'reference', 'claude', or 'pi'");
+            ReferenceAgent agent;
+            try {
+                agent = AgentFactory.createAgent(agentName, runner.dockerClient);
+            } catch (IllegalArgumentException e) {
+                System.err.println(e.getMessage());
                 System.exit(1);
+                return; // Never reached, but required for compilation
             }
 
             if (exerciseName != null) {
@@ -506,21 +412,7 @@ public class BenchmarkRunner {
     }
 
     public boolean resultFileSuccess(String name, String agentName, String model, String language, String[] languages) {
-        String resultsDir = config.getOutput().getResultsDir(agentName, model, languages);
-        Path resultsPath = Paths.get(resultsDir);
-        String filename = String.format("result_%s_%s_%s.json", agentName, language, name);
-        var p = resultsPath.resolve(filename);
-        if (Files.exists(p)) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            try {
-                var er = mapper.readTree(p.toFile());
-                return er.has("success") && er.get("success").asBoolean();
-            } catch (IOException e) {
-                // ignore, and assume it was not succesful
-            }
-        }
-        return false;
+        return resultPersister.resultFileSuccess(name, agentName, model, language, languages);
     }
 
     /**

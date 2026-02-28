@@ -2,7 +2,8 @@
 
 | Benchmark | Total Results | Success | Failed | Completion % | Total Duration | Tokens |
 |-----------|---------------|---------|--------|---------------|----------------|--------|
-| [claude-qwen35-122b](#claude-qwen35-122b) | 153 | 113 | 40 | 73.9% | 14h 11m 41s | 19.4M / 32.9M / 347.0K |
+| [reference-stepfun35](#reference-stepfun35) | 40 | 40 | 0 | 100.0% | 0s | 0 / 0 / 0 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | 158 | 113 | 45 | 71.5% | 14h 40m 58s | 19.6M / 33.3M / 352.5K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | 169 | 90 | 79 | 53.3% | 5h 28m 18s | 30.9M / 26.5M / 800.6K |
 | [claude-qwen3-27b](#claude-qwen3-27b) | 1 | 0 | 1 | 0.0% | 10m 0s | 17.8K / 50.7K / 222 |
 
@@ -372,14 +373,11 @@
 | [custom-set_java](#custom-set_java) | ✅ | 4m 48s | 244.9K / 346.0K / 4.1K |
 | [dominoes_java](#dominoes_java) | ✅ | 4m 4s | 119.3K / 217.6K / 1.7K |
 | [food-chain_java](#food-chain_java) | ✅ | 2m 36s | 122.5K / 164.0K / 1.4K |
-| [forth_java](#forth_java) | ❌ | 10m 0s | 190.5K / 391.5K / 3.9K |
-| [go-counting_java](#go-counting_java) | ✅ | 4m 44s | 146.3K / 239.5K / 3.1K |
-| [hangman_java](#hangman_java) | ❌ | 10m 0s | 172.6K / 350.6K / 4.3K |
-| [house_java](#house_java) | ✅ | 1m 48s | 98.3K / 97.0K / 919 |
+| [go-counting_java](#go-counting_java) | ✅ | 4m 44s | 336.8K / 631.0K / 7.0K |
+| [house_java](#house_java) | ✅ | 1m 48s | 271.0K / 447.5K / 5.2K |
 | [kindergarten-garden_java](#kindergarten-garden_java) | ✅ | 1m 41s | 91.3K / 108.1K / 842 |
 | [ledger_java](#ledger_java) | ✅ | 4m 31s | 99.4K / 200.6K / 2.5K |
-| [mazy-mice_java](#mazy-mice_java) | ❌ | 10m 0s | 135.6K / 217.7K / 7.4K |
-| [ocr-numbers_java](#ocr-numbers_java) | ✅ | 2m 41s | 112.8K / 129.4K / 1.4K |
+| [ocr-numbers_java](#ocr-numbers_java) | ✅ | 2m 41s | 248.4K / 347.1K / 8.8K |
 | [palindrome-products_java](#palindrome-products_java) | ✅ | 3m 28s | 111.3K / 166.2K / 1.2K |
 | [phone-number_java](#phone-number_java) | ✅ | 1m 43s | 67.4K / 84.3K / 940 |
 | [pig-latin_java](#pig-latin_java) | ✅ | 1m 8s | 87.5K / 85.8K / 927 |
@@ -487,21 +485,9 @@
 | [beer-song_python](#beer-song_python) | ✅ | 6m 49s | 98.1K / 286.2K / 1.7K |
 | [book-store_python](#book-store_python) | ✅ | 6m 22s | 73.9K / 222.3K / 2.1K |
 | [bottle-song_python](#bottle-song_python) | ✅ | 3m 49s | 70.8K / 143.1K / 1.4K |
-| [bowling_python](#bowling_python) | ❌ | 10m 0s | 92.7K / 246.6K / 5.6K |
-| [connect_python](#connect_python) | ❌ | 10m 0s | 174.9K / 244.0K / 4.8K |
-| [dominoes_python](#dominoes_python) | ❌ | 10m 0s | 50.2K / 32.5K / 879 |
-| [dot-dsl_python](#dot-dsl_python) | ❌ | 10m 0s | 49.2K / 15.2K / 165 |
-| [food-chain_python](#food-chain_python) | ❌ | 10m 0s | 31.1K / 0 / 76 |
-| [forth_python](#forth_python) | ❌ | 10m 0s | 34.7K / 15.1K / 286 |
-| [go-counting_python](#go-counting_python) | ✅ | 10m 0s | 88.7K / 139.6K / 1.4K |
-| [grade-school_python](#grade-school_python) | ❌ | 10m 0s | 51.3K / 15.2K / 196 |
-| [grep_python](#grep_python) | ❌ | 10m 0s | 56.2K / 35.7K / 151 |
-| [hangman_python](#hangman_python) | ❌ | 10m 0s | 49.1K / 65.2K / 262 |
-| [list-ops_python](#list-ops_python) | ❌ | 10m 0s | 67.0K / 49.2K / 240 |
-| [paasio_python](#paasio_python) | ❌ | 10m 0s | 54.7K / 52.7K / 148 |
-| [phone-number_python](#phone-number_python) | ✅ | 10m 0s | 51.1K / 86.8K / 1.5K |
-| [pig-latin_python](#pig-latin_python) | ❌ | 10m 0s | 49.2K / 49.1K / 529 |
-| [affine-cipher_javascript](#affine-cipher_javascript) | ❌ | 27s | 0 / 0 / 0 |
+| [go-counting_python](#go-counting_python) | ✅ | 10m 0s | 521.4K / 693.0K / 13.2K |
+| [phone-number_python](#phone-number_python) | ✅ | 10m 0s | 329.3K / 304.8K / 2.4K |
+| [affine-cipher_javascript](#affine-cipher_javascript) | ❌ | 27s | 49.2K / 49.1K / 529 |
 | [alphametics_javascript](#alphametics_javascript) | ❌ | 10m 0s | 49.4K / 49.2K / 219 |
 | [beer-song_javascript](#beer-song_javascript) | ❌ | 10m 0s | 70.0K / 44.2K / 172 |
 | [binary_javascript](#binary_javascript) | ❌ | 10m 0s | 47.3K / 31.2K / 126 |
@@ -512,6 +498,72 @@
 | [connect_javascript](#connect_javascript) | ❌ | 10m 0s | 48.7K / 48.5K / 237 |
 | [food-chain_javascript](#food-chain_javascript) | ❌ | 10m 0s | 31.0K / 0 / 55 |
 | [forth_javascript](#forth_javascript) | ❌ | 10m 0s | 30.1K / 0 / 64 |
+| [forth_java](#forth_java) | ❌ | 10m 0s | 0 / 0 / 0 |
+| [hangman_java](#hangman_java) | ❌ | 10m 0s | 0 / 0 / 0 |
+| [mazy-mice_java](#mazy-mice_java) | ✅ | 7m 38s | 0 / 0 / 0 |
+| [bowling_python](#bowling_python) | ❌ | 10m 1s | 0 / 0 / 0 |
+| [connect_python](#connect_python) | ✅ | 10m 1s | 0 / 0 / 0 |
+| [dominoes_python](#dominoes_python) | ✅ | 10m 0s | 0 / 0 / 0 |
+| [dot-dsl_python](#dot-dsl_python) | ✅ | 6m 55s | 0 / 0 / 0 |
+| [food-chain_python](#food-chain_python) | ✅ | 9m 1s | 0 / 0 / 0 |
+| [forth_python](#forth_python) | ❌ | 10m 0s | 0 / 0 / 0 |
+| [grade-school_python](#grade-school_python) | ✅ | 3m 36s | 0 / 0 / 0 |
+| [grep_python](#grep_python) | ✅ | 3m 10s | 0 / 0 / 0 |
+| [hangman_python](#hangman_python) | ✅ | 10m 0s | 0 / 0 / 0 |
+| [list-ops_python](#list-ops_python) | ✅ | 8m 46s | 0 / 0 / 0 |
+| [paasio_python](#paasio_python) | ❌ | 10m 0s | 0 / 0 / 0 |
+| [pig-latin_python](#pig-latin_python) | ✅ | 10m 0s | 0 / 0 / 0 |
+| [poker_python](#poker_python) | ❌ | 10m 1s | 0 / 0 / 0 |
+| [proverb_python](#proverb_python) | ✅ | 10m 0s | 49.1K / 99.6K / 841 |
+| [react_python](#react_python) | ❌ | 10m 0s | 74.2K / 92.4K / 2.6K |
+| [rest-api_python](#rest-api_python) | ❌ | 10m 0s | 53.8K / 90.6K / 1.6K |
+| [robot-name_python](#robot-name_python) | ❌ | 10m 0s | 46.9K / 62.8K / 472 |
+
+
+# reference-stepfun35
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 0s | 0 / 0 / 0 |
+| [all-your-base_java](#all-your-base_java) | ✅ | 0s | 0 / 0 / 0 |
+| [alphametics_java](#alphametics_java) | ✅ | 0s | 0 / 0 / 0 |
+| [bank-account_java](#bank-account_java) | ✅ | 0s | 0 / 0 / 0 |
+| [book-store_java](#book-store_java) | ✅ | 0s | 0 / 0 / 0 |
+| [bottle-song_java](#bottle-song_java) | ✅ | 0s | 0 / 0 / 0 |
+| [bowling_java](#bowling_java) | ✅ | 0s | 0 / 0 / 0 |
+| [change_java](#change_java) | ✅ | 0s | 0 / 0 / 0 |
+| [circular-buffer_java](#circular-buffer_java) | ✅ | 0s | 0 / 0 / 0 |
+| [connect_java](#connect_java) | ✅ | 0s | 0 / 0 / 0 |
+| [custom-set_java](#custom-set_java) | ✅ | 0s | 0 / 0 / 0 |
+| [dominoes_java](#dominoes_java) | ✅ | 0s | 0 / 0 / 0 |
+| [food-chain_java](#food-chain_java) | ✅ | 0s | 0 / 0 / 0 |
+| [forth_java](#forth_java) | ✅ | 0s | 0 / 0 / 0 |
+| [go-counting_java](#go-counting_java) | ✅ | 0s | 0 / 0 / 0 |
+| [hangman_java](#hangman_java) | ✅ | 0s | 0 / 0 / 0 |
+| [house_java](#house_java) | ✅ | 0s | 0 / 0 / 0 |
+| [kindergarten-garden_java](#kindergarten-garden_java) | ✅ | 0s | 0 / 0 / 0 |
+| [ledger_java](#ledger_java) | ✅ | 0s | 0 / 0 / 0 |
+| [mazy-mice_java](#mazy-mice_java) | ✅ | 0s | 0 / 0 / 0 |
+| [ocr-numbers_java](#ocr-numbers_java) | ✅ | 0s | 0 / 0 / 0 |
+| [palindrome-products_java](#palindrome-products_java) | ✅ | 0s | 0 / 0 / 0 |
+| [phone-number_java](#phone-number_java) | ✅ | 0s | 0 / 0 / 0 |
+| [pig-latin_java](#pig-latin_java) | ✅ | 0s | 0 / 0 / 0 |
+| [poker_java](#poker_java) | ✅ | 0s | 0 / 0 / 0 |
+| [protein-translation_java](#protein-translation_java) | ✅ | 0s | 0 / 0 / 0 |
+| [pythagorean-triplet_java](#pythagorean-triplet_java) | ✅ | 0s | 0 / 0 / 0 |
+| [queen-attack_java](#queen-attack_java) | ✅ | 0s | 0 / 0 / 0 |
+| [rational-numbers_java](#rational-numbers_java) | ✅ | 0s | 0 / 0 / 0 |
+| [react_java](#react_java) | ✅ | 0s | 0 / 0 / 0 |
+| [resistor-color-trio_java](#resistor-color-trio_java) | ✅ | 0s | 0 / 0 / 0 |
+| [rest-api_java](#rest-api_java) | ✅ | 0s | 0 / 0 / 0 |
+| [satellite_java](#satellite_java) | ✅ | 0s | 0 / 0 / 0 |
+| [series_java](#series_java) | ✅ | 0s | 0 / 0 / 0 |
+| [sgf-parsing_java](#sgf-parsing_java) | ✅ | 0s | 0 / 0 / 0 |
+| [simple-linked-list_java](#simple-linked-list_java) | ✅ | 0s | 0 / 0 / 0 |
+| [state-of-tic-tac-toe_java](#state-of-tic-tac-toe_java) | ✅ | 0s | 0 / 0 / 0 |
+| [transpose_java](#transpose_java) | ✅ | 0s | 0 / 0 / 0 |
+| [tree-building_java](#tree-building_java) | ✅ | 0s | 0 / 0 / 0 |
+| [twelve-days_java](#twelve-days_java) | ✅ | 0s | 0 / 0 / 0 |
 
 
 # claude-qwen3-27b
@@ -582,6 +634,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 39s | 231.0K / 214.9K / 3.4K |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 46.9K / 62.8K / 472 |
 
 
 # trinary_go
@@ -604,6 +657,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 10s | 117.2K / 100.6K / 3.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 59s | 88.2K / 158.1K / 1.5K |
 
@@ -620,6 +674,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 37s | 90.3K / 72.6K / 1.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 52s | 91.4K / 89.4K / 1.1K |
 
@@ -636,6 +691,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 55s | 139.2K / 121.7K / 2.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 51s | 166.3K / 257.5K / 2.8K |
 
@@ -668,6 +724,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 59s | 165.3K / 147.9K / 1.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 15s | 86.8K / 120.1K / 1.0K |
 
@@ -685,7 +742,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 21s | 151.2K / 134.4K / 3.1K |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 50.2K / 32.5K / 879 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 
 
 # simple-linked-list_javascript
@@ -700,6 +757,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 11s | 135.1K / 115.1K / 3.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 16s | 211.5K / 305.0K / 4.1K |
 
@@ -708,6 +766,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 50s | 175.8K / 152.3K / 8.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 15s | 107.4K / 261.0K / 4.8K |
 
@@ -749,7 +808,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 25.8K / 0 / 57 |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 49.1K / 65.2K / 262 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 
 
 # paasio_go
@@ -765,7 +824,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 6m 38s | 571.5K / 546.7K / 10.1K |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 88.7K / 139.6K / 1.4K |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 521.4K / 693.0K / 13.2K |
 
 
 # phone-number_python
@@ -773,7 +832,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 54s | 177.0K / 172.1K / 3.7K |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 51.1K / 86.8K / 1.5K |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 329.3K / 304.8K / 2.4K |
 
 
 # zipper_python
@@ -835,6 +894,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 58s | 120.9K / 103.6K / 2.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 36s | 52.4K / 82.4K / 810 |
 
@@ -876,7 +936,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 26.0K / 0 / 66 |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 51.3K / 15.2K / 196 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 36s | 0 / 0 / 0 |
 
 
 # sgf-parsing_python
@@ -898,8 +958,9 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 44s | 95.3K / 76.1K / 4.9K |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 135.6K / 217.7K / 7.4K |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 7m 38s | 0 / 0 / 0 |
 
 
 # food-chain_python
@@ -907,13 +968,14 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 1s | 93.7K / 76.4K / 2.5K |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 31.1K / 0 / 76 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 9m 1s | 0 / 0 / 0 |
 
 
 # connect_java
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 24s | 117.3K / 185.6K / 3.0K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 10m 0s | 448.6K / 391.8K / 30.2K |
 
@@ -922,14 +984,16 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2m 0s | 215.7K / 191.1K / 5.6K |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 190.5K / 391.5K / 3.9K |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 
 
 # circular-buffer_java
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 40s | 89.5K / 105.8K / 860 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 54s | 225.1K / 206.8K / 6.2K |
 
@@ -986,6 +1050,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 4s | 12.9K / 0 / 82 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 58s | 70.9K / 87.8K / 826 |
 
@@ -994,8 +1059,9 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 31s | 104.0K / 86.0K / 4.2K |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 44s | 146.3K / 239.5K / 3.1K |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 44s | 336.8K / 631.0K / 7.0K |
 
 
 # wordy_java
@@ -1026,7 +1092,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 27s | 0 / 0 / 0 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 27s | 49.2K / 49.1K / 529 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 4m 4s | 314.7K / 292.3K / 12.6K |
 
 
@@ -1035,13 +1101,14 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 11s | 85.3K / 69.8K / 3.5K |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 49.2K / 49.1K / 529 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 
 
 # simple-linked-list_java
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 3s | 131.5K / 114.9K / 2.9K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 48s | 101.7K / 117.5K / 987 |
 
@@ -1065,6 +1132,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 10s | 90.2K / 73.0K / 2.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 21s | 125.5K / 163.2K / 1.7K |
 | [claude-qwen3-27b](#claude-qwen3-27b) | ❌ | 10m 0s | 17.8K / 50.7K / 222 |
@@ -1075,6 +1143,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 26.5K / 0 / 70 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 53.8K / 90.6K / 1.6K |
 
 
 # scale-generator_python
@@ -1105,7 +1174,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 26.5K / 0 / 84 |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 92.7K / 246.6K / 5.6K |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 1s | 0 / 0 / 0 |
 
 
 # say_go
@@ -1120,8 +1189,9 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 25.7K / 0 / 58 |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 172.6K / 350.6K / 4.3K |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 
 
 # matrix_go
@@ -1174,8 +1244,9 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 26.2K / 0 / 69 |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 41s | 112.8K / 129.4K / 1.4K |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 41s | 248.4K / 347.1K / 8.8K |
 
 
 # dominoes_go
@@ -1206,14 +1277,16 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 54s | 97.6K / 78.2K / 2.3K |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 48s | 98.3K / 97.0K / 919 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 48s | 271.0K / 447.5K / 5.2K |
 
 
 # book-store_java
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 55s | 372.5K / 349.0K / 5.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 3s | 90.7K / 146.2K / 1.5K |
 
@@ -1231,6 +1304,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 25.7K / 0 / 64 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 74.2K / 92.4K / 2.6K |
 
 
 # zipper_javascript
@@ -1276,6 +1350,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 8m 24s | 297.6K / 454.7K / 6.8K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 10m 0s | 636.5K / 575.1K / 29.7K |
 
@@ -1284,6 +1359,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 3m 19s | 533.2K / 508.6K / 10.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 4s | 119.3K / 217.6K / 1.7K |
 
@@ -1332,6 +1408,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 54s | 105.9K / 88.1K / 1.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 43s | 67.4K / 84.3K / 940 |
 
@@ -1349,7 +1426,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 26.1K / 0 / 71 |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 49.2K / 15.2K / 165 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 55s | 0 / 0 / 0 |
 
 
 # pov_go
@@ -1372,6 +1449,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 57s | 107.6K / 88.6K / 2.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 34s | 77.7K / 163.3K / 1.5K |
 
@@ -1381,6 +1459,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 25.5K / 0 / 81 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 1s | 0 / 0 / 0 |
 
 
 # counter_go
@@ -1395,6 +1474,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 3m 6s | 286.6K / 256.9K / 9.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 31s | 99.4K / 200.6K / 2.5K |
 
@@ -1411,6 +1491,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 36s | 136.1K / 115.7K / 4.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 29s | 157.2K / 174.5K / 1.7K |
 
@@ -1443,6 +1524,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 17s | 116.0K / 97.2K / 3.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 3s | 118.1K / 133.4K / 1.0K |
 
@@ -1451,6 +1533,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 30s | 131.9K / 112.4K / 3.9K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 36s | 122.5K / 164.0K / 1.4K |
 
@@ -1459,6 +1542,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 25.7K / 0 / 72 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 27s | 91.8K / 183.8K / 1.2K |
 
@@ -1482,7 +1566,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 26.0K / 0 / 75 |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 174.9K / 244.0K / 4.8K |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 1s | 0 / 0 / 0 |
 
 
 # bowling_go
@@ -1497,6 +1581,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 26.1K / 0 / 54 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 41s | 91.3K / 108.1K / 842 |
 
@@ -1513,6 +1598,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 25.8K / 0 / 54 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 49.1K / 99.6K / 841 |
 
 
 # hexadecimal_go
@@ -1528,7 +1614,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 29s | 138.9K / 119.6K / 2.7K |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 56.2K / 35.7K / 151 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 10s | 0 / 0 / 0 |
 
 
 # ocr-numbers_javascript
@@ -1552,7 +1638,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 25.9K / 0 / 96 |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 34.7K / 15.1K / 286 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 
 
 # transpose_go
@@ -1567,6 +1653,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 15s | 26.5K / 0 / 55 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 42s | 83.9K / 81.4K / 1.0K |
 
@@ -1607,6 +1694,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 3m 53s | 172.4K / 149.9K / 11.9K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 7m 4s | 270.2K / 391.2K / 5.0K |
 
@@ -1615,6 +1703,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 2s | 191.5K / 232.8K / 2.4K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 5m 0s | 642.0K / 602.6K / 12.1K |
 
@@ -1631,6 +1720,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 4s | 235.8K / 216.2K / 2.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 28s | 111.3K / 166.2K / 1.2K |
 
@@ -1647,6 +1737,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 3m 20s | 372.8K / 349.8K / 10.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 48s | 244.9K / 346.0K / 4.1K |
 
@@ -1695,6 +1786,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 25.6K / 0 / 42 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 25s | 83.8K / 82.8K / 608 |
 
@@ -1703,6 +1795,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 26.5K / 0 / 40 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 45s | 166.3K / 149.8K / 3.1K |
 
@@ -1727,6 +1820,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 46s | 88.6K / 71.5K / 2.0K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 8s | 87.5K / 85.8K / 927 |
 
@@ -1735,6 +1829,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 25.8K / 0 / 86 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 58s | 73.2K / 209.6K / 1.9K |
 
@@ -1744,7 +1839,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 21s | 237.2K / 218.9K / 5.6K |
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 67.0K / 49.2K / 240 |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 8m 46s | 0 / 0 / 0 |
 
 
 # sum-of-multiples_javascript
@@ -1791,6 +1886,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 1s | 165.8K / 145.8K / 2.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 50s | 80.5K / 202.8K / 1.7K |
 
@@ -1807,6 +1903,7 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-stepfun35](#reference-stepfun35) | ✅ | 0s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 2s | 71.4K / 87.1K / 1.6K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 10m 0s | 908.8K / 851.4K / 14.4K |
 
@@ -1846,8 +1943,8 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
-| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 54.7K / 52.7K / 148 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 10m 0s | 543.7K / 480.2K / 15.3K |
+| [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 
 
 # affine-cipher_python

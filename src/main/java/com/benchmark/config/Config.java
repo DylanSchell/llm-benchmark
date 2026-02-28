@@ -1,7 +1,10 @@
 package com.benchmark.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -9,6 +12,7 @@ import java.nio.file.Paths;
  * Root configuration class for the benchmark runner.
  */
 public class Config {
+    private static final Logger logger = LoggerFactory.getLogger(Config.class);
 
     @JsonProperty("parallelism")
     private int parallelism = 1; // default: run sequentially
@@ -98,5 +102,43 @@ public class Config {
 
     public void setOutput(OutputConfig output) {
         this.output = output;
+    }
+
+    /**
+     * Validates the configuration.
+     * Checks for required fields and valid paths.
+     *
+     * @throws ConfigurationException if validation fails
+     */
+    public void validate() throws ConfigurationException {
+        // Validate parallelism
+        if (parallelism < 1) {
+            throw new ConfigurationException("parallelism must be at least 1, got: " + parallelism);
+        }
+
+        // Validate benchmark path exists
+        Path benchmarkPath = getBenchmarkPath();
+        if (!Files.exists(benchmarkPath)) {
+            throw new ConfigurationException("benchmark_path does not exist: " + benchmarkPath.toAbsolutePath());
+        }
+
+        // Validate docker configuration
+        if (docker == null) {
+            throw new ConfigurationException("docker configuration is required");
+        }
+        docker.validate();
+
+        // Validate output configuration
+        if (output == null) {
+            throw new ConfigurationException("output configuration is required");
+        }
+        output.validate();
+
+        // Validate claude configuration (optional but recommended)
+        if (claude != null) {
+            claude.validate();
+        }
+
+        logger.debug("Configuration validation successful");
     }
 }

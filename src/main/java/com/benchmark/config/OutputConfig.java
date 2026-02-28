@@ -122,4 +122,20 @@ public class OutputConfig {
 
         return maxRunNumber[0] + 1;
     }
+
+    /**
+     * Validates the output configuration.
+     *
+     * @throws ConfigurationException if validation fails
+     */
+    public void validate() throws ConfigurationException {
+        if (resultsDir == null || resultsDir.isBlank()) {
+            throw new ConfigurationException("output.results_dir is required");
+        }
+
+        // Validate log level
+        if (logLevel != null && !logLevel.matches("^(TRACE|DEBUG|INFO|WARN|ERROR)$")) {
+            throw new ConfigurationException("output.log_level must be one of: TRACE, DEBUG, INFO, WARN, ERROR. Got: " + logLevel);
+        }
+    }
 }

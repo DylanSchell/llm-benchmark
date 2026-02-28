@@ -42,4 +42,14 @@ public class ClaudeConfig {
     public void setExtraArgs(List<String> extraArgs) {
         this.extraArgs = extraArgs;
     }
+
+    /**
+     * Validates the Claude configuration.
+     */
+    public void validate() throws ConfigurationException {
+        // Claude config is optional, no strict validation needed
+        if (cliPath == null || cliPath.isBlank()) {
+            throw new ConfigurationException("claude.cli_path is required");
+        }
+    }
 }

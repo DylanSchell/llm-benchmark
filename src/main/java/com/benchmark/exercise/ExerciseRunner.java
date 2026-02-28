@@ -344,26 +344,6 @@ public class ExerciseRunner {
         return result;
     }
 
-    /**
-     * Represents a language/exercise pair.
-     */
-    public static class LanguageExercise {
-        private final String language;
-        private final String exercise;
-
-        public LanguageExercise(String language, String exercise) {
-            this.language = language;
-            this.exercise = exercise;
-        }
-
-        public String getLanguage() {
-            return language;
-        }
-
-        public String getExercise() {
-            return exercise;
-        }
-    }
 
     /**
      * Runs the reference agent for an exercise.
