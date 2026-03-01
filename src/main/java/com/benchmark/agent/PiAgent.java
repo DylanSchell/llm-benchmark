@@ -104,7 +104,7 @@ public class PiAgent extends ReferenceAgent {
 
     /**
      * Creates the models.json configuration file for pi inside the working directory.
-     * This configures pi to use the correct model endpoint by reading from DockerConfig.
+     * This configures pi to use the OpenAI endpoint (which works with Anthropic-compatible APIs).
      */
     private void createModelsJson(Path tempWorkDir) throws IOException {
         // Create .pi/agent directory structure
@@ -114,7 +114,8 @@ public class PiAgent extends ReferenceAgent {
         // Read environment configuration from Docker config (same as what's passed to container)
         Map<String, String> envVars = getDockerClient().getConfig().getEnvironmentMap();
         
-        String baseUrl = envVars.getOrDefault("ANTHROPIC_BASE_URL", "http://host.docker.internal:8080");
+        // Use OpenAI endpoint (derived from ANTHROPIC_BASE_URL with /v1 suffix)
+        String baseUrl = envVars.getOrDefault("OPENAI_BASE_URL", "http://host.docker.internal:8080/v1");
         
         String apiKey = envVars.getOrDefault("ANTHROPIC_API_KEY", "");
         if (apiKey.isEmpty()) {
@@ -123,14 +124,15 @@ public class PiAgent extends ReferenceAgent {
 
         String model = envVars.getOrDefault("ANTHROPIC_MODEL", "claude-sonnet-4");
 
-        // Create models.json configuration
+        // Create models.json configuration using OpenAI provider
+        // Pi prefers OpenAI endpoint which is compatible with Anthropic's API
         String modelsJson = String.format(
                 "{" +
                 "  \"providers\": {" +
-                "    \"anthropic\": {" +
+                "    \"openai\": {" +
                 "      \"baseUrl\": \"%s\"," +
                 "      \"apiKey\": \"%s\"," +
-                "      \"api\": \"anthropic-messages\"," +
+                "      \"api\": \"openai-completions\"," +
                 "      \"models\": [" +
                 "        { \"id\": \"%s\" }" +
                 "      ]" +
@@ -142,7 +144,7 @@ public class PiAgent extends ReferenceAgent {
 
         Path modelsFile = piAgentDir.resolve("models.json");
         Files.writeString(modelsFile, modelsJson);
-        logger.debug("Created models.json at: {}", modelsFile);
+        logger.debug("Created models.json at: {} with OpenAI provider", modelsFile);
     }
 
     /**
@@ -167,7 +169,9 @@ public class PiAgent extends ReferenceAgent {
         command.add("json");
         command.add("--tools");
         command.add("read,bash,edit,write,grep,find,ls");
-        command.add("--no-session");
+        // Don't use --no-session - we want to capture the session trace
+        command.add("--provider");
+        command.add("openai");
         command.add("--model");
         command.add(model);
         command.add(prompt);
@@ -175,49 +179,145 @@ public class PiAgent extends ReferenceAgent {
     }
 
     /**
-     * Collects trace information from pi session files.
+     * Collects trace information from pi session files and exports to HTML.
      */
     private String collectPiTrace(Path tempWorkDir, Path resultsDir, Exercise exercise) throws IOException {
-        // Pi stores sessions in ~/.pi/sessions by default
-        // The .pi directory is mounted from host, so we look there after container exits
-        Path piSessionsDir = tempWorkDir.resolve(".pi").resolve("sessions");
+        // Pi stores sessions in ~/.pi/agent/sessions by default inside the container
+        // The .pi directory is mounted at tempWorkDir/.pi on the host
+        // Inside container: /home/runner/.pi/agent/sessions
+        // On host (mounted): tempWorkDir/.pi/agent/sessions
+        
+        Path piSessionsDir = tempWorkDir.resolve(".pi").resolve("agent").resolve("sessions");
 
         if (!Files.exists(piSessionsDir)) {
-            logger.debug("No pi sessions directory found at: {}", piSessionsDir);
+            logger.warn("No pi sessions directory found at: {}", piSessionsDir);
+            logger.info("Contents of .pi directory: {}", listDirectoryContents(tempWorkDir.resolve(".pi")));
             return "";
         }
 
+        logger.info("Found pi sessions directory at: {}", piSessionsDir);
+        
         List<String> htmlTraces = new ArrayList<>();
+        List<Path> jsonlFiles = new ArrayList<>();
 
-        // Look for HTML export files or JSON session files
+        // Look for JSON session files and copy them
+        List<Path> sessionFiles;
         try (Stream<Path> paths = Files.walk(piSessionsDir)) {
-            paths.filter(Files::isRegularFile).forEach(sessionFile -> {
-                String fileName = sessionFile.getFileName().toString();
-                try {
-                    if (fileName.endsWith(".html")) {
-                        // Found an HTML trace
-                        htmlTraces.add(Files.readString(sessionFile));
-                    } else if (fileName.endsWith(".json") || fileName.endsWith(".jsonl")) {
-                        // Copy JSON/JSONL log files to results directory
-                        String targetName = "log_pi_" + exercise.getLanguage() + "_" + exercise.getName() + "_" + fileName;
-                        Files.copy(sessionFile, resultsDir.resolve(targetName), StandardCopyOption.REPLACE_EXISTING);
-                        logger.debug("Copied pi log file: {}", targetName);
-                    }
-                } catch (IOException e) {
-                    logger.warn("Failed to process session file {}: {}", sessionFile, e.getMessage());
+            sessionFiles = paths.filter(Files::isRegularFile).toList();
+        }
+
+        logger.info("Found {} session files in total", sessionFiles.size());
+
+        for (Path sessionFile : sessionFiles) {
+            String fileName = sessionFile.getFileName().toString();
+            try {
+                logger.info("Processing pi session file: {}", fileName);
+                if (fileName.endsWith(".jsonl")) {
+                    // Copy JSONL log files to results directory
+                    String targetName = "log_pi_" + exercise.getLanguage() + "_" + exercise.getName() + ".jsonl";
+                    Files.copy(sessionFile, resultsDir.resolve(targetName), StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Copied pi JSONL log file: {}", targetName);
+                    jsonlFiles.add(sessionFile);
+                } else if (fileName.endsWith(".json")) {
+                    String targetName = "log_pi_" + exercise.getLanguage() + "_" + exercise.getName() + "_" + fileName;
+                    Files.copy(sessionFile, resultsDir.resolve(targetName), StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Copied pi JSON log file: {}", targetName);
+                } else if (fileName.endsWith(".html")) {
+                    // Found an HTML trace
+                    String htmlContent = Files.readString(sessionFile);
+                    htmlTraces.add(htmlContent);
+                    logger.info("Found HTML trace with {} chars", htmlContent.length());
                 }
-            });
+            } catch (IOException e) {
+                logger.warn("Failed to process session file {}: {}", sessionFile, e.getMessage());
+            }
         }
 
-        // Also check for JSONL trace files that pi might output directly
-        Path jsonlTrace = tempWorkDir.resolve(".pi").resolve("trace.jsonl");
-        if (Files.exists(jsonlTrace)) {
-            String targetName = "log_pi_" + exercise.getLanguage() + "_" + exercise.getName() + ".jsonl";
-            Files.copy(jsonlTrace, resultsDir.resolve(targetName), StandardCopyOption.REPLACE_EXISTING);
-            logger.debug("Copied pi trace file: {}", targetName);
+        // Export JSONL files to HTML using pi --export command
+        if (!jsonlFiles.isEmpty()) {
+            logger.info("Exporting {} JSONL trace file(s) to HTML", jsonlFiles.size());
+            
+            // Base path for .pi directory on host and in container
+            Path hostPiBase = tempWorkDir.resolve(".pi");
+            String containerPiBase = "/home/runner/.pi";
+            
+            for (Path jsonlFile : jsonlFiles) {
+                try {
+                    String baseName = jsonlFile.getFileName().toString().replace(".jsonl", "");
+                    
+                    // Relativize the discovered path against tempWorkDir/.pi to get relative path
+                    Path relativePath = hostPiBase.relativize(jsonlFile);
+                    logger.info("Relative path from .pi: {}", relativePath);
+                    
+                    // Construct container paths by prepending /home/runner/.pi
+                    Path containerJsonlPath = Paths.get(containerPiBase).resolve(relativePath);
+                    Path containerHtmlPath = containerJsonlPath.getParent().resolve(baseName + ".html");
+                    
+                    logger.info("Exporting from {} to {} (container paths)", 
+                        containerJsonlPath, containerHtmlPath);
+                    
+                    // Run: pi --export <jsonl_file> <html_file> using CONTAINER paths
+                    List<String> exportCommand = List.of("pi", "--export", 
+                        containerJsonlPath.toString(),
+                        containerHtmlPath.toString());
+                    
+                    ProcessResult exportResult = getDockerClient().runCommandWithLimitsAndVolume(
+                        null,
+                        "/workspace",
+                        exportCommand,
+                        60,  // 60 second timeout for export
+                        null,
+                        tempWorkDir.toAbsolutePath().toString(),
+                        logger::debug
+                    );
+                    
+                    if (exportResult.isSuccess()) {
+                        logger.info("Successfully exported {} to {}", jsonlFile.getFileName(), baseName + ".html");
+                        
+                        // Read the HTML content from HOST side using same relative path
+                        Path hostHtmlFile = hostPiBase.resolve(relativePath.getParent()).resolve(baseName + ".html");
+                        if (Files.exists(hostHtmlFile)) {
+                            String htmlContent = Files.readString(hostHtmlFile);
+                            htmlTraces.add(htmlContent);
+                            logger.info("Read HTML trace with {} chars", htmlContent.length());
+                            
+                            // Also copy to results directory for persistence
+                            Files.copy(hostHtmlFile, resultsDir.resolve(baseName + ".html"), 
+                                StandardCopyOption.REPLACE_EXISTING);
+                            logger.info("Copied HTML trace to results directory");
+                        } else {
+                            logger.warn("HTML file not found at host path: {}", hostHtmlFile);
+                        }
+                    } else {
+                        logger.warn("Failed to export {}: {}", jsonlFile.getFileName(), exportResult.output());
+                    }
+                } catch (Exception e) {
+                    logger.warn("Error exporting {}: {}", jsonlFile.getFileName(), e.getMessage());
+                }
+            }
         }
 
+        if (htmlTraces.isEmpty()) {
+            logger.warn("No HTML traces found or generated");
+        } else {
+            logger.info("Found/generated {} HTML trace(s)", htmlTraces.size());
+        }
+        
         return htmlTraces.isEmpty() ? "" : htmlTraces.get(0);
+    }
+
+    /**
+     * Helper method to list directory contents for debugging.
+     */
+    private String listDirectoryContents(Path dir) {
+        if (!Files.exists(dir)) {
+            return "directory does not exist";
+        }
+        try (Stream<Path> paths = Files.walk(dir)) {
+            return paths.map(p -> p.toString().replace(dir.toString(), ".")).collect(java.util.stream.Collectors.joining(", "));
+        } catch (IOException e) {
+            return "error reading directory: " + e.getMessage();
+        }
     }
 
     @Override

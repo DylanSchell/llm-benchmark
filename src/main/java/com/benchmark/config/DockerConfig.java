@@ -83,6 +83,7 @@ public class DockerConfig {
     /**
      * Updates environment variables with the model name.
      * Sets ANTHROPIC_MODEL and all ANTHROPIC_DEFAULT_*_MODEL variables.
+     * Also sets OPENAI_BASE_URL based on ANTHROPIC_BASE_URL (appends /v1).
      */
     public void updateModelEnvironment(String modelName) {
         if (environment == null) {
