@@ -3,6 +3,7 @@ package com.benchmark.web.service;
 import com.benchmark.BenchmarkRunner;
 import com.benchmark.agent.AgentFactory;
 import com.benchmark.agent.ReferenceAgent;
+import com.benchmark.config.Config;
 import com.benchmark.docker.DockerClient;
 import com.benchmark.exercise.ExerciseResult;
 import com.benchmark.exception.BenchmarkExecutionException;
@@ -24,10 +25,12 @@ public class BenchmarkExecutor {
 
     private final BenchmarkRunner benchmarkRunner;
     private final DockerClient dockerClient;
+    private final Config config;
 
-    public BenchmarkExecutor(BenchmarkRunner benchmarkRunner, DockerClient dockerClient) {
+    public BenchmarkExecutor(BenchmarkRunner benchmarkRunner, DockerClient dockerClient, Config config) {
         this.benchmarkRunner = benchmarkRunner;
         this.dockerClient = dockerClient;
+        this.config = config;
     }
 
     /**

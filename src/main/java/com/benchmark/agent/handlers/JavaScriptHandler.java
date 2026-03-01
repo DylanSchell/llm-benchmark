@@ -45,7 +45,14 @@ public class JavaScriptHandler implements LanguageHandler {
     }
 
     @Override
+    public List<String> prepareWorkspaceCommand(Exercise exercise) {
+        // JavaScript needs npm install to get dependencies
+        return List.of("npm", "install");
+    }
+
+    @Override
     public List<String> getTestCommand(Exercise exercise) {
+        // Just run tests, npm install was done in preparation
         return List.of("npm", "run", "test");
     }
 

@@ -53,6 +53,16 @@
             </div>
         </div>
 
+        <!-- Quick Actions -->
+        <div class="card" style="margin-bottom: 1rem;">
+            <h3 style="margin-bottom: 1rem;">Quick Actions</h3>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a th:href="@{/run}" class="btn btn-primary">New Benchmark Run</a>
+                <a th:href="@{/results}" class="btn btn-primary">View Results</a>
+                <button onclick="refreshResults()" class="btn btn-primary">Reload Results</button>
+            </div>
+        </div>
+
         <!-- Active Runs -->
         <div class="card" style="margin-bottom: 1rem;">
             <h3 style="margin-bottom: 1rem;">Active Runs</h3>
@@ -135,15 +145,6 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="card" style="margin-top: 1rem;">
-            <h3 style="margin-bottom: 1rem;">Quick Actions</h3>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <a th:href="@{/run}" class="btn btn-primary">New Benchmark Run</a>
-                <a th:href="@{/results}" class="btn btn-primary">View Results</a>
-            </div>
         </div>
 
         <!-- By Language -->
@@ -230,6 +231,27 @@
     </footer>
 
     <script>
+        // Refresh results from disk
+        async function refreshResults() {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Loading...';
+            btn.disabled = true;
+
+            try {
+                await fetch('/api/results/refresh', {
+                    method: 'POST'
+                });
+                // Reload page to show updated results
+                window.location.reload();
+            } catch (e) {
+                console.error('Error reloading results:', e);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
         // Cancel queue item
         async function cancelQueueItem(itemId) {
             if (!confirm('Cancel this queued item?')) return;

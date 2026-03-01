@@ -28,12 +28,12 @@ public class PiAgent extends ReferenceAgent {
     }
 
     @Override
-    protected ReferenceResult runAgent(Exercise exercise, Path hostExerciseDir, Path tempWorkDir, Path resultsDir) throws IOException {
+    protected ReferenceResult runAgent(Exercise exercise, Path hostExerciseDir, Path tempWorkDir, Path resultsDir, String model) {
         Instant startTime = Instant.now();
 
         try {
             logger.info("Starting exercise with Pi agent: {} at {}", exercise.getName(), startTime);
-
+            PiMessageProcessor processor = new PiMessageProcessor(getOutputConsumer());
             // Create models.json configuration for pi inside the container
             createModelsJson(tempWorkDir);
 
@@ -42,7 +42,7 @@ public class PiAgent extends ReferenceAgent {
             patchTests(exercise, tempWorkDir);
 
             // Build pi command with JSON output mode
-            List<String> command = buildPiCommand(prompt);
+            List<String> command = buildPiCommand(prompt, model);
 
             ProcessResult result = getDockerClient().runCommandWithLimitsAndVolume(
                     null,  // use default image from config
@@ -51,7 +51,7 @@ public class PiAgent extends ReferenceAgent {
                     -1,    // use default timeout from config
                     null,  // use default memory from config
                     tempWorkDir.toAbsolutePath().toString(),  // mount temp dir as /workspace
-                    getOutputCallback(),  // stream output to stdout
+                    processor,  // stream output to stdout
                     true  // enable .pi volume mount for session data
             );
 
@@ -160,7 +160,7 @@ public class PiAgent extends ReferenceAgent {
     /**
      * Builds the command line arguments for invoking pi.
      */
-    private List<String> buildPiCommand(String prompt) {
+    private List<String> buildPiCommand(String prompt, String model) {
         List<String> command = new ArrayList<>();
         command.add("pi");
         command.add("--mode");
@@ -168,6 +168,8 @@ public class PiAgent extends ReferenceAgent {
         command.add("--tools");
         command.add("read,bash,edit,write,grep,find,ls");
         command.add("--no-session");
+        command.add("--model");
+        command.add(model);
         command.add(prompt);
         return command;
     }

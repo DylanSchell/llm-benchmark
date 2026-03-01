@@ -23,7 +23,7 @@ public class ClaudeAgent extends ReferenceAgent {
     }
 
     @Override
-    protected ReferenceResult runAgent(Exercise exercise, Path hostExerciseDir, Path tempWorkDir, Path resultsDir) throws IOException {
+    protected ReferenceResult runAgent(Exercise exercise, Path hostExerciseDir, Path tempWorkDir, Path resultsDir, String model) throws IOException {
         Instant startTime = Instant.now();
 
         try {

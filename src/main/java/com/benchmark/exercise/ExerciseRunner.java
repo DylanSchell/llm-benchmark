@@ -339,7 +339,7 @@ public class ExerciseRunner {
      */
     private ExerciseResult runReferenceAgent(ReferenceAgent agent, Exercise exercise, String model, Path exerciseHostDir, Path resultDir) {
         try {
-            ReferenceAgent.ReferenceResult refResult = agent.runReferenceSolution(exercise, exerciseHostDir, resultDir);
+            ReferenceAgent.ReferenceResult refResult = agent.runReferenceSolution(exercise, exerciseHostDir, resultDir, model);
 
             return ExerciseResult.builder()
                     .exerciseName(refResult.exerciseName())

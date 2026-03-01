@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Comparator;
@@ -56,6 +55,52 @@ public class ReferenceAgent {
      */
     protected java.util.function.Consumer<String> getOutputCallback() {
         return outputConsumer != null ? outputConsumer : System.out::println;
+    }
+
+    /**
+     * Prepares the workspace for a language by running setup commands (npm install, uv venv, etc.).
+     * This should be called once before running tests to avoid repeating setup.
+     *
+     * @param exercise The exercise
+     * @param tempWorkDir The temporary working directory
+     * @throws IOException if preparation fails
+     */
+    public void prepareWorkspace(Exercise exercise, Path tempWorkDir) throws IOException {
+        LanguageHandler handler = handlerRegistry.getHandler(exercise);
+        if (handler == null) {
+            logger.warn("No handler found for language: {}, skipping workspace preparation", exercise.getLanguage());
+            return;
+        }
+
+        List<String> prepareCommand = handler.prepareWorkspaceCommand(exercise);
+        if (prepareCommand == null || prepareCommand.isEmpty()) {
+            logger.debug("No workspace preparation needed for {}", exercise.getLanguage());
+            return;
+        }
+
+        logger.info("Preparing workspace for {} exercise: {}", exercise.getLanguage(), String.join(" ", prepareCommand));
+        
+        try {
+            DockerClient.ProcessResult result = dockerClient.runCommandWithLimitsAndVolume(
+                    null,  // use default image from config
+                    "/workspace",
+                    prepareCommand,
+                    -1,    // use default timeout from config
+                    null,  // use default memory from config
+                    tempWorkDir.toAbsolutePath().toString(),  // mount temp dir as /workspace
+                    getOutputCallback()
+            );
+
+            if (!result.isSuccess() || result.exitCode() != 0) {
+                throw new IOException("Workspace preparation failed for " + exercise.getLanguage() + 
+                        ": " + result.output());
+            }
+            
+            logger.info("Workspace prepared successfully for {}", exercise.getLanguage());
+        } catch (Exception e) {
+            logger.error("Failed to prepare workspace for {}: {}", exercise.getName(), e.getMessage());
+            throw new IOException("Workspace preparation failed", e);
+        }
     }
 
     /**
@@ -164,7 +209,7 @@ public class ReferenceAgent {
      * @param hostExerciseDir The directory containing the exercise on the host
      * @return ReferenceResult with the test execution outcome
      */
-    public ReferenceResult runReferenceSolution(Exercise exercise, Path hostExerciseDir, Path resultDir) {
+    public ReferenceResult runReferenceSolution(Exercise exercise, Path hostExerciseDir, Path resultDir, String model) {
         Instant startTime = Instant.now();
         logger.info("Running reference agent for exercise: {}", exercise.getName());
 
@@ -177,7 +222,10 @@ public class ReferenceAgent {
             // Copy exercise files to temp directory (excluding reference implementation)
             copyExerciseFiles(exercise, hostExerciseDir, tempWorkDir);
 
-            ReferenceResult agentResult = runAgent(exercise, hostExerciseDir, tempWorkDir, resultDir);
+            // prepare workspace ( npm install / etc )
+            prepareWorkspace(exercise, tempWorkDir);
+
+            ReferenceResult agentResult = runAgent(exercise, hostExerciseDir, tempWorkDir, resultDir, model);
 
             // Run tests inside Docker container
             ReferenceResult testResult = runTestsInDocker(exercise, hostExerciseDir, tempWorkDir, startTime);
@@ -224,11 +272,17 @@ public class ReferenceAgent {
      * @param hostExerciseDir
      * @param tempWorkDir
      */
-    protected ReferenceResult runAgent(Exercise exercise, Path hostExerciseDir, Path tempWorkDir, Path resultDir) throws IOException {
+    protected ReferenceResult runAgent(Exercise exercise, Path hostExerciseDir, Path tempWorkDir, Path resultDir, String model) throws IOException {
+        // Get language handler
+        LanguageHandler handler = handlerRegistry.getHandler(exercise);
+        if (handler == null) {
+            throw new IOException("No handler found for language: " + exercise.getLanguage());
+        }
+
         // Copy reference implementation to source directory
         Instant startTime = Instant.now();
         if (exercise.hasReference()) {
-            copyReferenceImplementation(exercise, tempWorkDir);
+            handler.copyReference(exercise, tempWorkDir);
         } else {
             logger.warn("No reference implementation found for: {}", exercise.getName());
         }
@@ -266,339 +320,66 @@ public class ReferenceAgent {
      * For C++ exercises, files are placed in a subdirectory named after the exercise.
      */
     private void copyExerciseFiles(Exercise exercise, Path sourceDir, Path destDir) throws IOException {
+        // Get language handler
+        LanguageHandler handler = handlerRegistry.getHandler(exercise);
+        if (handler == null) {
+            throw new IOException("No handler found for language: " + exercise.getLanguage());
+        }
+
         logger.info("Copying exercise files from {} to {}", sourceDir, destDir);
 
-        // For C++, create a subdirectory named after the exercise
-        final Path actualDestDir;
-        if ("cpp".equals(exercise.getLanguage())) {
-            actualDestDir = destDir.resolve(exercise.getName());
-            Files.createDirectories(actualDestDir);
-        } else {
-            actualDestDir = destDir;
-        }
-
-        try (Stream<Path> paths = Files.walk(sourceDir)) {
-            paths.forEach(sourcePath -> {
-                try {
-                    Path relativePath = sourceDir.relativize(sourcePath);
-
-                    // Skip reference implementation directory
-                    if (relativePath.toString().contains(".meta/")) {
-                        logger.debug("Skipping reference file: {}", relativePath);
-                        return;
-                    }
-
-                    Path destPath = actualDestDir.resolve(relativePath);
-
-                    if (Files.isDirectory(sourcePath)) {
-                        Files.createDirectories(destPath);
-                    } else {
-                        Files.copy(sourcePath, destPath, StandardCopyOption.REPLACE_EXISTING);
-                        if (destPath.endsWith("gradle-wrapper.properties")) {
-                            String wrapperProperties = Files.readString(destPath);
-                            wrapperProperties = wrapperProperties.replace("distributionUrl=https\\://services.gradle.org/distributions/gradle-8.7-bin.zip", "distributionUrl=file:///opt/gradle/gradle-8.7-bin.zip");
-                            Files.writeString(destPath, wrapperProperties);
-                        }
-                    }
-                } catch (IOException e) {
-                    logger.error("Failed to copy file {}: {}", sourcePath, e.getMessage());
-                }
-            });
-        }
+        // Delegate to handler (which handles C++ subdirectory logic)
+        handler.copyExerciseFiles(exercise, sourceDir, destDir);
     }
 
     protected void copyFreshTests(Exercise exercise, Path sourceDir, Path destDir) throws IOException {
-        // For C++, create a subdirectory named after the exercise
-        final Path actualDestDir;
-        if ("cpp".equals(exercise.getLanguage())) {
-            actualDestDir = destDir.resolve(exercise.getName());
-            Files.createDirectories(actualDestDir);
-        } else {
-            actualDestDir = destDir;
+        // Get language handler
+        LanguageHandler handler = handlerRegistry.getHandler(exercise);
+        if (handler == null) {
+            throw new IOException("No handler found for language: " + exercise.getLanguage());
         }
-        if ("java".equals(exercise.getLanguage())) {
-            try (Stream<Path> paths = Files.walk(sourceDir)) {
-                paths.forEach(sourcePath -> {
-                    try {
-                        Path relativePath = sourceDir.relativize(sourcePath);
-                        Path destPath = actualDestDir.resolve(relativePath);
-                        if (Files.isDirectory(sourcePath)) {
-                            Files.createDirectories(destPath);
-                        } else {
-                            // Skip reference implementation directory
-                            if (relativePath.toString().contains("src/test/java") && relativePath.endsWith(".java")) {
-                                logger.info("Copying fresh tests from {} to {}", sourceDir, actualDestDir);
-                                Files.copy(sourcePath, destPath, StandardCopyOption.REPLACE_EXISTING);
-                            }
-                        }
-                    } catch (IOException e) {
-                        logger.error("Failed to copy file {}: {}", sourcePath, e.getMessage());
-                    }
-                });
-            }
-        } else if ("go".equals(exercise.getLanguage())) {
-            Iterable<Path> testPath = exercise.getTestPath();
-            for (Path refPath : testPath) {
-                try {
-                    String fileName = refPath.getFileName().toString();
-                    Path destFile = actualDestDir.resolve(fileName);
-                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Copied test file: {}", fileName);
-                } catch (IOException e) {
-                    logger.error("Failed to copy test file {}: {}", refPath, e.getMessage());
-                }
-            }
-        } else if ("javascript".equals(exercise.getLanguage())) {
-            Iterable<Path> testPath = exercise.getTestPath();
-            for (Path refPath : testPath) {
-                try {
-                    String fileName = refPath.getFileName().toString();
-                    Path destFile = actualDestDir.resolve(fileName);
-                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Copied test file: {}", fileName);
-                } catch (IOException e) {
-                    logger.error("Failed to copy test file {}: {}", refPath, e.getMessage());
-                }
-            }
-        } else if ("python".equals(exercise.getLanguage())) {
-            Iterable<Path> testPath = exercise.getTestPath();
-            for (Path refPath : testPath) {
-                try {
-                    String fileName = refPath.getFileName().toString();
-                    Path destFile = actualDestDir.resolve(fileName);
-                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Copied test file: {}", fileName);
-                } catch (IOException e) {
-                    logger.error("Failed to copy test file {}: {}", refPath, e.getMessage());
-                }
-            }
-        } else if ("rust".equals(exercise.getLanguage())) {
-            // For Rust, copy from tests/ directory
-            Path testsDir = sourceDir.resolve("tests");
-            if (Files.exists(testsDir)) {
-                try (Stream<Path> paths = Files.walk(testsDir)) {
-                    paths.forEach(sourcePath -> {
-                        try {
-                            if (Files.isRegularFile(sourcePath)) {
-                                Path relativePath = testsDir.relativize(sourcePath);
-                                Path destPath = actualDestDir.resolve("tests").resolve(relativePath);
-                                Files.createDirectories(destPath.getParent());
-                                Files.copy(sourcePath, destPath, StandardCopyOption.REPLACE_EXISTING);
-                                logger.info("Copied Rust test file: {}", relativePath);
-                            }
-                        } catch (IOException e) {
-                            logger.error("Failed to copy Rust test file {}: {}", sourcePath, e.getMessage());
-                        }
-                    });
-                }
-            }
-        } else if ("cpp".equals(exercise.getLanguage())) {
-            Iterable<Path> testPath = exercise.getTestPath();
-            for (Path refPath : testPath) {
-                try {
-                    String fileName = refPath.getFileName().toString();
-                    Path destFile = actualDestDir.resolve(fileName);
-                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Copied C++ test file: {}", fileName);
-                } catch (IOException e) {
-                    logger.error("Failed to copy C++ test file {}: {}", refPath, e.getMessage());
-                }
-            }
-        }
+
+        handler.copyTests(exercise, sourceDir, destDir);
     }
 
     /**
-     * Copies the reference implementation Java files to the main source directory.
+     * Copies the reference implementation files to the temp directory.
+     * Delegates to language-specific handler.
      */
     private void copyReferenceImplementation(Exercise exercise, Path tempDir) throws IOException {
-        if ("cpp".equals(exercise.getLanguage())) {
-            tempDir = tempDir.resolve(exercise.getName());
-            Files.createDirectories(tempDir);
+        // Get language handler
+        LanguageHandler handler = handlerRegistry.getHandler(exercise);
+        if (handler == null) {
+            throw new IOException("No handler found for language: " + exercise.getLanguage());
         }
-        Iterable<Path> refDirs = exercise.getReferencePath();
-        if (refDirs == null) {
-            return;
-        }
-        for (Path refPath : refDirs) {
-            if (refPath == null || !Files.exists(refPath)) {
-                logger.warn("Reference path not found for: {}", exercise.getName());
-                return;
-            }
-            if (exercise.getLanguage().equals("java")) {
-                Path mainSrcDir = tempDir.resolve("src/main/java");
-                Files.createDirectories(mainSrcDir);
 
-                logger.info("Copying reference implementation from {} to {}", refPath, mainSrcDir);
-
-                try (Stream<Path> paths = Files.walk(refPath)) {
-                    paths.filter(Files::isRegularFile)
-                            .filter(p -> p.toString().endsWith(".java"))
-                            .forEach(refFile -> {
-                                try {
-                                    String fileName = refFile.getFileName().toString();
-                                    Path destFile = mainSrcDir.resolve(fileName);
-                                    Files.copy(refFile, destFile, StandardCopyOption.REPLACE_EXISTING);
-                                    logger.info("Copied reference file: {}", fileName);
-                                } catch (IOException e) {
-                                    logger.error("Failed to copy reference file {}: {}", refFile, e.getMessage());
-                                }
-                            });
-                }
-                // overwrite with "sample"
-                for(Path examplePath: exercise.getExamples()) {
-                    try {
-                        String fileName = examplePath.getFileName().toString();
-                        // copy this over the "reference"?
-                        Path destFile = tempDir.resolve("src/main/java").resolve(fileName);
-                        //Path destFile = tempDir.resolve(destFileName);
-                        Files.copy(examplePath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                        logger.info("Copied reference file: {}", fileName);
-                    } catch (IOException e) {
-                        logger.error("Failed to copy reference file {}: {}", examplePath, e.getMessage());
-                    }
-                }
-            } else if (exercise.getLanguage().equals("go")) {
-                try {
-                    String fileName = refPath.getFileName().toString();
-                    Path destFile = tempDir.resolve(fileName);
-                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Copied reference file: {}", fileName);
-                } catch (IOException e) {
-                    logger.error("Failed to copy reference file {}: {}", refPath, e.getMessage());
-                }
-            } else if ("javascript".equals(exercise.getLanguage())) {
-                try {
-                    String fileName = refPath.getFileName().toString();
-                    Path destFile = tempDir.resolve(fileName);
-                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Copied JavaScript reference file: {}", fileName);
-                } catch (IOException e) {
-                    logger.error("Failed to copy JavaScript reference file {}: {}", refPath, e.getMessage());
-                }
-            } else if ("python".equals(exercise.getLanguage())) {
-                try {
-                    String fileName = refPath.getFileName().toString();
-                    Path destFile = tempDir.resolve(fileName);
-                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Copied Python reference file: {}", fileName);
-                } catch (IOException e) {
-                    logger.error("Failed to copy Python reference file {}: {}", refPath, e.getMessage());
-                }
-            } else if ("rust".equals(exercise.getLanguage())) {
-                try {
-                    // For Rust, maintain directory structure: src/lib.rs -> src/lib.rs, Cargo.toml -> Cargo.toml
-                    String fileName = refPath.getFileName().toString();
-                    Path destFile;
-                    if ("src".equals(refPath.getParent().getFileName().toString())) {
-                        // File is in src/ directory, maintain that structure
-                        Path srcDir = tempDir.resolve("src");
-                        Files.createDirectories(srcDir);
-                        destFile = srcDir.resolve(fileName);
-                    } else {
-                        // File is at root level (e.g., Cargo.toml)
-                        destFile = tempDir.resolve(fileName);
-                    }
-                    Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                    logger.info("Copied Rust reference file: {}", fileName);
-                } catch (IOException e) {
-                    logger.error("Failed to copy Rust reference file {}: {}", refPath, e.getMessage());
-                }
-            } else if ("cpp".equals(exercise.getLanguage())) {
-                // For C++, skip copying the stub files from getReferencePath()
-                // The example solution files will be copied below and renamed appropriately
-                logger.debug("Skipping C++ stub file: {}", refPath.getFileName());
-            }
-        }
-        for(Path examplePath: exercise.getExamples()) {
-            try {
-                String fileName = examplePath.getFileName().toString();
-                // Determine destination based on language
-                Path destFile;
-                if ("rust".equals(exercise.getLanguage())) {
-                    // For Rust examples:
-                    // - .meta/example.rs -> src/lib.rs
-                    String destFileName = exercise.getReferencePath().iterator().next().getFileName().toString();
-                    Path referencePath = exercise.getReferencePath().iterator().next();
-                    if ("src".equals(referencePath.getParent().getFileName().toString())) {
-                        // Reference is in src/, so example should go to src/
-                        Path srcDir = tempDir.resolve("src");
-                        Files.createDirectories(srcDir);
-                        destFile = srcDir.resolve(destFileName);
-                    } else {
-                        destFile = tempDir.resolve(destFileName);
-                    }
-
-                } else if ("cpp".equals(exercise.getLanguage())) {
-                    // For C++, rename example files to match the stub file names
-                    // e.g., example.cpp -> all_your_base.cpp, example.h -> all_your_base.h
-                    String exampleExtension = fileName.substring(fileName.lastIndexOf('.'));
-
-                    // Find the solution file with the same extension as this example
-                    String stubFileName = null;
-                    for (Path refPath : exercise.getReferencePath()) {
-                        String refExt = refPath.getFileName().toString().substring(refPath.getFileName().toString().lastIndexOf('.'));
-                        if (refExt.equals(exampleExtension)) {
-                            stubFileName = refPath.getFileName().toString();
-                            break;
-                        }
-                    }
-
-                    if (stubFileName != null) {
-                        destFile = tempDir.resolve(stubFileName);
-                        Files.copy(examplePath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                        logger.info("Copied C++ example file as: {}", stubFileName);
-                    } else {
-                        logger.warn("Could not find matching solution file for C++ example: {}", fileName);
-                    }
-                    continue; // Skip the regular copy logic below
-
-                } else {
-                    String destFileName = exercise.getReferencePath().iterator().next().getFileName().toString();
-                    destFile = tempDir.resolve(destFileName);
-                }
-                Files.copy(examplePath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                logger.info("Copied reference file: {}", fileName);
-            } catch (IOException e) {
-                logger.error("Failed to copy reference file {}: {}", examplePath, e.getMessage());
-            }
-        }
-        if ( "rust".equals(exercise.getLanguage())) {
-            var cargoFile = exercise.getExercisePath().resolve(".meta").resolve("Cargo-example.toml");
-            if (Files.exists(cargoFile)) {
-                var destFile = tempDir.resolve("Cargo.toml");
-                Files.copy(cargoFile, destFile, StandardCopyOption.REPLACE_EXISTING);
-                logger.info("Copied Rust reference file: {}", cargoFile);
-            }
-        }
+        handler.copyReference(exercise, tempDir);
     }
 
     /**
      * Runs tests inside the Docker container.
      */
     private ReferenceResult runTestsInDocker(Exercise exercise, Path hostExerciseDir, Path tempWorkDir, Instant startTime) {
-        // Mount the temp exercise directory as /workspace in the container
-        // For C++, files are in a subdirectory named after the exercise
-        String containerWorkDir;
-        if ("cpp".equals(exercise.getLanguage())) {
-            containerWorkDir = "/workspace/" + exercise.getName();
-        } else {
-            containerWorkDir = "/workspace";
+        // Get language handler
+        LanguageHandler handler = handlerRegistry.getHandler(exercise);
+
+        // Prepare workspace (npm install, uv venv, etc.) - only needed once per language/benchmark run
+        try {
+            prepareWorkspace(exercise, tempWorkDir);
+        } catch (IOException e) {
+            logger.error("Failed to prepare workspace for {}: {}", exercise.getName(), e.getMessage());
+            // Continue anyway - tests might still work without preparation
         }
 
-        List<String> command;
-        if ("javascript".equals(exercise.getLanguage())) {
-            // For JavaScript, first run npm install to get dependencies, then run tests
-            command = List.of("sh", "-c", "npm install && npm run test");
-        } else if ("python".equals(exercise.getLanguage())) {
-            // For Python, use uv to create a venv and install pytest
-            // First check if .venv exists, if so activate it, otherwise create new venv
-            command = List.of("sh", "-c",
-                "if [ -d \".venv\" ]; then source .venv/bin/activate; else uv venv && source .venv/bin/activate; fi && " +
-                "uv pip install -q pytest && pytest");
-        } else {
-            // Determine the test command based on available build files
-            command = getTestCommand(exercise);
-        }
+        // Determine container work directory (default is /workspace, C++ uses subdirectory)
+        String containerWorkDir = (handler != null) 
+                ? handler.getContainerWorkDir(exercise)
+                : "/workspace";
+
+        // Get test command from handler
+        List<String> command = (handler != null)
+                ? handler.getTestCommand(exercise)
+                : getTestCommand(exercise);
 
         logger.info("Running tests in Docker container at {} (mounted from: {})",
                 containerWorkDir, tempWorkDir);
@@ -666,9 +447,16 @@ public class ReferenceAgent {
 
     /**
      * Determines the appropriate test command based on the build system.
+     * Delegates to language-specific handler when available.
      */
     private List<String> getTestCommand(Exercise exercise) {
-        // Check for Maven or Gradle
+        // Get language handler if available
+        LanguageHandler handler = handlerRegistry.getHandler(exercise);
+        if (handler != null) {
+            return handler.getTestCommand(exercise);
+        }
+
+        // Fallback for unsupported languages
         Path exerciseDir = Path.of(System.getProperty("user.dir"))
                 .resolve("../polyglot-benchmark")
                 .resolve(exercise.getLanguage())
@@ -677,7 +465,6 @@ public class ReferenceAgent {
                 .resolve(exercise.getName());
 
         if (Files.exists(exerciseDir.resolve("pom.xml"))) {
-            // Maven project
             return List.of("mvn", "test", "-q");
         } else if (Files.exists(exerciseDir.resolve("build.gradle"))) {
             return List.of("./gradlew", "test", "--no-daemon", "-q");
@@ -744,57 +531,15 @@ public class ReferenceAgent {
         }
     }
 
-    protected void patchTests(Exercise exercise, Path tempWorkDir) {
-        if ("java".equals(exercise.getLanguage())) {
-            logger.info("Ensuring no tests are disabled");
-            // patch all java files under src/test/java to remove @Disabled annotations
-            try {
-                Files.walkFileTree(tempWorkDir.resolve("src").resolve("test"), new SimpleFileVisitor<>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (file.toString().endsWith(".java")) {
-                            try {
-                                String testCode = Files.readString(file);
-                                String updatedCode = testCode.replaceAll("@Disabled\\(.*\\)", "");
-                                Files.writeString(file, updatedCode);
-                            } catch (IOException e) {
-                                logger.error("Error reading file {}", file);
-                            }
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            } catch (IOException e) {
-                logger.error("There was an error while removing test annotations.", e);
-            }
-        } else if ("rust".equals(exercise.getLanguage())) {
-            logger.info("Ensuring no Rust tests are ignored (removing #[ignore] annotations)");
-            // patch all rust test files under tests/ to remove #[ignore] annotations
-            Path testsDir = tempWorkDir.resolve("tests");
-            if (Files.exists(testsDir)) {
-                try {
-                    Files.walkFileTree(testsDir, new SimpleFileVisitor<>() {
-                        @Override
-                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                            if (file.toString().endsWith(".rs")) {
-                                try {
-                                    String testCode = Files.readString(file);
-                                    // Remove #[ignore] annotations (with or without arguments)
-                                    String updatedCode = testCode.replaceAll("#\\[ignore]", "");
-                                    updatedCode = updatedCode.replaceAll("#\\[ignore[(].*[)]", "");
-                                    Files.writeString(file, updatedCode);
-                                } catch (IOException e) {
-                                    logger.error("Error reading file {}", file);
-                                }
-                            }
-                            return FileVisitResult.CONTINUE;
-                        }
-                    });
-                } catch (IOException e) {
-                    logger.error("There was an error while removing #[ignore] annotations.", e);
-                }
-            }
+    protected void patchTests(Exercise exercise, Path tempWorkDir) throws IOException {
+        // Get language handler
+        LanguageHandler handler = handlerRegistry.getHandler(exercise);
+        if (handler == null) {
+            logger.warn("No handler found for language: {}, skipping test patching", exercise.getLanguage());
+            return;
         }
+
+        handler.patchTests(tempWorkDir);
     }
 
     /**

@@ -31,10 +31,14 @@ public class ResultController {
     @PostMapping("/api/results/refresh")
     @ResponseBody
     public Map<String, Object> refreshResults() {
+        long startTime = System.currentTimeMillis();
         resultService.refreshCache();
+        long duration = System.currentTimeMillis() - startTime;
+        
         Map<String, Object> response = new java.util.HashMap<>();
         response.put("status", "ok");
-        response.put("message", "Result cache refreshed");
+        response.put("message", String.format("Result cache refreshed in %dms", duration));
+        response.put("durationMs", duration);
         return response;
     }
 

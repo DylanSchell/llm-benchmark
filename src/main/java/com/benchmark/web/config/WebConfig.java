@@ -128,8 +128,8 @@ public class WebConfig implements WebMvcConfigurer {
      * BenchmarkExecutor bean - depends on BenchmarkRunner and DockerClient.
      */
     @Bean
-    public BenchmarkExecutor benchmarkExecutor(BenchmarkRunner benchmarkRunner, DockerClient dockerClient) {
-        return new BenchmarkExecutor(benchmarkRunner, dockerClient);
+    public BenchmarkExecutor benchmarkExecutor(BenchmarkRunner benchmarkRunner, DockerClient dockerClient, Config config) {
+        return new BenchmarkExecutor(benchmarkRunner, dockerClient, config);
     }
 
     /**

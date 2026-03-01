@@ -45,10 +45,17 @@ public class PythonHandler implements LanguageHandler {
     }
 
     @Override
-    public List<String> getTestCommand(Exercise exercise) {
+    public List<String> prepareWorkspaceCommand(Exercise exercise) {
+        // Python needs virtual environment setup
         return List.of("sh", "-c",
-            "if [ -d \".venv\" ]; then source .venv/bin/activate; else uv venv && source .venv/bin/activate; fi && " +
-            "uv pip install -q pytest && pytest");
+            "if [ ! -d \".venv\" ]; then uv venv; fi");
+    }
+
+    @Override
+    public List<String> getTestCommand(Exercise exercise) {
+        // Activate venv and run pytest (venv was created in preparation)
+        return List.of("sh", "-c",
+            "source .venv/bin/activate && uv pip install -q pytest && pytest");
     }
 
     @Override

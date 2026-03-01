@@ -1,5 +1,6 @@
 package com.benchmark.agent;
 
+import com.benchmark.config.Config;
 import com.benchmark.docker.DockerClient;
 
 /**
@@ -104,7 +105,7 @@ public interface AgentFactory {
         AgentFactory factory = getFactory(name);
         if (factory == null) {
             throw new IllegalArgumentException(
-                "Unknown agent: " + name + ". Available agents: reference, claude, pi"
+                    "Unknown agent: " + name + ". Available agents: reference, claude, pi"
             );
         }
         return factory.create(dockerClient);

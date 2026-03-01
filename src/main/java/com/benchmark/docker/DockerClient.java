@@ -141,7 +141,7 @@ public class DockerClient {
         fullCommand.add(image);
         fullCommand.addAll(command);
 
-        logger.debug("Executing with memory limit {} and volume {}:/workspace: {}",
+        logger.info("Executing with memory limit {} and volume {}:/workspace: {}",
                 memory, hostDir, String.join(" ", fullCommand));
 
         ProcessBuilder pb = new ProcessBuilder(fullCommand);

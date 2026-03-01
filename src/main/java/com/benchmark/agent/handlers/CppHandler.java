@@ -6,10 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Handler for C++ exercises.
@@ -27,6 +26,8 @@ public class CppHandler implements LanguageHandler {
         // For C++, create a subdirectory named after the exercise
         Path exerciseDir = tempDir.resolve(exercise.getName());
         Files.createDirectories(exerciseDir);
+
+        logger.info("Copying C++ reference implementation to {}", exerciseDir);
 
         // Copy example solutions and rename to match stub file names
         for (Path examplePath : exercise.getExamples()) {
@@ -61,6 +62,7 @@ public class CppHandler implements LanguageHandler {
     @Override
     public void copyTests(Exercise exercise, Path sourceDir, Path destDir) throws IOException {
         Path exerciseDest = destDir.resolve(exercise.getName());
+        Files.createDirectories(exerciseDest);
         
         for (Path testPath : exercise.getTestPath()) {
             String fileName = testPath.getFileName().toString();
@@ -80,5 +82,43 @@ public class CppHandler implements LanguageHandler {
     public void patchTests(Path tempWorkDir) throws IOException {
         // C++ tests don't typically have skip annotations
         logger.debug("No test patching needed for C++");
+    }
+
+    @Override
+    public String getContainerWorkDir(Exercise exercise) {
+        return "/workspace/" + exercise.getName();
+    }
+
+    @Override
+    public void copyExerciseFiles(Exercise exercise, Path sourceDir, Path destDir) throws IOException {
+        // For C++, create a subdirectory named after the exercise
+        Path exerciseDest = destDir.resolve(exercise.getName());
+        Files.createDirectories(exerciseDest);
+
+        logger.info("Copying C++ exercise files to {}", exerciseDest);
+
+        // Default implementation: copy all files except .meta/ directory
+        try (Stream<Path> paths = Files.walk(sourceDir)) {
+            paths.forEach(sourcePath -> {
+                try {
+                    Path relativePath = sourceDir.relativize(sourcePath);
+
+                    // Skip reference implementation directory
+                    if (relativePath.toString().contains(".meta/")) {
+                        return;
+                    }
+
+                    Path destPath = exerciseDest.resolve(relativePath);
+
+                    if (Files.isDirectory(sourcePath)) {
+                        Files.createDirectories(destPath);
+                    } else {
+                        Files.copy(sourcePath, destPath, StandardCopyOption.REPLACE_EXISTING);
+                    }
+                } catch (IOException e) {
+                    logger.error("Failed to copy file {}: {}", sourcePath, e.getMessage());
+                }
+            });
+        }
     }
 }
