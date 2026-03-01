@@ -40,7 +40,7 @@ public class CliEntryPoint {
     private static CliArgs parseArguments(String[] args) {
         String configFile = "config.yaml";
         boolean webMode = false;
-        int webPort = 8080;
+        int webPort = 8081;
         String model = null;
         String resultsDir = null;
         String language = "java";
@@ -232,7 +232,7 @@ public class CliEntryPoint {
         System.out.println();
         System.out.println("Options:");
         System.out.println("  --config <file>       Config file (default: config.yaml)");
-        System.out.println("  --web [port]          Start web interface (optional port, default: 8080)");
+        System.out.println("  --web [port]          Start web interface (optional port, default: 8081)");
         System.out.println("  --port <port>         Web interface port");
         System.out.println("  --model <model>       Model name override");
         System.out.println("  --results-dir <dir>   Results directory override");

@@ -3,6 +3,7 @@ package com.benchmark.web.controller;
 import com.benchmark.web.domain.BenchmarkSession;
 import com.benchmark.web.domain.RunStatus;
 import com.benchmark.web.service.BenchmarkService;
+import com.benchmark.web.service.ResultService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -29,13 +30,15 @@ public class BenchmarkController {
     private static final Logger logger = LoggerFactory.getLogger(BenchmarkController.class);
 
     private final BenchmarkService benchmarkService;
+    private final ResultService resultService;
     private final ObjectMapper objectMapper;
 
     // Inference endpoint URL from config
     private final String inferenceEndpoint;
 
-    public BenchmarkController(BenchmarkService benchmarkService) {
+    public BenchmarkController(BenchmarkService benchmarkService, ResultService resultService) {
         this.benchmarkService = benchmarkService;
+        this.resultService = resultService;
         this.objectMapper = new ObjectMapper();
         this.inferenceEndpoint = "http://localhost:8080";
     }
@@ -45,7 +48,8 @@ public class BenchmarkController {
      */
     @GetMapping("/")
     public String dashboard(Model model) {
-        Map<String, Object> stats = new HashMap<>(); // TODO: Get from ResultService
+        // Get statistics from ResultService (aggregates all individual result files)
+        Map<String, Object> stats = resultService.getStatistics();
         model.addAttribute("stats", stats);
         List<BenchmarkSession> activeSessions = benchmarkService.getAllSessions().values().stream()
                 .filter(s -> s.getStatus() == RunStatus.RUNNING || s.getStatus() == RunStatus.PENDING)

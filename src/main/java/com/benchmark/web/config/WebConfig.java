@@ -8,16 +8,23 @@ import com.benchmark.exercise.ExerciseRunner;
 import com.benchmark.web.service.BenchmarkExecutor;
 import com.benchmark.web.service.QueueProcessor;
 import com.benchmark.web.service.SessionManager;
+import jakarta.annotation.PreDestroy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.concurrent.Executor;
 
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Web configuration for static resources and executors.
@@ -25,11 +32,36 @@ import java.util.concurrent.ThreadFactory;
 @Configuration
 @EnableAsync
 public class WebConfig implements WebMvcConfigurer {
+    private static final Logger logger = LoggerFactory.getLogger(WebConfig.class);
+
+    private ExecutorService benchmarkExecutorService;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/");
+    }
+
+    /**
+     * Gracefully shut down executor services on application close.
+     */
+    @PreDestroy
+    public void shutdown() {
+        logger.info("Shutting down web configuration beans...");
+        if (benchmarkExecutorService != null && !benchmarkExecutorService.isShutdown()) {
+            logger.info("Shutting down benchmark executor service...");
+            benchmarkExecutorService.shutdown();
+            try {
+                if (!benchmarkExecutorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                    logger.warn("Executor service did not terminate in time, forcing shutdown");
+                    benchmarkExecutorService.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted while shutting down executor service");
+                benchmarkExecutorService.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     /**
@@ -71,8 +103,9 @@ public class WebConfig implements WebMvcConfigurer {
      * Spring will manage the lifecycle - shutting it down on application close.
      */
     @Bean
-    public ExecutorService benchmarkExecutor() {
-        return Executors.newCachedThreadPool(new DaemonThreadFactory());
+    public ExecutorService benchmarkExecutorService() {
+        this.benchmarkExecutorService = Executors.newCachedThreadPool(new DaemonThreadFactory());
+        return this.benchmarkExecutorService;
     }
 
     /**
@@ -107,8 +140,9 @@ public class WebConfig implements WebMvcConfigurer {
                                         com.benchmark.web.service.ResultService resultService,
                                         ExerciseRunner exerciseRunner,
                                         Config config,
-                                        ExecutorService benchmarkExecutor) {
-        return new QueueProcessor(sessionManager, resultService, exerciseRunner, config, benchmarkExecutor);
+                                        ExecutorService benchmarkExecutorService,
+                                        BenchmarkExecutor benchmarkExecutor) {
+        return new QueueProcessor(sessionManager, resultService, exerciseRunner, config, benchmarkExecutorService, benchmarkExecutor);
     }
 
     /**
@@ -123,6 +157,23 @@ public class WebConfig implements WebMvcConfigurer {
             ExerciseRunner exerciseRunner) {
         return new com.benchmark.web.service.BenchmarkService(
                 sessionManager, benchmarkExecutor, queueProcessor, resultService, exerciseRunner);
+    }
+
+    /**
+     * Spring TaskExecutor for @Async methods.
+     */
+    @Bean(name = "taskExecutor")
+    public Executor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(25);
+        executor.setThreadNamePrefix("benchmark-async-");
+        executor.setThreadFactory(new DaemonThreadFactory());
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(10);
+        executor.initialize();
+        return executor;
     }
 
     /**

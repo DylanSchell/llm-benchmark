@@ -94,8 +94,9 @@ public class ResultService {
                     .filter(p -> p.toString().endsWith(".json"))
                     .filter(p -> {
                         String filename = p.getFileName().toString();
-                        // Load both results_* (batch) and result_* (individual exercise) files
-                        return filename.startsWith("results_") || filename.startsWith("result_");
+                        // Only load individual exercise result files (result_*.json)
+                        // Aggregated batch results (results_*.json) are no longer used
+                        return filename.startsWith("result_");
                     })
                     .toList();
 
@@ -119,18 +120,13 @@ public class ResultService {
     }
 
     /**
-     * Loads a single cachedResult file into a CachedResult object.
-     * Handles both batch result files (results_*.json with results array)
-     * and individual exercise result files (result_*.json serialized ExerciseResult).
+     * Loads a single individual result file (result_*.json) into a CachedResult object.
      */
     private CachedResult loadCachedResult(Path resultFile) throws IOException {
         JsonNode node = objectMapper.readTree(resultFile.toFile());
 
-        // Check if this is a batch result file (has "results" array) or individual exercise result
-        boolean isBatchResult = node.has("results") && node.get("results").isArray();
-        boolean isIndividualResult = node.has("exerciseName") && node.has("language");
-
-        if (!isBatchResult && !isIndividualResult) {
+        // Validate this is an individual exercise result
+        if (!node.has("exerciseName") || !node.has("language")) {
             return null;
         }
 
@@ -138,138 +134,87 @@ public class ResultService {
         cached.filename = resultFile.getFileName().toString();
         cached.path = resultFile.toString();
 
-        // Extract model from file path or from embedded field
+        // Extract model from embedded field or directory structure
         if (node.has("model")) {
             cached.model = node.get("model").asText();
         } else {
-            // Derive from directory structure
             cached.model = resultFile.getParent().getFileName().toString();
         }
 
         cached.timestamp = node.has("timestamp") ? node.get("timestamp").asText() : null;
 
-        // Extract agent from embedded field or derive from filename
+        // Extract agent from embedded field or filename
         if (node.has("agent")) {
             cached.agent = node.get("agent").asText();
-        } else if (isIndividualResult) {
+        } else {
             // Derive agent from filename pattern: result_<agent>_<language>_<exercise>.json
             String filename = resultFile.getFileName().toString();
             if (filename.startsWith("result_")) {
-                // Extract agent from filename
-                String[] parts = filename.split("_");
-                if (parts.length >= 2) {
-                    cached.agent = parts[1]; // Second part after "result"
+                String[] parts = filename.substring(7).split("_"); // Remove "result_" prefix
+                if (parts.length >= 1) {
+                    cached.agent = parts[0];
                 } else {
                     cached.agent = "unknown";
                 }
             } else {
                 cached.agent = "unknown";
             }
-        } else {
-            cached.agent = "unknown";
         }
 
-        // For individual results, extract language and exercise from embedded fields
-        if (isIndividualResult) {
-            cached.language = node.has("language") ? node.get("language").asText() : "unknown";
-            String exercise = node.has("exerciseName") ? node.get("exerciseName").asText() : "unknown";
+        // Extract exercise data
+        cached.language = node.has("language") ? node.get("language").asText() : "unknown";
+        String exercise = node.has("exerciseName") ? node.get("exerciseName").asText() : "unknown";
 
-            // Create a single-item results list for individual result files
-            Map<String, Object> singleResult = new HashMap<>();
-            singleResult.put("language", cached.language);
-            singleResult.put("exercise", exercise);
-            singleResult.put("success", node.has("success") ? node.get("success").asBoolean() : false);
-            singleResult.put("duration", node.has("duration") ? node.get("duration").toString() : "0");
-            singleResult.put("output", node.has("output") ? node.get("output").asText() : "");
-            singleResult.put("trace", node.has("trace") ? node.get("trace").asText() : "");
+        // Create a single-item results list
+        Map<String, Object> singleResult = new HashMap<>();
+        singleResult.put("language", cached.language);
+        singleResult.put("exercise", exercise);
+        singleResult.put("success", node.has("success") ? node.get("success").asBoolean() : false);
+        singleResult.put("duration", node.has("duration") ? node.get("duration").toString() : "0");
+        singleResult.put("output", node.has("output") ? node.get("output").asText() : "");
+        singleResult.put("trace", node.has("trace") ? node.get("trace").asText() : "");
 
-            cached.results = List.of(singleResult);
-            cached.totalExercises = 1;
-            cached.successful = singleResult.get("success") == Boolean.TRUE ? 1 : 0;
-            cached.failed = singleResult.get("success") == Boolean.FALSE ? 1 : 0;
-            cached.successRate = cached.successful > 0 ? "100.0%" : "0.0%";
+        cached.results = List.of(singleResult);
+        cached.totalExercises = 1;
+        cached.successful = singleResult.get("success") == Boolean.TRUE ? 1 : 0;
+        cached.failed = singleResult.get("success") == Boolean.FALSE ? 1 : 0;
+        cached.successRate = cached.successful > 0 ? "100.0%" : "0.0%";
 
-            // Compute per-language statistics for this single result
-            String lang = cached.language != null ? cached.language : "unknown";
-            cached.exerciseCountByLanguage.put(lang, 1);
+        // Compute per-language statistics for this single result
+        String lang = cached.language != null ? cached.language : "unknown";
+        cached.exerciseCountByLanguage.put(lang, 1);
 
-            if (singleResult.get("success") == Boolean.TRUE) {
-                cached.successCountByLanguage.put(lang, 1);
-            }
-
-            // Parse duration if available
-            try {
-                String durStr = singleResult.get("duration").toString();
-                if (durStr != null && !durStr.isEmpty() && !durStr.equals("null")) {
-                    // Try to parse duration string (e.g., "PT1.5S" or "100ms")
-                    double dur = 0.0;
-                    if (durStr.endsWith("ms")) {
-                        dur = Double.parseDouble(durStr.substring(0, durStr.length() - 2)) / 1000.0;
-                    } else if (durStr.endsWith("s")) {
-                        dur = Double.parseDouble(durStr.substring(0, durStr.length() - 1));
-                    } else {
-                        try {
-                            dur = Double.parseDouble(durStr);
-                        } catch (NumberFormatException ignored) {}
-                    }
-                    cached.durationByLanguage.put(lang, dur);
-                }
-            } catch (Exception e) {
-                logger.debug("Failed to parse duration: {}", e.getMessage());
-            }
+        if (singleResult.get("success") == Boolean.TRUE) {
+            cached.successCountByLanguage.put(lang, 1);
         }
 
-        if (isBatchResult) {
-            // Parse batch results array
-            cached.language = node.has("language") ? node.get("language").asText() : "unknown";
-            cached.totalExercises = node.has("total_exercises") ? node.get("total_exercises").asInt() : 0;
-            cached.successful = node.has("successful") ? node.get("successful").asInt() : 0;
-            cached.failed = node.has("failed") ? node.get("failed").asInt() : 0;
-            cached.successRate = node.has("success_rate") ? node.get("success_rate").asText() : "0.0%";
-
-            // Parse results array
-            if (node.has("results") && node.get("results").isArray()) {
-                @SuppressWarnings("unchecked")
-                List<Map<String, Object>> resultsList = objectMapper.readValue(
-                    node.get("results").toString(), 
-                    new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, Object>>>() {}
-                );
-                cached.results = resultsList;
-
-                // Compute per-language statistics
-                for (Map<String, Object> result : cached.results) {
-                    String lang = (String) result.get("language");
-                    if (lang == null) lang = "unknown";
-
-                    Boolean success = (Boolean) result.get("success");
-                    Number duration = (Number) result.get("duration");
-                    double dur = duration != null ? duration.doubleValue() : 0.0;
-
-                    cached.exerciseCountByLanguage.putIfAbsent(lang, 0);
-                    cached.exerciseCountByLanguage.put(lang, cached.exerciseCountByLanguage.get(lang) + 1);
-
-                    cached.durationByLanguage.putIfAbsent(lang, 0.0);
-                    cached.durationByLanguage.put(lang, cached.durationByLanguage.get(lang) + dur);
-
-                    if (success != null && success) {
-                        cached.successCountByLanguage.putIfAbsent(lang, 0);
-                        cached.successCountByLanguage.put(lang, cached.successCountByLanguage.get(lang) + 1);
-                    }
+        // Parse duration if available
+        try {
+            String durStr = singleResult.get("duration").toString();
+            if (durStr != null && !durStr.isEmpty() && !durStr.equals("null")) {
+                double dur = 0.0;
+                if (durStr.endsWith("ms")) {
+                    dur = Double.parseDouble(durStr.substring(0, durStr.length() - 2)) / 1000.0;
+                } else if (durStr.endsWith("s")) {
+                    dur = Double.parseDouble(durStr.substring(0, durStr.length() - 1));
+                } else {
+                    try {
+                        dur = Double.parseDouble(durStr);
+                    } catch (NumberFormatException ignored) {}
                 }
+                cached.durationByLanguage.put(lang, dur);
             }
+        } catch (Exception e) {
+            logger.debug("Failed to parse duration: {}", e.getMessage());
         }
 
-        // Check for separate trace HTML file (trace_<agent>_<language>_<exercise>.html)
-        // For individual results, look for a corresponding .html trace file
-        if (isIndividualResult) {
-            String filename = resultFile.getFileName().toString();
-            if (filename.startsWith("result_")) {
-                // Replace result_ with trace_ and .json with .html
-                String traceFilename = filename.replace("result_", "trace_").replace(".json", ".html");
-                Path traceFilePath = resultFile.getParent().resolve(traceFilename);
-                if (Files.exists(traceFilePath)) {
-                    cached.tracePath = traceFilePath.toString();
-                }
+        // Check for separate trace HTML file
+        String filename = resultFile.getFileName().toString();
+        if (filename.startsWith("result_")) {
+            String traceFilename = filename.replace("result_", "trace_").replace(".json", ".html");
+            Path traceFilePath = resultFile.getParent().resolve(traceFilename);
+            if (Files.exists(traceFilePath)) {
+                cached.tracePath = traceFilePath.toString();
             }
         }
 
@@ -286,7 +231,7 @@ public class ResultService {
             boolean matchesLanguage = language == null || language.isEmpty() ||
                     (cached.language != null && cached.language.equals(language));
             boolean matchesAgent = agent == null || agent.isEmpty() ||
-                    (cached.agent != null && cached.agent.contains(agent));
+                    (cached.agent != null && cached.agent.equals(agent));
             boolean matchesModel = model == null || model.isEmpty() ||
                     (cached.model != null && cached.model.equals(model));
 
@@ -340,6 +285,24 @@ public class ResultService {
                     String fileModel = node.has("model") ? node.get("model").asText() : p.getParent().getFileName().toString();
                     String exerciseName = node.has("exerciseName") ? node.get("exerciseName").asText() : "unknown";
 
+                    // Use endTime as timestamp (when the result was completed)
+                    String timestamp = null;
+                    if (node.has("endTime")) {
+                        JsonNode endTimeNode = node.get("endTime");
+                        // Handle both numeric (epoch seconds with nanos) and string formats
+                        if (endTimeNode.isNumber()) {
+                            double epochSeconds = endTimeNode.asDouble();
+                            long seconds = (long) epochSeconds;
+                            int nanos = (int) ((epochSeconds - seconds) * 1_000_000_000);
+                            java.time.Instant instant = java.time.Instant.ofEpochSecond(seconds, nanos);
+                            timestamp = instant.toString();
+                        } else {
+                            timestamp = endTimeNode.asText();
+                        }
+                    } else if (node.has("timestamp")) {
+                        timestamp = node.get("timestamp").asText();
+                    }
+
                     // Apply filters
                     boolean matchesLanguage = language == null || language.isEmpty() || fileLanguage.equals(language);
                     boolean matchesAgent = agent == null || agent.isEmpty() || fileAgent.equals(agent);
@@ -354,7 +317,7 @@ public class ResultService {
                         individualResult.put("model", fileModel);
                         individualResult.put("exercise", exerciseName);
                         individualResult.put("success", node.has("success") ? node.get("success").asBoolean() : false);
-                        individualResult.put("timestamp", node.has("timestamp") ? node.get("timestamp").asText() : null);
+                        individualResult.put("timestamp", timestamp);
 
                         // Check for separate trace HTML file
                         String traceFilename = p.getFileName().toString().replace("result_", "trace_").replace(".json", ".html");
@@ -506,9 +469,9 @@ public class ResultService {
 
         for (CachedResult cached : cachedResults.values()) {
             boolean matchesLanguage = language == null || language.isEmpty() ||
-                    (cached.filename != null && cached.filename.contains(language));
+                    (cached.language != null && cached.language.equals(language));
             boolean matchesAgent = agent == null || agent.isEmpty() ||
-                    (cached.agent != null && cached.agent.contains(agent));
+                    (cached.agent != null && cached.agent.equals(agent));
             boolean matchesModel = model == null || model.isEmpty() ||
                     (cached.model != null && cached.model.equals(model));
 

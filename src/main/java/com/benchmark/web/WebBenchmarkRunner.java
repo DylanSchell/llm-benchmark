@@ -20,59 +20,38 @@ public class WebBenchmarkRunner {
      * Main entry point for web mode.
      * Starts the Spring Boot application.
      *
-     * @param args Command line arguments (passed from main runner)
+     * @param args Command line arguments (should include --server.port from caller)
      */
     public static void runWebMode(String[] args) {
         logger.info("Starting web interface...");
 
-        // Parse port from args - default to 8081 (as in application.properties)
-        int port = 8081;
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].equals("--web") && i + 1 < args.length) {
-                try {
-                    int potentialPort = Integer.parseInt(args[++i]);
-                    if (potentialPort > 0 && potentialPort < 65536) {
-                        port = potentialPort;
-                    } else {
-                        i--;
-                    }
-                } catch (NumberFormatException e) {
-                    i--;
-                }
-            } else if (args[i].equals("--port") && i + 1 < args.length) {
-                int potentialPort = Integer.parseInt(args[++i]);
-                if (potentialPort > 0 && potentialPort < 65536) {
-                    port = potentialPort;
-                } else {
-                    i--;
-                }
-            }
-        }
-
-        final int webPort = port;
-
-        // Build args with server.port override
-        java.util.List<String> argList = new java.util.ArrayList<>();
-        argList.add("--server.port=" + webPort);
-        for (String arg : args) {
-            if (!arg.equals("--web") && !arg.equals("--port")) {
-                try {
-                    Integer.parseInt(arg); // Skip port values
-                } catch (NumberFormatException e) {
-                    argList.add(arg);
-                }
-            }
-        }
-
         SpringApplication app = new SpringApplication(WebBenchmarkRunner.class);
-        var context = app.run(argList.toArray(new String[0]));
+        var context = app.run(args);
 
-        logger.info("Web interface started successfully on port " + webPort);
+        // Extract port from args for logging
+        int port = 8081; // default
+        for (String arg : args) {
+            if (arg.startsWith("--server.port=")) {
+                try {
+                    port = Integer.parseInt(arg.substring("--server.port=".length()));
+                } catch (NumberFormatException e) {
+                    // Use default
+                }
+                break;
+            }
+        }
+
+        logger.info("Web interface started successfully on port " + port);
 
         // Register shutdown hook to ensure clean termination
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.info("Shutting down web interface...");
-            context.close();
-        }));
+            try {
+                context.close();
+                logger.info("Web interface shut down complete");
+            } catch (Exception e) {
+                logger.error("Error during shutdown: {}", e.getMessage());
+            }
+        }, "web-shutdown-hook"));
     }
 }

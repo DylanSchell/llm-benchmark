@@ -36,7 +36,7 @@
 
             <!-- Filters -->
             <div class="card" style="margin-bottom: 1rem;">
-                <form id="filter-form" hx-get="/results/table-fragment" hx-target="#results-body" hx-swap="innerHTML" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+                <form method="get" action="/results" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
                     <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
                         <label for="filter-language">Language</label>
                         <select id="filter-language" name="language">
@@ -72,51 +72,54 @@
                 </form>
             </div>
 
-            <!-- Results Table -->
-            <div class="card">
+           <!-- Language Statistics -->
+            <div class="card" style="margin-bottom: 1rem;">
+                <h3 style="margin-bottom: 1rem;">By Language</h3>
                 <style>
-                    .timestamp-cell { white-space: nowrap; }
-                    .sortable-table th { cursor: pointer; user-select: none; }
-                    .sortable-table th:hover { background-color: #f0f0f0; }
+                    .stats-table { width: 100%; border-collapse: collapse; }
+                    .stats-table th { text-align: left; padding: 0.5rem; background: #f5f5f5; border-bottom: 2px solid #ddd; }
+                    .stats-table td { padding: 0.5rem; border-bottom: 1px solid #eee; }
                 </style>
-                <table class="sortable-table">
+                <table class="stats-table">
                     <thead>
                         <tr>
-                            <th onclick="sortTable('results-body', 0)" style="cursor: pointer;">Timestamp &#x2195;</th>
-                            <th onclick="sortTable('results-body', 1)" style="cursor: pointer;">Agent &#x2195;</th>
-                            <th onclick="sortTable('results-body', 2)" style="cursor: pointer;">Language &#x2195;</th>
-                            <th onclick="sortTable('results-body', 3)" style="cursor: pointer;">Total &#x2195;</th>
-                            <th onclick="sortTable('results-body', 4)" style="cursor: pointer;">Successful &#x2195;</th>
-                            <th onclick="sortTable('results-body', 5)" style="cursor: pointer;">Failed &#x2195;</th>
-                            <th onclick="sortTable('results-body', 6)" style="cursor: pointer;">Success Rate &#x2195;</th>
-                            <th onclick="sortTable('results-body', 7)" style="cursor: pointer;">Actions</th>
+                            <th>Language</th>
+                            <th>Total Exercises</th>
+                            <th>Successful</th>
+                            <th>Success Rate</th>
                         </tr>
                     </thead>
-                    <tbody id="results-body">
-                        <tr th:if="${#lists.isEmpty(results)}">
-                            <td colspan="8" style="text-align: center; color: #7f8c8d;">No results found</td>
-                        </tr>
-                        <tr th:each="result : ${results}"
-                            th:if="${(result['successful'] != null and result['successful'] > 0) or (result['failed'] != null and result['failed'] > 0)}">
-                            <td class="timestamp-cell" th:text="${result['timestamp'] != null ? result['timestamp'].replace('T', ' ').substring(0, 16) : ''}">2024-01-01 00:00</td>
-                            <td th:text="${result['agent']}">reference</td>
-                            <td th:text="${result['language']}">java</td>
-                            <td th:text="${result['total_exercises']}">10</td>
-                            <td th:text="${result['successful']}">8</td>
-                            <td th:text="${result['failed']}">2</td>
-                            <td th:text="${result['success_rate']}">80.0%</td>
+                    <tbody>
+                        <tr th:each="lang : ${stats['by_language']}">
+                            <td><a th:href="@{/results(language=${lang.key})}" th:text="${lang.key}" style="color: #3498db; text-decoration: none;">java</a></td>
+                            <td th:text="${lang.value}">10</td>
+                            <td th:text="${stats['success_by_language'][lang.key] ?: 0}">8</td>
                             <td>
-                                <a th:href="@{/results/{filename}(filename=${result['filename']})}" class="btn btn-primary" style="font-size: 0.875rem; padding: 0.25rem 0.5rem;">View Details</a>
+                                <span th:with="total=${stats['by_language'][lang.key]}, success=${stats['success_by_language'][lang.key]}"
+                                      th:text="${total != null && total > 0 ? #numbers.formatDecimal((success != null ? success : 0) * 100.0 / total, 1, 1) + '%' : '0.0%'}">80.0%</span>
                             </td>
+                        </tr>
+                        <tr th:if="${#maps.isEmpty(stats['by_language'])}">
+                            <td colspan="4" style="text-align: center; color: #7f8c8d;">No language statistics available</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Individual Results (shown when filtering) -->
-            <div class="card" style="margin-top: 1rem;" th:if="${!#lists.isEmpty(individualResults)}">
-                <h3 style="margin-bottom: 1rem;">Individual Runs</h3>
-                <p style="color: #7f8c8d; margin-bottom: 1rem;">Detailed results for each exercise matching the current filters</p>
+            <!-- Individual Results -->
+            <div class="card" th:if="${!#lists.isEmpty(individualResults)}">
+                <h3 style="margin-bottom: 1rem;">Individual Exercise Results</h3>
+                <p style="color: #7f8c8d; margin-bottom: 1rem;" 
+                   th:if="${(filterLanguage != null and !#strings.isEmpty(filterLanguage)) or 
+                           (filterAgent != null and !#strings.isEmpty(filterAgent)) or 
+                           (filterModel != null and !#strings.isEmpty(filterModel))}">
+                    Showing exercises matching filters
+                </p>
+                <style>
+                    .timestamp-cell { white-space: nowrap; }
+                    .sortable-table th { cursor: pointer; user-select: none; }
+                    .sortable-table th:hover { background-color: #f0f0f0; }
+                </style>
                 <table class="sortable-table">
                     <thead>
                         <tr>
@@ -130,7 +133,7 @@
                     </thead>
                     <tbody id="individual-body">
                         <tr th:each="indResult : ${individualResults}">
-                            <td th:text="${indResult['timestamp'] != null ? indResult['timestamp'].replace('T', ' ').substring(0, 16) : ''}">2024-01-01 00:00</td>
+                            <td class="timestamp-cell" th:text="${indResult['timestamp'] != null ? indResult['timestamp'].replace('T', ' ').substring(0, 16) : ''}">2024-01-01 00:00</td>
                             <td th:text="${indResult['agent']}">reference</td>
                             <td th:text="${indResult['language']}">java</td>
                             <td th:text="${indResult['exercise']}">exercise_name</td>
@@ -147,34 +150,51 @@
                 </table>
             </div>
 
+            <div th:if="${#lists.isEmpty(individualResults)}" class="card">
+                <p style="text-align: center; color: #7f8c8d;">No individual results found. Try adjusting your filters.</p>
+            </div>
+
             <script>
                 // Table sorting function for results page
                 let sortDirections = {};
 
-                function sortTable(tableId, columnIdx) {
-                    const table = document.getElementById(tableId).querySelector('table');
-                    const tbody = table.querySelector('tbody');
+                function sortTable(elementId, columnIdx) {
+                    // elementId can be either the table or tbody id
+                    let element = document.getElementById(elementId);
+                    if (!element) return;
+                    
+                    // If it's a tbody, find its parent table
+                    let tbody = element;
+                    if (element.tagName === 'TBODY') {
+                        tbody = element;
+                        element = element.closest('table');
+                    }
+                    
+                    if (!element || !tbody) return;
+                    
                     const rows = Array.from(tbody.querySelectorAll('tr'));
-                    const isNumeric = columnIdx !== 0 && columnIdx !== 1 && columnIdx !== 2; // timestamp, agent, language are strings
+                    if (rows.length === 0) return;
+                    
+                    const isNumeric = columnIdx !== 0 && columnIdx !== 1 && columnIdx !== 2;
                     const isTimestamp = columnIdx === 0;
 
-                    // Initialize or toggle sort direction
-                    if (!sortDirections[tableId]) {
-                        sortDirections[tableId] = [];
+                    if (!sortDirections[elementId]) {
+                        sortDirections[elementId] = [];
                     }
-                    sortDirections[tableId][columnIdx] = !sortDirections[tableId][columnIdx];
-                    const ascending = sortDirections[tableId][columnIdx];
+                    sortDirections[elementId][columnIdx] = !sortDirections[elementId][columnIdx];
+                    const ascending = sortDirections[elementId][columnIdx];
 
                     rows.sort((a, b) => {
+                        // Skip empty rows
+                        if (a.children.length === 0 || b.children.length === 0) return 0;
+                        
                         let aVal = a.children[columnIdx].textContent.trim();
                         let bVal = b.children[columnIdx].textContent.trim();
 
                         if (isTimestamp) {
-                            // Parse timestamp format "YYYY-MM-DD HH:mm"
                             aVal = new Date(aVal.replace(' ', 'T'));
                             bVal = new Date(bVal.replace(' ', 'T'));
                         } else if (isNumeric) {
-                            // Remove '%', 's' suffixes for numeric comparison
                             aVal = parseFloat(aVal.replace(/[^0-9.]/g, '')) || 0;
                             bVal = parseFloat(bVal.replace(/[^0-9.]/g, '')) || 0;
                         } else {
@@ -187,36 +207,9 @@
                         return 0;
                     });
 
-                    // Reorder rows
                     rows.forEach(row => tbody.appendChild(row));
                 }
             </script>
-
-            <!-- Language Stats -->
-            <div class="card" style="margin-top: 1rem;">
-                <h3 style="margin-bottom: 1rem;">By Language</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Language</th>
-                            <th>Total Exercises</th>
-                            <th>Successful</th>
-                            <th>Success Rate</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="lang : ${stats['by_language']}">
-                            <td th:text="${lang.key}">java</td>
-                            <td th:text="${lang.value}">10</td>
-                            <td th:text="${stats['success_by_language'][lang.key] ?: 0}">8</td>
-                            <td>
-                                <span th:with="total=${stats['by_language'][lang.key]}, success=${stats['success_by_language'][lang.key]}"
-                                      th:text="${total != null && total > 0 ? #numbers.formatDecimal((success != null ? success : 0) * 100.0 / total, 1, 1) + '%' : '0.0%'}">80.0%</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </main>
     </div>
 </body>

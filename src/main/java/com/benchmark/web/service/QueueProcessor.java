@@ -29,15 +29,18 @@ public class QueueProcessor {
     private final ExerciseRunner exerciseRunner;
     private final Config config;
     private final ExecutorService executor;
+    private final BenchmarkExecutor benchmarkExecutor;
     private volatile boolean processingItem = false;
 
     public QueueProcessor(SessionManager sessionManager, ResultService resultService,
-                         ExerciseRunner exerciseRunner, Config config, ExecutorService executor) {
+                         ExerciseRunner exerciseRunner, Config config, ExecutorService executor,
+                         BenchmarkExecutor benchmarkExecutor) {
         this.sessionManager = sessionManager;
         this.resultService = resultService;
         this.exerciseRunner = exerciseRunner;
         this.config = config;
         this.executor = executor;
+        this.benchmarkExecutor = benchmarkExecutor;
 
         // Start queue worker
         startQueueWorker();
@@ -103,20 +106,26 @@ public class QueueProcessor {
         String sessionId = null;
         try {
             // Create session for this queue item
-            sessionId = sessionManager.createSession(
+            BenchmarkSession session = sessionManager.createSession(
                     item.getAgentName(),
                     new String[]{item.getLanguage()},
                     item.getModel(),
                     item.getExercise()
-            ).getId();
+            );
+            sessionId = session.getId();
             item.setSessionId(sessionId);
 
+            logger.info("Starting benchmark execution for session: {}", sessionId);
+            
+            // Start the benchmark execution
+            benchmarkExecutor.execute(session);
+
             // Wait for session to complete
-            BenchmarkSession session = sessionManager.getSession(sessionId);
             while (session != null && 
                    (session.getStatus() == RunStatus.PENDING ||
                     session.getStatus() == RunStatus.RUNNING)) {
                 Thread.sleep(500);
+                session = sessionManager.getSession(sessionId); // Refresh session status
             }
 
             if (session != null) {
