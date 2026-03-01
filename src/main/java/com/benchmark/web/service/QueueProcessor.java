@@ -1,7 +1,6 @@
 package com.benchmark.web.service;
 
 import com.benchmark.config.Config;
-import com.benchmark.docker.DockerClient;
 import com.benchmark.exercise.ExerciseRunner;
 import com.benchmark.web.domain.BenchmarkQueue;
 import com.benchmark.web.domain.BenchmarkQueueItem;

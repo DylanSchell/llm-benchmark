@@ -1,6 +1,5 @@
 package com.benchmark;
 
-import com.benchmark.agent.AgentFactory;
 import com.benchmark.agent.ReferenceAgent;
 import com.benchmark.config.Config;
 import com.benchmark.config.ConfigLoader;
@@ -12,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

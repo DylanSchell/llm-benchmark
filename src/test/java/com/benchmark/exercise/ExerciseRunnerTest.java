@@ -44,9 +44,7 @@ class ExerciseRunnerTest {
     @Test
     void testGetExercisesForLanguageWithNullLanguage() {
         // When & Then - may throw NPE (acceptable behavior)
-        assertThrows(Exception.class, () -> {
-            exerciseRunner.getExercisesForLanguage(null);
-        });
+        assertThrows(Exception.class, () -> exerciseRunner.getExercisesForLanguage(null));
     }
 
     @Test

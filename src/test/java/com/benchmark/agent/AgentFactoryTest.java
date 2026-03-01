@@ -49,25 +49,19 @@ class AgentFactoryTest {
     @Test
     void testCreateUnknownAgentThrowsException() {
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> {
-            AgentFactory.createAgent("unknown-agent", createMockDockerClient());
-        });
+        assertThrows(IllegalArgumentException.class, () -> AgentFactory.createAgent("unknown-agent", createMockDockerClient()));
     }
 
     @Test
     void testCreateAgentWithEmptyString() {
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> {
-            AgentFactory.createAgent("", createMockDockerClient());
-        });
+        assertThrows(IllegalArgumentException.class, () -> AgentFactory.createAgent("", createMockDockerClient()));
     }
 
     @Test
     void testCreateAgentWithNullString() {
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> {
-            AgentFactory.createAgent(null, createMockDockerClient());
-        });
+        assertThrows(IllegalArgumentException.class, () -> AgentFactory.createAgent(null, createMockDockerClient()));
     }
 
     @Test

@@ -18,6 +18,7 @@ public class ExerciseResult {
     private final String errorMessage;
     private final String trace;
     private final String model;
+    private final int attempts;
 
     private ExerciseResult(Builder builder) {
         this.model = builder.model;
@@ -31,6 +32,7 @@ public class ExerciseResult {
         this.endTime = builder.endTime;
         this.errorMessage = builder.errorMessage;
         this.trace = builder.trace;
+        this.attempts = builder.attempts;
     }
 
     public static Builder builder() {
@@ -81,6 +83,10 @@ public class ExerciseResult {
         return model;
     }
 
+    public int getAttempts() {
+        return attempts;
+    }
+
     @Override
     public String toString() {
         return String.format("ExerciseResult{name='%s', language='%s', success=%s, duration=%s}",
@@ -99,6 +105,7 @@ public class ExerciseResult {
         private String errorMessage;
         private String trace;
         private String model;
+        private int attempts;
 
         public Builder exerciseName(String exerciseName) {
             this.exerciseName = exerciseName;
@@ -152,6 +159,11 @@ public class ExerciseResult {
 
         public Builder model(String model) {
             this.model = model;
+            return this;
+        }
+
+        public Builder attempts(int attempts) {
+            this.attempts = attempts;
             return this;
         }
 

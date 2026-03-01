@@ -110,7 +110,7 @@ public class ClaudeAgent extends ReferenceAgent {
                     });
                 }
             }
-            String trace = htmlTraces.isEmpty() ? "" : htmlTraces.get(0);
+            String trace = htmlTraces.isEmpty() ? "" : htmlTraces.getFirst();
 
             return ReferenceResult.builder()
                     .exerciseName(exercise.getName())

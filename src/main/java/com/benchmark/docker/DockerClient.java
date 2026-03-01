@@ -1,8 +1,6 @@
 package com.benchmark.docker;
 
 import com.benchmark.config.DockerConfig;
-import com.benchmark.exception.BenchmarkException;
-import com.benchmark.exception.DockerExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
