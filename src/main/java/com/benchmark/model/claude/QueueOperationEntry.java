@@ -1,4 +1,4 @@
-package com.benchmark.model;
+package com.benchmark.model.claude;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

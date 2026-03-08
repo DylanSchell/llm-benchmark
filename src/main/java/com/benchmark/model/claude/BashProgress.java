@@ -1,4 +1,4 @@
-package com.benchmark.model;
+package com.benchmark.model.claude;
 
 public class BashProgress extends ProgressData {
     private String output;

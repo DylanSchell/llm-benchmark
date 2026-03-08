@@ -1,6 +1,10 @@
 package com.benchmark;
 
-import com.benchmark.model.*;
+import com.benchmark.model.claude.*;
+import com.benchmark.model.pi.PiLogEntry;
+import com.benchmark.model.pi.PiMessage;
+import com.benchmark.model.pi.PiMessageMessage;
+import com.benchmark.model.pi.PiUsage;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.StreamReadConstraints;
@@ -106,7 +110,7 @@ public class BenchmarkResultAnalyzer {
                         while (!traceFiles.isEmpty() && resultTime.compareTo(traceFiles.get(0).fileTime) > 0) {
                             PathTime pt2 = traceFiles.remove(0);
                             Path tracePath = pt2.path;
-                            TokenUsage usage = calculateTokens(tracePath);
+                            TokenUsage usage = simple.model.startsWith("pi") ? calculatePiTokens(tracePath) : calculateClaudeTokens(tracePath);
                             stats.inputTokens += usage.input_tokens();
                             stats.outputTokens += usage.output_tokens();
                             stats.cachedInputTokens += usage.cached_input_tokens();
@@ -157,7 +161,41 @@ public class BenchmarkResultAnalyzer {
     }
 
 
-    private TokenUsage calculateTokens(Path tracePath) throws IOException {
+    private TokenUsage calculatePiTokens(Path tracePath) throws IOException {
+        long inputTokens = 0;
+        long outputTokens = 0;
+        long cachedInputTokens = 0;
+        long uncachedInputTokens = 0;
+        // Use a BufferedReader to avoid loading the whole file
+        try (BufferedReader br = Files.newBufferedReader(tracePath);
+             // Jackson's streaming parser works directly on the reader
+             JsonParser parser = mapper.getFactory().createParser(br)) {
+
+            // Walk through each line (JSON object) in the file
+            while (!parser.isClosed()) {
+                JsonToken token = parser.nextToken();
+                if (token == JsonToken.START_OBJECT) {
+                    // Parse just the current object with polymorphic type resolution
+                    PiLogEntry entry = mapper.readValue(parser, PiLogEntry.class);
+                    if (entry instanceof PiMessage) {
+                        PiMessage message = (PiMessage) entry;
+                        if ( message.message instanceof PiMessageMessage ) {
+                            PiMessageMessage messageMessage = (PiMessageMessage) message.message;
+                            if ( messageMessage.usage instanceof PiUsage ) {
+                                PiUsage usage = (PiUsage) messageMessage.usage;
+                                inputTokens += usage.input;
+                                outputTokens += usage.output;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        TokenUsage usage = new TokenUsage(inputTokens,outputTokens,cachedInputTokens,uncachedInputTokens);
+        return usage;
+    }
+
+    private TokenUsage calculateClaudeTokens(Path tracePath) throws IOException {
         long inputTokens = 0;
         long outputTokens = 0;
         long cachedInputTokens = 0;
@@ -208,7 +246,7 @@ public class BenchmarkResultAnalyzer {
     public void generateReport() throws IOException {
         // Sort by completion percentage (desc), then by total duration (desc) for ties
         List<BenchmarkStats> sortedStats = new ArrayList<>(statsByBenchmark.values());
-        sortedStats.sort(this::sortByPercentage);
+        sortedStats.sort(this::sortByCountAndPercentage);
 
 
         // Generate markdown output
@@ -310,6 +348,16 @@ public class BenchmarkResultAnalyzer {
         double compA = (statsA.successResults * 100.0) / statsA.totalResults;
         double compB = (statsB.successResults * 100.0) / statsB.totalResults;
         int cmp = Double.compare(compB, compA); // descending
+        if (cmp != 0) return cmp;
+        return Double.compare(statsB.totalDuration, statsA.totalDuration); // descending
+    }
+
+    private int sortByCountAndPercentage(BenchmarkStats statsA, BenchmarkStats statsB) {
+        int cmp = Long.compare(statsB.totalResults, statsA.totalResults);
+        if (cmp != 0) return cmp;
+        double compA = (statsA.successResults * 100.0) / statsA.totalResults;
+        double compB = (statsB.successResults * 100.0) / statsB.totalResults;
+        cmp = Double.compare(compB, compA); // descending
         if (cmp != 0) return cmp;
         return Double.compare(statsB.totalDuration, statsA.totalDuration); // descending
     }

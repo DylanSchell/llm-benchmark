@@ -1,6 +1,4 @@
-package com.benchmark.model;
-
-import com.fasterxml.jackson.databind.JsonNode;
+package com.benchmark.model.claude;
 
 public class Progress extends LogEntry {
     private String agentId;

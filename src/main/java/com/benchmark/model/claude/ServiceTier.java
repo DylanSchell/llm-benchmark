@@ -1,4 +1,4 @@
-package com.benchmark.model;
+package com.benchmark.model.claude;
 
 /**
  * Typed representation of the {@code service_tier} field.

@@ -13,10 +13,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Processes benchmark queue items.
- * Handles queue management and sequential processing of queued benchmark runs.
+ * Handles queue management and concurrent processing of queued benchmark runs.
+ * Respects the parallelism setting from config.yaml.
  */
 @Component
 public class QueueProcessor {
@@ -29,7 +32,8 @@ public class QueueProcessor {
     private final Config config;
     private final ExecutorService executor;
     private final BenchmarkExecutor benchmarkExecutor;
-    private volatile boolean processingItem = false;
+    private final Semaphore workerSemaphore;
+    private final AtomicInteger activeWorkers = new AtomicInteger(0);
 
     public QueueProcessor(SessionManager sessionManager, ResultService resultService,
                          ExerciseRunner exerciseRunner, Config config, ExecutorService executor,
@@ -40,29 +44,29 @@ public class QueueProcessor {
         this.config = config;
         this.executor = executor;
         this.benchmarkExecutor = benchmarkExecutor;
+        this.workerSemaphore = new Semaphore(config.getParallelism());
 
         // Start queue worker
         startQueueWorker();
     }
 
     /**
-     * Starts the queue worker that processes items sequentially.
+     * Starts the queue worker that processes items concurrently up to parallelism limit.
      */
     @Async
     public void startQueueWorker() {
         executor.execute(() -> {
-            logger.info("Queue worker started");
+            logger.info("Queue worker started (parallelism={})", config.getParallelism());
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    processNextItem();
-                    Thread.sleep(1000); // Check every second
+                    tryStartNextItem();
+                    Thread.sleep(500); // Check twice per second
                 } catch (InterruptedException e) {
                     logger.info("Queue worker interrupted, shutting down");
                     Thread.currentThread().interrupt();
                     break;
                 } catch (Exception e) {
                     logger.error("Error in queue worker: {}", e.getMessage(), e);
-                    processingItem = false;
                     try {
                         Thread.sleep(5000); // Wait 5 seconds before retrying
                     } catch (InterruptedException ie) {
@@ -75,27 +79,43 @@ public class QueueProcessor {
     }
 
     /**
-     * Process the next item in the queue.
+     * Try to start processing the next available queue item.
+     * Only starts a new item if we have capacity (active workers < parallelism).
      */
-    private void processNextItem() {
-        if (processingItem) {
-            return; // Already processing
+    private void tryStartNextItem() {
+        // Check if we have capacity
+        if (activeWorkers.get() >= config.getParallelism()) {
+            return; // At max capacity
+        }
+
+        // Try to acquire a permit (non-blocking check via semaphore)
+        if (!workerSemaphore.tryAcquire()) {
+            return; // No permits available
         }
 
         BenchmarkQueueItem item = queue.pollNext();
         if (item == null) {
-            return; // No items pending
+            workerSemaphore.release(); // Release permit since no item to process
+            return;
         }
 
-        processingItem = true;
-        logger.info("Processing queue item: {} - {}/{}", 
-                item.getId(), item.getLanguage(), item.getExercise());
+        // We have an item and a permit - start processing
+        activeWorkers.incrementAndGet();
+        logger.info("Starting queue item: {} - {}/{} (active workers: {}/{})", 
+                item.getId(), item.getLanguage(), item.getExercise(),
+                activeWorkers.get(), config.getParallelism());
 
-        try {
-            processQueueItem(item);
-        } finally {
-            processingItem = false;
-        }
+        // Process the item asynchronously
+        executor.execute(() -> {
+            try {
+                processQueueItem(item);
+            } finally {
+                activeWorkers.decrementAndGet();
+                workerSemaphore.release();
+                logger.info("Completed queue item: {} (active workers: {})", 
+                        item.getId(), activeWorkers.get());
+            }
+        });
     }
 
     /**
@@ -234,9 +254,23 @@ public class QueueProcessor {
     }
 
     /**
-     * Check if currently processing a queue item.
+     * Check if currently processing any queue items.
      */
     public boolean isProcessingItem() {
-        return processingItem;
+        return activeWorkers.get() > 0;
+    }
+
+    /**
+     * Get the number of currently active workers.
+     */
+    public int getActiveWorkerCount() {
+        return activeWorkers.get();
+    }
+
+    /**
+     * Get the configured parallelism limit.
+     */
+    public int getParallelismLimit() {
+        return config.getParallelism();
     }
 }

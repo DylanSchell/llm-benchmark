@@ -81,12 +81,14 @@ public class ResultService {
      */
     public synchronized void loadAllResults() {
         logger.info("Loading all results into cache...");
+        logger.info("Results directory: {}", config.getOutput().getResultsDir());
         cachedResults.clear();
         cachedModels.clear();
 
         Path configuredResultsDir = Paths.get(config.getOutput().getResultsDir());
 
         int count = 0;
+        int errorCount = 0;
         try (Stream<Path> paths = Files.walk(configuredResultsDir)) {
             List<Path> resultFiles = paths.filter(Files::isRegularFile)
                     .filter(p -> p.toString().endsWith(".json"))
@@ -98,6 +100,8 @@ public class ResultService {
                     })
                     .toList();
 
+            logger.info("Found {} result files to load", resultFiles.size());
+            
             for (Path p : resultFiles) {
                 try {
                     CachedResult cached = loadCachedResult(p);
@@ -105,16 +109,19 @@ public class ResultService {
                         cachedResults.put(p.getFileName().toString(), cached);
                         cachedModels.add(cached.model);
                         count++;
+                        logger.debug("Loaded cache entry: filename={}, model={}", p.getFileName(), cached.model);
                     }
                 } catch (IOException e) {
                     logger.warn("Failed to load cachedResult file {}: {}", p, e.getMessage());
+                    errorCount++;
                 }
             }
         } catch (IOException e) {
             logger.error("Failed to list results: {}", e.getMessage(), e);
         }
 
-        logger.info("Loaded {} cachedResult files into cache", count);
+        logger.info("Loaded {} cachedResult files into cache ({} errors)", count, errorCount);
+        logger.info("Cached models: {}", cachedModels);
     }
 
     /**
@@ -465,9 +472,39 @@ public class ResultService {
         Map<String, Integer> successByModel = new HashMap<>();
         Map<String, Double> durationByModel = new HashMap<>();
 
-        logger.debug("getStatistics called with: language={}, agent={}, model={}", language, agent, model);
+        logger.info("getStatistics called with: language='{}', agent='{}', model='{}'", language, agent, model);
+        logger.info("Cache size: {} entries", cachedResults.size());
+        logger.info("Unique cached models: {}", cachedModels);
         
+        // Log how many cached entries have the target model
+        long matchingCachedModel = cachedResults.values().stream()
+            .filter(c -> c.model != null && c.model.equals(model))
+            .count();
+        logger.info("Cached entries with model '{}': {}", model, matchingCachedModel);
+        
+        // Debug: show sample of actual model values in cache
+        List<String> sampleModels = cachedResults.values().stream()
+            .map(c -> c.model)
+            .filter(m -> m != null && m.contains("qwen35-397b"))
+            .distinct()
+            .limit(10)
+            .toList();
+        logger.warn("Sample models containing 'qwen35-397b': {}", sampleModels);
+        
+        // Also check for exact byte match issues
+        cachedResults.values().stream()
+            .filter(c -> c.model != null && c.model.contains("397b"))
+            .findFirst()
+            .ifPresent(c -> {
+                logger.warn("First entry with '397b': model='{}', bytes={}", 
+                    c.model, java.util.Arrays.toString(c.model.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+            });
+        
+        int matchCount = 0;
+        int totalChecked = 0;
+        int modelMismatchCount = 0;
         for (CachedResult cached : cachedResults.values()) {
+            totalChecked++;
             boolean matchesLanguage = language == null || language.isEmpty() ||
                     (cached.language != null && cached.language.equals(language));
             boolean matchesAgent = agent == null || agent.isEmpty() ||
@@ -475,11 +512,18 @@ public class ResultService {
             boolean matchesModel = model == null || model.isEmpty() ||
                     (cached.model != null && cached.model.equals(model));
 
-            logger.debug("Checking cached result: model='{}', matchesModel={}", cached.model, matchesModel);
+            if (model != null && !model.isEmpty() && cached.model != null && !matchesModel) {
+                modelMismatchCount++;
+                if (modelMismatchCount <= 3) {
+                    logger.warn("Model mismatch: filter='{}' vs cached='{}'", model, cached.model);
+                }
+            }
 
             if (!matchesLanguage || !matchesAgent || !matchesModel) {
                 continue;
             }
+            
+            matchCount++;
 
             totalRuns++;
 
@@ -549,6 +593,9 @@ public class ResultService {
         stats.put("success_by_model", successByModel);
         stats.put("duration_by_model", durationByModel);
         stats.put("duration_by_model_formatted", formatDurationMap(durationByModel));
+
+        logger.info("getStatistics results: checked={}, matched={}, by_language size={}", 
+            totalChecked, matchCount, byLanguage.size());
 
         return stats;
     }
