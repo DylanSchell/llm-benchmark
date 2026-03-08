@@ -58,7 +58,30 @@ public class JavaScriptHandler implements LanguageHandler {
 
     @Override
     public void patchTests(Path tempWorkDir) throws IOException {
-        // JavaScript tests don't typically have skip annotations
-        logger.debug("No test patching needed for JavaScript");
+        logger.info("Replacing xtest( with test( in JavaScript tests");
+
+        // Find and process all JavaScript/TypeScript test files
+        try (var stream = Files.walk(tempWorkDir)) {
+            stream.filter(Files::isRegularFile)
+                    .filter(p -> {
+                        String name = p.toString().toLowerCase();
+                        return (name.endsWith(".js") || name.endsWith(".ts") || 
+                                name.endsWith(".mjs") || name.endsWith(".cjs")) &&
+                               (name.contains(".test.") || name.contains(".spec.") || 
+                                name.contains("test") || name.contains("spec"));
+                    })
+                    .forEach(testFile -> {
+                        try {
+                            String testCode = Files.readString(testFile);
+                            String updatedCode = testCode.replaceAll("\\bxtest\\(", "test(");
+                            if (!testCode.equals(updatedCode)) {
+                                Files.writeString(testFile, updatedCode);
+                                logger.info("Patched xtest in {}", testFile);
+                            }
+                        } catch (IOException e) {
+                            logger.error("Error reading file {}", testFile);
+                        }
+                    });
+        }
     }
 }

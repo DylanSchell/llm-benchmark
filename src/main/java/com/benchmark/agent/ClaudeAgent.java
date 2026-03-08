@@ -79,20 +79,21 @@ public class ClaudeAgent extends ReferenceAgent {
                 Files.walkFileTree(claudeJsonLogDirectory, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (file.getFileName().toString().startsWith("agent")) {
-                            // sub agent log
-                            // log_claude_java_affine-cipher_agent-xxxx.jsonl
-                            Files.copy(file, resultsDir.resolve("log_claude_"+exercise.getLanguage()+"_"+exercise.getName()+"_"+file.getFileName()));
-                        } else {
-                            // main agent log
-                            // log_claude_java_affine-cipher.jsonl
-                            Files.copy(file, resultsDir.resolve("log_claude_"+exercise.getLanguage()+"_"+exercise.getName()+".jsonl"));
+                        String fileName = file.getFileName().toString();
+                        if (fileName.endsWith(".jsonl")) {
+                            // Main agent log - use standard naming: trace_{language}_{exercise}.jsonl
+                            Files.copy(file, resultsDir.resolve("trace_" + exercise.getLanguage() + "_" + exercise.getName() + ".jsonl"), 
+                                StandardCopyOption.REPLACE_EXISTING);
+                        } else if (fileName.endsWith(".json")) {
+                            // Sub agent or other JSON logs - keep original naming with prefix
+                            Files.copy(file, resultsDir.resolve("trace_" + exercise.getLanguage() + "_" + exercise.getName() + "_" + fileName), 
+                                StandardCopyOption.REPLACE_EXISTING);
                         }
                         return FileVisitResult.CONTINUE;
                     }
                 });
             }
-            // attach trace to result
+            // attach trace to result and save HTML file with standard naming
             Path claudeArchive = tempWorkDir.resolve("claude-archive").resolve("workspace");
             final List<String> htmlTraces = new ArrayList<>();
             if (Files.isDirectory(claudeArchive)) {
@@ -100,9 +101,14 @@ public class ClaudeAgent extends ReferenceAgent {
                         (p, a) -> true)) {
                     stream.forEach(p -> {
                         try {
-
                             if (p.toString().endsWith(".html") && p.toString().contains("page")) {
-                                htmlTraces.add(Files.readString(p));
+                                String htmlContent = Files.readString(p);
+                                htmlTraces.add(htmlContent);
+                                
+                                // Save HTML trace to results directory with standard naming
+                                String htmlTargetName = "trace_" + exercise.getLanguage() + "_" + exercise.getName() + ".html";
+                                Files.copy(p, resultsDir.resolve(htmlTargetName), StandardCopyOption.REPLACE_EXISTING);
+                                logger.info("Saved Claude HTML trace: {}", htmlTargetName);
                             }
                         } catch (IOException e) {
                             throw new RuntimeException(e);
@@ -116,7 +122,7 @@ public class ClaudeAgent extends ReferenceAgent {
                     .exerciseName(exercise.getName())
                     .language(exercise.getLanguage())
                     .exitCode(result.exitCode())
-                    .output(result.output())
+                    .output("")  // Don't store raw output - trace is saved separately
                     .success(success)
                     .startTime(startTime)
                     .endTime(endTime)

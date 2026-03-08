@@ -67,14 +67,14 @@ public class PiAgent extends ReferenceAgent {
                         exercise.getName(), duration);
             }
 
-            // Collect trace from pi session files
+            // Collect trace from pi session files (saves JSONL and HTML to resultsDir)
             String trace = collectPiTrace(tempWorkDir, resultsDir, exercise);
 
             return ReferenceResult.builder()
                     .exerciseName(exercise.getName())
                     .language(exercise.getLanguage())
                     .exitCode(result.exitCode())
-                    .output(result.output())
+                    .output("")  // Don't store raw output - trace is saved separately
                     .success(success)
                     .startTime(startTime)
                     .endTime(endTime)
@@ -94,7 +94,7 @@ public class PiAgent extends ReferenceAgent {
                     .startTime(startTime)
                     .endTime(endTime)
                     .duration(duration)
-                    .output(e.getMessage())
+                    .output("")  // Don't store raw output - trace is saved separately
                     .language(exercise.getLanguage())
                     .exerciseName(exercise.getName())
                     .agent("pi")
@@ -213,8 +213,8 @@ public class PiAgent extends ReferenceAgent {
             try {
                 logger.info("Processing pi session file: {}", fileName);
                 if (fileName.endsWith(".jsonl")) {
-                    // Copy JSONL log files to results directory
-                    String targetName = "log_pi_" + exercise.getLanguage() + "_" + exercise.getName() + ".jsonl";
+                    // Copy JSONL log files to results directory with standard naming
+                    String targetName = "trace_" + exercise.getLanguage() + "_" + exercise.getName() + ".jsonl";
                     Files.copy(sessionFile, resultsDir.resolve(targetName), StandardCopyOption.REPLACE_EXISTING);
                     logger.info("Copied pi JSONL log file: {}", targetName);
                     jsonlFiles.add(sessionFile);
@@ -261,6 +261,8 @@ public class PiAgent extends ReferenceAgent {
                         containerJsonlPath.toString(),
                         containerHtmlPath.toString());
                     
+                    logger.info("Running export command: {}", String.join(" ", exportCommand));
+                    
                     ProcessResult exportResult = getDockerClient().runCommandWithLimitsAndVolume(
                         null,
                         "/workspace",
@@ -268,28 +270,44 @@ public class PiAgent extends ReferenceAgent {
                         60,  // 60 second timeout for export
                         null,
                         tempWorkDir.toAbsolutePath().toString(),
-                        logger::debug
+                        line -> logger.info("[Export] {}", line)  // Log all output, not just debug
                     );
                     
-                    if (exportResult.isSuccess()) {
-                        logger.info("Successfully exported {} to {}", jsonlFile.getFileName(), baseName + ".html");
+                    logger.info("Export completed. Success: {}, Exit code: {}", 
+                        exportResult.isSuccess(), exportResult.exitCode());
+                    if (!exportResult.output().isEmpty()) {
+                        String preview = exportResult.output().substring(0, Math.min(500, exportResult.output().length()));
+                        logger.info("Export output preview: {}", preview);
+                    }
+                    
+                    // Check if HTML file exists on host side using same relative path
+                    Path hostHtmlFile = hostPiBase.resolve(relativePath.getParent()).resolve(baseName + ".html");
+                    logger.info("Looking for HTML at: {}", hostHtmlFile);
+                    
+                    if (Files.exists(hostHtmlFile)) {
+                        logger.info("Found HTML file at: {}", hostHtmlFile);
+                        String htmlContent = Files.readString(hostHtmlFile);
+                        htmlTraces.add(htmlContent);
+                        logger.info("Read HTML trace with {} chars", htmlContent.length());
                         
-                        // Read the HTML content from HOST side using same relative path
-                        Path hostHtmlFile = hostPiBase.resolve(relativePath.getParent()).resolve(baseName + ".html");
-                        if (Files.exists(hostHtmlFile)) {
-                            String htmlContent = Files.readString(hostHtmlFile);
-                            htmlTraces.add(htmlContent);
-                            logger.info("Read HTML trace with {} chars", htmlContent.length());
-                            
-                            // Also copy to results directory for persistence
-                            Files.copy(hostHtmlFile, resultsDir.resolve(baseName + ".html"), 
-                                StandardCopyOption.REPLACE_EXISTING);
-                            logger.info("Copied HTML trace to results directory");
-                        } else {
-                            logger.warn("HTML file not found at host path: {}", hostHtmlFile);
-                        }
+                        // Also copy to results directory for persistence with standard naming
+                        String htmlTargetName = "trace_" + exercise.getLanguage() + "_" + exercise.getName() + ".html";
+                        Files.copy(hostHtmlFile, resultsDir.resolve(htmlTargetName), 
+                            StandardCopyOption.REPLACE_EXISTING);
+                        logger.info("Copied HTML trace to results directory: {}", htmlTargetName);
                     } else {
-                        logger.warn("Failed to export {}: {}", jsonlFile.getFileName(), exportResult.output());
+                        logger.warn("HTML file not found at: {}", hostHtmlFile);
+                        // List what's actually in the sessions directory
+                        Path sessionsDir = hostPiBase.resolve(relativePath.getParent());
+                        if (Files.exists(sessionsDir)) {
+                            try (Stream<Path> ls = Files.list(sessionsDir)) {
+                                String contents = ls.map(p -> p.getFileName().toString()).collect(
+                                    java.util.stream.Collectors.joining(", "));
+                                logger.info("Contents of sessions dir [{}]: {}", sessionsDir, contents);
+                            }
+                        } else {
+                            logger.warn("Sessions directory does not exist: {}", sessionsDir);
+                        }
                     }
                 } catch (Exception e) {
                     logger.warn("Error exporting {}: {}", jsonlFile.getFileName(), e.getMessage());

@@ -35,6 +35,7 @@ public class ResultsController {
                                @RequestParam(value = "agent", required = false) String agent,
                                @RequestParam(value = "model", required = false) String model,
                                Model modelAttr) {
+        logger.debug("resultsPage called with: language={}, agent={}, model={}", language, agent, model);
         List<Map<String, Object>> results = resultService.listResults(language, agent, model);
         Map<String, Object> stats = resultService.getStatistics(language, agent, model);
         List<String> models = resultService.getModels();

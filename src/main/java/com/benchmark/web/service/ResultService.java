@@ -465,6 +465,8 @@ public class ResultService {
         Map<String, Integer> successByModel = new HashMap<>();
         Map<String, Double> durationByModel = new HashMap<>();
 
+        logger.debug("getStatistics called with: language={}, agent={}, model={}", language, agent, model);
+        
         for (CachedResult cached : cachedResults.values()) {
             boolean matchesLanguage = language == null || language.isEmpty() ||
                     (cached.language != null && cached.language.equals(language));
@@ -472,6 +474,8 @@ public class ResultService {
                     (cached.agent != null && cached.agent.equals(agent));
             boolean matchesModel = model == null || model.isEmpty() ||
                     (cached.model != null && cached.model.equals(model));
+
+            logger.debug("Checking cached result: model='{}', matchesModel={}", cached.model, matchesModel);
 
             if (!matchesLanguage || !matchesAgent || !matchesModel) {
                 continue;

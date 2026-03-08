@@ -48,7 +48,7 @@ public class BenchmarkResultAnalyzer {
             // Find result files in this directory (but not timestamped result files)
             List<PathTime> resultFiles = new ArrayList<>(Files.list(dir)
                     .filter(p -> p.toString().endsWith(".json"))
-                    .filter(p -> p.getFileName().toString().startsWith("result_claude") || p.getFileName().toString().startsWith("result_reference"))
+                    .filter(p-> p.getFileName().toString().startsWith("result_pi_")|| p.getFileName().toString().startsWith("result_claude") || p.getFileName().toString().startsWith("result_reference"))
                     .filter(p -> !Pattern.matches(".*result_claude_\\d{8}_\\d{6}\\.json", p.getFileName().toString())) // Exclude timestamped files
                     .map(p -> {
                         try {
@@ -250,7 +250,7 @@ public class BenchmarkResultAnalyzer {
         // Breakdown of individual benchmark runs per model confgururation
         resultsByBenchmark.forEach((benchmarkName, results) -> {
             markdown.append("\n");
-            markdown.append(String.format("# %s\n\n", benchmarkName.replace(".","_")));
+            markdown.append(String.format("# %s\n\n", benchmarkName.replace(".","_").replace(':','-')));
             markdown.append("| Exercise | Success | Duration | Tokens |\n");
             markdown.append("|----------|---------|----------|--------|\n");
             for (SimpleResult simpleResult : results) {
@@ -295,8 +295,8 @@ public class BenchmarkResultAnalyzer {
             double completionPercent = (stats.successResults * 100.0) / stats.totalResults;
             String durationStr = formatDuration(stats.totalDuration);
             markdown.append(String.format("| [%s](#%s) | %d | %d | %d | %.1f%% | %s | %s |\n",
-                    stats.benchmarkName.replace(".","_"),
-                    stats.benchmarkName.replace(".","_"),
+                    stats.benchmarkName.replace(".","_").replace(':','-'),
+                    stats.benchmarkName.replace(".","_").replace(':','-'),
                     stats.totalResults,
                     stats.successResults,
                     stats.failedResults,
@@ -399,5 +399,6 @@ public class BenchmarkResultAnalyzer {
         public String endTime;
         public String errorMessage;
         public String trace;
+        public int attempts;
     }
 }

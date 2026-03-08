@@ -12,7 +12,7 @@ docker:
   # Container working directory
   work_dir: "/workspace"
   # Timeout for exercise execution in seconds
-  timeout: 600
+  timeout: 3600
   # Memory limit for container (e.g., "2g")
   memory: "2g"
   # Environment variables to be set inside the runner
