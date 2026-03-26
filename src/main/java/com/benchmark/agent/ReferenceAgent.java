@@ -581,7 +581,7 @@ public class ReferenceAgent {
         } else if ("python".equals(exercise.getLanguage())) {
             prompt.append("\nUse uv to create a virtual environment and run tests:\n");
             prompt.append("1. Create venv: uv venv (or use existing .venv)\n");
-            prompt.append("2. Activate: source .venv/bin/activate\n");
+            prompt.append("2. Activate: . .venv/bin/activate\n");
             prompt.append("3. Install pytest: uv pip install pytest\n");
             prompt.append("4. Run tests: pytest\n");
         } else if ("rust".equals(exercise.getLanguage())) {

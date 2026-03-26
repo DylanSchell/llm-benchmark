@@ -15,25 +15,34 @@
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jackson.version>2.15.3</jackson.version>
-        <springboot.version>3.2.0</springboot.version>
+        
+        <springboot.version>4.0.4</springboot.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${springboot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <!-- SLF4J API and Logback implementation -->
         <dependency>
@@ -139,7 +148,7 @@
                             <name>claude-benchmark/runner:latest</name>
                             <build>
                                 <contextDir>${project.basedir}/docker</contextDir>
-                                <dockerFile>Dockerfile.runner</dockerFile>
+                                <dockerFile>Dockerfile.runner.debian</dockerFile>
                             </build>
                         </image>
                     </images>

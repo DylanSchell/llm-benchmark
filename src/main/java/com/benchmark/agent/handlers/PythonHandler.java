@@ -54,8 +54,9 @@ public class PythonHandler implements LanguageHandler {
     @Override
     public List<String> getTestCommand(Exercise exercise) {
         // Activate venv and run pytest (venv was created in preparation)
+        // Use ". " instead of "source" for POSIX compatibility with dash/sh
         return List.of("sh", "-c",
-            "source .venv/bin/activate && uv pip install -q pytest && pytest");
+            ". .venv/bin/activate && uv pip install -q pytest && pytest");
     }
 
     @Override

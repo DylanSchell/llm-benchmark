@@ -15,5 +15,6 @@ public class PiMessageMessage {
     public String toolName;
     public boolean isError;
     public JsonNode details;
+    public String responseId;
 
 }

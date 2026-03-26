@@ -43,4 +43,9 @@ public class CostCalculator {
         return energyKwh * electricityCostPerKwh;
     }
 
+    public static void main(String[] args) {
+        // cost per 1M tokens for Qwen 3.5 122B-A3B on my mac studio
+        double cost = CostCalculator.calculateTokenGenerationCost(0.25,34,150,1000_000);
+        System.out.println("Cost per 1M Tokens for Qwen 3.5 122B-A3B-Q8_0: "+cost);
+    }
 }
