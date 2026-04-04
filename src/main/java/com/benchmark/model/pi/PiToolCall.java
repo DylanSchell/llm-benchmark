@@ -6,4 +6,5 @@ public class PiToolCall extends PiContent {
     public String id;
     public String name;
     public JsonNode arguments;
+    public JsonNode partialArgs;
 }

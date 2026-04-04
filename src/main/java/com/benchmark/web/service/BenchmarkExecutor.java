@@ -54,7 +54,7 @@ public class BenchmarkExecutor {
             ReferenceAgent agent = createAgent(agentName);
 
             // Set up output consumer for live streaming to web UI
-            agent.setOutputConsumer(line -> session.emitOutput(line));
+            agent.setOutputConsumer(session::emitOutput);
 
             if (exerciseName != null && !exerciseName.isEmpty()) {
                 executeSingleExercise(session, agent, languages, effectiveModel);
@@ -85,15 +85,6 @@ public class BenchmarkExecutor {
             if (session.getStatus() == RunStatus.CANCELLED) {
                 session.emitOutput("Benchmark cancelled");
                 return;
-            }
-
-            // Skip if result already exists and was successful
-            if (benchmarkRunner.resultFileSuccess(exerciseName, session.getAgentName(), 
-                    effectiveModel, language, languages)) {
-                session.emitOutput("Skipping exercise: " + exerciseName + " for language: " + 
-                        language + " (already completed successfully)");
-                session.incrementCompletedExercises();
-                continue;
             }
 
             session.emitOutput("Running exercise: " + exerciseName + " for language: " + language);

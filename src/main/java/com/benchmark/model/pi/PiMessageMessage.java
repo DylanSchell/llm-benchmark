@@ -16,5 +16,6 @@ public class PiMessageMessage {
     public boolean isError;
     public JsonNode details;
     public String responseId;
+    public String errorMessage;
 
 }

@@ -44,15 +44,18 @@ public class WebConfig implements WebMvcConfigurer {
 
     /**
      * Gracefully shut down executor services on application close.
+     * Note: QueueProcessor has its own @PreDestroy that should be called first.
      */
     @PreDestroy
     public void shutdown() {
         logger.info("Shutting down web configuration beans...");
+        
+        // Shut down the benchmark executor service
         if (benchmarkExecutorService != null && !benchmarkExecutorService.isShutdown()) {
             logger.info("Shutting down benchmark executor service...");
             benchmarkExecutorService.shutdown();
             try {
-                if (!benchmarkExecutorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                if (!benchmarkExecutorService.awaitTermination(10, TimeUnit.SECONDS)) {
                     logger.warn("Executor service did not terminate in time, forcing shutdown");
                     benchmarkExecutorService.shutdownNow();
                 }
@@ -141,8 +144,9 @@ public class WebConfig implements WebMvcConfigurer {
                                         ExerciseRunner exerciseRunner,
                                         Config config,
                                         ExecutorService benchmarkExecutorService,
-                                        BenchmarkExecutor benchmarkExecutor) {
-        return new QueueProcessor(sessionManager, resultService, exerciseRunner, config, benchmarkExecutorService, benchmarkExecutor);
+                                        BenchmarkExecutor benchmarkExecutor,
+                                        com.benchmark.BenchmarkRunner benchmarkRunner) {
+        return new QueueProcessor(sessionManager, resultService, exerciseRunner, config, benchmarkExecutorService, benchmarkExecutor, benchmarkRunner);
     }
 
     /**

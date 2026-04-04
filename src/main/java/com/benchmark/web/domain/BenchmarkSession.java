@@ -171,6 +171,17 @@ public class BenchmarkSession {
         try {
             sseEmitter.complete();
         } catch (Exception e) {
+            // Ignore - client may have disconnected
+        }
+    }
+
+    /**
+     * Forces completion of the SSE stream, used during shutdown.
+     */
+    public void forceComplete() {
+        try {
+            sseEmitter.completeWithError(new IllegalStateException("Session terminated during shutdown"));
+        } catch (Exception e) {
             // Ignore
         }
     }

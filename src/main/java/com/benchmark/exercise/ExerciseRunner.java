@@ -14,13 +14,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Runner for executing benchmark exercises inside Docker containers.
@@ -170,9 +170,21 @@ public class ExerciseRunner {
             }
         } catch (InterruptedException e) {
             logger.error("Benchmark execution interrupted: {}", e.getMessage(), e);
+            executor.shutdownNow();
             Thread.currentThread().interrupt();
         } finally {
-            executor.shutdown();
+            if (!executor.isShutdown()) {
+                executor.shutdown();
+                try {
+                    if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                        logger.warn("Executor did not terminate in time, forcing shutdown");
+                        executor.shutdownNow();
+                    }
+                } catch (InterruptedException e) {
+                    executor.shutdownNow();
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
 
         return results;

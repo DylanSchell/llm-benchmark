@@ -1,11 +1,13 @@
 package com.benchmark.web.service;
 
+import com.benchmark.BenchmarkRunner;
 import com.benchmark.config.Config;
 import com.benchmark.exercise.ExerciseRunner;
 import com.benchmark.web.domain.BenchmarkQueue;
 import com.benchmark.web.domain.BenchmarkQueueItem;
 import com.benchmark.web.domain.BenchmarkSession;
 import com.benchmark.web.domain.RunStatus;
+import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -32,18 +35,22 @@ public class QueueProcessor {
     private final Config config;
     private final ExecutorService executor;
     private final BenchmarkExecutor benchmarkExecutor;
+    private final BenchmarkRunner benchmarkRunner;
     private final Semaphore workerSemaphore;
     private final AtomicInteger activeWorkers = new AtomicInteger(0);
+    private final AtomicBoolean shutdownRequested = new AtomicBoolean(false);
+    private volatile Thread queueWorkerThread;
 
     public QueueProcessor(SessionManager sessionManager, ResultService resultService,
                          ExerciseRunner exerciseRunner, Config config, ExecutorService executor,
-                         BenchmarkExecutor benchmarkExecutor) {
+                         BenchmarkExecutor benchmarkExecutor, BenchmarkRunner benchmarkRunner) {
         this.sessionManager = sessionManager;
         this.resultService = resultService;
         this.exerciseRunner = exerciseRunner;
         this.config = config;
         this.executor = executor;
         this.benchmarkExecutor = benchmarkExecutor;
+        this.benchmarkRunner = benchmarkRunner;
         this.workerSemaphore = new Semaphore(config.getParallelism());
 
         // Start queue worker
@@ -51,30 +58,51 @@ public class QueueProcessor {
     }
 
     /**
+     * Gracefully shut down the queue processor.
+     */
+    @PreDestroy
+    public void shutdown() {
+        logger.info("Shutting down queue processor...");
+        shutdownRequested.set(true);
+        if (queueWorkerThread != null) {
+            queueWorkerThread.interrupt();
+        }
+    }
+
+    /**
      * Starts the queue worker that processes items concurrently up to parallelism limit.
      */
     @Async
     public void startQueueWorker() {
+        queueWorkerThread = Thread.currentThread();
         executor.execute(() -> {
             logger.info("Queue worker started (parallelism={})", config.getParallelism());
-            while (!Thread.currentThread().isInterrupted()) {
+            Thread workerThread = Thread.currentThread();
+            while (!workerThread.isInterrupted() && !shutdownRequested.get()) {
                 try {
                     tryStartNextItem();
-                    Thread.sleep(500); // Check twice per second
+                    // Use a shorter sleep to respond faster to shutdown
+                    for (int i = 0; i < 10 && !workerThread.isInterrupted() && !shutdownRequested.get(); i++) {
+                        Thread.sleep(50);
+                    }
                 } catch (InterruptedException e) {
                     logger.info("Queue worker interrupted, shutting down");
-                    Thread.currentThread().interrupt();
+                    workerThread.interrupt();
                     break;
                 } catch (Exception e) {
                     logger.error("Error in queue worker: {}", e.getMessage(), e);
                     try {
-                        Thread.sleep(5000); // Wait 5 seconds before retrying
+                        // Sleep in smaller increments to be more responsive to shutdown
+                        for (int i = 0; i < 100 && !workerThread.isInterrupted() && !shutdownRequested.get(); i++) {
+                            Thread.sleep(50);
+                        }
                     } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
+                        workerThread.interrupt();
                         break;
                     }
                 }
             }
+            logger.info("Queue worker shut down");
         });
     }
 
@@ -177,6 +205,7 @@ public class QueueProcessor {
      * Schedule a batch of benchmark runs.
      * Creates individual queue items for each language/exercise combination.
      * Never uses "all" exercises - always expands to individual exercise items.
+     * Skips exercises that have already been completed successfully.
      *
      * @param agentName   The agent to use
      * @param model       The model to use (can be null)
@@ -190,10 +219,19 @@ public class QueueProcessor {
         String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
 
         List<BenchmarkQueueItem> items = new java.util.ArrayList<>();
+        int skippedCount = 0;
 
         if (exercise != null && !exercise.isEmpty()) {
             // Single exercise specified - create one item per language for that exercise
             for (String language : languages) {
+                // Check if this exercise has already been completed successfully using the same logic as BenchmarkRunner
+                if (benchmarkRunner.resultFileSuccess(exercise, agentName, effectiveModel, language, languages)) {
+                    logger.info("Skipping exercise: {} for language: {} (already completed successfully)", 
+                            exercise, language);
+                    skippedCount++;
+                    continue;
+                }
+                
                 String targetDir = config.getOutput().getResultsDir(agentName, effectiveModel, 
                         new String[]{language});
                 BenchmarkQueueItem item = new BenchmarkQueueItem(targetDir, agentName, 
@@ -205,15 +243,24 @@ public class QueueProcessor {
             for (String language : languages) {
                 try {
                     List<String> exercises = exerciseRunner.getExercisesForLanguage(language);
-                    String targetDir = config.getOutput().getResultsDir(agentName, effectiveModel, 
-                            new String[]{language});
                     for (String exerciseName : exercises) {
+                        // Check if this exercise has already been completed successfully using the same logic as BenchmarkRunner
+                        if (benchmarkRunner.resultFileSuccess(exerciseName, agentName, effectiveModel, language, languages)) {
+                            logger.debug("Skipping exercise: {} for language: {} (already completed successfully)", 
+                                    exerciseName, language);
+                            skippedCount++;
+                            continue;
+                        }
+                        
+                        String targetDir = config.getOutput().getResultsDir(agentName, effectiveModel, 
+                                new String[]{language});
                         BenchmarkQueueItem item = new BenchmarkQueueItem(targetDir, agentName, 
                                 model, language, exerciseName);
                         items.add(item);
                     }
-                    logger.info("Scheduled {} individual items for language: {}", 
-                            exercises.size(), language);
+                    logger.info("Scheduled {} individual items for language: {} (skipped {} already successful)", 
+                            exercises.size() - countSkippedForLanguage(exercises, agentName, effectiveModel, language),
+                            exercises.size(), skippedCount);
                 } catch (Exception e) {
                     logger.error("Failed to get exercises for language {}: {}", language, e.getMessage());
                 }
@@ -221,8 +268,21 @@ public class QueueProcessor {
         }
 
         queue.addAll(items);
-        logger.info("Scheduled {} queue items total", items.size());
+        logger.info("Scheduled {} queue items total (skipped {} already successful)", items.size(), skippedCount);
         return items;
+    }
+
+    /**
+     * Counts how many exercises for a language have already been completed successfully.
+     */
+    private int countSkippedForLanguage(List<String> exercises, String agentName, String model, String language) {
+        int count = 0;
+        for (String exerciseName : exercises) {
+            if (benchmarkRunner.resultFileSuccess(exerciseName, agentName, model, language, new String[]{language})) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /**

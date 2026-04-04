@@ -467,7 +467,7 @@ public class ReferenceAgent {
         if (Files.exists(exerciseDir.resolve("pom.xml"))) {
             return List.of("mvn", "test", "-q");
         } else if (Files.exists(exerciseDir.resolve("build.gradle"))) {
-            return List.of("./gradlew", "test", "--no-daemon", "-q");
+            return List.of("/workspace/gradlew", "test", "--no-daemon", "-q");
         } else if (Files.exists(exerciseDir.resolve("go.mod"))) {
             return List.of("go", "test");
         } else if (Files.exists(exerciseDir.resolve("package.json"))) {

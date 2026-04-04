@@ -35,6 +35,12 @@ public class Config {
     @JsonProperty("model")
     private String model;
 
+    @JsonProperty("inference_endpoint")
+    private String inferenceEndpoint = "http://localhost:8000/v1";
+
+    @JsonProperty("api_key")
+    private String apiKey;
+
     public Path getBenchmarkPath() {
         return Paths.get(benchmarkPath);
     }
@@ -87,6 +93,22 @@ public class Config {
 
     public String getModel() {
         return model;
+    }
+
+    public String getInferenceEndpoint() {
+        return inferenceEndpoint;
+    }
+
+    public void setInferenceEndpoint(String inferenceEndpoint) {
+        this.inferenceEndpoint = inferenceEndpoint;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 
     public void setExercise(ExerciseConfig exercise) {

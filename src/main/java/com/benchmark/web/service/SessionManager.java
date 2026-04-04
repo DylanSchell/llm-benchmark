@@ -2,6 +2,7 @@ package com.benchmark.web.service;
 
 import com.benchmark.web.domain.BenchmarkSession;
 import com.benchmark.web.domain.RunStatus;
+import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -121,5 +122,20 @@ public class SessionManager {
                    status == RunStatus.CANCELLED;
         });
         logger.info("Cleared completed sessions, {} remaining", sessions.size());
+    }
+
+    /**
+     * Force complete all active sessions during shutdown.
+     */
+    @PreDestroy
+    public void shutdown() {
+        logger.info("Shutting down session manager, completing {} active sessions", sessions.size());
+        for (BenchmarkSession session : sessions.values()) {
+            if (session.getStatus() == RunStatus.RUNNING || session.getStatus() == RunStatus.PENDING) {
+                session.setStatus(RunStatus.CANCELLED);
+                session.forceComplete();
+            }
+        }
+        sessions.clear();
     }
 }

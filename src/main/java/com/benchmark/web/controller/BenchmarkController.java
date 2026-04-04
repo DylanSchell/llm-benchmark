@@ -1,5 +1,6 @@
 package com.benchmark.web.controller;
 
+import com.benchmark.config.Config;
 import com.benchmark.web.domain.BenchmarkSession;
 import com.benchmark.web.domain.RunStatus;
 import com.benchmark.web.service.BenchmarkService;
@@ -32,15 +33,19 @@ public class BenchmarkController {
     private final BenchmarkService benchmarkService;
     private final ResultService resultService;
     private final ObjectMapper objectMapper;
+    private final Config config;
 
-    // Inference endpoint URL from config
+    // Inference endpoint URL and API key from config
     private final String inferenceEndpoint;
+    private final String apiKey;
 
-    public BenchmarkController(BenchmarkService benchmarkService, ResultService resultService) {
+    public BenchmarkController(BenchmarkService benchmarkService, ResultService resultService, Config config) {
         this.benchmarkService = benchmarkService;
         this.resultService = resultService;
+        this.config = config;
         this.objectMapper = new ObjectMapper();
-        this.inferenceEndpoint = "http://localhost:8080";
+        this.inferenceEndpoint = config.getInferenceEndpoint();
+        this.apiKey = config.getApiKey();
     }
 
     /**
@@ -232,12 +237,18 @@ public class BenchmarkController {
      */
     private List<String> fetchModels() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
-        String url = inferenceEndpoint + "/v1/models";
+        String url = inferenceEndpoint + "/models";
 
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .GET()
-                .build();
+                .GET();
+
+        // Add API key header if configured
+        if (apiKey != null && !apiKey.isEmpty()) {
+            requestBuilder.header("Authorization", "Bearer " + apiKey);
+        }
+
+        HttpRequest request = requestBuilder.build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 

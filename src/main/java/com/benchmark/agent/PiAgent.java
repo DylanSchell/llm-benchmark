@@ -115,9 +115,9 @@ public class PiAgent extends ReferenceAgent {
         Map<String, String> envVars = getDockerClient().getConfig().getEnvironmentMap();
         
         // Use OpenAI endpoint (derived from ANTHROPIC_BASE_URL with /v1 suffix)
-        String baseUrl = envVars.getOrDefault("OPENAI_BASE_URL", "http://host.docker.internal:8080/v1");
+        String baseUrl = envVars.getOrDefault("OPENAI_BASE_URL", "http://host.docker.internal:8000/v1");
         
-        String apiKey = envVars.getOrDefault("ANTHROPIC_API_KEY", "");
+        String apiKey = envVars.getOrDefault("OPENAI_API_KEY", "api-key");
         if (apiKey.isEmpty()) {
             apiKey = envVars.getOrDefault("ANTHROPIC_AUTH_TOKEN", "placeholder-key");
         }
@@ -321,7 +321,7 @@ public class PiAgent extends ReferenceAgent {
             logger.info("Found/generated {} HTML trace(s)", htmlTraces.size());
         }
         
-        return htmlTraces.isEmpty() ? "" : htmlTraces.get(0);
+        return htmlTraces.isEmpty() ? "" : htmlTraces.getFirst();
     }
 
     /**

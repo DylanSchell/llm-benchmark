@@ -1,5 +1,6 @@
 package com.benchmark.web;
 
+import com.benchmark.web.service.QueueProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -45,12 +46,32 @@ public class WebBenchmarkRunner {
 
         // Register shutdown hook to ensure clean termination
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.info("Shutting down web interface...");
+            logger.info("Shutdown signal received, shutting down web interface...");
             try {
+                // First, signal QueueProcessor to stop accepting new work
+                QueueProcessor queueProcessor = context.getBean(QueueProcessor.class);
+                if (queueProcessor != null) {
+                    logger.info("Signaling queue processor to shut down...");
+                    // Use reflection to call the @PreDestroy method since it's not public
+                    try {
+                        var shutdownMethod = queueProcessor.getClass().getDeclaredMethod("shutdown");
+                        shutdownMethod.setAccessible(true);
+                        shutdownMethod.invoke(queueProcessor);
+                    } catch (Exception e) {
+                        logger.warn("Could not signal queue processor shutdown: {}", e.getMessage());
+                    }
+                }
+
+                // Close the Spring context (this triggers @PreDestroy on all beans)
+                logger.info("Closing Spring application context...");
                 context.close();
+                
+                // Wait a bit for threads to terminate
+                Thread.sleep(2000);
+                
                 logger.info("Web interface shut down complete");
             } catch (Exception e) {
-                logger.error("Error during shutdown: {}", e.getMessage());
+                logger.error("Error during shutdown: {}", e.getMessage(), e);
             }
         }, "web-shutdown-hook"));
     }

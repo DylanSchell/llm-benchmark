@@ -4,6 +4,7 @@ import com.benchmark.config.Config;
 import com.benchmark.exercise.ExerciseResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -125,6 +126,56 @@ public class ResultService {
     }
 
     /**
+     * Extracts embedded trace content to a separate JSONL file.
+     * This is done during cache load to avoid keeping large traces in memory.
+     *
+     * @param resultFile The original result JSON file
+     * @param traceContent The embedded trace content
+     * @return The trace filename, or null if extraction failed
+     */
+    private String extractTraceToFile(Path resultFile, String traceContent) {
+        try {
+            String filename = resultFile.getFileName().toString();
+            if (!filename.startsWith("result_")) {
+                return null;
+            }
+            // Replace result_ with trace_ and change extension to .jsonl
+            String traceFilename = filename.replaceFirst("^result_", "trace_").replaceFirst("\\.json$", ".jsonl");
+            Path traceFile = resultFile.getParent().resolve(traceFilename);
+            
+            // Check if trace file already exists
+            if (Files.exists(traceFile)) {
+                logger.debug("Trace file already exists: {}", traceFilename);
+                return traceFilename;
+            }
+            
+            // Write trace content to file
+            Files.writeString(traceFile, traceContent);
+            logger.info("Extracted trace to: {} ({} bytes)", traceFilename, traceContent.length());
+            return traceFilename;
+        } catch (IOException e) {
+            logger.warn("Failed to extract trace to file: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Rewrites the result JSON file after removing the trace field.
+     * This reduces the file size and prevents the trace from being re-loaded into memory.
+     *
+     * @param resultFile The result JSON file to rewrite
+     * @param node The JSON node without the trace field
+     */
+    private void rewriteResultFileWithoutTrace(Path resultFile, JsonNode node) {
+        try {
+            Files.writeString(resultFile, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
+            logger.debug("Rewrote result file without trace: {}", resultFile.getFileName());
+        } catch (IOException e) {
+            logger.warn("Failed to rewrite result file {}: {}", resultFile.getFileName(), e.getMessage());
+        }
+    }
+
+    /**
      * Loads a single individual result file (result_*.json) into a CachedResult object.
      */
     private CachedResult loadCachedResult(Path resultFile) throws IOException {
@@ -170,14 +221,31 @@ public class ResultService {
         cached.language = node.has("language") ? node.get("language").asText() : "unknown";
         String exercise = node.has("exerciseName") ? node.get("exerciseName").asText() : "unknown";
 
+        // Check for embedded trace and extract it to a separate file if present
+        String traceFilename = null;
+        boolean traceWasExtracted = false;
+        if (node.has("trace")) {
+            String traceContent = node.get("trace").asText();
+            if (traceContent != null && !traceContent.isEmpty()) {
+                traceFilename = extractTraceToFile(resultFile, traceContent);
+                if (traceFilename != null) {
+                    traceWasExtracted = true;
+                    // Remove trace from the node and rewrite the file
+                    ((ObjectNode) node).remove("trace");
+                    rewriteResultFileWithoutTrace(resultFile, node);
+                }
+            }
+        }
+
         // Create a single-item results list
+        // NOTE: We do NOT store trace in the cache to save memory. Trace is loaded on-demand.
         Map<String, Object> singleResult = new HashMap<>();
         singleResult.put("language", cached.language);
         singleResult.put("exercise", exercise);
-        singleResult.put("success", node.has("success") ? node.get("success").asBoolean() : false);
+        singleResult.put("success", node.has("success") && node.get("success").asBoolean());
         singleResult.put("duration", node.has("duration") ? node.get("duration").toString() : "0");
         singleResult.put("output", node.has("output") ? node.get("output").asText() : "");
-        singleResult.put("trace", node.has("trace") ? node.get("trace").asText() : "");
+        // Trace is not stored in cache - loaded on-demand from external file
 
         cached.results = List.of(singleResult);
         cached.totalExercises = 1;
@@ -213,13 +281,19 @@ public class ResultService {
             logger.debug("Failed to parse duration: {}", e.getMessage());
         }
 
-        // Check for separate trace HTML file
-        String filename = resultFile.getFileName().toString();
-        if (filename.startsWith("result_")) {
-            String traceFilename = filename.replace("result_", "trace_").replace(".json", ".html");
-            Path traceFilePath = resultFile.getParent().resolve(traceFilename);
-            if (Files.exists(traceFilePath)) {
-                cached.tracePath = traceFilePath.toString();
+        // Set trace path to the extracted JSONL file if it was created
+        if (traceFilename != null) {
+            cached.tracePath = resultFile.getParent().resolve(traceFilename).toString();
+            logger.debug("Extracted trace to: {}", cached.tracePath);
+        } else {
+            // Fall back to checking for existing HTML trace file
+            String filename = resultFile.getFileName().toString();
+            if (filename.startsWith("result_")) {
+                String htmlTraceFilename = filename.replace("result_", "trace_").replace(".json", ".html");
+                Path traceFilePath = resultFile.getParent().resolve(htmlTraceFilename);
+                if (Files.exists(traceFilePath)) {
+                    cached.tracePath = traceFilePath.toString();
+                }
             }
         }
 
@@ -321,7 +395,7 @@ public class ResultService {
                         individualResult.put("language", fileLanguage);
                         individualResult.put("model", fileModel);
                         individualResult.put("exercise", exerciseName);
-                        individualResult.put("success", node.has("success") ? node.get("success").asBoolean() : false);
+                        individualResult.put("success", node.has("success") && node.get("success").asBoolean());
                         individualResult.put("timestamp", timestamp);
 
                         // Check for separate trace HTML file
@@ -382,42 +456,25 @@ public class ResultService {
     }
 
     /**
-     * Reads the trace HTML content for a result.
-     * Returns the embedded trace from the JSON or reads from a separate .html file.
+     * Reads the trace content for a result on-demand.
+     * This is called when the trace is actually needed, not during cache load.
+     * Reads from the extracted JSONL trace file if available.
+     *
+     * @param filename The result filename (e.g., result_claude_java_hello.json)
+     * @return The trace content, or null if not found
      */
     public String getTraceContent(String filename) throws IOException {
         CachedResult cached = cachedResults.get(filename);
-        if (cached != null) {
-            // First try to get trace from embedded data in results (batch results)
-            if (cached.results != null && !cached.results.isEmpty()) {
-                Object traceObj = cached.results.get(0).get("trace");
-                if (traceObj != null && !traceObj.toString().isEmpty()) {
-                    return traceObj.toString();
-                }
-            }
-            // Next, try to get trace directly from the JSON file for individual results
-            Path resultFile = Paths.get(config.getOutput().getResultsDir()).resolve(filename);
-            if (Files.exists(resultFile)) {
-                try {
-                    JsonNode node = objectMapper.readTree(resultFile.toFile());
-                    if (node.has("trace")) {
-                        String trace = node.get("trace").asText();
-                        if (!trace.isEmpty()) {
-                            return trace;
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.debug("Failed to parse trace from JSON file {}: {}", filename, e.getMessage());
-                }
-            }
-            // Then try separate HTML file
-            if (cached.tracePath != null) {
-                Path traceFile = Paths.get(cached.tracePath);
-                if (Files.exists(traceFile)) {
-                    return Files.readString(traceFile);
-                }
+        if (cached != null && cached.tracePath != null) {
+            Path traceFile = Paths.get(cached.tracePath);
+            if (Files.exists(traceFile)) {
+                logger.debug("Loading trace from file: {}", traceFile);
+                return Files.readString(traceFile);
+            } else {
+                logger.warn("Trace file referenced but not found: {}", traceFile);
             }
         }
+        logger.debug("No trace available for: {}", filename);
         return null;
     }
 
@@ -495,10 +552,8 @@ public class ResultService {
         cachedResults.values().stream()
             .filter(c -> c.model != null && c.model.contains("397b"))
             .findFirst()
-            .ifPresent(c -> {
-                logger.warn("First entry with '397b': model='{}', bytes={}", 
-                    c.model, java.util.Arrays.toString(c.model.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
-            });
+            .ifPresent(c -> logger.warn("First entry with '397b': model='{}', bytes={}",
+                c.model, Arrays.toString(c.model.getBytes(java.nio.charset.StandardCharsets.UTF_8))));
         
         int matchCount = 0;
         int totalChecked = 0;
