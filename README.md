@@ -62,28 +62,28 @@ java -jar target/claude-benchmark-1.0-SNAPSHOT.jar --web
 
 ```
 ┌─────────────────────────────────────────────┐
-│              Presentation Layer              │
+│              Presentation Layer             │
 │  CLI │ Web Controllers │ REST API           │
 └────────────────┬────────────────────────────┘
                  ▼
 ┌─────────────────────────────────────────────┐
-│               Service Layer                  │
-│  BenchmarkService (Facade)                   │
-│  ├─ SessionManager                           │
-│  ├─ BenchmarkExecutor                        │
-│  └─ QueueProcessor                           │
+│               Service Layer                 │
+│  BenchmarkService (Facade)                  │
+│  ├─ SessionManager                          │
+│  ├─ BenchmarkExecutor                       │
+│  └─ QueueProcessor                          │
 └────────────────┬────────────────────────────┘
                  ▼
 ┌─────────────────────────────────────────────┐
-│               Domain Layer                   │
-│  BenchmarkRunner │ ExerciseRunner            │
-│  ReferenceAgent │ ClaudeAgent                │
-│  LanguageHandlers (Strategy Pattern)         │
+│               Domain Layer                  │
+│  BenchmarkRunner │ ExerciseRunner           │
+│  ReferenceAgent │ ClaudeAgent               │
+│  LanguageHandlers (Strategy Pattern)        │
 └────────────────┬────────────────────────────┘
                  ▼
 ┌─────────────────────────────────────────────┐
-│            Infrastructure Layer              │
-│  DockerClient │ ResultPersister │ Config     │
+│            Infrastructure Layer             │
+│  DockerClient │ ResultPersister │ Config    │
 └─────────────────────────────────────────────┘
 ```
 
