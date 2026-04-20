@@ -128,8 +128,9 @@
                             <th onclick="sortTable('individual-body', 1)" style="cursor: pointer;">Agent &#x2195;</th>
                             <th onclick="sortTable('individual-body', 2)" style="cursor: pointer;">Language &#x2195;</th>
                             <th onclick="sortTable('individual-body', 3)" style="cursor: pointer;">Exercise &#x2195;</th>
-                            <th onclick="sortTable('individual-body', 4)" style="cursor: pointer;">Success &#x2195;</th>
-                            <th onclick="sortTable('individual-body', 5)" style="cursor: pointer;">Actions</th>
+                            <th onclick="sortTable('individual-body', 4, true)" style="cursor: pointer;">Duration &#x2195;</th>
+                            <th onclick="sortTable('individual-body', 5)" style="cursor: pointer;">Success &#x2195;</th>
+                            <th onclick="sortTable('individual-body', 6)" style="cursor: pointer;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="individual-body">
@@ -138,11 +139,12 @@
                             <td th:text="${indResult['agent']}">reference</td>
                             <td th:text="${indResult['language']}">java</td>
                             <td th:text="${indResult['exercise']}">exercise_name</td>
+                            <td th:attr="data-sort=${indResult['sortDuration'] != null ? indResult['sortDuration'] : 0}" th:text="${indResult['duration'] != null ? indResult['duration'] : '-'}">0s</td>
                             <td th:text="${indResult['success'] ? '✓' : '✗'}">✓</td>
                             <td>
-                                <a th:href="@{/results/{filename}(filename=${indResult['filename']})}" class="btn btn-primary" style="font-size: 0.875rem; padding: 0.25rem 0.5rem;">View Details</a>
+                                <a th:href="${indResult['detailUrl']}" class="btn btn-primary" style="font-size: 0.875rem; padding: 0.25rem 0.5rem;">View Details</a>
                                 <a th:if="${indResult['hasTraceFile']}"
-                                   th:href="@{/results/{filename}/trace(filename=${indResult['filename']})}"
+                                   th:href="${indResult['traceUrl']}"
                                    class="btn btn-secondary"
                                    style="font-size: 0.875rem; padding: 0.25rem 0.5rem; margin-left: 0.5rem;">View Trace</a>
                             </td>
@@ -189,16 +191,25 @@
                         // Skip empty rows
                         if (a.children.length === 0 || b.children.length === 0) return 0;
                         
-                        let aVal = a.children[columnIdx].textContent.trim();
-                        let bVal = b.children[columnIdx].textContent.trim();
+                        let aVal, bVal;
 
                         if (isTimestamp) {
-                            aVal = new Date(aVal.replace(' ', 'T'));
-                            bVal = new Date(bVal.replace(' ', 'T'));
+                            aVal = new Date(a.children[columnIdx].textContent.trim().replace(' ', 'T'));
+                            bVal = new Date(b.children[columnIdx].textContent.trim().replace(' ', 'T'));
                         } else if (isNumeric) {
-                            aVal = parseFloat(aVal.replace(/[^0-9.]/g, '')) || 0;
-                            bVal = parseFloat(bVal.replace(/[^0-9.]/g, '')) || 0;
+                            // Use data-sort attribute for numeric sorting if available
+                            let aSort = a.children[columnIdx].getAttribute('data-sort');
+                            let bSort = b.children[columnIdx].getAttribute('data-sort');
+                            if (aSort !== null && bSort !== null) {
+                                aVal = parseFloat(aSort);
+                                bVal = parseFloat(bSort);
+                            } else {
+                                aVal = parseFloat(a.children[columnIdx].textContent.trim().replace(/[^0-9.]/g, '')) || 0;
+                                bVal = parseFloat(b.children[columnIdx].textContent.trim().replace(/[^0-9.]/g, '')) || 0;
+                            }
                         } else {
+                            aVal = a.children[columnIdx].textContent.trim();
+                            bVal = b.children[columnIdx].textContent.trim();
                             aVal = aVal.toLowerCase();
                             bVal = bVal.toLowerCase();
                         }

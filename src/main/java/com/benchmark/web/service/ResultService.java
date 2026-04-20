@@ -30,7 +30,7 @@ public class ResultService {
     private final Config config;
     private final ObjectMapper objectMapper;
 
-    // In-memory cache of all cachedResult files (keyed by filename)
+    // In-memory cache of all cachedResult files (keyed by directory/language/exercise for uniqueness)
     private final Map<String, CachedResult> cachedResults = new ConcurrentHashMap<>();
 
     // Cache of models (subdirectory names)
@@ -41,6 +41,8 @@ public class ResultService {
      */
     private static class CachedResult {
         String filename;
+        String directory; // Parent directory name (e.g., "pi-qwen35-122b")
+        String exercise;  // Exercise name for URL construction (e.g., "rational-numbers")
         String path;
         String timestamp;
         String agent;
@@ -52,6 +54,7 @@ public class ResultService {
         String successRate;
         List<Map<String, Object>> results;
         String tracePath; // Path to separate trace HTML file if it exists
+        boolean hasTraceFile; // Whether a trace HTML file or embedded trace exists
 
         // Computed fields for statistics
         Map<String, Integer> exerciseCountByLanguage = new HashMap<>();
@@ -107,9 +110,16 @@ public class ResultService {
                 try {
                     CachedResult cached = loadCachedResult(p);
                     if (cached != null) {
-                        cachedResults.put(p.getFileName().toString(), cached);
+                        // Key by directory/language/exercise for uniqueness.
+                        // The directory (e.g. "pi-qwen35-122b-q4-q8kv-no-thinking") uniquely identifies
+                        // each model run. The model field in JSON (e.g. "qwen35-122b") is shared
+                        // across multiple directories, so we must include the directory in the key.
+                        String cacheKey = cached.directory + "/" + cached.language + "/" + cached.exercise;
+                        cachedResults.put(cacheKey, cached);
                         cachedModels.add(cached.model);
                         count++;
+                        logger.info("Cached result: key={}, agent={}, model={}, lang={}, exercise={}",
+                                cacheKey, cached.agent, cached.model, cached.language, cached.exercise);
                         logger.debug("Loaded cache entry: filename={}, model={}", p.getFileName(), cached.model);
                     }
                 } catch (IOException e) {
@@ -188,6 +198,7 @@ public class ResultService {
 
         CachedResult cached = new CachedResult();
         cached.filename = resultFile.getFileName().toString();
+        cached.directory = resultFile.getParent().getFileName().toString();
         cached.path = resultFile.toString();
 
         // Extract model from embedded field or directory structure
@@ -197,7 +208,22 @@ public class ResultService {
             cached.model = resultFile.getParent().getFileName().toString();
         }
 
-        cached.timestamp = node.has("timestamp") ? node.get("timestamp").asText() : null;
+        // Derive timestamp from endTime (when the result was completed), falling back to timestamp field
+        // This matches the logic in listIndividualResults()
+        if (node.has("endTime")) {
+            JsonNode endTimeNode = node.get("endTime");
+            if (endTimeNode.isNumber()) {
+                double epochSeconds = endTimeNode.asDouble();
+                long seconds = (long) epochSeconds;
+                int nanos = (int) ((epochSeconds - seconds) * 1_000_000_000);
+                java.time.Instant instant = java.time.Instant.ofEpochSecond(seconds, nanos);
+                cached.timestamp = instant.toString();
+            } else {
+                cached.timestamp = endTimeNode.asText();
+            }
+        } else if (node.has("timestamp")) {
+            cached.timestamp = node.get("timestamp").asText();
+        }
 
         // Extract agent from embedded field or filename
         if (node.has("agent")) {
@@ -219,7 +245,7 @@ public class ResultService {
 
         // Extract exercise data
         cached.language = node.has("language") ? node.get("language").asText() : "unknown";
-        String exercise = node.has("exerciseName") ? node.get("exerciseName").asText() : "unknown";
+        cached.exercise = node.has("exerciseName") ? node.get("exerciseName").asText() : "unknown";
 
         // Check for embedded trace and extract it to a separate file if present
         String traceFilename = null;
@@ -241,7 +267,7 @@ public class ResultService {
         // NOTE: We do NOT store trace in the cache to save memory. Trace is loaded on-demand.
         Map<String, Object> singleResult = new HashMap<>();
         singleResult.put("language", cached.language);
-        singleResult.put("exercise", exercise);
+        singleResult.put("exercise", cached.exercise);
         singleResult.put("success", node.has("success") && node.get("success").asBoolean());
         singleResult.put("duration", node.has("duration") ? node.get("duration").toString() : "0");
         singleResult.put("output", node.has("output") ? node.get("output").asText() : "");
@@ -286,13 +312,39 @@ public class ResultService {
             cached.tracePath = resultFile.getParent().resolve(traceFilename).toString();
             logger.debug("Extracted trace to: {}", cached.tracePath);
         } else {
-            // Fall back to checking for existing HTML trace file
+            // Fall back to checking for existing trace files on disk.
+            // Trace files are named trace_<language>_<exercise>.jsonl (agent is NOT in the trace filename).
+            // e.g. result_pi_javascript_rational-numbers.json -> trace_javascript_rational-numbers.jsonl
             String filename = resultFile.getFileName().toString();
             if (filename.startsWith("result_")) {
-                String htmlTraceFilename = filename.replace("result_", "trace_").replace(".json", ".html");
-                Path traceFilePath = resultFile.getParent().resolve(htmlTraceFilename);
-                if (Files.exists(traceFilePath)) {
-                    cached.tracePath = traceFilePath.toString();
+                // Strip "result_<agent>_" prefix to get "<language>_<exercise>.json"
+                String withoutResultPrefix = filename.substring(7); // remove "result_"
+                int firstUnderscore = withoutResultPrefix.indexOf('_');
+                String langExercisePart;
+                if (firstUnderscore > 0) {
+                    langExercisePart = withoutResultPrefix.substring(firstUnderscore + 1);
+                } else {
+                    // Fallback: just replace "result_" with "trace_"
+                    langExercisePart = withoutResultPrefix;
+                }
+                String jsonlTraceFilename = "trace_" + langExercisePart.replace(".json", ".jsonl");
+                Path jsonlTracePath = resultFile.getParent().resolve(jsonlTraceFilename);
+                boolean jsonlExists = Files.exists(jsonlTracePath);
+                logger.info("Trace fallback: checking {} -> exists={}", jsonlTracePath, jsonlExists);
+                if (jsonlExists) {
+                    cached.tracePath = jsonlTracePath.toString();
+                    cached.hasTraceFile = true;
+                    logger.info("Found JSONL trace: {}", cached.tracePath);
+                } else {
+                    String htmlTraceFilename = "trace_" + langExercisePart.replace(".json", ".html");
+                    Path htmlTracePath = resultFile.getParent().resolve(htmlTraceFilename);
+                    boolean htmlExists = Files.exists(htmlTracePath);
+                    logger.info("Trace fallback: checking {} -> exists={}", htmlTracePath, htmlExists);
+                    if (htmlExists) {
+                        cached.tracePath = htmlTracePath.toString();
+                        cached.hasTraceFile = true;
+                        logger.info("Found HTML trace: {}", cached.tracePath);
+                    }
                 }
             }
         }
@@ -345,76 +397,43 @@ public class ResultService {
      */
     public List<Map<String, Object>> listIndividualResults(String language, String agent, String model) {
         List<Map<String, Object>> results = new ArrayList<>();
-        Path configuredResultsDir = Paths.get(config.getOutput().getResultsDir());
 
-        try (Stream<Path> paths = Files.walk(configuredResultsDir)) {
-            List<Path> individualResultFiles = paths.filter(Files::isRegularFile)
-                    .filter(p -> p.toString().endsWith(".json"))
-                    .filter(p -> p.getFileName().toString().startsWith("result_"))
-                    .toList();
+        for (CachedResult cached : cachedResults.values()) {
+            boolean matchesLanguage = language == null || language.isEmpty() || cached.language.equals(language);
+            boolean matchesAgent = agent == null || agent.isEmpty() || cached.agent.equals(agent);
+            boolean matchesModel = model == null || model.isEmpty() ||
+                    (cached.model != null && cached.model.equals(model));
 
-            for (Path p : individualResultFiles) {
-                try {
-                    JsonNode node = objectMapper.readTree(p.toFile());
-
-                    // Extract fields from the individual result file
-                    String fileAgent = node.has("agent") ? node.get("agent").asText() :
-                            extractAgentFromFilename(p.getFileName().toString());
-                    String fileLanguage = node.has("language") ? node.get("language").asText() : "unknown";
-                    String fileModel = node.has("model") ? node.get("model").asText() : p.getParent().getFileName().toString();
-                    String exerciseName = node.has("exerciseName") ? node.get("exerciseName").asText() : "unknown";
-
-                    // Use endTime as timestamp (when the result was completed)
-                    String timestamp = null;
-                    if (node.has("endTime")) {
-                        JsonNode endTimeNode = node.get("endTime");
-                        // Handle both numeric (epoch seconds with nanos) and string formats
-                        if (endTimeNode.isNumber()) {
-                            double epochSeconds = endTimeNode.asDouble();
-                            long seconds = (long) epochSeconds;
-                            int nanos = (int) ((epochSeconds - seconds) * 1_000_000_000);
-                            java.time.Instant instant = java.time.Instant.ofEpochSecond(seconds, nanos);
-                            timestamp = instant.toString();
-                        } else {
-                            timestamp = endTimeNode.asText();
+            if (matchesLanguage && matchesAgent && matchesModel) {
+                Map<String, Object> individualResult = new HashMap<>();
+                individualResult.put("filename", cached.filename);
+                individualResult.put("detailUrl", "/results/" + cached.agent + "/" + cached.directory + "/" + cached.language + "/" + cached.exercise);
+                individualResult.put("traceUrl", "/results/" + cached.agent + "/" + cached.directory + "/" + cached.language + "/" + cached.exercise + "/trace");
+                individualResult.put("path", cached.path);
+                individualResult.put("agent", cached.agent);
+                individualResult.put("language", cached.language);
+                individualResult.put("model", cached.model);
+                individualResult.put("exercise", cached.results.isEmpty() ? "unknown" :
+                        ((Map<String, Object>) cached.results.get(0)).get("exercise"));
+                individualResult.put("success", cached.successful > 0);
+                individualResult.put("timestamp", cached.timestamp);
+                individualResult.put("hasTraceFile", cached.hasTraceFile);
+                // Get duration from the first result entry (single exercise)
+                // Store raw duration for sorting, and formatted duration for display
+                if (!cached.results.isEmpty()) {
+                    Map<String, Object> firstResult = (Map<String, Object>) cached.results.get(0);
+                    if (firstResult.containsKey("duration")) {
+                        try {
+                            double dur = Double.parseDouble(firstResult.get("duration").toString());
+                            individualResult.put("duration", formatDuration(dur));
+                            individualResult.put("sortDuration", dur);
+                        } catch (NumberFormatException e) {
+                            individualResult.put("duration", firstResult.get("duration"));
                         }
-                    } else if (node.has("timestamp")) {
-                        timestamp = node.get("timestamp").asText();
                     }
-
-                    // Apply filters
-                    boolean matchesLanguage = language == null || language.isEmpty() || fileLanguage.equals(language);
-                    boolean matchesAgent = agent == null || agent.isEmpty() || fileAgent.equals(agent);
-                    boolean matchesModel = model == null || model.isEmpty() || fileModel.equals(model);
-
-                    if (matchesLanguage && matchesAgent && matchesModel) {
-                        Map<String, Object> individualResult = new HashMap<>();
-                        individualResult.put("filename", p.getFileName().toString());
-                        individualResult.put("path", p.toString());
-                        individualResult.put("agent", fileAgent);
-                        individualResult.put("language", fileLanguage);
-                        individualResult.put("model", fileModel);
-                        individualResult.put("exercise", exerciseName);
-                        individualResult.put("success", node.has("success") && node.get("success").asBoolean());
-                        individualResult.put("timestamp", timestamp);
-
-                        // Check for separate trace HTML file
-                        String traceFilename = p.getFileName().toString().replace("result_", "trace_").replace(".json", ".html");
-                        Path traceFile = p.getParent().resolve(traceFilename);
-                        if (Files.exists(traceFile)) {
-                            individualResult.put("hasTraceFile", true);
-                        } else {
-                            individualResult.put("hasTraceFile", node.has("trace") && !node.get("trace").asText().isEmpty());
-                        }
-
-                        results.add(individualResult);
-                    }
-                } catch (IOException e) {
-                    logger.warn("Failed to read individual result file {}: {}", p, e.getMessage());
                 }
+                results.add(individualResult);
             }
-        } catch (IOException e) {
-            logger.error("Failed to list individual results: {}", e.getMessage(), e);
         }
 
         // Sort by timestamp descending
@@ -445,10 +464,19 @@ public class ResultService {
     }
 
     /**
-     * Reads a specific cachedResult file by filename.
+     * Reads a specific cachedResult file by its unique key (directory/language/exercise).
+     * Also supports the legacy directory/filename format for backward compatibility.
      */
-    public Map<String, Object> getResultByFilename(String filename) throws IOException {
-        CachedResult cached = cachedResults.get(filename);
+    public Map<String, Object> getResultByFilename(String key) throws IOException {
+        // Try the new directory/language/exercise key first
+        CachedResult cached = cachedResults.get(key);
+        if (cached == null) {
+            // Fall back to legacy directory/filename lookup (for backward compat)
+            cached = cachedResults.values().stream()
+                    .filter(c -> (c.directory + "/" + c.filename).equals(key))
+                    .findFirst()
+                    .orElse(null);
+        }
         if (cached == null) {
             return null;
         }
@@ -456,25 +484,79 @@ public class ResultService {
     }
 
     /**
-     * Reads the trace content for a result on-demand.
-     * This is called when the trace is actually needed, not during cache load.
-     * Reads from the extracted JSONL trace file if available.
+     * Gets the rendered HTML trace for a result.
+     * If an HTML trace file already exists, returns it directly.
+     * Otherwise, if a JSONL trace file exists, generates the HTML via 'pi --export'.
      *
-     * @param filename The result filename (e.g., result_claude_java_hello.json)
-     * @return The trace content, or null if not found
+     * @param key The result key (directory/language/exercise, e.g. pi-qwen35-122b/javascript/rational-numbers)
+     * @return The HTML trace content, or null if not found
      */
-    public String getTraceContent(String filename) throws IOException {
-        CachedResult cached = cachedResults.get(filename);
-        if (cached != null && cached.tracePath != null) {
-            Path traceFile = Paths.get(cached.tracePath);
-            if (Files.exists(traceFile)) {
-                logger.debug("Loading trace from file: {}", traceFile);
-                return Files.readString(traceFile);
+    public String getTraceContent(String key) throws IOException {
+        CachedResult cached = cachedResults.get(key);
+        if (cached == null) {
+            logger.info("TRACE MISS: No cached result for key='{}'", key);
+            return null;
+        }
+
+        logger.info("TRACE HIT: key='{}', filename='{}', path='{}'", key, cached.filename, cached.path);
+        Path resultDir = Paths.get(cached.path).getParent();
+        // Derive the trace filename prefix from the result filename: result_<agent>_<lang>_<exercise>.json
+        // → trace_<lang>_<exercise>.jsonl and trace_<lang>_<exercise>.html
+        String filename = cached.filename;
+        String tracePrefix;
+        if (filename.startsWith("result_")) {
+            // Strip "result_<agent>_" to get "<lang>_<exercise>.json"
+            String withoutResultPrefix = filename.substring(7);
+            int firstUnderscore = withoutResultPrefix.indexOf('_');
+            if (firstUnderscore > 0) {
+                tracePrefix = withoutResultPrefix.substring(firstUnderscore + 1, withoutResultPrefix.length() - 5); // remove .json
             } else {
-                logger.warn("Trace file referenced but not found: {}", traceFile);
+                tracePrefix = withoutResultPrefix.substring(0, withoutResultPrefix.length() - 5);
+            }
+        } else {
+            tracePrefix = filename.replace(".json", "");
+        }
+
+        logger.info("TRACE: resultDir='{}', tracePrefix='{}'", resultDir, tracePrefix);
+
+        // Step 1: Check for existing HTML trace
+        Path htmlTracePath = resultDir.resolve("trace_" + tracePrefix + ".html");
+        logger.info("TRACE: checking HTML trace: {} (exists={})", htmlTracePath, Files.exists(htmlTracePath));
+        if (Files.exists(htmlTracePath)) {
+            logger.info("Loading existing HTML trace: {}", htmlTracePath);
+            try {
+                return Files.readString(htmlTracePath);
+            } catch (IOException e) {
+                logger.warn("Failed to read HTML trace: {}", e.getMessage());
             }
         }
-        logger.debug("No trace available for: {}", filename);
+
+        // Step 2: Check for JSONL trace and try to generate HTML
+        Path jsonlTracePath = resultDir.resolve("trace_" + tracePrefix + ".jsonl");
+        if (Files.exists(jsonlTracePath)) {
+            logger.info("Generating HTML trace from JSONL: {}", jsonlTracePath);
+            try {
+                ProcessBuilder pb = new ProcessBuilder(
+                    "pi", "--export", jsonlTracePath.toString(), htmlTracePath.toString()
+                );
+                pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                Process p = pb.start();
+                boolean completed = p.waitFor(60, java.util.concurrent.TimeUnit.SECONDS);
+                if (completed && p.exitValue() == 0 && Files.exists(htmlTracePath)) {
+                    logger.info("Generated HTML trace: {}", htmlTracePath);
+                    return Files.readString(htmlTracePath);
+                } else {
+                    logger.warn("pi --export failed (exit={}, completed={}, exists={})", p.exitValue(), completed, Files.exists(htmlTracePath));
+                }
+            } catch (IOException e) {
+                logger.warn("Failed to run pi --export: {}", e.getMessage());
+            } catch (InterruptedException e) {
+                logger.warn("pi --export interrupted: {}", e.getMessage());
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        logger.debug("No trace available for: {}", key);
         return null;
     }
 
@@ -672,6 +754,9 @@ public class ResultService {
     private Map<String, Object> toMetadataMap(CachedResult cached) {
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("filename", cached.filename);
+        metadata.put("directory", cached.directory);
+        metadata.put("detailUrl", "/results/" + cached.agent + "/" + cached.directory + "/" + cached.language + "/" + cached.exercise);
+        metadata.put("traceUrl", "/results/" + cached.agent + "/" + cached.directory + "/" + cached.language + "/" + cached.exercise + "/trace");
         metadata.put("path", cached.path);
         metadata.put("timestamp", cached.timestamp);
         metadata.put("agent", cached.agent);
@@ -691,7 +776,7 @@ public class ResultService {
     /**
      * Formats duration in seconds to human-readable string (e.g., "1h 2m 30s").
      */
-    private static String formatDuration(double totalSeconds) {
+    public static String formatDuration(double totalSeconds) {
         if (totalSeconds == 0) return "0s";
 
         int days = (int) (totalSeconds / 86400);
