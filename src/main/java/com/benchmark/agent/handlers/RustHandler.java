@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
 /**
@@ -54,21 +53,8 @@ public class RustHandler implements LanguageHandler {
     public void copyTests(Exercise exercise, Path sourceDir, Path destDir) throws IOException {
         Path testsDir = sourceDir.resolve("tests");
         if (Files.exists(testsDir)) {
-            try (var paths = Files.walk(testsDir)) {
-                paths.forEach(sourcePath -> {
-                    try {
-                        if (Files.isRegularFile(sourcePath)) {
-                            Path relativePath = testsDir.relativize(sourcePath);
-                            Path destPath = destDir.resolve("tests").resolve(relativePath);
-                            Files.createDirectories(destPath.getParent());
-                            Files.copy(sourcePath, destPath, StandardCopyOption.REPLACE_EXISTING);
-                            logger.info("Copied Rust test file: {}", relativePath);
-                        }
-                    } catch (IOException e) {
-                        logger.error("Failed to copy Rust test file {}: {}", sourcePath, e.getMessage());
-                    }
-                });
-            }
+            Files.createDirectories(destDir.resolve("tests"));
+            copyDirectoryExcluding(testsDir, destDir.resolve("tests"), null);
         }
     }
 
@@ -86,27 +72,12 @@ public class RustHandler implements LanguageHandler {
             return;
         }
 
-        int[] errorCount = {0};
-        Files.walkFileTree(testsDir, new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                if (file.toString().endsWith(".rs")) {
-                    try {
-                        String testCode = Files.readString(file);
-                        String updatedCode = testCode.replaceAll("#\\[ignore]", "");
-                        updatedCode = updatedCode.replaceAll("#\\[ignore[(].*[)]", "");
-                        Files.writeString(file, updatedCode);
-                    } catch (IOException e) {
-                        errorCount[0]++;
-                        logger.error("Failed to patch {}: {}", file.getFileName(), e.getMessage());
-                    }
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
-
-        if (errorCount[0] > 0) {
-            logger.warn("Failed to patch {} Rust test file(s) - some #[ignore] annotations may not have been removed", errorCount[0]);
+        int errorCount1 = replaceInFilesRecursive(testsDir, ".rs", "#\\[ignore]", "");
+        int errorCount2 = replaceInFilesRecursive(testsDir, ".rs", "#\\[ignore[(].*[)]", "");
+        
+        int totalErrors = errorCount1 + errorCount2;
+        if (totalErrors > 0) {
+            logger.warn("Failed to patch {} Rust test file(s) - some #[ignore] annotations may not have been removed", totalErrors);
         }
     }
 }

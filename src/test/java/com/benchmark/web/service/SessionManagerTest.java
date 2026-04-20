@@ -1,10 +1,13 @@
 package com.benchmark.web.service;
 
+import com.benchmark.config.Config;
+import com.benchmark.config.ConfigLoader;
 import com.benchmark.web.domain.BenchmarkSession;
 import com.benchmark.web.domain.RunStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,10 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class SessionManagerTest {
 
     private SessionManager sessionManager;
+    private Config config;
 
     @BeforeEach
-    void setUp() {
-        sessionManager = new SessionManager();
+    void setUp() throws Exception {
+        config = ConfigLoader.load(Path.of("config.yaml"));
+        sessionManager = new SessionManager(config);
     }
 
     @Test

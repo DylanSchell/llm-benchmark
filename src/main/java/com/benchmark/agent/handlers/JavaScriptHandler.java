@@ -61,33 +61,51 @@ public class JavaScriptHandler implements LanguageHandler {
         logger.info("Replacing xtest( with test( in JavaScript tests");
 
         // Find and process all JavaScript/TypeScript test files
-        int[] errorCount = {0};
-        try (var stream = Files.walk(tempWorkDir)) {
-            stream.filter(Files::isRegularFile)
-                    .filter(p -> {
-                        String name = p.toString().toLowerCase();
-                        return (name.endsWith(".js") || name.endsWith(".ts") || 
-                                name.endsWith(".mjs") || name.endsWith(".cjs")) &&
-                               (name.contains(".test.") || name.contains(".spec.") || 
-                                name.contains("test") || name.contains("spec"));
-                    })
-                    .forEach(testFile -> {
-                        try {
-                            String testCode = Files.readString(testFile);
-                            String updatedCode = testCode.replaceAll("\\bxtest\\(", "test(");
-                            if (!testCode.equals(updatedCode)) {
-                                Files.writeString(testFile, updatedCode);
-                                logger.info("Patched xtest in {}", testFile);
-                            }
-                        } catch (IOException e) {
-                            errorCount[0]++;
-                            logger.error("Failed to patch {}: {}", testFile.getFileName(), e.getMessage());
-                        }
-                    });
+        int errorCount = 0;
+        errorCount += replaceXtestInDirectory(tempWorkDir, ".js");
+        errorCount += replaceXtestInDirectory(tempWorkDir, ".ts");
+        errorCount += replaceXtestInDirectory(tempWorkDir, ".mjs");
+        errorCount += replaceXtestInDirectory(tempWorkDir, ".cjs");
+
+        if (errorCount > 0) {
+            logger.warn("Failed to patch {} JavaScript/TypeScript test file(s) - some xtest() calls may not have been enabled", errorCount);
+        }
+    }
+
+    /**
+     * Replaces xtest( with test( in all files with the given extension.
+     */
+    private int replaceXtestInDirectory(Path directory, String extension) throws IOException {
+        if (!Files.exists(directory)) {
+            return 0;
         }
 
-        if (errorCount[0] > 0) {
-            logger.warn("Failed to patch {} JavaScript/TypeScript test file(s) - some xtest() calls may not have been enabled", errorCount[0]);
-        }
+        int[] errorCount = {0};
+        Files.walkFileTree(directory, new java.nio.file.SimpleFileVisitor<>() {
+            @Override
+            public java.nio.file.FileVisitResult visitFile(Path file,
+                                                            java.nio.file.attribute.BasicFileAttributes attrs) {
+                String name = file.toString().toLowerCase();
+                boolean isTestFile = name.contains(".test.") || name.contains(".spec.") || 
+                                    name.contains("test") || name.contains("spec");
+                
+                if (file.toString().endsWith(extension) && isTestFile) {
+                    try {
+                        String testCode = Files.readString(file);
+                        String updatedCode = testCode.replaceAll("\\bxtest\\(", "test(");
+                        if (!testCode.equals(updatedCode)) {
+                            Files.writeString(file, updatedCode);
+                            logger.info("Patched xtest in {}", file);
+                        }
+                    } catch (IOException e) {
+                        errorCount[0]++;
+                        logger.error("Failed to patch {}: {}", file.getFileName(), e.getMessage());
+                    }
+                }
+                return java.nio.file.FileVisitResult.CONTINUE;
+            }
+        });
+
+        return errorCount[0];
     }
 }

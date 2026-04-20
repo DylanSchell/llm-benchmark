@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Handler for C++ exercises.
@@ -97,28 +96,7 @@ public class CppHandler implements LanguageHandler {
 
         logger.info("Copying C++ exercise files to {}", exerciseDest);
 
-        // Default implementation: copy all files except .meta/ directory
-        try (Stream<Path> paths = Files.walk(sourceDir)) {
-            paths.forEach(sourcePath -> {
-                try {
-                    Path relativePath = sourceDir.relativize(sourcePath);
-
-                    // Skip reference implementation directory
-                    if (relativePath.toString().contains(".meta/")) {
-                        return;
-                    }
-
-                    Path destPath = exerciseDest.resolve(relativePath);
-
-                    if (Files.isDirectory(sourcePath)) {
-                        Files.createDirectories(destPath);
-                    } else {
-                        Files.copy(sourcePath, destPath, StandardCopyOption.REPLACE_EXISTING);
-                    }
-                } catch (IOException e) {
-                    logger.error("Failed to copy file {}: {}", sourcePath, e.getMessage());
-                }
-            });
-        }
+        // Copy all files except .meta/ directory
+        copyDirectoryExcluding(sourceDir, exerciseDest, ".meta/");
     }
 }

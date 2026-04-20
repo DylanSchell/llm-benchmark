@@ -13,7 +13,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class ClaudeAgent extends ReferenceAgent {
     private static final Logger logger = LoggerFactory.getLogger(ClaudeAgent.class);
@@ -74,49 +73,15 @@ public class ClaudeAgent extends ReferenceAgent {
                     tempWorkDir.toAbsolutePath().toString(),
                     System.out::println
             );
+            
+            // Collect JSONL trace files
             Path claudeJsonLogDirectory = tempWorkDir.resolve(".claude").resolve("projects").resolve("-workspace");
-            if (Files.isDirectory(claudeJsonLogDirectory)) {
-                Files.walkFileTree(claudeJsonLogDirectory, new SimpleFileVisitor<>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        String fileName = file.getFileName().toString();
-                        if (fileName.endsWith(".jsonl")) {
-                            // Main agent log - use standard naming: trace_{language}_{exercise}.jsonl
-                            Files.copy(file, resultsDir.resolve("trace_" + exercise.getLanguage() + "_" + exercise.getName() + ".jsonl"), 
-                                StandardCopyOption.REPLACE_EXISTING);
-                        } else if (fileName.endsWith(".json")) {
-                            // Sub agent or other JSON logs - keep original naming with prefix
-                            Files.copy(file, resultsDir.resolve("trace_" + exercise.getLanguage() + "_" + exercise.getName() + "_" + fileName), 
-                                StandardCopyOption.REPLACE_EXISTING);
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            }
-            // attach trace to result and save HTML file with standard naming
+            collectTraceFiles(claudeJsonLogDirectory, resultsDir, exercise, ".jsonl");
+            
+            // Collect HTML trace files
             Path claudeArchive = tempWorkDir.resolve("claude-archive").resolve("workspace");
-            final List<String> htmlTraces = new ArrayList<>();
-            if (Files.isDirectory(claudeArchive)) {
-                try (Stream<Path> stream = Files.find(claudeArchive, Integer.MAX_VALUE,
-                        (p, a) -> true)) {
-                    stream.forEach(p -> {
-                        try {
-                            if (p.toString().endsWith(".html") && p.toString().contains("page")) {
-                                String htmlContent = Files.readString(p);
-                                htmlTraces.add(htmlContent);
-                                
-                                // Save HTML trace to results directory with standard naming
-                                String htmlTargetName = "trace_" + exercise.getLanguage() + "_" + exercise.getName() + ".html";
-                                Files.copy(p, resultsDir.resolve(htmlTargetName), StandardCopyOption.REPLACE_EXISTING);
-                                logger.info("Saved Claude HTML trace: {}", htmlTargetName);
-                            }
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                }
-            }
-            String trace = htmlTraces.isEmpty() ? "" : htmlTraces.getFirst();
+            String trace = collectHtmlTraces(claudeArchive, resultsDir, exercise);
+
 
             return ReferenceResult.builder()
                     .exerciseName(exercise.getName())
@@ -152,5 +117,63 @@ public class ClaudeAgent extends ReferenceAgent {
 
     public String getName() {
         return "claude";
+    }
+
+    /**
+     * Collects trace files (JSONL, JSON) from a source directory to the results directory.
+     */
+    private void collectTraceFiles(Path sourceDir, Path resultsDir, Exercise exercise, String extension) throws IOException {
+        if (!Files.isDirectory(sourceDir)) {
+            return;
+        }
+
+        Files.walkFileTree(sourceDir, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                String fileName = file.getFileName().toString();
+                if (fileName.endsWith(extension)) {
+                    String targetName;
+                    if (extension.equals(".jsonl")) {
+                        // Main agent log - use standard naming: trace_{language}_{exercise}.jsonl
+                        targetName = "trace_" + exercise.getLanguage() + "_" + exercise.getName() + ".jsonl";
+                    } else {
+                        // Sub agent or other JSON logs - keep original naming with prefix
+                        targetName = "trace_" + exercise.getLanguage() + "_" + exercise.getName() + "_" + fileName;
+                    }
+                    Files.copy(file, resultsDir.resolve(targetName), StandardCopyOption.REPLACE_EXISTING);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
+    /**
+     * Collects HTML trace files and returns the first one as a string.
+     */
+    private String collectHtmlTraces(Path sourceDir, Path resultsDir, Exercise exercise) throws IOException {
+        if (!Files.isDirectory(sourceDir)) {
+            return "";
+        }
+
+        final List<String> htmlTraces = new ArrayList<>();
+        
+        Files.walkFileTree(sourceDir, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                String fileName = file.getFileName().toString();
+                if (fileName.endsWith(".html") && fileName.contains("page")) {
+                    String htmlContent = Files.readString(file);
+                    htmlTraces.add(htmlContent);
+                    
+                    // Save HTML trace to results directory with standard naming
+                    String htmlTargetName = "trace_" + exercise.getLanguage() + "_" + exercise.getName() + ".html";
+                    Files.copy(file, resultsDir.resolve(htmlTargetName), StandardCopyOption.REPLACE_EXISTING);
+                    logger.info("Saved Claude HTML trace: {}", htmlTargetName);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+
+        return htmlTraces.isEmpty() ? "" : htmlTraces.getFirst();
     }
 }

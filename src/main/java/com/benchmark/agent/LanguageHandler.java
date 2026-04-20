@@ -1,6 +1,7 @@
 package com.benchmark.agent;
 
 import com.benchmark.exercise.Exercise;
+import com.benchmark.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,5 +125,47 @@ public interface LanguageHandler {
      */
     default String getContainerWorkDir(Exercise exercise) {
         return "/workspace";
+    }
+
+    /**
+     * Copies files from a collection of source paths to a destination directory.
+     * Optionally filters by file extension.
+     *
+     * @param sourcePaths Collection of source file paths
+     * @param destDir     Destination directory
+     * @param fileFilter  File extension filter (e.g., ".java"), or null for no filter
+     * @throws IOException if file operations fail
+     */
+    default void copyFilesFromPaths(Iterable<Path> sourcePaths, Path destDir, String fileFilter) throws IOException {
+        FileUtils.copyFilesFromPaths(sourcePaths, destDir, fileFilter);
+    }
+
+    /**
+     * Copies all files from a source directory to a destination directory,
+     * excluding paths that contain the given exclusion pattern.
+     *
+     * @param sourceDir      Source directory
+     * @param destDir        Destination directory
+     * @param exclusionPattern Pattern to exclude (e.g., ".meta/")
+     * @throws IOException if file operations fail
+     */
+    default void copyDirectoryExcluding(Path sourceDir, Path destDir, String exclusionPattern) throws IOException {
+        FileUtils.copyDirectoryExcluding(sourceDir, destDir, exclusionPattern);
+    }
+
+    /**
+     * Recursively replaces text patterns in files with the given extension.
+     * Used for removing test annotations like @Disabled or #[ignore].
+     *
+     * @param directory       Directory to search
+     * @param fileExtension   File extension to match (e.g., ".java")
+     * @param pattern         Regex pattern to replace
+     * @param replacement     Replacement string
+     * @return Number of files that failed to process
+     * @throws IOException if directory traversal fails
+     */
+    default int replaceInFilesRecursive(Path directory, String fileExtension, 
+                                         String pattern, String replacement) throws IOException {
+        return FileUtils.replaceInFilesRecursive(directory, fileExtension, pattern, replacement);
     }
 }

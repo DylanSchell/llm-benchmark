@@ -5,6 +5,7 @@ import com.benchmark.agent.ReferenceAgent;
 import com.benchmark.config.Config;
 import com.benchmark.docker.DockerClient;
 import com.benchmark.exception.ExerciseNotFoundException;
+import com.benchmark.util.ParallelExecutor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +17,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Runner for executing benchmark exercises inside Docker containers.
@@ -132,9 +128,9 @@ public class ExerciseRunner {
 
         // Determine parallelism from runner configuration
         int parallelism = benchmarkRunner.getParallelism();
-        ExecutorService executor = Executors.newFixedThreadPool(parallelism);
-        List<Callable<ExerciseResult>> tasks = new ArrayList<>();
-
+        
+        // Build list of tasks for parallel execution
+        List<java.util.concurrent.Callable<ExerciseResult>> tasks = new ArrayList<>();
         for (Exercise exercise : exercises) {
             logger.info("=============================================================================");
             logger.info("Running {} exercise {} ({}/{})", language, exercise.getName(), ++counter, total);
@@ -158,34 +154,8 @@ public class ExerciseRunner {
             });
         }
 
-        try {
-            List<Future<ExerciseResult>> futures = executor.invokeAll(tasks);
-            for (Future<ExerciseResult> future : futures) {
-                try {
-                    ExerciseResult result = future.get();
-                    results.add(result);
-                } catch (Exception e) {
-                    logger.error("Error executing benchmark task: {}", e.getMessage(), e);
-                }
-            }
-        } catch (InterruptedException e) {
-            logger.error("Benchmark execution interrupted: {}", e.getMessage(), e);
-            executor.shutdownNow();
-            Thread.currentThread().interrupt();
-        } finally {
-            if (!executor.isShutdown()) {
-                executor.shutdown();
-                try {
-                    if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
-                        logger.warn("Executor did not terminate in time, forcing shutdown");
-                        executor.shutdownNow();
-                    }
-                } catch (InterruptedException e) {
-                    executor.shutdownNow();
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }
+        // Execute tasks in parallel using utility class
+        results = ParallelExecutor.executeParallel(tasks, parallelism);
 
         return results;
     }

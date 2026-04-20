@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -29,38 +28,25 @@ public class JavaHandler implements LanguageHandler {
 
         logger.info("Copying reference implementation to {}", mainSrcDir);
 
+        // Copy reference Java files
         for (Path refPath : exercise.getReferencePath()) {
             if (refPath == null || !Files.exists(refPath)) {
-                logger.warn("Reference path not found for: {}", exercise.getName());
                 continue;
             }
-
-            try (Stream<Path> paths = Files.walk(refPath)) {
-                paths.filter(Files::isRegularFile)
-                        .filter(p -> p.toString().endsWith(".java"))
-                        .forEach(refFile -> {
-                            try {
-                                String fileName = refFile.getFileName().toString();
-                                Path destFile = mainSrcDir.resolve(fileName);
-                                Files.copy(refFile, destFile, StandardCopyOption.REPLACE_EXISTING);
-                                logger.info("Copied reference file: {}", fileName);
-                            } catch (IOException e) {
-                                logger.error("Failed to copy reference file {}: {}", refFile, e.getMessage());
-                            }
-                        });
+            String fileName = refPath.getFileName().toString();
+            if (fileName.endsWith(".java")) {
+                Path destFile = mainSrcDir.resolve(fileName);
+                Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
+                logger.info("Copied reference file: {}", fileName);
             }
         }
 
         // Copy example solutions
         for (Path examplePath : exercise.getExamples()) {
-            try {
-                String fileName = examplePath.getFileName().toString();
-                Path destFile = tempDir.resolve("src/main/java").resolve(fileName);
-                Files.copy(examplePath, destFile, StandardCopyOption.REPLACE_EXISTING);
-                logger.info("Copied example file: {}", fileName);
-            } catch (IOException e) {
-                logger.error("Failed to copy example file {}: {}", examplePath, e.getMessage());
-            }
+            String fileName = examplePath.getFileName().toString();
+            Path destFile = tempDir.resolve("src/main/java").resolve(fileName);
+            Files.copy(examplePath, destFile, StandardCopyOption.REPLACE_EXISTING);
+            logger.info("Copied example file: {}", fileName);
         }
     }
 
@@ -110,26 +96,15 @@ public class JavaHandler implements LanguageHandler {
             return;
         }
 
-        int[] errorCount = {0};
-        Files.walkFileTree(testDir, new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                if (file.toString().endsWith(".java")) {
-                    try {
-                        String testCode = Files.readString(file);
-                        String updatedCode = testCode.replaceAll("@Disabled\\(.*\\)", "");
-                        Files.writeString(file, updatedCode);
-                    } catch (IOException e) {
-                        errorCount[0]++;
-                        logger.error("Failed to patch {}: {}", file.getFileName(), e.getMessage());
-                    }
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
+        int errorCount = replaceInFilesRecursive(
+            testDir, 
+            ".java", 
+            "@Disabled\\(.*\\)", 
+            ""
+        );
 
-        if (errorCount[0] > 0) {
-            logger.warn("Failed to patch {} Java test file(s) - some @Disabled annotations may not have been removed", errorCount[0]);
+        if (errorCount > 0) {
+            logger.warn("Failed to patch {} Java test file(s) - some @Disabled annotations may not have been removed", errorCount);
         }
     }
 }

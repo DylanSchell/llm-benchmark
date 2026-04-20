@@ -7,13 +7,13 @@ import com.benchmark.docker.DockerClient;
 import com.benchmark.exercise.ExerciseResult;
 import com.benchmark.exercise.ExerciseRunner;
 import com.benchmark.persistence.ResultPersister;
+import com.benchmark.util.Languages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Main entry point for the benchmark runner.
@@ -27,7 +27,7 @@ public class BenchmarkRunner {
     private final ResultPersister resultPersister;
     private ExerciseRunner exerciseRunner;
 
-    private static final Set<String> supportedLanguages = Set.of("java", "go", "javascript", "python", "rust", "cpp");
+
 
     public BenchmarkRunner(Path configPath) throws Exception {
         this(ConfigLoader.load(configPath), new DockerClient(ConfigLoader.load(configPath).getDocker()));
@@ -151,7 +151,7 @@ public class BenchmarkRunner {
         String[] split = languages.split(",");
         for (String language : split) {
             String trimmedLanguage = language.trim().toLowerCase();
-            if (supportedLanguages.contains(trimmedLanguage)) {
+            if (Languages.isSupported(trimmedLanguage)) {
                 // Set run parameters for result directory computation
                 // Treat empty strings as null for proper directory naming
                 String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
