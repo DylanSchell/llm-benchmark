@@ -3,14 +3,18 @@
 | Benchmark | Total Results | Success | Failed | Completion % | Total Duration | Tokens |
 |-----------|---------------|---------|--------|---------------|----------------|--------|
 | [pi-qwen35-397b-coding-nospec](#pi-qwen35-397b-coding-nospec) | 225 | 225 | 0 | 100.0% | 12h 11m 33s | 0 / 0 / 633.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | 225 | 225 | 0 | 100.0% | 6h 13s | 0 / 0 / 997.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | 225 | 224 | 1 | 99.6% | 9h 4m 7s | 0 / 0 / 783.9K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | 225 | 224 | 1 | 99.6% | 5h 33m 51s | 0 / 0 / 1.1M |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | 225 | 222 | 3 | 98.7% | 10h 21m 17s | 0 / 0 / 863.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | 225 | 222 | 3 | 98.7% | 9h 54m 24s | 0 / 0 / 862.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | 225 | 221 | 4 | 98.2% | 18h 54m 56s | 0 / 0 / 800.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | 225 | 221 | 4 | 98.2% | 8h 18m 28s | 0 / 0 / 1.3M |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | 225 | 220 | 5 | 97.8% | 10h 36m 45s | 0 / 0 / 1.2M |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | 225 | 219 | 6 | 97.3% | 16h 11m 35s | 0 / 0 / 786.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | 225 | 217 | 8 | 96.4% | 11h 10m 14s | 0 / 0 / 780.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | 225 | 216 | 9 | 96.0% | 23h 52m 5s | 0 / 0 / 800.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | 225 | 208 | 17 | 92.4% | 9h 10m 39s | 0 / 0 / 1.7M |
 | [pi-omnicoder](#pi-omnicoder) | 225 | 183 | 42 | 81.3% | 13h 18m 29s | 0 / 0 / 2.0M |
 | [pi-qwen35-9b-coding](#pi-qwen35-9b-coding) | 225 | 170 | 55 | 75.6% | 1d 18h 34m 57s | 0 / 0 / 1.7M |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | 225 | 5 | 220 | 2.2% | 4h 17m 21s | 0 / 0 / 77.7K |
@@ -20,9 +24,12 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | 169 | 90 | 79 | 53.3% | 5h 28m 18s | 30.9M / 26.5M / 800.6K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | 145 | 140 | 5 | 96.6% | 7h 57m 23s | 0 / 0 / 695.5K |
 | [pi-kimi-linear](#pi-kimi-linear) | 136 | 82 | 54 | 60.3% | 1d 45m 47s | 0 / 0 / 1.4M |
+| [pi-minimax-m27](#pi-minimax-m27) | 128 | 96 | 32 | 75.0% | 8h 38m 13s | 0 / 0 / 789.0K |
 | [pi-step-35-flash](#pi-step-35-flash) | 45 | 32 | 13 | 71.1% | 4h 1m 3s | 0 / 0 / 442.4K |
-| [pi-gemma-4-26b](#pi-gemma-4-26b) | 19 | 15 | 4 | 78.9% | 1h 16m 57s | 0 / 0 / 186.2K |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | 15 | 15 | 0 | 100.0% | 23m 7s | 0 / 0 / 59.7K |
 | [pi-qwen35-397b-coding](#pi-qwen35-397b-coding) | 6 | 0 | 6 | 0.0% | 1m 24s | 0 / 0 / 519 |
+| [reference-qwen36-35b-a3b-coding](#reference-qwen36-35b-a3b-coding) | 3 | 2 | 1 | 66.7% | 0s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b](#pi-qwen36-35b-a3b) | 2 | 2 | 0 | 100.0% | 1m 14s | 0 / 0 / 1.7K |
 | [pi-gemma-4-31b](#pi-gemma-4-31b) | 1 | 1 | 0 | 100.0% | 6m 46s | 0 / 0 / 3.9K |
 | [pi-gpt-oss-120b](#pi-gpt-oss-120b) | 1 | 1 | 0 | 100.0% | 1m 53s | 0 / 0 / 2.6K |
 | [claude-qwen3-27b](#claude-qwen3-27b) | 1 | 0 | 1 | 0.0% | 10m 0s | 17.8K / 50.7K / 222 |
@@ -665,6 +672,237 @@
 | [react_rust](#react_rust) | ✅ | 12m 13s | 0 / 0 / 40.2K |
 
 
+# pi-qwen36-35b-a3b-q4-no-thinking
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 54s | 0 / 0 / 1.0K |
+| [all-your-base_java](#all-your-base_java) | ✅ | 24s | 0 / 0 / 925 |
+| [alphametics_java](#alphametics_java) | ✅ | 7m 18s | 0 / 0 / 24.4K |
+| [bank-account_java](#bank-account_java) | ✅ | 32s | 0 / 0 / 859 |
+| [book-store_java](#book-store_java) | ✅ | 55s | 0 / 0 / 2.0K |
+| [bottle-song_java](#bottle-song_java) | ✅ | 29s | 0 / 0 / 851 |
+| [bowling_java](#bowling_java) | ✅ | 4m 5s | 0 / 0 / 10.5K |
+| [change_java](#change_java) | ✅ | 31s | 0 / 0 / 961 |
+| [circular-buffer_java](#circular-buffer_java) | ✅ | 41s | 0 / 0 / 1.3K |
+| [connect_java](#connect_java) | ✅ | 3m 2s | 0 / 0 / 8.0K |
+| [custom-set_java](#custom-set_java) | ✅ | 52s | 0 / 0 / 1.8K |
+| [dominoes_java](#dominoes_java) | ✅ | 51s | 0 / 0 / 2.0K |
+| [food-chain_java](#food-chain_java) | ✅ | 2m 27s | 0 / 0 / 5.5K |
+| [forth_java](#forth_java) | ✅ | 2m 16s | 0 / 0 / 4.8K |
+| [go-counting_java](#go-counting_java) | ✅ | 1m 27s | 0 / 0 / 3.8K |
+| [hangman_java](#hangman_java) | ✅ | 10m 51s | 0 / 0 / 27.8K |
+| [house_java](#house_java) | ✅ | 39s | 0 / 0 / 1.4K |
+| [kindergarten-garden_java](#kindergarten-garden_java) | ✅ | 20s | 0 / 0 / 637 |
+| [ledger_java](#ledger_java) | ✅ | 2m 41s | 0 / 0 / 6.9K |
+| [ocr-numbers_java](#ocr-numbers_java) | ✅ | 30s | 0 / 0 / 1.0K |
+| [palindrome-products_java](#palindrome-products_java) | ✅ | 30s | 0 / 0 / 992 |
+| [phone-number_java](#phone-number_java) | ✅ | 25s | 0 / 0 / 934 |
+| [pig-latin_java](#pig-latin_java) | ✅ | 23s | 0 / 0 / 848 |
+| [poker_java](#poker_java) | ✅ | 3m 19s | 0 / 0 / 10.7K |
+| [protein-translation_java](#protein-translation_java) | ✅ | 24s | 0 / 0 / 927 |
+| [pythagorean-triplet_java](#pythagorean-triplet_java) | ✅ | 28s | 0 / 0 / 1.2K |
+| [queen-attack_java](#queen-attack_java) | ✅ | 23s | 0 / 0 / 884 |
+| [rational-numbers_java](#rational-numbers_java) | ✅ | 1m 24s | 0 / 0 / 3.4K |
+| [react_java](#react_java) | ✅ | 6m 28s | 0 / 0 / 20.0K |
+| [resistor-color-trio_java](#resistor-color-trio_java) | ✅ | 23s | 0 / 0 / 830 |
+| [rest-api_java](#rest-api_java) | ✅ | 2m 16s | 0 / 0 / 6.5K |
+| [satellite_java](#satellite_java) | ✅ | 40s | 0 / 0 / 1.2K |
+| [series_java](#series_java) | ✅ | 18s | 0 / 0 / 543 |
+| [sgf-parsing_java](#sgf-parsing_java) | ✅ | 7m 49s | 0 / 0 / 24.3K |
+| [simple-linked-list_java](#simple-linked-list_java) | ✅ | 32s | 0 / 0 / 1.1K |
+| [state-of-tic-tac-toe_java](#state-of-tic-tac-toe_java) | ✅ | 33s | 0 / 0 / 1.5K |
+| [transpose_java](#transpose_java) | ✅ | 22s | 0 / 0 / 848 |
+| [tree-building_java](#tree-building_java) | ✅ | 42s | 0 / 0 / 1.9K |
+| [twelve-days_java](#twelve-days_java) | ✅ | 46s | 0 / 0 / 1.8K |
+| [two-bucket_java](#two-bucket_java) | ✅ | 32s | 0 / 0 / 1.5K |
+| [variable-length-quantity_java](#variable-length-quantity_java) | ✅ | 1m 34s | 0 / 0 / 4.2K |
+| [word-search_java](#word-search_java) | ✅ | 36s | 0 / 0 / 1.4K |
+| [wordy_java](#wordy_java) | ✅ | 1m 36s | 0 / 0 / 5.0K |
+| [zebra-puzzle_java](#zebra-puzzle_java) | ✅ | 1m 5s | 0 / 0 / 3.9K |
+| [zipper_java](#zipper_java) | ✅ | 1m 35s | 0 / 0 / 3.3K |
+| [pov_java](#pov_java) | ✅ | 10m 36s | 0 / 0 / 26.9K |
+| [alphametics_go](#alphametics_go) | ✅ | 4m 18s | 0 / 0 / 12.7K |
+| [beer-song_go](#beer-song_go) | ✅ | 39s | 0 / 0 / 1.8K |
+| [book-store_go](#book-store_go) | ✅ | 27s | 0 / 0 / 1.2K |
+| [bottle-song_go](#bottle-song_go) | ✅ | 18s | 0 / 0 / 786 |
+| [bowling_go](#bowling_go) | ✅ | 3m 3s | 0 / 0 / 9.0K |
+| [connect_go](#connect_go) | ✅ | 4m 0s | 0 / 0 / 12.8K |
+| [counter_go](#counter_go) | ✅ | 5m 44s | 0 / 0 / 16.9K |
+| [crypto-square_go](#crypto-square_go) | ✅ | 15s | 0 / 0 / 618 |
+| [dnd-character_go](#dnd-character_go) | ✅ | 30s | 0 / 0 / 1.4K |
+| [dominoes_go](#dominoes_go) | ✅ | 30s | 0 / 0 / 1.5K |
+| [error-handling_go](#error-handling_go) | ✅ | 22s | 0 / 0 / 1.1K |
+| [food-chain_go](#food-chain_go) | ✅ | 30s | 0 / 0 / 1.3K |
+| [forth_go](#forth_go) | ✅ | 1m 52s | 0 / 0 / 5.7K |
+| [hexadecimal_go](#hexadecimal_go) | ✅ | 46s | 0 / 0 / 2.2K |
+| [kindergarten-garden_go](#kindergarten-garden_go) | ✅ | 1m 8s | 0 / 0 / 3.2K |
+| [ledger_go](#ledger_go) | ✅ | 4m 51s | 0 / 0 / 13.9K |
+| [markdown_go](#markdown_go) | ✅ | 1m 38s | 0 / 0 / 4.8K |
+| [octal_go](#octal_go) | ✅ | 10s | 0 / 0 / 401 |
+| [paasio_go](#paasio_go) | ✅ | 28s | 0 / 0 / 1.3K |
+| [palindrome-products_go](#palindrome-products_go) | ✅ | 21s | 0 / 0 / 946 |
+| [pig-latin_go](#pig-latin_go) | ✅ | 21s | 0 / 0 / 949 |
+| [poker_go](#poker_go) | ✅ | 1m 15s | 0 / 0 / 3.7K |
+| [protein-translation_go](#protein-translation_go) | ✅ | 17s | 0 / 0 / 806 |
+| [react_go](#react_go) | ✅ | 1m 3s | 0 / 0 / 3.3K |
+| [robot-simulator_go](#robot-simulator_go) | ✅ | 59m 31s | 0 / 0 / 98.0K |
+| [say_go](#say_go) | ✅ | 23s | 0 / 0 / 941 |
+| [scale-generator_go](#scale-generator_go) | ✅ | 2m 13s | 0 / 0 / 6.4K |
+| [simple-linked-list_go](#simple-linked-list_go) | ✅ | 25s | 0 / 0 / 1.0K |
+| [sublist_go](#sublist_go) | ✅ | 18s | 0 / 0 / 665 |
+| [transpose_go](#transpose_go) | ✅ | 16s | 0 / 0 / 665 |
+| [tree-building_go](#tree-building_go) | ✅ | 37s | 0 / 0 / 1.6K |
+| [trinary_go](#trinary_go) | ✅ | 36s | 0 / 0 / 1.7K |
+| [two-bucket_go](#two-bucket_go) | ✅ | 35s | 0 / 0 / 1.7K |
+| [variable-length-quantity_go](#variable-length-quantity_go) | ✅ | 33s | 0 / 0 / 1.8K |
+| [word-search_go](#word-search_go) | ✅ | 19s | 0 / 0 / 902 |
+| [wordy_go](#wordy_go) | ✅ | 23s | 0 / 0 / 1.2K |
+| [zebra-puzzle_go](#zebra-puzzle_go) | ✅ | 1m 8s | 0 / 0 / 4.1K |
+| [pov_go](#pov_go) | ✅ | 4m 27s | 0 / 0 / 13.0K |
+| [affine-cipher_javascript](#affine-cipher_javascript) | ✅ | 18s | 0 / 0 / 863 |
+| [alphametics_javascript](#alphametics_javascript) | ✅ | 35s | 0 / 0 / 2.1K |
+| [beer-song_javascript](#beer-song_javascript) | ✅ | 20s | 0 / 0 / 708 |
+| [binary_javascript](#binary_javascript) | ✅ | 11s | 0 / 0 / 365 |
+| [book-store_javascript](#book-store_javascript) | ✅ | 24s | 0 / 0 / 1.1K |
+| [bottle-song_javascript](#bottle-song_javascript) | ✅ | 21s | 0 / 0 / 848 |
+| [bowling_javascript](#bowling_javascript) | ✅ | 6m 22s | 0 / 0 / 19.2K |
+| [complex-numbers_javascript](#complex-numbers_javascript) | ✅ | 4m 38s | 0 / 0 / 14.2K |
+| [connect_javascript](#connect_javascript) | ✅ | 26s | 0 / 0 / 1.4K |
+| [food-chain_javascript](#food-chain_javascript) | ✅ | 20s | 0 / 0 / 854 |
+| [forth_javascript](#forth_javascript) | ✅ | 1m 33s | 0 / 0 / 5.0K |
+| [go-counting_javascript](#go-counting_javascript) | ✅ | 28s | 0 / 0 / 1.4K |
+| [grade-school_javascript](#grade-school_javascript) | ✅ | 17s | 0 / 0 / 713 |
+| [grep_javascript](#grep_javascript) | ✅ | 33s | 0 / 0 / 1.4K |
+| [house_javascript](#house_javascript) | ✅ | 1m 2s | 0 / 0 / 2.5K |
+| [killer-sudoku-helper_javascript](#killer-sudoku-helper_javascript) | ✅ | 20s | 0 / 0 / 768 |
+| [ledger_javascript](#ledger_javascript) | ✅ | 1m 27s | 0 / 0 / 4.6K |
+| [list-ops_javascript](#list-ops_javascript) | ✅ | 25s | 0 / 0 / 1.2K |
+| [meetup_javascript](#meetup_javascript) | ✅ | 20s | 0 / 0 / 696 |
+| [ocr-numbers_javascript](#ocr-numbers_javascript) | ✅ | 20s | 0 / 0 / 993 |
+| [palindrome-products_javascript](#palindrome-products_javascript) | ✅ | 27s | 0 / 0 / 1.2K |
+| [parallel-letter-frequency_javascript](#parallel-letter-frequency_javascript) | ✅ | 1m 18s | 0 / 0 / 3.6K |
+| [phone-number_javascript](#phone-number_javascript) | ✅ | 19s | 0 / 0 / 876 |
+| [pig-latin_javascript](#pig-latin_javascript) | ✅ | 28s | 0 / 0 / 1.4K |
+| [poker_javascript](#poker_javascript) | ✅ | 1m 9s | 0 / 0 / 3.6K |
+| [promises_javascript](#promises_javascript) | ✅ | 26s | 0 / 0 / 1.3K |
+| [queen-attack_javascript](#queen-attack_javascript) | ✅ | 23s | 0 / 0 / 1.1K |
+| [rational-numbers_javascript](#rational-numbers_javascript) | ✅ | 42s | 0 / 0 / 2.1K |
+| [react_javascript](#react_javascript) | ✅ | 1m 48s | 0 / 0 / 6.1K |
+| [rectangles_javascript](#rectangles_javascript) | ✅ | 15s | 0 / 0 / 708 |
+| [resistor-color-trio_javascript](#resistor-color-trio_javascript) | ✅ | 26s | 0 / 0 / 1.3K |
+| [rest-api_javascript](#rest-api_javascript) | ✅ | 1m 46s | 0 / 0 / 5.9K |
+| [robot-name_javascript](#robot-name_javascript) | ✅ | 32s | 0 / 0 / 841 |
+| [say_javascript](#say_javascript) | ✅ | 19s | 0 / 0 / 910 |
+| [scale-generator_javascript](#scale-generator_javascript) | ✅ | 37s | 0 / 0 / 1.6K |
+| [simple-linked-list_javascript](#simple-linked-list_javascript) | ✅ | 12s | 0 / 0 / 518 |
+| [space-age_javascript](#space-age_javascript) | ✅ | 10s | 0 / 0 / 403 |
+| [state-of-tic-tac-toe_javascript](#state-of-tic-tac-toe_javascript) | ✅ | 30s | 0 / 0 / 1.6K |
+| [sum-of-multiples_javascript](#sum-of-multiples_javascript) | ✅ | 11s | 0 / 0 / 399 |
+| [tournament_javascript](#tournament_javascript) | ✅ | 21s | 0 / 0 / 979 |
+| [transpose_javascript](#transpose_javascript) | ✅ | 16s | 0 / 0 / 690 |
+| [triangle_javascript](#triangle_javascript) | ✅ | 12s | 0 / 0 / 574 |
+| [twelve-days_javascript](#twelve-days_javascript) | ✅ | 16s | 0 / 0 / 751 |
+| [two-bucket_javascript](#two-bucket_javascript) | ✅ | 43s | 0 / 0 / 2.6K |
+| [variable-length-quantity_javascript](#variable-length-quantity_javascript) | ✅ | 13s | 0 / 0 / 658 |
+| [word-search_javascript](#word-search_javascript) | ✅ | 17s | 0 / 0 / 783 |
+| [wordy_javascript](#wordy_javascript) | ✅ | 44s | 0 / 0 / 2.5K |
+| [zebra-puzzle_javascript](#zebra-puzzle_javascript) | ✅ | 2m 8s | 0 / 0 / 7.9K |
+| [zipper_javascript](#zipper_javascript) | ✅ | 27s | 0 / 0 / 1.4K |
+| [affine-cipher_python](#affine-cipher_python) | ✅ | 15s | 0 / 0 / 737 |
+| [beer-song_python](#beer-song_python) | ✅ | 19s | 0 / 0 / 692 |
+| [book-store_python](#book-store_python) | ✅ | 23s | 0 / 0 / 1.2K |
+| [bottle-song_python](#bottle-song_python) | ✅ | 26s | 0 / 0 / 1.2K |
+| [bowling_python](#bowling_python) | ✅ | 5m 40s | 0 / 0 / 14.3K |
+| [connect_python](#connect_python) | ✅ | 1m 24s | 0 / 0 / 5.0K |
+| [dominoes_python](#dominoes_python) | ✅ | 20s | 0 / 0 / 1.0K |
+| [dot-dsl_python](#dot-dsl_python) | ✅ | 1m 42s | 0 / 0 / 5.9K |
+| [food-chain_python](#food-chain_python) | ✅ | 32s | 0 / 0 / 1.7K |
+| [forth_python](#forth_python) | ✅ | 4m 11s | 0 / 0 / 13.2K |
+| [go-counting_python](#go-counting_python) | ✅ | 39s | 0 / 0 / 2.2K |
+| [grade-school_python](#grade-school_python) | ✅ | 18s | 0 / 0 / 851 |
+| [grep_python](#grep_python) | ✅ | 20s | 0 / 0 / 941 |
+| [hangman_python](#hangman_python) | ✅ | 2m 3s | 0 / 0 / 6.4K |
+| [list-ops_python](#list-ops_python) | ✅ | 17s | 0 / 0 / 861 |
+| [paasio_python](#paasio_python) | ✅ | 1m 30s | 0 / 0 / 4.6K |
+| [phone-number_python](#phone-number_python) | ✅ | 24s | 0 / 0 / 1.2K |
+| [pig-latin_python](#pig-latin_python) | ✅ | 12s | 0 / 0 / 573 |
+| [poker_python](#poker_python) | ✅ | 1m 4s | 0 / 0 / 3.2K |
+| [proverb_python](#proverb_python) | ✅ | 10s | 0 / 0 / 427 |
+| [react_python](#react_python) | ✅ | 1m 25s | 0 / 0 / 4.9K |
+| [rest-api_python](#rest-api_python) | ✅ | 31s | 0 / 0 / 1.8K |
+| [robot-name_python](#robot-name_python) | ✅ | 22s | 0 / 0 / 1.2K |
+| [scale-generator_python](#scale-generator_python) | ✅ | 1m 4s | 0 / 0 / 3.6K |
+| [sgf-parsing_python](#sgf-parsing_python) | ✅ | 3m 30s | 0 / 0 / 11.4K |
+| [simple-linked-list_python](#simple-linked-list_python) | ✅ | 17s | 0 / 0 / 935 |
+| [transpose_python](#transpose_python) | ✅ | 10s | 0 / 0 / 463 |
+| [tree-building_python](#tree-building_python) | ✅ | 30s | 0 / 0 / 1.5K |
+| [two-bucket_python](#two-bucket_python) | ✅ | 20s | 0 / 0 / 1.0K |
+| [variable-length-quantity_python](#variable-length-quantity_python) | ✅ | 16s | 0 / 0 / 781 |
+| [wordy_python](#wordy_python) | ✅ | 51s | 0 / 0 / 2.6K |
+| [zebra-puzzle_python](#zebra-puzzle_python) | ✅ | 35s | 0 / 0 / 2.1K |
+| [zipper_python](#zipper_python) | ✅ | 26s | 0 / 0 / 1.4K |
+| [accumulate_rust](#accumulate_rust) | ✅ | 13s | 0 / 0 / 646 |
+| [acronym_rust](#acronym_rust) | ✅ | 13s | 0 / 0 / 746 |
+| [alphametics_rust](#alphametics_rust) | ✅ | 37s | 0 / 0 / 2.1K |
+| [book-store_rust](#book-store_rust) | ✅ | 17s | 0 / 0 / 980 |
+| [bowling_rust](#bowling_rust) | ✅ | 4m 45s | 0 / 0 / 16.4K |
+| [decimal_rust](#decimal_rust) | ✅ | 9m 25s | 0 / 0 / 33.3K |
+| [dot-dsl_rust](#dot-dsl_rust) | ✅ | 23s | 0 / 0 / 1.3K |
+| [fizzy_rust](#fizzy_rust) | ✅ | 1m 16s | 0 / 0 / 4.6K |
+| [forth_rust](#forth_rust) | ✅ | 3m 36s | 0 / 0 / 13.7K |
+| [gigasecond_rust](#gigasecond_rust) | ✅ | 9s | 0 / 0 / 382 |
+| [grade-school_rust](#grade-school_rust) | ✅ | 20s | 0 / 0 / 1.2K |
+| [grep_rust](#grep_rust) | ✅ | 34s | 0 / 0 / 1.7K |
+| [luhn-from_rust](#luhn-from_rust) | ✅ | 16s | 0 / 0 / 929 |
+| [macros_rust](#macros_rust) | ✅ | 41s | 0 / 0 / 2.5K |
+| [nucleotide-codons_rust](#nucleotide-codons_rust) | ✅ | 26s | 0 / 0 / 1.7K |
+| [ocr-numbers_rust](#ocr-numbers_rust) | ✅ | 2m 10s | 0 / 0 / 8.1K |
+| [parallel-letter-frequency_rust](#parallel-letter-frequency_rust) | ✅ | 34s | 0 / 0 / 2.1K |
+| [pig-latin_rust](#pig-latin_rust) | ✅ | 16s | 0 / 0 / 883 |
+| [poker_rust](#poker_rust) | ✅ | 3m 1s | 0 / 0 / 11.4K |
+| [react_rust](#react_rust) | ✅ | 9m 28s | 0 / 0 / 33.8K |
+| [robot-name_rust](#robot-name_rust) | ✅ | 43s | 0 / 0 / 2.6K |
+| [say_rust](#say_rust) | ✅ | 20s | 0 / 0 / 1.2K |
+| [scale-generator_rust](#scale-generator_rust) | ✅ | 2m 48s | 0 / 0 / 10.4K |
+| [simple-cipher_rust](#simple-cipher_rust) | ✅ | 1m 3s | 0 / 0 / 3.6K |
+| [two-bucket_rust](#two-bucket_rust) | ✅ | 24s | 0 / 0 / 1.4K |
+| [variable-length-quantity_rust](#variable-length-quantity_rust) | ✅ | 25s | 0 / 0 / 1.4K |
+| [word-count_rust](#word-count_rust) | ✅ | 17s | 0 / 0 / 966 |
+| [wordy_rust](#wordy_rust) | ✅ | 1m 47s | 0 / 0 / 6.8K |
+| [xorcism_rust](#xorcism_rust) | ✅ | 6m 35s | 0 / 0 / 18.5K |
+| [all-your-base_cpp](#all-your-base_cpp) | ✅ | 26s | 0 / 0 / 1.2K |
+| [allergies_cpp](#allergies_cpp) | ✅ | 25s | 0 / 0 / 1.1K |
+| [bank-account_cpp](#bank-account_cpp) | ✅ | 27s | 0 / 0 / 1.3K |
+| [binary-search-tree_cpp](#binary-search-tree_cpp) | ✅ | 46s | 0 / 0 / 2.5K |
+| [circular-buffer_cpp](#circular-buffer_cpp) | ✅ | 24s | 0 / 0 / 1.1K |
+| [clock_cpp](#clock_cpp) | ✅ | 26s | 0 / 0 / 1.2K |
+| [complex-numbers_cpp](#complex-numbers_cpp) | ✅ | 1m 1s | 0 / 0 / 2.8K |
+| [crypto-square_cpp](#crypto-square_cpp) | ✅ | 27s | 0 / 0 / 1.4K |
+| [diamond_cpp](#diamond_cpp) | ✅ | 23s | 0 / 0 / 1.0K |
+| [dnd-character_cpp](#dnd-character_cpp) | ✅ | 39s | 0 / 0 / 1.9K |
+| [gigasecond_cpp](#gigasecond_cpp) | ✅ | 59s | 0 / 0 / 2.6K |
+| [grade-school_cpp](#grade-school_cpp) | ✅ | 22s | 0 / 0 / 955 |
+| [kindergarten-garden_cpp](#kindergarten-garden_cpp) | ✅ | 27s | 0 / 0 / 1.3K |
+| [knapsack_cpp](#knapsack_cpp) | ✅ | 21s | 0 / 0 / 900 |
+| [linked-list_cpp](#linked-list_cpp) | ✅ | 33s | 0 / 0 / 1.6K |
+| [meetup_cpp](#meetup_cpp) | ✅ | 5m 22s | 0 / 0 / 16.4K |
+| [parallel-letter-frequency_cpp](#parallel-letter-frequency_cpp) | ✅ | 36s | 0 / 0 / 1.3K |
+| [perfect-numbers_cpp](#perfect-numbers_cpp) | ✅ | 22s | 0 / 0 / 967 |
+| [phone-number_cpp](#phone-number_cpp) | ✅ | 31s | 0 / 0 / 1.6K |
+| [queen-attack_cpp](#queen-attack_cpp) | ✅ | 26s | 0 / 0 / 1.2K |
+| [robot-name_cpp](#robot-name_cpp) | ✅ | 39s | 0 / 0 / 1.8K |
+| [space-age_cpp](#space-age_cpp) | ✅ | 31s | 0 / 0 / 1.6K |
+| [spiral-matrix_cpp](#spiral-matrix_cpp) | ✅ | 37s | 0 / 0 / 1.9K |
+| [sublist_cpp](#sublist_cpp) | ✅ | 25s | 0 / 0 / 1.1K |
+| [yacht_cpp](#yacht_cpp) | ✅ | 30s | 0 / 0 / 1.5K |
+| [zebra-puzzle_cpp](#zebra-puzzle_cpp) | ✅ | 2m 30s | 0 / 0 / 9.4K |
+| [mazy-mice_java](#mazy-mice_java) | ✅ | 5m 10s | 0 / 0 / 16.8K |
+| [matrix_go](#matrix_go) | ✅ | 2m 17s | 0 / 0 / 8.3K |
+| [doubly-linked-list_rust](#doubly-linked-list_rust) | ✅ | 6m 48s | 0 / 0 / 23.3K |
+| [pov_python](#pov_python) | ✅ | 5m 53s | 0 / 0 / 17.8K |
+
+
 # pi-Bonsai-8B_gguf
 
 | Exercise | Success | Duration | Tokens |
@@ -914,11 +1152,217 @@
 | [food-chain_java](#food-chain_java) | ✅ | 1m 25s | 0 / 0 / 4.3K |
 | [forth_java](#forth_java) | ✅ | 9m 45s | 0 / 0 / 27.2K |
 | [go-counting_java](#go-counting_java) | ✅ | 9m 19s | 0 / 0 / 13.7K |
-| [custom-set_java](#custom-set_java) | ❌ | 10m 0s | 0 / 0 / 7.9K |
-| [hangman_java](#hangman_java) | ❌ | 10m 0s | 0 / 0 / 23.7K |
 | [house_java](#house_java) | ✅ | 1m 41s | 0 / 0 / 5.1K |
 | [kindergarten-garden_java](#kindergarten-garden_java) | ✅ | 40s | 0 / 0 / 1.7K |
-| [ledger_java](#ledger_java) | ❌ | 10m 0s | 0 / 0 / 29.5K |
+| [palindrome-products_java](#palindrome-products_java) | ✅ | 1m 7s | 0 / 0 / 2.8K |
+| [phone-number_java](#phone-number_java) | ✅ | 1m 39s | 0 / 0 / 4.4K |
+| [pig-latin_java](#pig-latin_java) | ✅ | 3m 52s | 0 / 0 / 11.8K |
+| [poker_java](#poker_java) | ✅ | 2m 13s | 0 / 0 / 5.9K |
+| [protein-translation_java](#protein-translation_java) | ✅ | 1m 8s | 0 / 0 / 3.0K |
+| [pythagorean-triplet_java](#pythagorean-triplet_java) | ✅ | 1m 5s | 0 / 0 / 2.9K |
+| [queen-attack_java](#queen-attack_java) | ✅ | 36s | 0 / 0 / 1.3K |
+| [react_java](#react_java) | ✅ | 2m 9s | 0 / 0 / 5.7K |
+| [resistor-color-trio_java](#resistor-color-trio_java) | ✅ | 36s | 0 / 0 / 1.3K |
+| [rest-api_java](#rest-api_java) | ✅ | 5m 8s | 0 / 0 / 15.1K |
+| [satellite_java](#satellite_java) | ✅ | 1m 20s | 0 / 0 / 3.5K |
+| [series_java](#series_java) | ✅ | 37s | 0 / 0 / 1.4K |
+| [simple-linked-list_java](#simple-linked-list_java) | ✅ | 41s | 0 / 0 / 1.6K |
+| [state-of-tic-tac-toe_java](#state-of-tic-tac-toe_java) | ✅ | 1m 12s | 0 / 0 / 3.1K |
+| [transpose_java](#transpose_java) | ✅ | 9m 7s | 0 / 0 / 29.4K |
+| [tree-building_java](#tree-building_java) | ✅ | 2m 52s | 0 / 0 / 9.3K |
+| [twelve-days_java](#twelve-days_java) | ✅ | 1m 3s | 0 / 0 / 2.5K |
+| [two-bucket_java](#two-bucket_java) | ✅ | 1m 41s | 0 / 0 / 5.4K |
+| [variable-length-quantity_java](#variable-length-quantity_java) | ✅ | 1m 25s | 0 / 0 / 3.8K |
+| [word-search_java](#word-search_java) | ✅ | 1m 47s | 0 / 0 / 4.8K |
+| [wordy_java](#wordy_java) | ✅ | 1m 23s | 0 / 0 / 4.3K |
+| [zipper_java](#zipper_java) | ✅ | 3m 19s | 0 / 0 / 11.1K |
+| [pov_java](#pov_java) | ✅ | 3m 9s | 0 / 0 / 9.1K |
+| [alphametics_go](#alphametics_go) | ✅ | 2m 25s | 0 / 0 / 8.4K |
+| [beer-song_go](#beer-song_go) | ✅ | 1m 47s | 0 / 0 / 5.3K |
+| [book-store_go](#book-store_go) | ✅ | 51s | 0 / 0 / 2.7K |
+| [bottle-song_go](#bottle-song_go) | ✅ | 59s | 0 / 0 / 3.0K |
+| [bowling_go](#bowling_go) | ✅ | 3m 26s | 0 / 0 / 11.2K |
+| [connect_go](#connect_go) | ✅ | 2m 16s | 0 / 0 / 7.9K |
+| [counter_go](#counter_go) | ✅ | 2m 28s | 0 / 0 / 8.5K |
+| [crypto-square_go](#crypto-square_go) | ✅ | 2m 5s | 0 / 0 / 7.2K |
+| [dnd-character_go](#dnd-character_go) | ✅ | 23s | 0 / 0 / 1.1K |
+| [dominoes_go](#dominoes_go) | ✅ | 1m 29s | 0 / 0 / 5.1K |
+| [error-handling_go](#error-handling_go) | ✅ | 21s | 0 / 0 / 971 |
+| [food-chain_go](#food-chain_go) | ✅ | 2m 48s | 0 / 0 / 9.4K |
+| [hexadecimal_go](#hexadecimal_go) | ✅ | 44s | 0 / 0 / 2.2K |
+| [kindergarten-garden_go](#kindergarten-garden_go) | ✅ | 2m 42s | 0 / 0 / 8.8K |
+| [markdown_go](#markdown_go) | ✅ | 2m 22s | 0 / 0 / 7.6K |
+| [octal_go](#octal_go) | ✅ | 14s | 0 / 0 / 684 |
+| [palindrome-products_go](#palindrome-products_go) | ✅ | 30s | 0 / 0 / 1.3K |
+| [pig-latin_go](#pig-latin_go) | ✅ | 58s | 0 / 0 / 3.0K |
+| [poker_go](#poker_go) | ✅ | 6m 40s | 0 / 0 / 21.2K |
+| [protein-translation_go](#protein-translation_go) | ✅ | 44s | 0 / 0 / 2.3K |
+| [react_go](#react_go) | ✅ | 2m 11s | 0 / 0 / 7.3K |
+| [say_go](#say_go) | ✅ | 35s | 0 / 0 / 1.8K |
+| [simple-linked-list_go](#simple-linked-list_go) | ✅ | 40s | 0 / 0 / 2.0K |
+| [sublist_go](#sublist_go) | ✅ | 31s | 0 / 0 / 1.7K |
+| [transpose_go](#transpose_go) | ✅ | 4m 19s | 0 / 0 / 13.7K |
+| [tree-building_go](#tree-building_go) | ✅ | 1m 14s | 0 / 0 / 3.7K |
+| [trinary_go](#trinary_go) | ✅ | 15s | 0 / 0 / 750 |
+| [two-bucket_go](#two-bucket_go) | ✅ | 1m 7s | 0 / 0 / 3.6K |
+| [variable-length-quantity_go](#variable-length-quantity_go) | ✅ | 39s | 0 / 0 / 1.9K |
+| [word-search_go](#word-search_go) | ✅ | 1m 42s | 0 / 0 / 4.8K |
+| [wordy_go](#wordy_go) | ✅ | 1m 20s | 0 / 0 / 4.3K |
+| [zebra-puzzle_go](#zebra-puzzle_go) | ✅ | 1m 59s | 0 / 0 / 6.7K |
+| [pov_go](#pov_go) | ✅ | 1m 13s | 0 / 0 / 4.0K |
+| [affine-cipher_javascript](#affine-cipher_javascript) | ✅ | 1m 29s | 0 / 0 / 5.0K |
+| [alphametics_javascript](#alphametics_javascript) | ✅ | 1m 57s | 0 / 0 / 6.2K |
+| [beer-song_javascript](#beer-song_javascript) | ✅ | 24s | 0 / 0 / 751 |
+| [binary_javascript](#binary_javascript) | ✅ | 14s | 0 / 0 / 643 |
+| [book-store_javascript](#book-store_javascript) | ✅ | 1m 8s | 0 / 0 / 2.4K |
+| [bottle-song_javascript](#bottle-song_javascript) | ✅ | 29s | 0 / 0 / 1.2K |
+| [bowling_javascript](#bowling_javascript) | ✅ | 3m 52s | 0 / 0 / 12.8K |
+| [connect_javascript](#connect_javascript) | ✅ | 2m 28s | 0 / 0 / 8.3K |
+| [food-chain_javascript](#food-chain_javascript) | ✅ | 2m 37s | 0 / 0 / 8.9K |
+| [go-counting_javascript](#go-counting_javascript) | ✅ | 3m 11s | 0 / 0 / 11.0K |
+| [grade-school_javascript](#grade-school_javascript) | ✅ | 59s | 0 / 0 / 2.9K |
+| [grep_javascript](#grep_javascript) | ✅ | 5m 32s | 0 / 0 / 17.2K |
+| [house_javascript](#house_javascript) | ✅ | 47s | 0 / 0 / 2.2K |
+| [killer-sudoku-helper_javascript](#killer-sudoku-helper_javascript) | ✅ | 31s | 0 / 0 / 1.4K |
+| [ledger_javascript](#ledger_javascript) | ✅ | 1m 19s | 0 / 0 / 3.7K |
+| [list-ops_javascript](#list-ops_javascript) | ✅ | 21s | 0 / 0 / 950 |
+| [meetup_javascript](#meetup_javascript) | ✅ | 1m 13s | 0 / 0 / 3.1K |
+| [ocr-numbers_javascript](#ocr-numbers_javascript) | ✅ | 2m 8s | 0 / 0 / 6.6K |
+| [palindrome-products_javascript](#palindrome-products_javascript) | ✅ | 46s | 0 / 0 / 1.0K |
+| [parallel-letter-frequency_javascript](#parallel-letter-frequency_javascript) | ✅ | 2m 59s | 0 / 0 / 7.8K |
+| [phone-number_javascript](#phone-number_javascript) | ✅ | 1m 4s | 0 / 0 / 3.2K |
+| [pig-latin_javascript](#pig-latin_javascript) | ✅ | 2m 25s | 0 / 0 / 8.2K |
+| [poker_javascript](#poker_javascript) | ✅ | 2m 25s | 0 / 0 / 8.0K |
+| [promises_javascript](#promises_javascript) | ✅ | 35s | 0 / 0 / 1.7K |
+| [rational-numbers_javascript](#rational-numbers_javascript) | ✅ | 1m 57s | 0 / 0 / 6.2K |
+| [resistor-color-trio_javascript](#resistor-color-trio_javascript) | ✅ | 53s | 0 / 0 / 2.4K |
+| [rest-api_javascript](#rest-api_javascript) | ✅ | 3m 29s | 0 / 0 / 11.8K |
+| [robot-name_javascript](#robot-name_javascript) | ✅ | 4m 9s | 0 / 0 / 12.1K |
+| [say_javascript](#say_javascript) | ✅ | 22s | 0 / 0 / 976 |
+| [scale-generator_javascript](#scale-generator_javascript) | ✅ | 4m 5s | 0 / 0 / 13.3K |
+| [simple-linked-list_javascript](#simple-linked-list_javascript) | ✅ | 18s | 0 / 0 / 607 |
+| [space-age_javascript](#space-age_javascript) | ✅ | 16s | 0 / 0 / 631 |
+| [state-of-tic-tac-toe_javascript](#state-of-tic-tac-toe_javascript) | ✅ | 1m 17s | 0 / 0 / 4.0K |
+| [sum-of-multiples_javascript](#sum-of-multiples_javascript) | ✅ | 14s | 0 / 0 / 440 |
+| [tournament_javascript](#tournament_javascript) | ✅ | 31s | 0 / 0 / 1.4K |
+| [transpose_javascript](#transpose_javascript) | ✅ | 7m 42s | 0 / 0 / 25.3K |
+| [triangle_javascript](#triangle_javascript) | ✅ | 22s | 0 / 0 / 873 |
+| [twelve-days_javascript](#twelve-days_javascript) | ✅ | 2m 17s | 0 / 0 / 5.0K |
+| [variable-length-quantity_javascript](#variable-length-quantity_javascript) | ✅ | 54s | 0 / 0 / 2.4K |
+| [word-search_javascript](#word-search_javascript) | ✅ | 50s | 0 / 0 / 2.3K |
+| [wordy_javascript](#wordy_javascript) | ✅ | 4m 37s | 0 / 0 / 15.5K |
+| [zebra-puzzle_javascript](#zebra-puzzle_javascript) | ✅ | 1m 14s | 0 / 0 / 4.1K |
+| [zipper_javascript](#zipper_javascript) | ✅ | 51s | 0 / 0 / 2.5K |
+| [affine-cipher_python](#affine-cipher_python) | ✅ | 36s | 0 / 0 / 1.8K |
+| [beer-song_python](#beer-song_python) | ✅ | 2m 25s | 0 / 0 / 7.5K |
+| [book-store_python](#book-store_python) | ✅ | 1m 30s | 0 / 0 / 4.8K |
+| [bottle-song_python](#bottle-song_python) | ✅ | 1m 5s | 0 / 0 / 3.0K |
+| [connect_python](#connect_python) | ✅ | 1m 29s | 0 / 0 / 5.1K |
+| [dominoes_python](#dominoes_python) | ✅ | 2m 10s | 0 / 0 / 7.3K |
+| [dot-dsl_python](#dot-dsl_python) | ✅ | 1m 24s | 0 / 0 / 4.7K |
+| [food-chain_python](#food-chain_python) | ✅ | 1m 2s | 0 / 0 / 3.1K |
+| [go-counting_python](#go-counting_python) | ✅ | 2m 19s | 0 / 0 / 7.8K |
+| [grade-school_python](#grade-school_python) | ✅ | 54s | 0 / 0 / 2.7K |
+| [grep_python](#grep_python) | ✅ | 1m 1s | 0 / 0 / 2.6K |
+| [hangman_python](#hangman_python) | ✅ | 7m 46s | 0 / 0 / 20.5K |
+| [list-ops_python](#list-ops_python) | ✅ | 6m 29s | 0 / 0 / 22.1K |
+| [phone-number_python](#phone-number_python) | ✅ | 1m 6s | 0 / 0 / 3.5K |
+| [pig-latin_python](#pig-latin_python) | ✅ | 2m 11s | 0 / 0 / 7.6K |
+| [poker_python](#poker_python) | ✅ | 56s | 0 / 0 / 2.5K |
+| [proverb_python](#proverb_python) | ✅ | 41s | 0 / 0 / 2.2K |
+| [react_python](#react_python) | ✅ | 2m 54s | 0 / 0 / 10.0K |
+| [rest-api_python](#rest-api_python) | ✅ | 1m 38s | 0 / 0 / 4.7K |
+| [robot-name_python](#robot-name_python) | ✅ | 41s | 0 / 0 / 2.1K |
+| [scale-generator_python](#scale-generator_python) | ✅ | 4m 40s | 0 / 0 / 15.7K |
+| [sgf-parsing_python](#sgf-parsing_python) | ✅ | 9m 21s | 0 / 0 / 29.3K |
+| [simple-linked-list_python](#simple-linked-list_python) | ✅ | 1m 36s | 0 / 0 / 5.2K |
+| [transpose_python](#transpose_python) | ✅ | 3m 24s | 0 / 0 / 11.4K |
+| [tree-building_python](#tree-building_python) | ✅ | 2m 28s | 0 / 0 / 8.3K |
+| [two-bucket_python](#two-bucket_python) | ✅ | 47s | 0 / 0 / 2.4K |
+| [variable-length-quantity_python](#variable-length-quantity_python) | ✅ | 20s | 0 / 0 / 747 |
+| [wordy_python](#wordy_python) | ✅ | 1m 31s | 0 / 0 / 4.4K |
+| [zebra-puzzle_python](#zebra-puzzle_python) | ✅ | 1m 54s | 0 / 0 / 6.5K |
+| [zipper_python](#zipper_python) | ✅ | 2m 36s | 0 / 0 / 8.4K |
+| [pov_python](#pov_python) | ✅ | 1m 0s | 0 / 0 / 3.0K |
+| [accumulate_rust](#accumulate_rust) | ✅ | 15s | 0 / 0 / 665 |
+| [acronym_rust](#acronym_rust) | ✅ | 37s | 0 / 0 / 1.9K |
+| [alphametics_rust](#alphametics_rust) | ✅ | 2m 27s | 0 / 0 / 8.4K |
+| [book-store_rust](#book-store_rust) | ✅ | 59s | 0 / 0 / 3.3K |
+| [bowling_rust](#bowling_rust) | ✅ | 8m 4s | 0 / 0 / 26.0K |
+| [dot-dsl_rust](#dot-dsl_rust) | ✅ | 3m 6s | 0 / 0 / 9.8K |
+| [doubly-linked-list_rust](#doubly-linked-list_rust) | ✅ | 6m 22s | 0 / 0 / 17.8K |
+| [fizzy_rust](#fizzy_rust) | ✅ | 1m 40s | 0 / 0 / 5.2K |
+| [gigasecond_rust](#gigasecond_rust) | ✅ | 44s | 0 / 0 / 2.2K |
+| [grade-school_rust](#grade-school_rust) | ✅ | 53s | 0 / 0 / 3.0K |
+| [grep_rust](#grep_rust) | ✅ | 51s | 0 / 0 / 2.3K |
+| [luhn-from_rust](#luhn-from_rust) | ✅ | 55s | 0 / 0 / 2.9K |
+| [macros_rust](#macros_rust) | ✅ | 1m 4s | 0 / 0 / 3.1K |
+| [nucleotide-codons_rust](#nucleotide-codons_rust) | ✅ | 53s | 0 / 0 / 2.5K |
+| [ocr-numbers_rust](#ocr-numbers_rust) | ✅ | 36s | 0 / 0 / 1.9K |
+| [parallel-letter-frequency_rust](#parallel-letter-frequency_rust) | ✅ | 1m 18s | 0 / 0 / 3.9K |
+| [pig-latin_rust](#pig-latin_rust) | ✅ | 5m 15s | 0 / 0 / 17.6K |
+| [poker_rust](#poker_rust) | ✅ | 2m 18s | 0 / 0 / 6.6K |
+| [robot-name_rust](#robot-name_rust) | ✅ | 4m 24s | 0 / 0 / 12.0K |
+| [say_rust](#say_rust) | ✅ | 1m 35s | 0 / 0 / 5.0K |
+| [scale-generator_rust](#scale-generator_rust) | ✅ | 6m 55s | 0 / 0 / 22.2K |
+| [simple-cipher_rust](#simple-cipher_rust) | ✅ | 26s | 0 / 0 / 907 |
+| [two-bucket_rust](#two-bucket_rust) | ✅ | 32s | 0 / 0 / 1.6K |
+| [variable-length-quantity_rust](#variable-length-quantity_rust) | ✅ | 31s | 0 / 0 / 1.6K |
+| [word-count_rust](#word-count_rust) | ✅ | 23s | 0 / 0 / 1.1K |
+| [wordy_rust](#wordy_rust) | ✅ | 9m 54s | 0 / 0 / 30.0K |
+| [all-your-base_cpp](#all-your-base_cpp) | ✅ | 1m 53s | 0 / 0 / 6.0K |
+| [allergies_cpp](#allergies_cpp) | ✅ | 1m 18s | 0 / 0 / 3.9K |
+| [bank-account_cpp](#bank-account_cpp) | ✅ | 1m 26s | 0 / 0 / 4.6K |
+| [binary-search-tree_cpp](#binary-search-tree_cpp) | ✅ | 2m 18s | 0 / 0 / 7.7K |
+| [circular-buffer_cpp](#circular-buffer_cpp) | ✅ | 31s | 0 / 0 / 1.4K |
+| [clock_cpp](#clock_cpp) | ✅ | 45s | 0 / 0 / 2.1K |
+| [complex-numbers_cpp](#complex-numbers_cpp) | ✅ | 1m 11s | 0 / 0 / 2.9K |
+| [dnd-character_cpp](#dnd-character_cpp) | ✅ | 1m 13s | 0 / 0 / 3.6K |
+| [grade-school_cpp](#grade-school_cpp) | ✅ | 43s | 0 / 0 / 1.9K |
+| [knapsack_cpp](#knapsack_cpp) | ✅ | 47s | 0 / 0 / 2.2K |
+| [linked-list_cpp](#linked-list_cpp) | ✅ | 1m 14s | 0 / 0 / 3.9K |
+| [parallel-letter-frequency_cpp](#parallel-letter-frequency_cpp) | ✅ | 49s | 0 / 0 / 1.6K |
+| [perfect-numbers_cpp](#perfect-numbers_cpp) | ✅ | 43s | 0 / 0 / 2.1K |
+| [phone-number_cpp](#phone-number_cpp) | ✅ | 3m 4s | 0 / 0 / 10.3K |
+| [queen-attack_cpp](#queen-attack_cpp) | ✅ | 36s | 0 / 0 / 1.6K |
+| [robot-name_cpp](#robot-name_cpp) | ✅ | 58s | 0 / 0 / 3.0K |
+| [space-age_cpp](#space-age_cpp) | ✅ | 1m 12s | 0 / 0 / 3.8K |
+| [spiral-matrix_cpp](#spiral-matrix_cpp) | ✅ | 1m 34s | 0 / 0 / 5.2K |
+| [sublist_cpp](#sublist_cpp) | ✅ | 33s | 0 / 0 / 1.4K |
+| [yacht_cpp](#yacht_cpp) | ✅ | 2m 27s | 0 / 0 / 7.5K |
+| [zebra-puzzle_cpp](#zebra-puzzle_cpp) | ✅ | 1m 34s | 0 / 0 / 5.1K |
+| [ledger_java](#ledger_java) | ✅ | 4m 21s | 0 / 0 / 17.8K |
+| [mazy-mice_java](#mazy-mice_java) | ✅ | 2m 57s | 0 / 0 / 11.9K |
+| [ocr-numbers_java](#ocr-numbers_java) | ✅ | 1m 18s | 0 / 0 / 4.6K |
+| [zebra-puzzle_java](#zebra-puzzle_java) | ✅ | 2m 11s | 0 / 0 / 8.0K |
+| [matrix_go](#matrix_go) | ✅ | 2m 16s | 0 / 0 / 9.3K |
+| [scale-generator_go](#scale-generator_go) | ✅ | 3m 57s | 0 / 0 / 16.3K |
+| [complex-numbers_javascript](#complex-numbers_javascript) | ❌ | 5m 3s | 0 / 0 / 18.5K |
+| [forth_javascript](#forth_javascript) | ❌ | 3m 58s | 0 / 0 / 13.9K |
+| [queen-attack_javascript](#queen-attack_javascript) | ❌ | 56s | 0 / 0 / 2.7K |
+| [react_javascript](#react_javascript) | ✅ | 2m 23s | 0 / 0 / 9.8K |
+| [rectangles_javascript](#rectangles_javascript) | ✅ | 2m 1s | 0 / 0 / 7.3K |
+| [two-bucket_javascript](#two-bucket_javascript) | ✅ | 3m 17s | 0 / 0 / 13.0K |
+| [bowling_python](#bowling_python) | ✅ | 4m 33s | 0 / 0 / 18.1K |
+| [forth_python](#forth_python) | ❌ | 1m 18s | 0 / 0 / 4.6K |
+| [paasio_python](#paasio_python) | ✅ | 5m 11s | 0 / 0 / 20.5K |
+| [decimal_rust](#decimal_rust) | ✅ | 7m 26s | 0 / 0 / 30.5K |
+| [forth_rust](#forth_rust) | ❌ | 4m 24s | 0 / 0 / 17.7K |
+| [react_rust](#react_rust) | ❌ | 6m 58s | 0 / 0 / 17.3K |
+| [xorcism_rust](#xorcism_rust) | ❌ | 6m 27s | 0 / 0 / 24.4K |
+| [crypto-square_cpp](#crypto-square_cpp) | ❌ | 11m 6s | 0 / 0 / 35.7K |
+| [diamond_cpp](#diamond_cpp) | ✅ | 1m 44s | 0 / 0 / 7.2K |
+| [gigasecond_cpp](#gigasecond_cpp) | ❌ | 3m 8s | 0 / 0 / 11.2K |
+| [kindergarten-garden_cpp](#kindergarten-garden_cpp) | ✅ | 7m 29s | 0 / 0 / 29.7K |
+| [meetup_cpp](#meetup_cpp) | ❌ | 3m 51s | 0 / 0 / 11.9K |
+| [custom-set_java](#custom-set_java) | ❌ | 54s | 0 / 0 / 1.1K |
+| [hangman_java](#hangman_java) | ❌ | 7m 47s | 0 / 0 / 15.8K |
+| [rational-numbers_java](#rational-numbers_java) | ✅ | 2m 39s | 0 / 0 / 9.3K |
+| [sgf-parsing_java](#sgf-parsing_java) | ❌ | 11m 58s | 0 / 0 / 37.8K |
+| [forth_go](#forth_go) | ❌ | 8m 29s | 0 / 0 / 20.2K |
+| [ledger_go](#ledger_go) | ❌ | 2m 14s | 0 / 0 / 7.9K |
+| [paasio_go](#paasio_go) | ✅ | 2m 43s | 0 / 0 / 9.1K |
+| [robot-simulator_go](#robot-simulator_go) | ❌ | 27m 0s | 0 / 0 / 13.3K |
 
 
 # pi-cydonia-24b
@@ -1339,6 +1783,237 @@
 | [spiral-matrix_cpp](#spiral-matrix_cpp) | ✅ | 1m 7s | 0 / 0 / 1.4K |
 | [sublist_cpp](#sublist_cpp) | ✅ | 1m 14s | 0 / 0 / 1.5K |
 | [yacht_cpp](#yacht_cpp) | ✅ | 1m 37s | 0 / 0 / 2.0K |
+
+
+# pi-qwen36-35b-a3b-coding
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 59s | 0 / 0 / 2.8K |
+| [all-your-base_java](#all-your-base_java) | ✅ | 27s | 0 / 0 / 0 |
+| [alphametics_java](#alphametics_java) | ✅ | 42s | 0 / 0 / 2.1K |
+| [bank-account_java](#bank-account_java) | ✅ | 31s | 0 / 0 / 1.3K |
+| [book-store_java](#book-store_java) | ✅ | 2m 19s | 0 / 0 / 8.6K |
+| [bottle-song_java](#bottle-song_java) | ✅ | 33s | 0 / 0 / 1.2K |
+| [change_java](#change_java) | ✅ | 29s | 0 / 0 / 1.3K |
+| [circular-buffer_java](#circular-buffer_java) | ✅ | 41s | 0 / 0 / 1.8K |
+| [connect_java](#connect_java) | ✅ | 4m 56s | 0 / 0 / 18.1K |
+| [custom-set_java](#custom-set_java) | ✅ | 2m 28s | 0 / 0 / 8.5K |
+| [dominoes_java](#dominoes_java) | ✅ | 1m 12s | 0 / 0 / 3.9K |
+| [food-chain_java](#food-chain_java) | ✅ | 47s | 0 / 0 / 2.1K |
+| [go-counting_java](#go-counting_java) | ✅ | 1m 51s | 0 / 0 / 6.7K |
+| [house_java](#house_java) | ✅ | 1m 19s | 0 / 0 / 3.5K |
+| [kindergarten-garden_java](#kindergarten-garden_java) | ✅ | 28s | 0 / 0 / 1.1K |
+| [ledger_java](#ledger_java) | ✅ | 2m 39s | 0 / 0 / 8.0K |
+| [ocr-numbers_java](#ocr-numbers_java) | ✅ | 37s | 0 / 0 / 1.7K |
+| [palindrome-products_java](#palindrome-products_java) | ✅ | 26s | 0 / 0 / 1.0K |
+| [phone-number_java](#phone-number_java) | ✅ | 47s | 0 / 0 / 2.4K |
+| [pig-latin_java](#pig-latin_java) | ✅ | 58s | 0 / 0 / 2.9K |
+| [poker_java](#poker_java) | ✅ | 1m 22s | 0 / 0 / 4.0K |
+| [protein-translation_java](#protein-translation_java) | ✅ | 27s | 0 / 0 / 1.0K |
+| [pythagorean-triplet_java](#pythagorean-triplet_java) | ✅ | 35s | 0 / 0 / 1.7K |
+| [queen-attack_java](#queen-attack_java) | ✅ | 26s | 0 / 0 / 1.1K |
+| [react_java](#react_java) | ✅ | 4m 37s | 0 / 0 / 8.6K |
+| [resistor-color-trio_java](#resistor-color-trio_java) | ✅ | 34s | 0 / 0 / 1.6K |
+| [rest-api_java](#rest-api_java) | ✅ | 6m 21s | 0 / 0 / 21.7K |
+| [satellite_java](#satellite_java) | ✅ | 49s | 0 / 0 / 2.3K |
+| [series_java](#series_java) | ✅ | 20s | 0 / 0 / 690 |
+| [sgf-parsing_java](#sgf-parsing_java) | ✅ | 8m 0s | 0 / 0 / 28.3K |
+| [simple-linked-list_java](#simple-linked-list_java) | ✅ | 41s | 0 / 0 / 1.9K |
+| [state-of-tic-tac-toe_java](#state-of-tic-tac-toe_java) | ✅ | 35s | 0 / 0 / 1.6K |
+| [transpose_java](#transpose_java) | ✅ | 2m 53s | 0 / 0 / 10.4K |
+| [tree-building_java](#tree-building_java) | ✅ | 1m 11s | 0 / 0 / 3.3K |
+| [twelve-days_java](#twelve-days_java) | ✅ | 1m 48s | 0 / 0 / 4.9K |
+| [two-bucket_java](#two-bucket_java) | ✅ | 39s | 0 / 0 / 2.0K |
+| [variable-length-quantity_java](#variable-length-quantity_java) | ✅ | 1m 29s | 0 / 0 / 5.3K |
+| [word-search_java](#word-search_java) | ✅ | 1m 27s | 0 / 0 / 4.7K |
+| [wordy_java](#wordy_java) | ✅ | 31s | 0 / 0 / 1.4K |
+| [zebra-puzzle_java](#zebra-puzzle_java) | ✅ | 1m 24s | 0 / 0 / 5.0K |
+| [alphametics_go](#alphametics_go) | ✅ | 1m 36s | 0 / 0 / 5.7K |
+| [beer-song_go](#beer-song_go) | ✅ | 55s | 0 / 0 / 3.2K |
+| [bottle-song_go](#bottle-song_go) | ✅ | 18s | 0 / 0 / 970 |
+| [bowling_go](#bowling_go) | ✅ | 4m 2s | 0 / 0 / 14.3K |
+| [connect_go](#connect_go) | ✅ | 3m 38s | 0 / 0 / 14.0K |
+| [counter_go](#counter_go) | ✅ | 13s | 0 / 0 / 702 |
+| [crypto-square_go](#crypto-square_go) | ✅ | 17s | 0 / 0 / 975 |
+| [dnd-character_go](#dnd-character_go) | ✅ | 21s | 0 / 0 / 1.2K |
+| [error-handling_go](#error-handling_go) | ✅ | 16s | 0 / 0 / 824 |
+| [food-chain_go](#food-chain_go) | ✅ | 16s | 0 / 0 / 889 |
+| [forth_go](#forth_go) | ✅ | 3m 30s | 0 / 0 / 11.5K |
+| [hexadecimal_go](#hexadecimal_go) | ✅ | 19s | 0 / 0 / 1.0K |
+| [kindergarten-garden_go](#kindergarten-garden_go) | ✅ | 24s | 0 / 0 / 1.4K |
+| [ledger_go](#ledger_go) | ✅ | 3m 28s | 0 / 0 / 12.9K |
+| [markdown_go](#markdown_go) | ✅ | 6m 21s | 0 / 0 / 23.4K |
+| [matrix_go](#matrix_go) | ✅ | 29s | 0 / 0 / 1.3K |
+| [octal_go](#octal_go) | ✅ | 11s | 0 / 0 / 583 |
+| [paasio_go](#paasio_go) | ✅ | 28s | 0 / 0 / 1.4K |
+| [palindrome-products_go](#palindrome-products_go) | ✅ | 21s | 0 / 0 / 1.2K |
+| [pig-latin_go](#pig-latin_go) | ✅ | 36s | 0 / 0 / 2.2K |
+| [poker_go](#poker_go) | ✅ | 1m 45s | 0 / 0 / 6.0K |
+| [protein-translation_go](#protein-translation_go) | ✅ | 24s | 0 / 0 / 1.3K |
+| [say_go](#say_go) | ✅ | 41s | 0 / 0 / 2.3K |
+| [scale-generator_go](#scale-generator_go) | ✅ | 1m 17s | 0 / 0 / 4.7K |
+| [simple-linked-list_go](#simple-linked-list_go) | ✅ | 28s | 0 / 0 / 1.6K |
+| [sublist_go](#sublist_go) | ✅ | 19s | 0 / 0 / 957 |
+| [transpose_go](#transpose_go) | ✅ | 44s | 0 / 0 / 2.7K |
+| [tree-building_go](#tree-building_go) | ✅ | 44s | 0 / 0 / 2.2K |
+| [trinary_go](#trinary_go) | ✅ | 23s | 0 / 0 / 1.2K |
+| [two-bucket_go](#two-bucket_go) | ✅ | 34s | 0 / 0 / 2.0K |
+| [variable-length-quantity_go](#variable-length-quantity_go) | ✅ | 20s | 0 / 0 / 1.1K |
+| [word-search_go](#word-search_go) | ✅ | 30s | 0 / 0 / 1.7K |
+| [wordy_go](#wordy_go) | ✅ | 1m 4s | 0 / 0 / 3.9K |
+| [zebra-puzzle_go](#zebra-puzzle_go) | ✅ | 1m 6s | 0 / 0 / 4.1K |
+| [pov_go](#pov_go) | ✅ | 6m 11s | 0 / 0 / 23.0K |
+| [affine-cipher_javascript](#affine-cipher_javascript) | ✅ | 19s | 0 / 0 / 1.0K |
+| [alphametics_javascript](#alphametics_javascript) | ✅ | 1m 47s | 0 / 0 / 6.6K |
+| [beer-song_javascript](#beer-song_javascript) | ✅ | 19s | 0 / 0 / 706 |
+| [binary_javascript](#binary_javascript) | ✅ | 16s | 0 / 0 / 639 |
+| [book-store_javascript](#book-store_javascript) | ✅ | 2m 1s | 0 / 0 / 7.2K |
+| [bottle-song_javascript](#bottle-song_javascript) | ✅ | 15s | 0 / 0 / 715 |
+| [bowling_javascript](#bowling_javascript) | ✅ | 47s | 0 / 0 / 2.7K |
+| [complex-numbers_javascript](#complex-numbers_javascript) | ✅ | 3m 12s | 0 / 0 / 11.7K |
+| [connect_javascript](#connect_javascript) | ✅ | 4m 0s | 0 / 0 / 14.9K |
+| [food-chain_javascript](#food-chain_javascript) | ✅ | 17s | 0 / 0 / 819 |
+| [forth_javascript](#forth_javascript) | ✅ | 1m 31s | 0 / 0 / 5.5K |
+| [go-counting_javascript](#go-counting_javascript) | ✅ | 1m 9s | 0 / 0 / 4.2K |
+| [grade-school_javascript](#grade-school_javascript) | ✅ | 15s | 0 / 0 / 715 |
+| [grep_javascript](#grep_javascript) | ✅ | 57s | 0 / 0 / 3.1K |
+| [house_javascript](#house_javascript) | ✅ | 17s | 0 / 0 / 853 |
+| [killer-sudoku-helper_javascript](#killer-sudoku-helper_javascript) | ✅ | 14s | 0 / 0 / 658 |
+| [ledger_javascript](#ledger_javascript) | ✅ | 2m 55s | 0 / 0 / 9.9K |
+| [list-ops_javascript](#list-ops_javascript) | ✅ | 20s | 0 / 0 / 1.1K |
+| [meetup_javascript](#meetup_javascript) | ✅ | 18s | 0 / 0 / 739 |
+| [ocr-numbers_javascript](#ocr-numbers_javascript) | ✅ | 18s | 0 / 0 / 952 |
+| [palindrome-products_javascript](#palindrome-products_javascript) | ✅ | 32s | 0 / 0 / 1.7K |
+| [parallel-letter-frequency_javascript](#parallel-letter-frequency_javascript) | ✅ | 35s | 0 / 0 / 1.9K |
+| [phone-number_javascript](#phone-number_javascript) | ✅ | 18s | 0 / 0 / 962 |
+| [pig-latin_javascript](#pig-latin_javascript) | ✅ | 34s | 0 / 0 / 2.1K |
+| [poker_javascript](#poker_javascript) | ✅ | 1m 41s | 0 / 0 / 5.8K |
+| [promises_javascript](#promises_javascript) | ✅ | 28s | 0 / 0 / 1.5K |
+| [queen-attack_javascript](#queen-attack_javascript) | ✅ | 18s | 0 / 0 / 918 |
+| [rational-numbers_javascript](#rational-numbers_javascript) | ✅ | 1m 1s | 0 / 0 / 3.6K |
+| [react_javascript](#react_javascript) | ✅ | 1m 3s | 0 / 0 / 3.7K |
+| [rectangles_javascript](#rectangles_javascript) | ✅ | 19s | 0 / 0 / 1.1K |
+| [resistor-color-trio_javascript](#resistor-color-trio_javascript) | ✅ | 17s | 0 / 0 / 899 |
+| [rest-api_javascript](#rest-api_javascript) | ✅ | 49s | 0 / 0 / 3.1K |
+| [robot-name_javascript](#robot-name_javascript) | ✅ | 38s | 0 / 0 / 1.9K |
+| [say_javascript](#say_javascript) | ✅ | 17s | 0 / 0 / 872 |
+| [scale-generator_javascript](#scale-generator_javascript) | ✅ | 1m 7s | 0 / 0 / 3.9K |
+| [simple-linked-list_javascript](#simple-linked-list_javascript) | ✅ | 1m 52s | 0 / 0 / 3.0K |
+| [space-age_javascript](#space-age_javascript) | ✅ | 11s | 0 / 0 / 486 |
+| [state-of-tic-tac-toe_javascript](#state-of-tic-tac-toe_javascript) | ✅ | 37s | 0 / 0 / 2.0K |
+| [sum-of-multiples_javascript](#sum-of-multiples_javascript) | ✅ | 11s | 0 / 0 / 449 |
+| [tournament_javascript](#tournament_javascript) | ✅ | 17s | 0 / 0 / 824 |
+| [transpose_javascript](#transpose_javascript) | ✅ | 13s | 0 / 0 / 566 |
+| [triangle_javascript](#triangle_javascript) | ✅ | 16s | 0 / 0 / 789 |
+| [twelve-days_javascript](#twelve-days_javascript) | ✅ | 27s | 0 / 0 / 1.2K |
+| [two-bucket_javascript](#two-bucket_javascript) | ✅ | 44s | 0 / 0 / 2.3K |
+| [variable-length-quantity_javascript](#variable-length-quantity_javascript) | ✅ | 58s | 0 / 0 / 3.6K |
+| [word-search_javascript](#word-search_javascript) | ✅ | 37s | 0 / 0 / 1.7K |
+| [wordy_javascript](#wordy_javascript) | ✅ | 1m 28s | 0 / 0 / 5.2K |
+| [zebra-puzzle_javascript](#zebra-puzzle_javascript) | ✅ | 38s | 0 / 0 / 2.4K |
+| [zipper_javascript](#zipper_javascript) | ✅ | 22s | 0 / 0 / 1.2K |
+| [affine-cipher_python](#affine-cipher_python) | ✅ | 14s | 0 / 0 / 777 |
+| [beer-song_python](#beer-song_python) | ✅ | 17s | 0 / 0 / 672 |
+| [book-store_python](#book-store_python) | ✅ | 20s | 0 / 0 / 1.1K |
+| [bottle-song_python](#bottle-song_python) | ✅ | 26s | 0 / 0 / 1.4K |
+| [bowling_python](#bowling_python) | ✅ | 4m 15s | 0 / 0 / 10.5K |
+| [dominoes_python](#dominoes_python) | ✅ | 3m 20s | 0 / 0 / 12.8K |
+| [dot-dsl_python](#dot-dsl_python) | ✅ | 1m 18s | 0 / 0 / 4.8K |
+| [food-chain_python](#food-chain_python) | ✅ | 36s | 0 / 0 / 2.0K |
+| [forth_python](#forth_python) | ✅ | 53s | 0 / 0 / 3.1K |
+| [go-counting_python](#go-counting_python) | ✅ | 39s | 0 / 0 / 2.4K |
+| [grade-school_python](#grade-school_python) | ✅ | 16s | 0 / 0 / 806 |
+| [grep_python](#grep_python) | ✅ | 18s | 0 / 0 / 927 |
+| [hangman_python](#hangman_python) | ✅ | 38s | 0 / 0 / 2.3K |
+| [list-ops_python](#list-ops_python) | ✅ | 15s | 0 / 0 / 812 |
+| [phone-number_python](#phone-number_python) | ✅ | 18s | 0 / 0 / 1.0K |
+| [pig-latin_python](#pig-latin_python) | ✅ | 31s | 0 / 0 / 2.0K |
+| [poker_python](#poker_python) | ✅ | 30s | 0 / 0 / 1.8K |
+| [proverb_python](#proverb_python) | ✅ | 10s | 0 / 0 / 482 |
+| [react_python](#react_python) | ✅ | 44s | 0 / 0 / 2.6K |
+| [rest-api_python](#rest-api_python) | ✅ | 28s | 0 / 0 / 1.6K |
+| [robot-name_python](#robot-name_python) | ✅ | 10s | 0 / 0 / 537 |
+| [scale-generator_python](#scale-generator_python) | ✅ | 56s | 0 / 0 / 3.4K |
+| [sgf-parsing_python](#sgf-parsing_python) | ✅ | 9m 44s | 0 / 0 / 31.1K |
+| [simple-linked-list_python](#simple-linked-list_python) | ✅ | 19s | 0 / 0 / 1.1K |
+| [transpose_python](#transpose_python) | ✅ | 15s | 0 / 0 / 804 |
+| [tree-building_python](#tree-building_python) | ✅ | 34s | 0 / 0 / 1.9K |
+| [two-bucket_python](#two-bucket_python) | ✅ | 22s | 0 / 0 / 1.3K |
+| [variable-length-quantity_python](#variable-length-quantity_python) | ✅ | 14s | 0 / 0 / 715 |
+| [wordy_python](#wordy_python) | ✅ | 1m 43s | 0 / 0 / 6.0K |
+| [zebra-puzzle_python](#zebra-puzzle_python) | ✅ | 1m 8s | 0 / 0 / 4.4K |
+| [zipper_python](#zipper_python) | ✅ | 27s | 0 / 0 / 1.6K |
+| [acronym_rust](#acronym_rust) | ✅ | 1m 23s | 0 / 0 / 5.4K |
+| [alphametics_rust](#alphametics_rust) | ✅ | 49s | 0 / 0 / 3.1K |
+| [book-store_rust](#book-store_rust) | ✅ | 27s | 0 / 0 / 1.6K |
+| [bowling_rust](#bowling_rust) | ✅ | 4m 8s | 0 / 0 / 15.1K |
+| [dot-dsl_rust](#dot-dsl_rust) | ✅ | 2m 27s | 0 / 0 / 9.4K |
+| [forth_rust](#forth_rust) | ✅ | 3m 43s | 0 / 0 / 12.9K |
+| [gigasecond_rust](#gigasecond_rust) | ✅ | 14s | 0 / 0 / 654 |
+| [grade-school_rust](#grade-school_rust) | ✅ | 16s | 0 / 0 / 912 |
+| [grep_rust](#grep_rust) | ✅ | 32s | 0 / 0 / 1.7K |
+| [luhn-from_rust](#luhn-from_rust) | ✅ | 29s | 0 / 0 / 1.8K |
+| [macros_rust](#macros_rust) | ✅ | 24s | 0 / 0 / 1.3K |
+| [nucleotide-codons_rust](#nucleotide-codons_rust) | ✅ | 52s | 0 / 0 / 3.1K |
+| [ocr-numbers_rust](#ocr-numbers_rust) | ✅ | 24s | 0 / 0 / 1.4K |
+| [parallel-letter-frequency_rust](#parallel-letter-frequency_rust) | ✅ | 33s | 0 / 0 / 1.8K |
+| [pig-latin_rust](#pig-latin_rust) | ✅ | 23s | 0 / 0 / 1.4K |
+| [poker_rust](#poker_rust) | ✅ | 5m 20s | 0 / 0 / 18.7K |
+| [react_rust](#react_rust) | ✅ | 6m 17s | 0 / 0 / 22.2K |
+| [robot-name_rust](#robot-name_rust) | ✅ | 3m 32s | 0 / 0 / 13.7K |
+| [say_rust](#say_rust) | ✅ | 26s | 0 / 0 / 1.6K |
+| [simple-cipher_rust](#simple-cipher_rust) | ✅ | 29s | 0 / 0 / 1.6K |
+| [two-bucket_rust](#two-bucket_rust) | ✅ | 56s | 0 / 0 / 3.5K |
+| [variable-length-quantity_rust](#variable-length-quantity_rust) | ✅ | 1m 32s | 0 / 0 / 5.6K |
+| [word-count_rust](#word-count_rust) | ✅ | 34s | 0 / 0 / 2.0K |
+| [wordy_rust](#wordy_rust) | ✅ | 1m 15s | 0 / 0 / 4.6K |
+| [all-your-base_cpp](#all-your-base_cpp) | ✅ | 31s | 0 / 0 / 1.5K |
+| [allergies_cpp](#allergies_cpp) | ✅ | 37s | 0 / 0 / 0 |
+| [bank-account_cpp](#bank-account_cpp) | ✅ | 30s | 0 / 0 / 1.5K |
+| [circular-buffer_cpp](#circular-buffer_cpp) | ✅ | 33s | 0 / 0 / 1.7K |
+| [clock_cpp](#clock_cpp) | ✅ | 1m 20s | 0 / 0 / 4.8K |
+| [complex-numbers_cpp](#complex-numbers_cpp) | ✅ | 41s | 0 / 0 / 2.1K |
+| [crypto-square_cpp](#crypto-square_cpp) | ✅ | 52s | 0 / 0 / 2.9K |
+| [diamond_cpp](#diamond_cpp) | ✅ | 35s | 0 / 0 / 1.8K |
+| [dnd-character_cpp](#dnd-character_cpp) | ✅ | 51s | 0 / 0 / 2.8K |
+| [gigasecond_cpp](#gigasecond_cpp) | ✅ | 1m 3s | 0 / 0 / 3.2K |
+| [grade-school_cpp](#grade-school_cpp) | ✅ | 26s | 0 / 0 / 1.2K |
+| [kindergarten-garden_cpp](#kindergarten-garden_cpp) | ✅ | 43s | 0 / 0 / 2.3K |
+| [knapsack_cpp](#knapsack_cpp) | ✅ | 29s | 0 / 0 / 1.5K |
+| [linked-list_cpp](#linked-list_cpp) | ✅ | 37s | 0 / 0 / 1.9K |
+| [meetup_cpp](#meetup_cpp) | ✅ | 5m 9s | 0 / 0 / 14.9K |
+| [parallel-letter-frequency_cpp](#parallel-letter-frequency_cpp) | ✅ | 47s | 0 / 0 / 2.0K |
+| [perfect-numbers_cpp](#perfect-numbers_cpp) | ✅ | 31s | 0 / 0 / 1.5K |
+| [phone-number_cpp](#phone-number_cpp) | ✅ | 36s | 0 / 0 / 1.9K |
+| [queen-attack_cpp](#queen-attack_cpp) | ✅ | 32s | 0 / 0 / 1.6K |
+| [robot-name_cpp](#robot-name_cpp) | ✅ | 38s | 0 / 0 / 2.0K |
+| [space-age_cpp](#space-age_cpp) | ✅ | 37s | 0 / 0 / 2.0K |
+| [spiral-matrix_cpp](#spiral-matrix_cpp) | ✅ | 29s | 0 / 0 / 1.4K |
+| [sublist_cpp](#sublist_cpp) | ✅ | 31s | 0 / 0 / 1.5K |
+| [yacht_cpp](#yacht_cpp) | ✅ | 45s | 0 / 0 / 2.3K |
+| [zebra-puzzle_cpp](#zebra-puzzle_cpp) | ✅ | 1m 38s | 0 / 0 / 6.1K |
+| [bowling_java](#bowling_java) | ✅ | 12m 41s | 0 / 0 / 40.2K |
+| [forth_java](#forth_java) | ✅ | 2m 38s | 0 / 0 / 7.9K |
+| [hangman_java](#hangman_java) | ✅ | 8m 11s | 0 / 0 / 22.4K |
+| [rational-numbers_java](#rational-numbers_java) | ✅ | 1m 23s | 0 / 0 / 4.1K |
+| [zipper_java](#zipper_java) | ✅ | 4m 26s | 0 / 0 / 16.4K |
+| [dominoes_go](#dominoes_go) | ✅ | 2m 28s | 0 / 0 / 9.4K |
+| [paasio_python](#paasio_python) | ✅ | 3m 3s | 0 / 0 / 10.5K |
+| [accumulate_rust](#accumulate_rust) | ✅ | 15s | 0 / 0 / 783 |
+| [fizzy_rust](#fizzy_rust) | ✅ | 5m 9s | 0 / 0 / 19.6K |
+| [binary-search-tree_cpp](#binary-search-tree_cpp) | ✅ | 2m 8s | 0 / 0 / 6.8K |
+| [mazy-mice_java](#mazy-mice_java) | ✅ | 8m 35s | 0 / 0 / 29.4K |
+| [pov_java](#pov_java) | ✅ | 3m 57s | 0 / 0 / 14.7K |
+| [book-store_go](#book-store_go) | ✅ | 3m 10s | 0 / 0 / 12.3K |
+| [connect_python](#connect_python) | ✅ | 4m 14s | 0 / 0 / 15.7K |
+| [scale-generator_rust](#scale-generator_rust) | ✅ | 2m 54s | 0 / 0 / 11.3K |
+| [xorcism_rust](#xorcism_rust) | ✅ | 6m 19s | 0 / 0 / 20.2K |
+| [pov_python](#pov_python) | ✅ | 7m 42s | 0 / 0 / 25.2K |
+| [doubly-linked-list_rust](#doubly-linked-list_rust) | ✅ | 4m 38s | 0 / 0 / 17.1K |
+| [react_go](#react_go) | ✅ | 3m 56s | 0 / 0 / 14.8K |
+| [robot-simulator_go](#robot-simulator_go) | ❌ | 5m 4s | 0 / 0 / 609 |
+| [decimal_rust](#decimal_rust) | ✅ | 1m 22s | 0 / 0 / 4.9K |
 
 
 # pi-qwen35-122b-q4-q4kv-coding
@@ -1889,6 +2564,237 @@
 | [transpose_go](#transpose_go) | ❌ | 5m 8s | 0 / 0 / 12.0K |
 
 
+# pi-qwen36-35b-a3b-q4-coding
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 35s | 0 / 0 / 1.3K |
+| [all-your-base_java](#all-your-base_java) | ✅ | 33s | 0 / 0 / 1.6K |
+| [alphametics_java](#alphametics_java) | ✅ | 7m 5s | 0 / 0 / 25.7K |
+| [bank-account_java](#bank-account_java) | ✅ | 37s | 0 / 0 / 1.6K |
+| [book-store_java](#book-store_java) | ✅ | 34s | 0 / 0 / 1.6K |
+| [bottle-song_java](#bottle-song_java) | ✅ | 26s | 0 / 0 / 1.1K |
+| [change_java](#change_java) | ✅ | 29s | 0 / 0 / 1.2K |
+| [circular-buffer_java](#circular-buffer_java) | ✅ | 38s | 0 / 0 / 1.6K |
+| [connect_java](#connect_java) | ✅ | 2m 57s | 0 / 0 / 10.5K |
+| [dominoes_java](#dominoes_java) | ✅ | 47s | 0 / 0 / 2.4K |
+| [food-chain_java](#food-chain_java) | ✅ | 57s | 0 / 0 / 2.8K |
+| [forth_java](#forth_java) | ✅ | 6m 2s | 0 / 0 / 20.2K |
+| [go-counting_java](#go-counting_java) | ✅ | 1m 46s | 0 / 0 / 5.2K |
+| [house_java](#house_java) | ✅ | 46s | 0 / 0 / 1.8K |
+| [kindergarten-garden_java](#kindergarten-garden_java) | ✅ | 29s | 0 / 0 / 864 |
+| [ledger_java](#ledger_java) | ✅ | 5m 28s | 0 / 0 / 14.6K |
+| [ocr-numbers_java](#ocr-numbers_java) | ✅ | 45s | 0 / 0 / 1.6K |
+| [palindrome-products_java](#palindrome-products_java) | ✅ | 32s | 0 / 0 / 1.0K |
+| [phone-number_java](#phone-number_java) | ✅ | 41s | 0 / 0 / 1.5K |
+| [pig-latin_java](#pig-latin_java) | ✅ | 33s | 0 / 0 / 1.1K |
+| [poker_java](#poker_java) | ✅ | 2m 17s | 0 / 0 / 6.7K |
+| [protein-translation_java](#protein-translation_java) | ✅ | 34s | 0 / 0 / 1.2K |
+| [pythagorean-triplet_java](#pythagorean-triplet_java) | ✅ | 52s | 0 / 0 / 2.1K |
+| [queen-attack_java](#queen-attack_java) | ✅ | 34s | 0 / 0 / 1.1K |
+| [rational-numbers_java](#rational-numbers_java) | ✅ | 1m 48s | 0 / 0 / 4.8K |
+| [react_java](#react_java) | ✅ | 1m 58s | 0 / 0 / 5.3K |
+| [resistor-color-trio_java](#resistor-color-trio_java) | ✅ | 28s | 0 / 0 / 908 |
+| [rest-api_java](#rest-api_java) | ✅ | 6m 21s | 0 / 0 / 19.6K |
+| [satellite_java](#satellite_java) | ✅ | 56s | 0 / 0 / 2.2K |
+| [series_java](#series_java) | ✅ | 27s | 0 / 0 / 764 |
+| [sgf-parsing_java](#sgf-parsing_java) | ✅ | 6m 37s | 0 / 0 / 21.8K |
+| [simple-linked-list_java](#simple-linked-list_java) | ✅ | 53s | 0 / 0 / 2.0K |
+| [state-of-tic-tac-toe_java](#state-of-tic-tac-toe_java) | ✅ | 52s | 0 / 0 / 2.4K |
+| [transpose_java](#transpose_java) | ✅ | 2m 21s | 0 / 0 / 7.9K |
+| [tree-building_java](#tree-building_java) | ✅ | 1m 55s | 0 / 0 / 4.9K |
+| [twelve-days_java](#twelve-days_java) | ✅ | 1m 10s | 0 / 0 / 2.2K |
+| [two-bucket_java](#two-bucket_java) | ✅ | 55s | 0 / 0 / 2.0K |
+| [variable-length-quantity_java](#variable-length-quantity_java) | ✅ | 58s | 0 / 0 / 2.3K |
+| [word-search_java](#word-search_java) | ✅ | 1m 7s | 0 / 0 / 3.0K |
+| [wordy_java](#wordy_java) | ✅ | 1m 3s | 0 / 0 / 2.8K |
+| [zebra-puzzle_java](#zebra-puzzle_java) | ✅ | 1m 39s | 0 / 0 / 5.4K |
+| [zipper_java](#zipper_java) | ✅ | 3m 19s | 0 / 0 / 11.1K |
+| [alphametics_go](#alphametics_go) | ✅ | 42s | 0 / 0 / 2.3K |
+| [beer-song_go](#beer-song_go) | ✅ | 29s | 0 / 0 / 1.5K |
+| [book-store_go](#book-store_go) | ✅ | 1m 38s | 0 / 0 / 5.9K |
+| [bottle-song_go](#bottle-song_go) | ✅ | 27s | 0 / 0 / 1.5K |
+| [bowling_go](#bowling_go) | ✅ | 6m 2s | 0 / 0 / 19.9K |
+| [connect_go](#connect_go) | ✅ | 4m 1s | 0 / 0 / 15.0K |
+| [counter_go](#counter_go) | ✅ | 1m 59s | 0 / 0 / 7.6K |
+| [crypto-square_go](#crypto-square_go) | ✅ | 15s | 0 / 0 / 834 |
+| [dnd-character_go](#dnd-character_go) | ✅ | 18s | 0 / 0 / 1.0K |
+| [dominoes_go](#dominoes_go) | ✅ | 2m 9s | 0 / 0 / 8.6K |
+| [error-handling_go](#error-handling_go) | ✅ | 30s | 0 / 0 / 1.9K |
+| [food-chain_go](#food-chain_go) | ✅ | 17s | 0 / 0 / 1.0K |
+| [forth_go](#forth_go) | ✅ | 1m 6s | 0 / 0 / 3.9K |
+| [hexadecimal_go](#hexadecimal_go) | ✅ | 33s | 0 / 0 / 2.1K |
+| [kindergarten-garden_go](#kindergarten-garden_go) | ✅ | 35s | 0 / 0 / 1.9K |
+| [ledger_go](#ledger_go) | ✅ | 4m 18s | 0 / 0 / 16.2K |
+| [markdown_go](#markdown_go) | ✅ | 5m 53s | 0 / 0 / 22.3K |
+| [matrix_go](#matrix_go) | ✅ | 2m 20s | 0 / 0 / 8.4K |
+| [octal_go](#octal_go) | ✅ | 9s | 0 / 0 / 437 |
+| [paasio_go](#paasio_go) | ✅ | 1m 2s | 0 / 0 / 2.4K |
+| [palindrome-products_go](#palindrome-products_go) | ✅ | 23s | 0 / 0 / 1.3K |
+| [pig-latin_go](#pig-latin_go) | ✅ | 46s | 0 / 0 / 2.8K |
+| [poker_go](#poker_go) | ✅ | 4m 13s | 0 / 0 / 13.3K |
+| [protein-translation_go](#protein-translation_go) | ✅ | 33s | 0 / 0 / 1.9K |
+| [say_go](#say_go) | ✅ | 40s | 0 / 0 / 2.4K |
+| [scale-generator_go](#scale-generator_go) | ✅ | 1m 40s | 0 / 0 / 6.2K |
+| [simple-linked-list_go](#simple-linked-list_go) | ✅ | 19s | 0 / 0 / 1.2K |
+| [sublist_go](#sublist_go) | ✅ | 20s | 0 / 0 / 1.0K |
+| [transpose_go](#transpose_go) | ✅ | 43s | 0 / 0 / 2.6K |
+| [tree-building_go](#tree-building_go) | ✅ | 42s | 0 / 0 / 1.5K |
+| [trinary_go](#trinary_go) | ✅ | 26s | 0 / 0 / 1.4K |
+| [two-bucket_go](#two-bucket_go) | ✅ | 44s | 0 / 0 / 2.6K |
+| [variable-length-quantity_go](#variable-length-quantity_go) | ✅ | 24s | 0 / 0 / 1.4K |
+| [wordy_go](#wordy_go) | ✅ | 48s | 0 / 0 / 2.9K |
+| [zebra-puzzle_go](#zebra-puzzle_go) | ✅ | 1m 10s | 0 / 0 / 4.5K |
+| [affine-cipher_javascript](#affine-cipher_javascript) | ✅ | 18s | 0 / 0 / 1.0K |
+| [alphametics_javascript](#alphametics_javascript) | ✅ | 3m 3s | 0 / 0 / 11.7K |
+| [beer-song_javascript](#beer-song_javascript) | ✅ | 17s | 0 / 0 / 651 |
+| [binary_javascript](#binary_javascript) | ✅ | 13s | 0 / 0 / 588 |
+| [book-store_javascript](#book-store_javascript) | ✅ | 22s | 0 / 0 / 1.3K |
+| [bottle-song_javascript](#bottle-song_javascript) | ✅ | 21s | 0 / 0 / 996 |
+| [bowling_javascript](#bowling_javascript) | ✅ | 5m 16s | 0 / 0 / 18.9K |
+| [complex-numbers_javascript](#complex-numbers_javascript) | ✅ | 45s | 0 / 0 / 2.5K |
+| [food-chain_javascript](#food-chain_javascript) | ✅ | 36s | 0 / 0 / 2.0K |
+| [forth_javascript](#forth_javascript) | ✅ | 5m 16s | 0 / 0 / 15.7K |
+| [go-counting_javascript](#go-counting_javascript) | ✅ | 56s | 0 / 0 / 3.5K |
+| [grade-school_javascript](#grade-school_javascript) | ✅ | 14s | 0 / 0 / 703 |
+| [grep_javascript](#grep_javascript) | ✅ | 31s | 0 / 0 / 1.5K |
+| [house_javascript](#house_javascript) | ✅ | 22s | 0 / 0 / 1.1K |
+| [killer-sudoku-helper_javascript](#killer-sudoku-helper_javascript) | ✅ | 13s | 0 / 0 / 543 |
+| [ledger_javascript](#ledger_javascript) | ✅ | 2m 32s | 0 / 0 / 9.0K |
+| [list-ops_javascript](#list-ops_javascript) | ✅ | 40s | 0 / 0 / 2.5K |
+| [meetup_javascript](#meetup_javascript) | ✅ | 18s | 0 / 0 / 744 |
+| [ocr-numbers_javascript](#ocr-numbers_javascript) | ✅ | 3m 41s | 0 / 0 / 13.9K |
+| [palindrome-products_javascript](#palindrome-products_javascript) | ✅ | 23s | 0 / 0 / 1.2K |
+| [parallel-letter-frequency_javascript](#parallel-letter-frequency_javascript) | ✅ | 39s | 0 / 0 / 1.8K |
+| [phone-number_javascript](#phone-number_javascript) | ✅ | 15s | 0 / 0 / 749 |
+| [pig-latin_javascript](#pig-latin_javascript) | ✅ | 15s | 0 / 0 / 776 |
+| [poker_javascript](#poker_javascript) | ✅ | 1m 17s | 0 / 0 / 4.1K |
+| [promises_javascript](#promises_javascript) | ✅ | 28s | 0 / 0 / 1.6K |
+| [queen-attack_javascript](#queen-attack_javascript) | ✅ | 24s | 0 / 0 / 1.2K |
+| [rational-numbers_javascript](#rational-numbers_javascript) | ✅ | 50s | 0 / 0 / 2.8K |
+| [react_javascript](#react_javascript) | ✅ | 2m 2s | 0 / 0 / 7.6K |
+| [rectangles_javascript](#rectangles_javascript) | ✅ | 18s | 0 / 0 / 1.0K |
+| [resistor-color-trio_javascript](#resistor-color-trio_javascript) | ✅ | 17s | 0 / 0 / 934 |
+| [rest-api_javascript](#rest-api_javascript) | ✅ | 1m 9s | 0 / 0 / 4.3K |
+| [robot-name_javascript](#robot-name_javascript) | ✅ | 33s | 0 / 0 / 1.2K |
+| [say_javascript](#say_javascript) | ✅ | 17s | 0 / 0 / 905 |
+| [scale-generator_javascript](#scale-generator_javascript) | ✅ | 1m 44s | 0 / 0 / 6.3K |
+| [simple-linked-list_javascript](#simple-linked-list_javascript) | ✅ | 36s | 0 / 0 / 2.1K |
+| [space-age_javascript](#space-age_javascript) | ✅ | 14s | 0 / 0 / 702 |
+| [state-of-tic-tac-toe_javascript](#state-of-tic-tac-toe_javascript) | ✅ | 31s | 0 / 0 / 1.7K |
+| [sum-of-multiples_javascript](#sum-of-multiples_javascript) | ✅ | 10s | 0 / 0 / 438 |
+| [tournament_javascript](#tournament_javascript) | ✅ | 17s | 0 / 0 / 799 |
+| [transpose_javascript](#transpose_javascript) | ✅ | 1m 6s | 0 / 0 / 4.0K |
+| [triangle_javascript](#triangle_javascript) | ✅ | 13s | 0 / 0 / 678 |
+| [twelve-days_javascript](#twelve-days_javascript) | ✅ | 38s | 0 / 0 / 1.7K |
+| [two-bucket_javascript](#two-bucket_javascript) | ✅ | 46s | 0 / 0 / 2.6K |
+| [variable-length-quantity_javascript](#variable-length-quantity_javascript) | ✅ | 34s | 0 / 0 / 2.0K |
+| [word-search_javascript](#word-search_javascript) | ✅ | 19s | 0 / 0 / 869 |
+| [wordy_javascript](#wordy_javascript) | ✅ | 55s | 0 / 0 / 3.2K |
+| [zebra-puzzle_javascript](#zebra-puzzle_javascript) | ✅ | 2m 34s | 0 / 0 / 9.9K |
+| [zipper_javascript](#zipper_javascript) | ✅ | 3m 16s | 0 / 0 / 12.2K |
+| [affine-cipher_python](#affine-cipher_python) | ✅ | 16s | 0 / 0 / 844 |
+| [beer-song_python](#beer-song_python) | ✅ | 18s | 0 / 0 / 757 |
+| [book-store_python](#book-store_python) | ✅ | 4m 46s | 0 / 0 / 18.5K |
+| [bottle-song_python](#bottle-song_python) | ✅ | 24s | 0 / 0 / 1.3K |
+| [bowling_python](#bowling_python) | ✅ | 5m 48s | 0 / 0 / 15.6K |
+| [connect_python](#connect_python) | ✅ | 5m 30s | 0 / 0 / 20.5K |
+| [dominoes_python](#dominoes_python) | ✅ | 24s | 0 / 0 / 1.4K |
+| [dot-dsl_python](#dot-dsl_python) | ✅ | 1m 27s | 0 / 0 / 5.4K |
+| [food-chain_python](#food-chain_python) | ✅ | 50s | 0 / 0 / 2.8K |
+| [forth_python](#forth_python) | ✅ | 37s | 0 / 0 / 2.1K |
+| [go-counting_python](#go-counting_python) | ✅ | 45s | 0 / 0 / 2.9K |
+| [grade-school_python](#grade-school_python) | ✅ | 14s | 0 / 0 / 727 |
+| [grep_python](#grep_python) | ✅ | 18s | 0 / 0 / 874 |
+| [hangman_python](#hangman_python) | ✅ | 45s | 0 / 0 / 2.7K |
+| [list-ops_python](#list-ops_python) | ✅ | 17s | 0 / 0 / 920 |
+| [phone-number_python](#phone-number_python) | ✅ | 18s | 0 / 0 / 955 |
+| [pig-latin_python](#pig-latin_python) | ✅ | 17s | 0 / 0 / 954 |
+| [poker_python](#poker_python) | ✅ | 30s | 0 / 0 / 1.8K |
+| [proverb_python](#proverb_python) | ✅ | 11s | 0 / 0 / 609 |
+| [react_python](#react_python) | ✅ | 1m 23s | 0 / 0 / 5.4K |
+| [rest-api_python](#rest-api_python) | ✅ | 37s | 0 / 0 / 2.2K |
+| [robot-name_python](#robot-name_python) | ✅ | 21s | 0 / 0 / 1.2K |
+| [scale-generator_python](#scale-generator_python) | ✅ | 1m 8s | 0 / 0 / 4.0K |
+| [sgf-parsing_python](#sgf-parsing_python) | ✅ | 1m 16s | 0 / 0 / 4.3K |
+| [simple-linked-list_python](#simple-linked-list_python) | ✅ | 18s | 0 / 0 / 1.1K |
+| [transpose_python](#transpose_python) | ✅ | 2m 14s | 0 / 0 / 8.8K |
+| [tree-building_python](#tree-building_python) | ✅ | 55s | 0 / 0 / 3.2K |
+| [two-bucket_python](#two-bucket_python) | ✅ | 1m 0s | 0 / 0 / 3.7K |
+| [variable-length-quantity_python](#variable-length-quantity_python) | ✅ | 14s | 0 / 0 / 760 |
+| [wordy_python](#wordy_python) | ✅ | 1m 18s | 0 / 0 / 4.7K |
+| [zebra-puzzle_python](#zebra-puzzle_python) | ✅ | 2m 52s | 0 / 0 / 11.3K |
+| [zipper_python](#zipper_python) | ✅ | 54s | 0 / 0 / 3.1K |
+| [accumulate_rust](#accumulate_rust) | ✅ | 19s | 0 / 0 / 1.1K |
+| [acronym_rust](#acronym_rust) | ✅ | 50s | 0 / 0 / 3.3K |
+| [alphametics_rust](#alphametics_rust) | ✅ | 57s | 0 / 0 / 3.4K |
+| [book-store_rust](#book-store_rust) | ✅ | 1m 16s | 0 / 0 / 5.0K |
+| [bowling_rust](#bowling_rust) | ✅ | 8m 4s | 0 / 0 / 29.1K |
+| [dot-dsl_rust](#dot-dsl_rust) | ✅ | 2m 8s | 0 / 0 / 8.2K |
+| [fizzy_rust](#fizzy_rust) | ✅ | 2m 13s | 0 / 0 / 8.8K |
+| [forth_rust](#forth_rust) | ✅ | 5m 15s | 0 / 0 / 18.8K |
+| [gigasecond_rust](#gigasecond_rust) | ✅ | 11s | 0 / 0 / 551 |
+| [grade-school_rust](#grade-school_rust) | ✅ | 17s | 0 / 0 / 930 |
+| [grep_rust](#grep_rust) | ✅ | 27s | 0 / 0 / 1.5K |
+| [luhn-from_rust](#luhn-from_rust) | ✅ | 30s | 0 / 0 / 1.9K |
+| [macros_rust](#macros_rust) | ✅ | 37s | 0 / 0 / 2.3K |
+| [nucleotide-codons_rust](#nucleotide-codons_rust) | ✅ | 44s | 0 / 0 / 2.9K |
+| [ocr-numbers_rust](#ocr-numbers_rust) | ✅ | 21s | 0 / 0 / 1.2K |
+| [parallel-letter-frequency_rust](#parallel-letter-frequency_rust) | ✅ | 23s | 0 / 0 / 1.3K |
+| [pig-latin_rust](#pig-latin_rust) | ✅ | 28s | 0 / 0 / 1.8K |
+| [poker_rust](#poker_rust) | ✅ | 1m 28s | 0 / 0 / 5.3K |
+| [say_rust](#say_rust) | ✅ | 47s | 0 / 0 / 3.1K |
+| [scale-generator_rust](#scale-generator_rust) | ✅ | 3m 0s | 0 / 0 / 11.6K |
+| [simple-cipher_rust](#simple-cipher_rust) | ✅ | 36s | 0 / 0 / 2.0K |
+| [two-bucket_rust](#two-bucket_rust) | ✅ | 33s | 0 / 0 / 2.0K |
+| [variable-length-quantity_rust](#variable-length-quantity_rust) | ✅ | 1m 11s | 0 / 0 / 4.4K |
+| [word-count_rust](#word-count_rust) | ✅ | 27s | 0 / 0 / 1.5K |
+| [wordy_rust](#wordy_rust) | ✅ | 1m 36s | 0 / 0 / 5.8K |
+| [all-your-base_cpp](#all-your-base_cpp) | ✅ | 33s | 0 / 0 / 1.7K |
+| [allergies_cpp](#allergies_cpp) | ✅ | 33s | 0 / 0 / 1.6K |
+| [bank-account_cpp](#bank-account_cpp) | ✅ | 33s | 0 / 0 / 1.7K |
+| [binary-search-tree_cpp](#binary-search-tree_cpp) | ✅ | 55s | 0 / 0 / 3.1K |
+| [circular-buffer_cpp](#circular-buffer_cpp) | ✅ | 29s | 0 / 0 / 1.4K |
+| [clock_cpp](#clock_cpp) | ✅ | 36s | 0 / 0 / 1.8K |
+| [complex-numbers_cpp](#complex-numbers_cpp) | ✅ | 41s | 0 / 0 / 2.1K |
+| [crypto-square_cpp](#crypto-square_cpp) | ✅ | 46s | 0 / 0 / 2.7K |
+| [diamond_cpp](#diamond_cpp) | ✅ | 38s | 0 / 0 / 2.0K |
+| [dnd-character_cpp](#dnd-character_cpp) | ✅ | 1m 1s | 0 / 0 / 3.3K |
+| [gigasecond_cpp](#gigasecond_cpp) | ✅ | 1m 9s | 0 / 0 / 3.1K |
+| [grade-school_cpp](#grade-school_cpp) | ✅ | 28s | 0 / 0 / 1.4K |
+| [kindergarten-garden_cpp](#kindergarten-garden_cpp) | ✅ | 40s | 0 / 0 / 2.1K |
+| [knapsack_cpp](#knapsack_cpp) | ✅ | 32s | 0 / 0 / 1.6K |
+| [linked-list_cpp](#linked-list_cpp) | ✅ | 30s | 0 / 0 / 1.5K |
+| [meetup_cpp](#meetup_cpp) | ✅ | 5m 23s | 0 / 0 / 17.1K |
+| [parallel-letter-frequency_cpp](#parallel-letter-frequency_cpp) | ✅ | 48s | 0 / 0 / 2.1K |
+| [perfect-numbers_cpp](#perfect-numbers_cpp) | ✅ | 29s | 0 / 0 / 1.4K |
+| [phone-number_cpp](#phone-number_cpp) | ✅ | 41s | 0 / 0 / 2.3K |
+| [queen-attack_cpp](#queen-attack_cpp) | ✅ | 30s | 0 / 0 / 1.5K |
+| [robot-name_cpp](#robot-name_cpp) | ✅ | 32s | 0 / 0 / 1.6K |
+| [space-age_cpp](#space-age_cpp) | ✅ | 1m 12s | 0 / 0 / 4.2K |
+| [spiral-matrix_cpp](#spiral-matrix_cpp) | ✅ | 45s | 0 / 0 / 2.3K |
+| [sublist_cpp](#sublist_cpp) | ✅ | 34s | 0 / 0 / 1.6K |
+| [yacht_cpp](#yacht_cpp) | ✅ | 37s | 0 / 0 / 1.9K |
+| [zebra-puzzle_cpp](#zebra-puzzle_cpp) | ✅ | 1m 1s | 0 / 0 / 3.5K |
+| [bowling_java](#bowling_java) | ✅ | 8m 35s | 0 / 0 / 26.6K |
+| [custom-set_java](#custom-set_java) | ✅ | 58s | 0 / 0 / 3.2K |
+| [react_go](#react_go) | ✅ | 56s | 0 / 0 / 3.5K |
+| [word-search_go](#word-search_go) | ✅ | 32s | 0 / 0 / 1.8K |
+| [pov_go](#pov_go) | ✅ | 57s | 0 / 0 / 3.6K |
+| [connect_javascript](#connect_javascript) | ✅ | 1m 39s | 0 / 0 / 6.5K |
+| [doubly-linked-list_rust](#doubly-linked-list_rust) | ✅ | 4m 51s | 0 / 0 / 17.5K |
+| [robot-name_rust](#robot-name_rust) | ✅ | 1m 7s | 0 / 0 / 4.2K |
+| [paasio_python](#paasio_python) | ✅ | 56s | 0 / 0 / 3.3K |
+| [pov_python](#pov_python) | ✅ | 4m 35s | 0 / 0 / 17.6K |
+| [xorcism_rust](#xorcism_rust) | ✅ | 5m 5s | 0 / 0 / 14.7K |
+| [pov_java](#pov_java) | ✅ | 9m 29s | 0 / 0 / 32.9K |
+| [robot-simulator_go](#robot-simulator_go) | ✅ | 18m 37s | 0 / 0 / 29.5K |
+| [hangman_java](#hangman_java) | ❌ | 9m 41s | 0 / 0 / 30.5K |
+| [mazy-mice_java](#mazy-mice_java) | ❌ | 5m 11s | 0 / 0 / 686 |
+| [decimal_rust](#decimal_rust) | ✅ | 2h 14m 59s | 0 / 0 / 69.6K |
+| [react_rust](#react_rust) | ⏰ | 2h 41m 51s | 0 / 0 / 12.6K |
+
+
 # pi-qwen35-122b-heretic-coding
 
 | Exercise | Success | Duration | Tokens |
@@ -2423,6 +3329,15 @@
 | [zebra-puzzle_java](#zebra-puzzle_java) | ❌ | 2m 1s | 0 / 0 / 318 |
 
 
+# reference-qwen36-35b-a3b-coding
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [alphametics_java](#alphametics_java) | ❌ | 0s | 0 / 0 / 0 |
+| [all-your-base_java](#all-your-base_java) | ✅ | 0s | 0 / 0 / 0 |
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 0s | 0 / 0 / 0 |
+
+
 # pi-qwen35-122b-coding
 
 | Exercise | Success | Duration | Tokens |
@@ -2652,6 +3567,27 @@
 | [doubly-linked-list_rust](#doubly-linked-list_rust) | ✅ | 12m 43s | 0 / 0 / 6.5K |
 | [forth_rust](#forth_rust) | ✅ | 16m 42s | 0 / 0 / 8.4K |
 | [xorcism_rust](#xorcism_rust) | ✅ | 17m 19s | 0 / 0 / 16.8K |
+
+
+# pi-qwen36-35b-a3b-q4-q8kv-no-thinking
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 35s | 0 / 0 / 1.1K |
+| [all-your-base_java](#all-your-base_java) | ✅ | 23s | 0 / 0 / 861 |
+| [alphametics_java](#alphametics_java) | ✅ | 2m 18s | 0 / 0 / 6.9K |
+| [bank-account_java](#bank-account_java) | ✅ | 24s | 0 / 0 / 788 |
+| [book-store_java](#book-store_java) | ✅ | 1m 37s | 0 / 0 / 3.9K |
+| [bottle-song_java](#bottle-song_java) | ✅ | 23s | 0 / 0 / 811 |
+| [bowling_java](#bowling_java) | ✅ | 6m 0s | 0 / 0 / 14.6K |
+| [change_java](#change_java) | ✅ | 22s | 0 / 0 / 719 |
+| [circular-buffer_java](#circular-buffer_java) | ✅ | 54s | 0 / 0 / 1.5K |
+| [connect_java](#connect_java) | ✅ | 4m 57s | 0 / 0 / 16.0K |
+| [custom-set_java](#custom-set_java) | ✅ | 52s | 0 / 0 / 2.1K |
+| [dominoes_java](#dominoes_java) | ✅ | 41s | 0 / 0 / 1.8K |
+| [food-chain_java](#food-chain_java) | ✅ | 26s | 0 / 0 / 926 |
+| [forth_java](#forth_java) | ✅ | 2m 26s | 0 / 0 / 5.5K |
+| [go-counting_java](#go-counting_java) | ✅ | 44s | 0 / 0 / 2.1K |
 
 
 # pi-qwen35-122b-q3-q4kv-coding
@@ -3274,6 +4210,14 @@
 | [affine-cipher_java](#affine-cipher_java) | ❌ | 10m 0s | 17.8K / 50.7K / 222 |
 
 
+# pi-qwen36-35b-a3b
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 37s | 0 / 0 / 1.7K |
+| [all-your-base_java](#all-your-base_java) | ✅ | 37s | 0 / 0 / 0 |
+
+
 # pi-qwen3-coder-next
 
 | Exercise | Success | Duration | Tokens |
@@ -3734,6 +4678,140 @@
 | [robot-name_cpp](#robot-name_cpp) | ✅ | 20m 22s | 0 / 0 / 13.7K |
 | [yacht_cpp](#yacht_cpp) | ✅ | 8m 3s | 0 / 0 / 6.4K |
 | [zebra-puzzle_cpp](#zebra-puzzle_cpp) | ❌ | 30m 0s | 0 / 0 / 38.5K |
+
+
+# pi-minimax-m27
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 2m 56s | 0 / 0 / 4.9K |
+| [alphametics_java](#alphametics_java) | ✅ | 3m 36s | 0 / 0 / 2.5K |
+| [bank-account_java](#bank-account_java) | ✅ | 52s | 0 / 0 / 1.3K |
+| [book-store_java](#book-store_java) | ✅ | 3m 24s | 0 / 0 / 6.7K |
+| [bottle-song_java](#bottle-song_java) | ✅ | 1m 29s | 0 / 0 / 2.3K |
+| [change_java](#change_java) | ✅ | 1m 36s | 0 / 0 / 2.2K |
+| [circular-buffer_java](#circular-buffer_java) | ✅ | 1m 12s | 0 / 0 / 2.0K |
+| [dominoes_java](#dominoes_java) | ✅ | 2m 24s | 0 / 0 / 4.5K |
+| [food-chain_java](#food-chain_java) | ✅ | 1m 24s | 0 / 0 / 2.1K |
+| [all-your-base_java](#all-your-base_java) | ✅ | 1m 7s | 0 / 0 / 1.9K |
+| [bowling_java](#bowling_java) | ❌ | 10m 0s | 0 / 0 / 12.0K |
+| [connect_java](#connect_java) | ❌ | 10m 0s | 0 / 0 / 15.5K |
+| [custom-set_java](#custom-set_java) | ✅ | 3m 7s | 0 / 0 / 5.4K |
+| [forth_java](#forth_java) | ❌ | 10m 0s | 0 / 0 / 14.6K |
+| [go-counting_java](#go-counting_java) | ✅ | 2m 17s | 0 / 0 / 4.3K |
+| [hangman_java](#hangman_java) | ✅ | 10m 0s | 0 / 0 / 17.4K |
+| [house_java](#house_java) | ✅ | 1m 46s | 0 / 0 / 2.5K |
+| [kindergarten-garden_java](#kindergarten-garden_java) | ✅ | 1m 11s | 0 / 0 / 2.1K |
+| [ledger_java](#ledger_java) | ✅ | 4m 30s | 0 / 0 / 7.0K |
+| [mazy-mice_java](#mazy-mice_java) | ❌ | 10m 0s | 0 / 0 / 15.2K |
+| [ocr-numbers_java](#ocr-numbers_java) | ✅ | 5m 22s | 0 / 0 / 9.8K |
+| [palindrome-products_java](#palindrome-products_java) | ✅ | 1m 12s | 0 / 0 / 2.0K |
+| [phone-number_java](#phone-number_java) | ✅ | 1m 5s | 0 / 0 / 1.9K |
+| [pig-latin_java](#pig-latin_java) | ✅ | 3m 9s | 0 / 0 / 5.8K |
+| [poker_java](#poker_java) | ❌ | 10m 0s | 0 / 0 / 17.3K |
+| [protein-translation_java](#protein-translation_java) | ✅ | 1m 9s | 0 / 0 / 1.9K |
+| [pythagorean-triplet_java](#pythagorean-triplet_java) | ✅ | 1m 32s | 0 / 0 / 2.9K |
+| [queen-attack_java](#queen-attack_java) | ✅ | 51s | 0 / 0 / 1.3K |
+| [rational-numbers_java](#rational-numbers_java) | ✅ | 3m 50s | 0 / 0 / 6.0K |
+| [react_java](#react_java) | ❌ | 10m 0s | 0 / 0 / 14.0K |
+| [resistor-color-trio_java](#resistor-color-trio_java) | ✅ | 47s | 0 / 0 / 1.2K |
+| [rest-api_java](#rest-api_java) | ✅ | 7m 19s | 0 / 0 / 12.3K |
+| [satellite_java](#satellite_java) | ✅ | 1m 10s | 0 / 0 / 2.0K |
+| [series_java](#series_java) | ✅ | 42s | 0 / 0 / 1.1K |
+| [sgf-parsing_java](#sgf-parsing_java) | ❌ | 1m 33s | 0 / 0 / 3.2K |
+| [simple-linked-list_java](#simple-linked-list_java) | ✅ | 54s | 0 / 0 / 1.6K |
+| [state-of-tic-tac-toe_java](#state-of-tic-tac-toe_java) | ✅ | 1m 4s | 0 / 0 / 1.7K |
+| [transpose_java](#transpose_java) | ❌ | 10m 0s | 0 / 0 / 17.6K |
+| [tree-building_java](#tree-building_java) | ✅ | 2m 35s | 0 / 0 / 4.5K |
+| [twelve-days_java](#twelve-days_java) | ✅ | 1m 10s | 0 / 0 / 1.9K |
+| [two-bucket_java](#two-bucket_java) | ✅ | 1m 40s | 0 / 0 / 3.2K |
+| [variable-length-quantity_java](#variable-length-quantity_java) | ✅ | 1m 9s | 0 / 0 / 1.9K |
+| [word-search_java](#word-search_java) | ✅ | 1m 40s | 0 / 0 / 2.1K |
+| [wordy_java](#wordy_java) | ❌ | 10m 0s | 0 / 0 / 16.7K |
+| [zebra-puzzle_java](#zebra-puzzle_java) | ✅ | 2m 14s | 0 / 0 / 4.1K |
+| [zipper_java](#zipper_java) | ✅ | 2m 27s | 0 / 0 / 4.2K |
+| [pov_java](#pov_java) | ❌ | 10m 0s | 0 / 0 / 9.2K |
+| [alphametics_go](#alphametics_go) | ✅ | 2m 18s | 0 / 0 / 4.2K |
+| [beer-song_go](#beer-song_go) | ✅ | 1m 37s | 0 / 0 / 2.3K |
+| [book-store_go](#book-store_go) | ✅ | 2m 53s | 0 / 0 / 5.2K |
+| [bottle-song_go](#bottle-song_go) | ✅ | 1m 17s | 0 / 0 / 2.1K |
+| [bowling_go](#bowling_go) | ❌ | 9m 52s | 0 / 0 / 16.7K |
+| [connect_go](#connect_go) | ❌ | 10m 0s | 0 / 0 / 17.2K |
+| [counter_go](#counter_go) | ✅ | 10m 0s | 0 / 0 / 14.3K |
+| [crypto-square_go](#crypto-square_go) | ✅ | 1m 9s | 0 / 0 / 2.4K |
+| [dnd-character_go](#dnd-character_go) | ✅ | 1m 8s | 0 / 0 / 2.1K |
+| [dominoes_go](#dominoes_go) | ✅ | 5m 53s | 0 / 0 / 10.2K |
+| [error-handling_go](#error-handling_go) | ✅ | 46s | 0 / 0 / 1.5K |
+| [food-chain_go](#food-chain_go) | ✅ | 44s | 0 / 0 / 1.3K |
+| [forth_go](#forth_go) | ✅ | 6m 35s | 0 / 0 / 10.0K |
+| [hexadecimal_go](#hexadecimal_go) | ✅ | 28s | 0 / 0 / 872 |
+| [kindergarten-garden_go](#kindergarten-garden_go) | ✅ | 3m 26s | 0 / 0 / 7.0K |
+| [ledger_go](#ledger_go) | ✅ | 6m 9s | 0 / 0 / 10.3K |
+| [markdown_go](#markdown_go) | ✅ | 10m 0s | 0 / 0 / 16.3K |
+| [matrix_go](#matrix_go) | ❌ | 2m 33s | 0 / 0 / 4.5K |
+| [octal_go](#octal_go) | ✅ | 22s | 0 / 0 / 691 |
+| [paasio_go](#paasio_go) | ✅ | 2m 25s | 0 / 0 / 3.3K |
+| [palindrome-products_go](#palindrome-products_go) | ✅ | 35s | 0 / 0 / 1.1K |
+| [pig-latin_go](#pig-latin_go) | ✅ | 1m 39s | 0 / 0 / 3.3K |
+| [poker_go](#poker_go) | ❌ | 10m 0s | 0 / 0 / 12.2K |
+| [protein-translation_go](#protein-translation_go) | ✅ | 1m 8s | 0 / 0 / 2.2K |
+| [react_go](#react_go) | ✅ | 8m 39s | 0 / 0 / 15.8K |
+| [robot-simulator_go](#robot-simulator_go) | ❌ | 10m 0s | 0 / 0 / 15.3K |
+| [say_go](#say_go) | ✅ | 2m 1s | 0 / 0 / 3.8K |
+| [scale-generator_go](#scale-generator_go) | ❌ | 10m 0s | 0 / 0 / 16.9K |
+| [simple-linked-list_go](#simple-linked-list_go) | ✅ | 40s | 0 / 0 / 1.2K |
+| [sublist_go](#sublist_go) | ✅ | 50s | 0 / 0 / 1.5K |
+| [transpose_go](#transpose_go) | ❌ | 10m 0s | 0 / 0 / 17.4K |
+| [tree-building_go](#tree-building_go) | ✅ | 2m 24s | 0 / 0 / 4.2K |
+| [trinary_go](#trinary_go) | ❌ | 10m 0s | 0 / 0 / 7.1K |
+| [two-bucket_go](#two-bucket_go) | ❌ | 10m 0s | 0 / 0 / 17.4K |
+| [variable-length-quantity_go](#variable-length-quantity_go) | ✅ | 3m 33s | 0 / 0 / 6.4K |
+| [word-search_go](#word-search_go) | ✅ | 3m 16s | 0 / 0 / 5.5K |
+| [wordy_go](#wordy_go) | ✅ | 2m 57s | 0 / 0 / 5.4K |
+| [zebra-puzzle_go](#zebra-puzzle_go) | ✅ | 1m 0s | 0 / 0 / 2.0K |
+| [pov_go](#pov_go) | ❌ | 10m 0s | 0 / 0 / 14.9K |
+| [affine-cipher_javascript](#affine-cipher_javascript) | ❌ | 10m 2s | 0 / 0 / 14.5K |
+| [alphametics_javascript](#alphametics_javascript) | ✅ | 2m 56s | 0 / 0 / 2.7K |
+| [beer-song_javascript](#beer-song_javascript) | ✅ | 53s | 0 / 0 / 942 |
+| [binary_javascript](#binary_javascript) | ✅ | 22s | 0 / 0 / 506 |
+| [book-store_javascript](#book-store_javascript) | ❌ | 10m 1s | 0 / 0 / 13.5K |
+| [bottle-song_javascript](#bottle-song_javascript) | ✅ | 49s | 0 / 0 / 1.2K |
+| [bowling_javascript](#bowling_javascript) | ❌ | 10m 0s | 0 / 0 / 12.0K |
+| [complex-numbers_javascript](#complex-numbers_javascript) | ✅ | 2m 45s | 0 / 0 / 5.4K |
+| [connect_javascript](#connect_javascript) | ❌ | 10m 0s | 0 / 0 / 18.0K |
+| [food-chain_javascript](#food-chain_javascript) | ✅ | 3m 13s | 0 / 0 / 6.2K |
+| [forth_javascript](#forth_javascript) | ✅ | 6m 41s | 0 / 0 / 12.6K |
+| [go-counting_javascript](#go-counting_javascript) | ❌ | 10m 0s | 0 / 0 / 14.4K |
+| [grade-school_javascript](#grade-school_javascript) | ✅ | 38s | 0 / 0 / 1.1K |
+| [grep_javascript](#grep_javascript) | ✅ | 1m 26s | 0 / 0 / 2.2K |
+| [house_javascript](#house_javascript) | ✅ | 5m 40s | 0 / 0 / 6.6K |
+| [killer-sudoku-helper_javascript](#killer-sudoku-helper_javascript) | ✅ | 48s | 0 / 0 / 1.4K |
+| [ledger_javascript](#ledger_javascript) | ✅ | 2m 15s | 0 / 0 / 3.9K |
+| [list-ops_javascript](#list-ops_javascript) | ✅ | 1m 6s | 0 / 0 / 2.2K |
+| [meetup_javascript](#meetup_javascript) | ✅ | 1m 38s | 0 / 0 / 1.2K |
+| [ocr-numbers_javascript](#ocr-numbers_javascript) | ❌ | 10m 0s | 0 / 0 / 11.0K |
+| [palindrome-products_javascript](#palindrome-products_javascript) | ✅ | 3m 5s | 0 / 0 / 3.2K |
+| [parallel-letter-frequency_javascript](#parallel-letter-frequency_javascript) | ✅ | 1m 22s | 0 / 0 / 1.9K |
+| [phone-number_javascript](#phone-number_javascript) | ✅ | 36s | 0 / 0 / 884 |
+| [pig-latin_javascript](#pig-latin_javascript) | ✅ | 7m 54s | 0 / 0 / 12.4K |
+| [poker_javascript](#poker_javascript) | ✅ | 1m 27s | 0 / 0 / 2.2K |
+| [promises_javascript](#promises_javascript) | ✅ | 1m 29s | 0 / 0 / 2.3K |
+| [queen-attack_javascript](#queen-attack_javascript) | ✅ | 39s | 0 / 0 / 920 |
+| [rational-numbers_javascript](#rational-numbers_javascript) | ✅ | 3m 24s | 0 / 0 / 3.6K |
+| [react_javascript](#react_javascript) | ❌ | 10m 1s | 0 / 0 / 10.3K |
+| [rectangles_javascript](#rectangles_javascript) | ❌ | 10m 1s | 0 / 0 / 12.0K |
+| [resistor-color-trio_javascript](#resistor-color-trio_javascript) | ✅ | 49s | 0 / 0 / 1.3K |
+| [rest-api_javascript](#rest-api_javascript) | ✅ | 4m 55s | 0 / 0 / 8.5K |
+| [robot-name_javascript](#robot-name_javascript) | ✅ | 3m 44s | 0 / 0 / 4.8K |
+| [say_javascript](#say_javascript) | ✅ | 58s | 0 / 0 / 1.6K |
+| [scale-generator_javascript](#scale-generator_javascript) | ✅ | 5m 2s | 0 / 0 / 8.9K |
+| [simple-linked-list_javascript](#simple-linked-list_javascript) | ✅ | 1m 36s | 0 / 0 / 2.9K |
+| [space-age_javascript](#space-age_javascript) | ✅ | 19s | 0 / 0 / 420 |
+| [state-of-tic-tac-toe_javascript](#state-of-tic-tac-toe_javascript) | ✅ | 1m 11s | 0 / 0 / 1.9K |
+| [sum-of-multiples_javascript](#sum-of-multiples_javascript) | ✅ | 22s | 0 / 0 / 503 |
+| [tournament_javascript](#tournament_javascript) | ✅ | 36s | 0 / 0 / 848 |
+| [transpose_javascript](#transpose_javascript) | ❌ | 10m 1s | 0 / 0 / 11.0K |
+| [triangle_javascript](#triangle_javascript) | ✅ | 45s | 0 / 0 / 1.4K |
 
 
 # pi-qwen35-397b-coding
@@ -4201,6 +5279,9 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 13s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 28s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 56s | 0 / 0 / 3.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 9s | 0 / 0 / 4.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 13s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 22s | 0 / 0 / 2.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 44s | 0 / 0 / 2.7K |
@@ -4209,12 +5290,14 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 34s | 0 / 0 / 2.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 46s | 0 / 0 / 10.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 0s | 0 / 0 / 1.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 11s | 0 / 0 / 11.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 19s | 0 / 0 / 9.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 4m 47s | 0 / 0 / 11.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 25s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 7m 29s | 0 / 0 / 14.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 8m 18s | 0 / 0 / 19.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 8m 34s | 0 / 0 / 3.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 14.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 11m 30s | 0 / 0 / 8.9K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 0 |
 
@@ -4224,9 +5307,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 32s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 35s | 0 / 0 / 1.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 56s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 58s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 8s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 9s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 9s | 0 / 0 / 1.9K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 10s | 0 / 0 / 2.9K |
@@ -4237,7 +5323,9 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 1s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 18s | 0 / 0 / 1.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 24s | 0 / 0 / 2.3K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 42s | 0 / 0 / 8.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 54s | 0 / 0 / 0 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 26s | 0 / 0 / 7.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 27s | 0 / 0 / 2.5K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 3m 55s | 0 / 0 / 10.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 8s | 0 / 0 / 2.4K |
@@ -4249,7 +5337,11 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 52s | 0 / 0 / 2.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 1s | 0 / 0 / 3.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 34s | 0 / 0 / 5.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 38s | 0 / 0 / 6.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 51s | 0 / 0 / 3.1K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 30s | 0 / 0 / 9.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 4m 12s | 0 / 0 / 7.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 5m 5s | 0 / 0 / 6.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 52s | 0 / 0 / 3.6K |
@@ -4266,7 +5358,10 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 18s | 0 / 0 / 744 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 739 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 20s | 0 / 0 / 696 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 27s | 0 / 0 / 1.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 29s | 0 / 0 / 809 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 40s | 0 / 0 / 1.3K |
@@ -4275,9 +5370,11 @@
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 52s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 54s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 7s | 0 / 0 / 1.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 13s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 22s | 0 / 0 / 1.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 22s | 0 / 0 / 648 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 30s | 0 / 0 / 1.0K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 38s | 0 / 0 / 1.2K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 2m 2s | 0 / 0 / 1.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 43s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 45s | 0 / 0 / 1.9K |
@@ -4292,17 +5389,22 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 43s | 0 / 0 / 2.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 49s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 0s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 9s | 0 / 0 / 4.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 35s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 42s | 0 / 0 / 3.2K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 46s | 0 / 0 / 5.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 53s | 0 / 0 / 1.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 28s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 53s | 0 / 0 / 5.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 29s | 0 / 0 / 11.8K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 32s | 0 / 0 / 3.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 4m 2s | 0 / 0 / 11.3K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 4m 6s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 4m 38s | 0 / 0 / 10.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 4m 45s | 0 / 0 / 1.7K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 4m 55s | 0 / 0 / 8.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 35s | 0 / 0 / 3.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 8m 21s | 0 / 0 / 19.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
@@ -4313,7 +5415,10 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 9s | 0 / 0 / 382 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 11s | 0 / 0 / 551 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 13s | 0 / 0 / 462 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 14s | 0 / 0 / 654 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 817 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 27s | 0 / 0 / 731 |
@@ -4323,6 +5428,7 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 37s | 0 / 0 / 622 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 37s | 0 / 0 / 699 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 38s | 0 / 0 / 33.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 44s | 0 / 0 / 2.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 47s | 0 / 0 / 577 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 54s | 0 / 0 / 815 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 0s | 0 / 0 / 1.9K |
@@ -4333,8 +5439,12 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 15s | 0 / 0 / 750 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 23s | 0 / 0 / 1.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 26s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 36s | 0 / 0 / 1.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 39s | 0 / 0 / 987 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 42s | 0 / 0 / 1.3K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 42s | 0 / 0 / 0 |
@@ -4350,6 +5460,7 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 29s | 0 / 0 / 6.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 31s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 49s | 0 / 0 / 12.6K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 7.1K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 18.0K |
 
 
@@ -4357,7 +5468,11 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 22s | 0 / 0 / 719 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 29s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.3K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 30s | 0 / 0 / 2.3K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 31s | 0 / 0 / 961 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 32s | 0 / 0 / 1.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 50s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 53s | 0 / 0 / 1.2K |
@@ -4369,6 +5484,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 12s | 0 / 0 / 1.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 14s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 14s | 0 / 0 / 1.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 36s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 37s | 0 / 0 / 1.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 37s | 0 / 0 / 1.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 50s | 0 / 0 / 4.1K |
@@ -4384,6 +5500,9 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 15s | 0 / 0 / 834 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 15s | 0 / 0 / 618 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 17s | 0 / 0 / 975 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 1.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 29s | 0 / 0 / 475 |
@@ -4394,12 +5513,14 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 55s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 57s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 5s | 0 / 0 / 1.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 9s | 0 / 0 / 2.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 16s | 0 / 0 / 3.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 28s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 38s | 0 / 0 / 1.3K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 49s | 0 / 0 / 1.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 51s | 0 / 0 / 1.9K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 0s | 0 / 0 / 1.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 5s | 0 / 0 / 7.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 23s | 0 / 0 / 1.7K |
 
 
@@ -4408,7 +5529,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 24s | 0 / 0 / 927 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 27s | 0 / 0 / 1.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 30s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 34s | 0 / 0 / 1.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 37s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 52s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 53s | 0 / 0 / 1.3K |
@@ -4416,6 +5540,8 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 54s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 57s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 1s | 0 / 0 / 1.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 8s | 0 / 0 / 3.0K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 9s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 11s | 0 / 0 / 4.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 44s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 49s | 0 / 0 / 1.2K |
@@ -4432,7 +5558,11 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 39s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 51s | 0 / 0 / 2.8K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 0s | 0 / 0 / 3.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 1s | 0 / 0 / 3.3K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 13s | 0 / 0 / 3.6K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 27s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 37s | 0 / 0 / 2.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 45s | 0 / 0 / 3.1K |
@@ -4455,16 +5585,21 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 41s | 0 / 0 / 4.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 9s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 9s | 0 / 0 / 9.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 57s | 0 / 0 / 14.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 5m 0s | 0 / 0 / 4.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 35s | 0 / 0 / 3.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 6m 27s | 0 / 0 / 10.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ❌ | 7m 33s | 0 / 0 / 10.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 9m 17s | 0 / 0 / 14.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 9m 29s | 0 / 0 / 32.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 22.9K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 18.8K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 22.5K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 9.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 10m 33s | 0 / 0 / 17.0K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 10m 36s | 0 / 0 / 26.9K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 20m 0s | 0 / 0 / 22.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 28m 57s | 0 / 0 / 24.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 29m 6s | 0 / 0 / 17.1K |
@@ -4475,8 +5610,13 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 10s | 0 / 0 / 403 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 11s | 0 / 0 / 486 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 12s | 0 / 0 / 451 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 14s | 0 / 0 / 702 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 16s | 0 / 0 / 631 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 952 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 19s | 0 / 0 / 420 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 20s | 0 / 0 / 579 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 22s | 0 / 0 / 723 |
@@ -4498,8 +5638,13 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 23s | 0 / 0 / 884 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 34s | 0 / 0 / 1.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 36s | 0 / 0 / 1.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 1.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 49s | 0 / 0 / 1.7K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 51s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 51s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 51s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 53s | 0 / 0 / 1.4K |
@@ -4524,9 +5669,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 12s | 0 / 0 / 518 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 844 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 18s | 0 / 0 / 607 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 35s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 36s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 36s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 37s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 38s | 0 / 0 / 1.1K |
@@ -4535,6 +5683,8 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 6s | 0 / 0 / 1.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 22s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 27s | 0 / 0 / 1.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 36s | 0 / 0 / 2.9K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 52s | 0 / 0 / 3.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 6s | 0 / 0 / 5.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 28s | 0 / 0 / 5.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 30s | 0 / 0 / 2.1K |
@@ -4546,8 +5696,10 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 20s | 0 / 0 / 1.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 21s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 24s | 0 / 0 / 1.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 28s | 0 / 0 / 1.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 32s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 41s | 0 / 0 / 1.2K |
@@ -4560,7 +5712,9 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 8s | 0 / 0 / 1.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 21s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 42s | 0 / 0 / 1.3K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 10s | 0 / 0 / 7.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 12s | 0 / 0 / 2.3K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 20s | 0 / 0 / 12.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 4s | 0 / 0 / 3.0K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 
@@ -4571,14 +5725,19 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 9s | 0 / 0 / 4.0K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 16s | 0 / 0 / 6.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 37s | 0 / 0 / 7.9K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 50s | 0 / 0 / 0 |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 3m 14s | 0 / 0 / 6.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 3m 40s | 0 / 0 / 5.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 5m 8s | 0 / 0 / 15.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 5m 50s | 0 / 0 / 3.9K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 15s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 6m 21s | 0 / 0 / 19.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 6m 21s | 0 / 0 / 21.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 6m 29s | 0 / 0 / 10.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 6m 45s | 0 / 0 / 5.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 7m 19s | 0 / 0 / 12.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 7m 36s | 0 / 0 / 6.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 9m 15s | 0 / 0 / 5.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 21.4K |
@@ -4595,9 +5754,13 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 21s | 0 / 0 / 949 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 36s | 0 / 0 / 2.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 42s | 0 / 0 / 694 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 46s | 0 / 0 / 2.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 49s | 0 / 0 / 2.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 51s | 0 / 0 / 3.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 58s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 2s | 0 / 0 / 1.9K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 3s | 0 / 0 / 0 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 6s | 0 / 0 / 1.4K |
@@ -4607,6 +5770,7 @@
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 19s | 0 / 0 / 2.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 20s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 28s | 0 / 0 / 1.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 39s | 0 / 0 / 3.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 31s | 0 / 0 / 2.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 52s | 0 / 0 / 1.9K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 4s | 0 / 0 / 1.8K |
@@ -4619,13 +5783,18 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 32s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 39s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 55s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 17s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 21s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 28s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 28s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 34s | 0 / 0 / 2.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 37s | 0 / 0 / 3.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 40s | 0 / 0 / 3.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 41s | 0 / 0 / 5.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 43s | 0 / 0 / 2.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 45s | 0 / 0 / 3.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 37s | 0 / 0 / 2.7K |
@@ -4642,7 +5811,10 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 16s | 0 / 0 / 883 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 23s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 28s | 0 / 0 / 1.8K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 55s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 57s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 59s | 0 / 0 / 1.3K |
@@ -4656,6 +5828,7 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 19s | 0 / 0 / 1.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 34s | 0 / 0 / 6.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 14s | 0 / 0 / 3.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 5m 15s | 0 / 0 / 17.6K |
 
 
 # hangman_python
@@ -4665,6 +5838,8 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 2.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 2.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 45s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 47s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 50s | 0 / 0 / 1.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 57s | 0 / 0 / 651 |
@@ -4674,8 +5849,10 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 39s | 0 / 0 / 4.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 0s | 0 / 0 / 3.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 1s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 3s | 0 / 0 / 6.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 56s | 0 / 0 / 2.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 24s | 0 / 0 / 1.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 7m 46s | 0 / 0 / 20.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 12m 20s | 0 / 0 / 7.4K |
 
@@ -4690,7 +5867,11 @@
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 4s | 0 / 0 / 3.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 23s | 0 / 0 / 4.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 38s | 0 / 0 / 2.7K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 48s | 0 / 0 / 10.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 54s | 0 / 0 / 11.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 3m 0s | 0 / 0 / 11.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 6m 18s | 0 / 0 / 5.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 6m 55s | 0 / 0 / 22.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 7m 11s | 0 / 0 / 6.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 8m 30s | 0 / 0 / 6.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 20.6K |
@@ -4705,7 +5886,11 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 24s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 29s | 0 / 0 / 1.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 31s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 51s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 53s | 0 / 0 / 1.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 54s | 0 / 0 / 1.7K |
@@ -4724,7 +5909,10 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 18s | 0 / 0 / 955 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 1.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 24s | 0 / 0 / 1.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 39s | 0 / 0 / 656 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 44s | 0 / 0 / 1.8K |
@@ -4732,6 +5920,7 @@
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 48s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 50s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 57s | 0 / 0 / 1.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 6s | 0 / 0 / 3.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 9s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 19s | 0 / 0 / 1.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 42s | 0 / 0 / 0 |
@@ -4751,10 +5940,15 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 43s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 55s | 0 / 0 / 1.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 57s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 58s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 8s | 0 / 0 / 1.6K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 9s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 11s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 13s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 21s | 0 / 0 / 2.0K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 25s | 0 / 0 / 3.8K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 29s | 0 / 0 / 5.3K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 34s | 0 / 0 / 4.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 25s | 0 / 0 / 2.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 33s | 0 / 0 / 0 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 42s | 0 / 0 / 1.5K |
@@ -4771,8 +5965,13 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 824 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 21s | 0 / 0 / 971 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 22s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 30s | 0 / 0 / 1.9K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 41s | 0 / 0 / 0 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 46s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 46s | 0 / 0 / 9.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 52s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 54s | 0 / 0 / 3.4K |
@@ -4795,11 +5994,16 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 15s | 0 / 0 / 715 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 19s | 0 / 0 / 479 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 21s | 0 / 0 / 996 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 21s | 0 / 0 / 848 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 22s | 0 / 0 / 1.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 29s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 39s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 41s | 0 / 0 / 1.2K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 49s | 0 / 0 / 1.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 53s | 0 / 0 / 1.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 57s | 0 / 0 / 2.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 6s | 0 / 0 / 996 |
@@ -4820,8 +6024,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 32s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 39s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 57s | 0 / 0 / 1.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 58s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 0s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 11s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 14s | 0 / 0 / 1.2K |
@@ -4839,8 +6047,14 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-qwen36-35b-a3b-coding](#reference-qwen36-35b-a3b-coding) | ✅ | 0s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 23s | 0 / 0 / 861 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 24s | 0 / 0 / 925 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 27s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 1.6K |
 | [pi-qwen35-397b-coding](#pi-qwen35-397b-coding) | ❌ | 36s | 0 / 0 / 189 |
+| [pi-qwen36-35b-a3b](#pi-qwen36-35b-a3b) | ✅ | 37s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 40s | 0 / 0 / 1.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 52s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 52s | 0 / 0 / 1.2K |
@@ -4850,6 +6064,7 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 58s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 4s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 5s | 0 / 0 / 1.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 7s | 0 / 0 / 1.9K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 1m 8s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 12s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 30s | 0 / 0 / 1.2K |
@@ -4866,13 +6081,18 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 970 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 18s | 0 / 0 / 786 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 27s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 42s | 0 / 0 / 1.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 46s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 50s | 0 / 0 / 1.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 59s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 4s | 0 / 0 / 9.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 6s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 16s | 0 / 0 / 2.2K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 17s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 18s | 0 / 0 / 2.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 20s | 0 / 0 / 3.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 29s | 0 / 0 / 1.4K |
@@ -4891,7 +6111,11 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 26s | 0 / 0 / 1.7K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 2.2K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 44s | 0 / 0 / 2.9K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 52s | 0 / 0 / 3.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 53s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 19s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 33s | 0 / 0 / 2.8K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 44s | 0 / 0 / 2.5K |
@@ -4914,6 +6138,8 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 25s | 0 / 0 / 954 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 34s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 35s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 39s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 42s | 0 / 0 / 957 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 43s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 52s | 0 / 0 / 1.3K |
@@ -4921,11 +6147,14 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 56s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 58s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 5s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 18s | 0 / 0 / 3.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 19s | 0 / 0 / 3.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 22s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 25s | 0 / 0 / 1.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 37s | 0 / 0 / 1.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 54s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 31s | 0 / 0 / 882 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 59s | 0 / 0 / 7.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 3s | 0 / 0 / 1.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 13s | 0 / 0 / 0 |
 
@@ -4934,15 +6163,19 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 17s | 0 / 0 / 853 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 19s | 0 / 0 / 683 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 22s | 0 / 0 / 1.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 35s | 0 / 0 / 876 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 36s | 0 / 0 / 976 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 40s | 0 / 0 / 1.0K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 47s | 0 / 0 / 2.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 57s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 0s | 0 / 0 / 1.7K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 1s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 2s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 8s | 0 / 0 / 747 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 41s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 51s | 0 / 0 / 2.4K |
@@ -4952,6 +6185,7 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 1s | 0 / 0 / 6.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 45s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 5m 11s | 0 / 0 / 8.6K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 5m 40s | 0 / 0 / 6.6K |
 
 
 # bottle-song_python
@@ -4960,11 +6194,15 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 24s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 26s | 0 / 0 / 1.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 35s | 0 / 0 / 968 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 36s | 0 / 0 / 580 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 43s | 0 / 0 / 898 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 54s | 0 / 0 / 839 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 5s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 11s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 13s | 0 / 0 / 2.0K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 31s | 0 / 0 / 3.4K |
@@ -4983,7 +6221,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 14s | 0 / 0 / 727 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 806 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 974 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 18s | 0 / 0 / 851 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 29s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 32s | 0 / 0 / 797 |
@@ -4992,6 +6233,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 44s | 0 / 0 / 871 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 49s | 0 / 0 / 734 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 51s | 0 / 0 / 1.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 54s | 0 / 0 / 2.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 8s | 0 / 0 / 915 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 15s | 0 / 0 / 3.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 48s | 0 / 0 / 1.2K |
@@ -5005,9 +6247,13 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 21s | 0 / 0 / 900 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 32s | 0 / 0 / 1.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 38s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 42s | 0 / 0 / 1.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 47s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 49s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 54s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 6s | 0 / 0 / 1.7K |
@@ -5026,19 +6272,24 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ❌ | 3m 48s | 0 / 0 / 2.7K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ❌ | 5m 4s | 0 / 0 / 609 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 9.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 2.2K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 6.0K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 15.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ❌ | 12m 5s | 0 / 0 / 4.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 12m 52s | 0 / 0 / 8.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ❌ | 14m 54s | 0 / 0 / 7.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 15m 37s | 0 / 0 / 9.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ❌ | 15m 52s | 0 / 0 / 7.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 18m 37s | 0 / 0 / 29.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 27m 0s | 0 / 0 / 13.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ❌ | 32m 56s | 0 / 0 / 33.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 44m 38s | 0 / 0 / 14.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 59m 31s | 0 / 0 / 98.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ❌ | 1h 0s | 0 / 0 / 20.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ❌ | 1h 0s | 0 / 0 / 41.6K |
 
@@ -5055,8 +6306,12 @@
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 25s | 0 / 0 / 2.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 11s | 0 / 0 / 8.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 23s | 0 / 0 / 4.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 57s | 0 / 0 / 10.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 3m 2s | 0 / 0 / 8.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 4m 14s | 0 / 0 / 8.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 24s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 4m 56s | 0 / 0 / 18.1K |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 4m 57s | 0 / 0 / 16.0K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 5m 10s | 0 / 0 / 17.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 7m 9s | 0 / 0 / 5.7K |
 | [pi-step-35-flash](#pi-step-35-flash) | ❌ | 7m 27s | 0 / 0 / 16.6K |
@@ -5064,6 +6319,7 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 22.2K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 28.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 15.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 11m 19s | 0 / 0 / 3.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 49.8K |
 
@@ -5075,11 +6331,15 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 47s | 0 / 0 / 2.7K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2m 0s | 0 / 0 / 0 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 14s | 0 / 0 / 2.6K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 16s | 0 / 0 / 4.8K |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 2m 26s | 0 / 0 / 5.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 38s | 0 / 0 / 7.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 57s | 0 / 0 / 6.8K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 2m 58s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 4m 1s | 0 / 0 / 4.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 4m 6s | 0 / 0 / 5.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 5m 2s | 0 / 0 / 6.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 6m 2s | 0 / 0 / 20.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 7m 30s | 0 / 0 / 4.1K |
 | [pi-step-35-flash](#pi-step-35-flash) | ❌ | 7m 49s | 0 / 0 / 16.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 7m 55s | 0 / 0 / 9.0K |
@@ -5089,6 +6349,7 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 9m 55s | 0 / 0 / 23.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 10m 0s | 0 / 0 / 5.2K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 14.6K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 14.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 27.7K |
@@ -5099,6 +6360,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 35s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 35s | 0 / 0 / 949 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 50s | 0 / 0 / 1.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 52s | 0 / 0 / 3.1K |
@@ -5109,10 +6371,14 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 16s | 0 / 0 / 1.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 32s | 0 / 0 / 3.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 33s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 47s | 0 / 0 / 6.6K |
 | [pi-gpt-oss-120b](#pi-gpt-oss-120b) | ✅ | 1m 53s | 0 / 0 / 2.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 57s | 0 / 0 / 6.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 7s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 12s | 0 / 0 / 3.1K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 2m 15s | 0 / 0 / 1.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 56s | 0 / 0 / 2.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 3m 3s | 0 / 0 / 11.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 48s | 0 / 0 / 2.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 44s | 0 / 0 / 3.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 7m 24s | 0 / 0 / 4.1K |
@@ -5124,14 +6390,18 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 43s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 52s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 59s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 7s | 0 / 0 / 24.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 7s | 0 / 0 / 4.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 13s | 0 / 0 / 2.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 35s | 0 / 0 / 5.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 10s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 18s | 0 / 0 / 1.7K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 28s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 32s | 0 / 0 / 13.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 24s | 0 / 0 / 12.0K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 5m 47s | 0 / 0 / 6.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 5m 57s | 0 / 0 / 3.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 7m 49s | 0 / 0 / 17.5K |
@@ -5143,6 +6413,9 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 17s | 0 / 0 / 672 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 18s | 0 / 0 / 757 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 19s | 0 / 0 / 692 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 22s | 0 / 0 / 1.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 25s | 0 / 0 / 781 |
@@ -5159,6 +6432,7 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 48s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 15s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 25s | 0 / 0 / 1.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 25s | 0 / 0 / 7.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 29s | 0 / 0 / 1.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 49s | 0 / 0 / 0 |
 
@@ -5168,14 +6442,18 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.6K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 42s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 47s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 50s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 55s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 58s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 3s | 0 / 0 / 2.8K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 14s | 0 / 0 / 1.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 23s | 0 / 0 / 4.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 36s | 0 / 0 / 2.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 36s | 0 / 0 / 5.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 58s | 0 / 0 / 4.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 9s | 0 / 0 / 1.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 48s | 0 / 0 / 1.6K |
@@ -5185,6 +6463,7 @@
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 38s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 4m 40s | 0 / 0 / 4.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 58s | 0 / 0 / 11.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 16.7K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 24m 52s | 0 / 0 / 14.5K |
 
 
@@ -5193,6 +6472,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 5s | 0 / 0 / 14.7K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 6m 19s | 0 / 0 / 20.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 6m 27s | 0 / 0 / 24.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 6m 35s | 0 / 0 / 18.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 7m 19s | 0 / 0 / 6.8K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 9m 52s | 0 / 0 / 13.0K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 22.7K |
@@ -5212,19 +6495,24 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 15s | 0 / 0 / 3.7K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 36s | 0 / 0 / 5.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 45s | 0 / 0 / 6.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 57s | 0 / 0 / 3.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 18s | 0 / 0 / 3.7K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 52s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 7s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 4m 0s | 0 / 0 / 6.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 4m 13s | 0 / 0 / 13.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 4m 33s | 0 / 0 / 6.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 5m 26s | 0 / 0 / 8.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 6m 40s | 0 / 0 / 21.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 7m 32s | 0 / 0 / 6.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 7m 48s | 0 / 0 / 6.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 8m 25s | 0 / 0 / 20.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 22.0K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 12.2K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 13.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 21m 24s | 0 / 0 / 6.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 24m 53s | 0 / 0 / 136 |
@@ -5235,8 +6523,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 24s | 0 / 0 / 1.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 32s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 2.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 37s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 56s | 0 / 0 / 3.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 0s | 0 / 0 / 1.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 5s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 20s | 0 / 0 / 2.5K |
@@ -5254,6 +6546,9 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 18s | 0 / 0 / 863 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 18s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 1.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 27s | 18.9M / 32.7M / 345.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 29s | 0 / 0 / 1.2K |
@@ -5264,6 +6559,7 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 57s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 5s | 0 / 0 / 2.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 16s | 0 / 0 / 2.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 29s | 0 / 0 / 5.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 36s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 45s | 0 / 0 / 3.7K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 2m 19s | 0 / 0 / 1.8K |
@@ -5272,6 +6568,7 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 50s | 0 / 0 / 1.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 47s | 0 / 0 / 2.4K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 4m 4s | 0 / 0 / 0 |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 2s | 0 / 0 / 14.5K |
 
 
 # simple-linked-list_java
@@ -5279,9 +6576,14 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 32s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 41s | 0 / 0 / 1.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 41s | 0 / 0 / 1.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 43s | 0 / 0 / 644 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 45s | 0 / 0 / 1.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 47s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 53s | 0 / 0 / 2.0K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 54s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 2s | 0 / 0 / 1.5K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 3s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 4s | 0 / 0 / 1.7K |
@@ -5303,11 +6605,17 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-qwen36-35b-a3b-coding](#reference-qwen36-35b-a3b-coding) | ✅ | 0s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 3s | 0 / 0 / 133 |
 | [pi-qwen35-397b-coding](#pi-qwen35-397b-coding) | ❌ | 15s | 0 / 0 / 42 |
 | [pi-Qwen3_5-35B-A3B-8bit](#pi-Qwen3_5-35B-A3B-8bit) | ❌ | 25s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 35s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 35s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b](#pi-qwen36-35b-a3b) | ✅ | 37s | 0 / 0 / 1.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 40s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 54s | 0 / 0 / 1.0K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 55s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 59s | 0 / 0 / 2.8K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 10s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 12s | 0 / 0 / 1.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 13s | 0 / 0 / 2.3K |
@@ -5318,6 +6626,7 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 18s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 21s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 43s | 0 / 0 / 4.8K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 56s | 0 / 0 / 4.9K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 6s | 0 / 0 / 6.1K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 3m 25s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 3m 32s | 0 / 0 / 0 |
@@ -5336,8 +6645,12 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 28s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 31s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 37s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 57s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 35s | 0 / 0 / 2.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 38s | 0 / 0 / 4.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 42s | 0 / 0 / 2.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 46s | 0 / 0 / 3.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 23s | 0 / 0 / 2.5K |
@@ -5355,8 +6668,13 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 19s | 0 / 0 / 1.2K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 25s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 28s | 0 / 0 / 1.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 38s | 0 / 0 / 784 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 40s | 0 / 0 / 1.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 40s | 0 / 0 / 2.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 51s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 54s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 56s | 0 / 0 / 1.7K |
@@ -5382,6 +6700,9 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 46s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 56s | 0 / 0 / 3.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 4s | 0 / 0 / 3.6K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 8s | 0 / 0 / 4.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 18s | 0 / 0 / 4.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 24s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 38s | 0 / 0 / 2.5K |
@@ -5392,6 +6713,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 3m 30s | 0 / 0 / 4.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 15s | 0 / 0 / 3.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 4m 39s | 0 / 0 / 13.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 40s | 0 / 0 / 15.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 8m 33s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 9m 48s | 0 / 0 / 5.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 18m 49s | 0 / 0 / 6.2K |
@@ -5402,12 +6724,16 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 25s | 0 / 0 / 1.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 27s | 0 / 0 / 1.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 31s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 46s | 0 / 0 / 1.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 0s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 3s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 11s | 0 / 0 / 4.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 20s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 26s | 0 / 0 / 2.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 32s | 0 / 0 / 5.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 42s | 0 / 0 / 1.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 50s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 15s | 0 / 0 / 1.5K |
@@ -5423,7 +6749,11 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 14s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 23s | 0 / 0 / 941 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 35s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 40s | 0 / 0 / 2.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 41s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 41s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 46s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 47s | 0 / 0 / 1.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 47s | 0 / 0 / 2.1K |
@@ -5435,6 +6765,7 @@
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 23s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 31s | 0 / 0 / 1.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 45s | 0 / 0 / 1.7K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 1s | 0 / 0 / 3.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 6s | 0 / 0 / 1.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 56s | 0 / 0 / 12.5K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 5m 52s | 0 / 0 / 14.3K |
@@ -5446,6 +6777,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 48s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 1s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 2s | 0 / 0 / 1.7K |
@@ -5454,7 +6786,11 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 1m 45s | 0 / 0 / 4.0K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 1m 50s | 0 / 0 / 4.8K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ❌ | 2m 9s | 0 / 0 / 3.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 16s | 0 / 0 / 9.3K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 17s | 0 / 0 / 8.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 20s | 0 / 0 / 8.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ❌ | 2m 24s | 0 / 0 / 3.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 2m 33s | 0 / 0 / 4.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ❌ | 4m 1s | 0 / 0 / 3.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ❌ | 5m 7s | 0 / 0 / 6.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 5m 41s | 0 / 0 / 5.8K |
@@ -5470,7 +6806,9 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 20s | 0 / 0 / 1.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 23s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 52s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 53s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 54s | 0 / 0 / 1.6K |
@@ -5479,10 +6817,12 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 1s | 0 / 0 / 2.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 2s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 6s | 0 / 0 / 1.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 30s | 0 / 0 / 4.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 37s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 55s | 0 / 0 / 7.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 1s | 0 / 0 / 1.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 22s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 4m 46s | 0 / 0 / 18.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 5m 22s | 0 / 0 / 3.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 22s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 6m 51s | 0 / 0 / 17.1K |
@@ -5493,6 +6833,9 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 17s | 0 / 0 / 935 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 18s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 1.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 53s | 0 / 0 / 1.6K |
@@ -5500,6 +6843,7 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 7s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 12s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 25s | 0 / 0 / 6.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 36s | 0 / 0 / 5.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 38s | 0 / 0 / 2.9K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 43s | 0 / 0 / 4.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 14s | 0 / 0 / 1.3K |
@@ -5516,17 +6860,22 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 30s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 49s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 0s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 2s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 8s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 8s | 0 / 0 / 1.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 10s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 29s | 0 / 0 / 5.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 9s | 0 / 0 / 8.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 25s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 28s | 0 / 0 / 9.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 40s | 0 / 0 / 1.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 12s | 0 / 0 / 3.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 3m 15s | 0 / 0 / 12.6K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 5m 10s | 0 / 0 / 4.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 5m 53s | 0 / 0 / 10.2K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 9m 15s | 0 / 0 / 16.0K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 25.1K |
@@ -5539,6 +6888,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 25s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 33s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 34s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 51s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 55s | 0 / 0 / 1.5K |
@@ -5559,16 +6912,21 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 35s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 43s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 45s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 13s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 13s | 0 / 0 / 6.8K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 27s | 0 / 0 / 4.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 50s | 0 / 0 / 9.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 1s | 0 / 0 / 4.7K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 3m 18s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 3m 19s | 0 / 0 / 11.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 19s | 0 / 0 / 11.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 40s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 3m 53s | 0 / 0 / 6.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 4m 7s | 0 / 0 / 3.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 4m 26s | 0 / 0 / 16.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 32s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 6m 56s | 0 / 0 / 4.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 7m 0s | 0 / 0 / 16.6K |
@@ -5583,20 +6941,25 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-qwen35-397b-coding](#pi-qwen35-397b-coding) | ❌ | 15s | 0 / 0 / 195 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 34s | 0 / 0 / 1.6K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 44s | 0 / 0 / 2.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 45s | 0 / 0 / 2.3K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 55s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 29s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 29s | 0 / 0 / 2.6K |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 1m 37s | 0 / 0 / 3.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 43s | 0 / 0 / 2.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 49s | 0 / 0 / 4.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 51s | 0 / 0 / 2.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 55s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 11s | 0 / 0 / 3.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 12s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 19s | 0 / 0 / 8.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 20s | 0 / 0 / 4.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 47s | 0 / 0 / 8.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 51s | 0 / 0 / 2.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 3s | 0 / 0 / 0 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 24s | 0 / 0 / 6.7K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 6m 9s | 0 / 0 / 3.6K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 7m 17s | 0 / 0 / 14.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 1.7K |
@@ -5609,16 +6972,21 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 13s | 0 / 0 / 543 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 14s | 0 / 0 / 658 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 19s | 0 / 0 / 782 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 20s | 0 / 0 / 651 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 20s | 0 / 0 / 768 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 28s | 0 / 0 / 715 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 31s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 36s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 37s | 0 / 0 / 951 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 37s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 42s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 45s | 0 / 0 / 1.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 48s | 0 / 0 / 1.4K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 2s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 28s | 0 / 0 / 1.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 44s | 0 / 0 / 986 |
@@ -5634,8 +7002,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 46s | 0 / 0 / 2.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 55s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 26s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 45s | 0 / 0 / 2.9K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 8s | 0 / 0 / 6.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 18s | 0 / 0 / 7.7K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 25s | 0 / 0 / 7.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 40s | 0 / 0 / 4.7K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 53s | 0 / 0 / 3.6K |
@@ -5655,11 +7027,15 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 44s | 0 / 0 / 2.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 50s | 0 / 0 / 3.2K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 23s | 0 / 0 / 5.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 25s | 0 / 0 / 4.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 28s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 23s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 25s | 0 / 0 / 4.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 52s | 0 / 0 / 5.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 54s | 0 / 0 / 10.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 5s | 0 / 0 / 1.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 48s | 0 / 0 / 3.9K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 11s | 0 / 0 / 0 |
@@ -5675,9 +7051,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 22s | 0 / 0 / 1.2K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 27s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 39s | 0 / 0 / 1.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 49s | 0 / 0 / 882 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 51s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 2s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 11s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 56s | 0 / 0 / 14.2K |
@@ -5685,6 +7064,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 12s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 27s | 0 / 0 / 2.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 48s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 3m 16s | 0 / 0 / 12.2K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 6m 43s | 0 / 0 / 12.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 7m 7s | 0 / 0 / 20.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 8m 53s | 0 / 0 / 13.3K |
@@ -5697,7 +7077,11 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 14s | 0 / 0 / 715 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 14s | 0 / 0 / 760 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 16s | 0 / 0 / 781 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 1.0K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 20s | 0 / 0 / 747 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 30s | 0 / 0 / 1.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 36s | 0 / 0 / 629 |
@@ -5720,16 +7104,21 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 56s | 0 / 0 / 3.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 58s | 0 / 0 / 5.3K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 9s | 0 / 0 / 5.7K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 3m 30s | 0 / 0 / 11.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 12s | 0 / 0 / 4.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 4m 13s | 0 / 0 / 3.3K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 4m 37s | 0 / 0 / 8.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 6m 9s | 0 / 0 / 11.8K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 6m 28s | 0 / 0 / 20.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 7m 8s | 0 / 0 / 18.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 8m 2s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 8m 24s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 9m 6s | 0 / 0 / 19.5K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 19.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 14.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 10m 19s | 0 / 0 / 7.8K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 11m 57s | 0 / 0 / 20.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 12m 1s | 0 / 0 / 19.8K |
@@ -5742,10 +7131,14 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 889 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 17s | 0 / 0 / 1.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 29s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 30s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 43s | 0 / 0 / 1.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 44s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 54s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 56s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 59s | 0 / 0 / 1.3K |
@@ -5758,6 +7151,7 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 31s | 0 / 0 / 1.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 40s | 0 / 0 / 2.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 42s | 0 / 0 / 2.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 48s | 0 / 0 / 9.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 5s | 0 / 0 / 7.2K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 4m 29s | 0 / 0 / 2.4K |
 
@@ -5767,7 +7161,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 27s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 46s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 52s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 52s | 0 / 0 / 2.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 58s | 0 / 0 / 3.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 6s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 9s | 0 / 0 / 1.4K |
@@ -5779,6 +7176,7 @@
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 40s | 0 / 0 / 1.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 8m 33s | 0 / 0 / 23.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.3K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 11m 6s | 0 / 0 / 35.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 17.3K |
 
 
@@ -5787,7 +7185,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 13s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 17s | 0 / 0 / 819 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 20s | 0 / 0 / 854 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 36s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 40s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 42s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 48s | 0 / 0 / 1.4K |
@@ -5797,9 +7198,11 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 13s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 39s | 0 / 0 / 2.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 17s | 0 / 0 / 4.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 37s | 0 / 0 / 8.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 53s | 0 / 0 / 2.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 58s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 58s | 0 / 0 / 1.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 13s | 0 / 0 / 6.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 4m 3s | 0 / 0 / 1.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 28s | 0 / 0 / 10.0K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
@@ -5810,8 +7213,12 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 41s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 41s | 0 / 0 / 2.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 42s | 0 / 0 / 2.2K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 1s | 0 / 0 / 2.8K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 4s | 0 / 0 / 1.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 11s | 0 / 0 / 2.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 12s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 12s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 16s | 0 / 0 / 2.1K |
@@ -5833,9 +7240,12 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 28s | 0 / 0 / 1.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 3s | 0 / 0 / 966 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 15s | 0 / 0 / 4.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 20s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 27s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 36s | 0 / 0 / 2.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 36s | 0 / 0 / 5.8K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 47s | 0 / 0 / 6.8K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 25s | 0 / 0 / 1.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 30s | 0 / 0 / 6.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 40s | 0 / 0 / 4.9K |
@@ -5843,6 +7253,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 5m 36s | 0 / 0 / 5.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 5m 44s | 0 / 0 / 14.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 8m 6s | 0 / 0 / 4.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 9m 54s | 0 / 0 / 30.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 15m 26s | 0 / 0 / 9.6K |
 
 
@@ -5850,10 +7261,15 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 17s | 0 / 0 / 651 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 706 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 20s | 0 / 0 / 708 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 24s | 0 / 0 / 751 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 27s | 0 / 0 / 706 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 30s | 0 / 0 / 538 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 53s | 0 / 0 / 942 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 0s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 3s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 4s | 0 / 0 / 1.3K |
@@ -5875,7 +7291,11 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 27s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 32s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 32s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 34s | 0 / 0 / 1.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 51s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 3s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 5s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 13s | 0 / 0 / 1.2K |
@@ -5896,17 +7316,22 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 57s | 0 / 0 / 3.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 13s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 58s | 0 / 0 / 3.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 50s | 0 / 0 / 9.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 3m 29s | 0 / 0 / 6.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 52s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 4m 3s | 0 / 0 / 7.1K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 4m 27s | 0 / 0 / 13.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 6m 11s | 0 / 0 / 23.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 7m 5s | 0 / 0 / 10.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 7m 32s | 0 / 0 / 12.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 8m 32s | 0 / 0 / 8.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 17.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 26.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 14.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 17m 22s | 0 / 0 / 17.1K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 18.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 16.3K |
@@ -5923,6 +7348,10 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 46s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 56s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 8s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 18s | 0 / 0 / 4.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 24s | 0 / 0 / 4.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 27s | 0 / 0 / 5.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 42s | 0 / 0 / 5.9K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 45s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 2s | 0 / 0 / 3.8K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 23s | 0 / 0 / 4.3K |
@@ -5940,8 +7369,12 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 13s | 0 / 0 / 646 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 15s | 0 / 0 / 835 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 15s | 0 / 0 / 783 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 15s | 0 / 0 / 665 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 17s | 0 / 0 / 725 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 19s | 0 / 0 / 1.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 41s | 0 / 0 / 1.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 46s | 0 / 0 / 1.8K |
@@ -5961,14 +7394,18 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 16s | 0 / 0 / 4.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 40s | 0 / 0 / 5.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 53s | 0 / 0 / 3.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 3s | 0 / 0 / 3.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 13s | 0 / 0 / 8.8K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 28s | 0 / 0 / 9.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 54s | 0 / 0 / 3.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 8s | 0 / 0 / 9.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 14s | 0 / 0 / 6.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 11s | 0 / 0 / 5.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 5m 8s | 0 / 0 / 9.7K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 5m 9s | 0 / 0 / 19.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 40s | 0 / 0 / 3.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 6m 19s | 0 / 0 / 6.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 22.1K |
@@ -5980,9 +7417,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 13s | 0 / 0 / 702 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ✅ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 42s | 0 / 0 / 3.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 59s | 0 / 0 / 7.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 19s | 0 / 0 / 6.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 28s | 0 / 0 / 8.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 41s | 0 / 0 / 5.0K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 45s | 0 / 0 / 5.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 55s | 0 / 0 / 10.8K |
@@ -5990,10 +7430,12 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 4m 11s | 0 / 0 / 4.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 5m 13s | 0 / 0 / 4.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 5m 41s | 0 / 0 / 6.1K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 5m 44s | 0 / 0 / 16.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 6m 44s | 0 / 0 / 12.9K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 9m 39s | 0 / 0 / 6.0K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 10m 0s | 0 / 0 / 23.7K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 10m 0s | 0 / 0 / 14.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 16m 31s | 0 / 0 / 18.3K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 30m 0s | 0 / 0 / 19.9K |
 
@@ -6003,7 +7445,11 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-qwen35-397b-coding](#pi-qwen35-397b-coding) | ❌ | 6s | 0 / 0 / 37 |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 23s | 0 / 0 / 811 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 26s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 29s | 0 / 0 / 851 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 30s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 1.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 41s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 44s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 58s | 0 / 0 / 1.3K |
@@ -6012,6 +7458,7 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 14s | 0 / 0 / 2.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 24s | 0 / 0 / 3.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 29s | 0 / 0 / 1.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 29s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 34s | 0 / 0 / 2.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 35s | 0 / 0 / 1.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 36s | 0 / 0 / 0 |
@@ -6029,9 +7476,13 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 22s | 0 / 0 / 967 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 29s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 33s | 0 / 0 / 1.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 40s | 0 / 0 / 1.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 43s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 49s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 51s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 52s | 0 / 0 / 1.4K |
@@ -6050,13 +7501,18 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 14s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 18s | 0 / 0 / 665 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 957 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 20s | 0 / 0 / 1.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 22s | 0 / 0 / 1.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 27s | 0 / 0 / 946 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 31s | 0 / 0 / 726 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 31s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 37s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 39s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 44s | 0 / 0 / 1.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 50s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 50s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 50s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 51s | 0 / 0 / 941 |
@@ -6073,10 +7529,14 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 26s | 0 / 0 / 926 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 47s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 57s | 0 / 0 / 963 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 57s | 0 / 0 / 2.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 9s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 12s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 21s | 0 / 0 / 1.8K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 24s | 0 / 0 / 2.1K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 25s | 0 / 0 / 4.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 28s | 0 / 0 / 1.8K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 30s | 0 / 0 / 0 |
@@ -6085,6 +7545,7 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 46s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 51s | 0 / 0 / 2.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 19s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 27s | 0 / 0 / 5.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 36s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 38s | 0 / 0 / 2.0K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 2m 52s | 0 / 0 / 4.8K |
@@ -6099,12 +7560,16 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 16s | 0 / 0 / 929 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 25s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 30s | 0 / 0 / 1.9K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 34s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 37s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 41s | 0 / 0 / 1.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 53s | 0 / 0 / 714 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 55s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 56s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 57s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 6s | 0 / 0 / 1.5K |
@@ -6120,11 +7585,15 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 0s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 23s | 0 / 0 / 1.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 52s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 53s | 0 / 0 / 3.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 5s | 0 / 0 / 2.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 3m 37s | 0 / 0 / 12.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 4m 35s | 0 / 0 / 17.6K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 5m 53s | 0 / 0 / 17.8K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 7m 42s | 0 / 0 / 25.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 7m 49s | 0 / 0 / 4.8K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 8m 39s | 0 / 0 / 9.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 9m 28s | 0 / 0 / 0 |
@@ -6146,10 +7615,14 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 0s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 6s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 10s | 0 / 0 / 2.2K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 24s | 0 / 0 / 5.0K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 29s | 0 / 0 / 5.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 31s | 0 / 0 / 3.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 37s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 19s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 4m 14s | 0 / 0 / 15.7K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ❌ | 5m 4s | 0 / 0 / 18.2K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 30s | 0 / 0 / 20.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 6m 27s | 0 / 0 / 2.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 9m 4s | 0 / 0 / 6.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 24.4K |
@@ -6162,12 +7635,16 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 13s | 0 / 0 / 746 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 37s | 0 / 0 / 1.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 37s | 0 / 0 / 1.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 45s | 0 / 0 / 2.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 50s | 0 / 0 / 3.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 3s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 5s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 20s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 23s | 0 / 0 / 5.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 23s | 0 / 0 / 1.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 38s | 0 / 0 / 4.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 44s | 0 / 0 / 3.3K |
@@ -6186,11 +7663,16 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 23s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 37s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 48s | 0 / 0 / 4.6K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 3m 3s | 0 / 0 / 9.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 5s | 0 / 0 / 5.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 22s | 0 / 0 / 2.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 26s | 0 / 0 / 11.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 4m 2s | 0 / 0 / 14.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 4m 47s | 0 / 0 / 8.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 6m 2s | 0 / 0 / 19.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 6m 6s | 0 / 0 / 4.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 9m 16s | 0 / 0 / 31.0K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 9m 52s | 0 / 0 / 16.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.4K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 25.1K |
@@ -6206,7 +7688,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 20s | 0 / 0 / 637 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 28s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 29s | 0 / 0 / 864 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 34s | 0 / 0 / 1.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 40s | 0 / 0 / 1.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 56s | 0 / 0 / 2.0K |
@@ -6214,6 +7699,7 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 58s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 2s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 10s | 0 / 0 / 1.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 11s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 16s | 0 / 0 / 584 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 18s | 0 / 0 / 1.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 28s | 0 / 0 / 970 |
@@ -6232,12 +7718,16 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 20s | 0 / 0 / 1.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 22s | 0 / 0 / 1.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 25s | 0 / 0 / 1.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 28s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 46s | 0 / 0 / 1.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 47s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 48s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 50s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 0s | 0 / 0 / 3.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 30s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 32s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 36s | 0 / 0 / 2.4K |
@@ -6254,6 +7744,9 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 10s | 0 / 0 / 482 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 10s | 0 / 0 / 427 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 11s | 0 / 0 / 609 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 14s | 0 / 0 / 784 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 15s | 0 / 0 / 612 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
@@ -6265,6 +7758,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 33s | 0 / 0 / 602 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 33s | 0 / 0 / 585 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 36s | 0 / 0 / 545 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 41s | 0 / 0 / 2.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 56s | 0 / 0 / 476 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 13s | 0 / 0 / 720 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 36s | 0 / 0 / 904 |
@@ -6275,9 +7769,14 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 1.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 28s | 0 / 0 / 872 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 28s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 2.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 44s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 45s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 46s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 47s | 0 / 0 / 1.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 48s | 0 / 0 / 2.0K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 48s | 0 / 0 / 0 |
@@ -6299,7 +7798,9 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 952 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 20s | 0 / 0 / 993 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 22s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 34s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 41s | 0 / 0 / 1.2K |
@@ -6311,11 +7812,14 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 31s | 0 / 0 / 757 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 36s | 0 / 0 / 3.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 43s | 0 / 0 / 1.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 8s | 0 / 0 / 6.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 12s | 0 / 0 / 5.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 33s | 0 / 0 / 0 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 35s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 3m 41s | 0 / 0 / 13.9K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 43s | 0 / 0 / 1.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 37s | 0 / 0 / 0 |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 11.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 11m 2s | 0 / 0 / 11.3K |
 
 
@@ -6325,13 +7829,17 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 37s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 53s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 12s | 0 / 0 / 2.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 1m 18s | 0 / 0 / 4.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 29s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 1s | 0 / 0 / 3.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 3m 2s | 0 / 0 / 10.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 8s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 55s | 0 / 0 / 4.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 4s | 0 / 0 / 3.9K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 4m 11s | 0 / 0 / 13.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 51s | 0 / 0 / 3.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 7m 3s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 7m 20s | 0 / 0 / 8.2K |
@@ -6347,7 +7855,10 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 42s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 50s | 0 / 0 / 2.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 55s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 1s | 0 / 0 / 3.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 4s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 10s | 0 / 0 / 1.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 12s | 0 / 0 / 4.2K |
@@ -6355,8 +7866,10 @@
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 19s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 26s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 43s | 0 / 0 / 2.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 57s | 0 / 0 / 6.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 54s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 56s | 0 / 0 / 2.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 24s | 0 / 0 / 3.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 37s | 0 / 0 / 2.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 41s | 0 / 0 / 6.9K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 6m 0s | 0 / 0 / 3.7K |
@@ -6370,7 +7883,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 6m 17s | 0 / 0 / 22.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 6m 58s | 0 / 0 / 17.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ❌ | 9m 9s | 0 / 0 / 15.0K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 9m 28s | 0 / 0 / 33.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 22.2K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 28.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 11m 46s | 0 / 0 / 19.0K |
@@ -6382,6 +7898,7 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 34m 39s | 0 / 0 / 25.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 38m 21s | 0 / 0 / 37.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ❌ | 1h 0s | 0 / 0 / 40.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ❌ | 2h 41m 51s | 0 / 0 / 12.6K |
 
 
 # palindrome-products_java
@@ -6389,7 +7906,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 27s | 0 / 0 / 850 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 30s | 0 / 0 / 992 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 32s | 0 / 0 / 1.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 48s | 0 / 0 / 1.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 56s | 0 / 0 / 867 |
@@ -6397,6 +7917,8 @@
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 57s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 1s | 0 / 0 / 1.3K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 4s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 7s | 0 / 0 / 2.8K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 12s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 14s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 16s | 0 / 0 / 1.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 20s | 0 / 0 / 1.0K |
@@ -6414,7 +7936,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 14s | 0 / 0 / 703 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 15s | 0 / 0 / 715 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 17s | 0 / 0 / 565 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 17s | 0 / 0 / 713 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 18s | 0 / 0 / 427 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 1.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
@@ -6422,8 +7947,10 @@
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 30s | 0 / 0 / 892 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 37s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 37s | 0 / 0 / 1.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 38s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 39s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 59s | 0 / 0 / 806 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 59s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 8s | 0 / 0 / 1.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 15s | 0 / 0 / 965 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 49s | 0 / 0 / 3.9K |
@@ -6440,8 +7967,14 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 11s | 0 / 0 / 789 |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 21s | 0 / 0 / 227 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 52s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 52s | 0 / 0 / 1.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 54s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 58s | 0 / 0 / 3.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 28s | 0 / 0 / 8.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 31s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 33s | 0 / 0 / 3.8K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 7s | 0 / 0 / 5.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 8s | 0 / 0 / 2.6K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 3m 20s | 0 / 0 / 0 |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 3m 27s | 0 / 0 / 7.1K |
@@ -6455,7 +7988,6 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 8m 58s | 0 / 0 / 9.8K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ❌ | 9m 12s | 0 / 0 / 6.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 9m 33s | 0 / 0 / 5.7K |
-| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 10m 0s | 0 / 0 / 7.9K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 16m 59s | 0 / 0 / 11.4K |
 
 
@@ -6464,8 +7996,11 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 37s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 7s | 0 / 0 / 3.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 28s | 0 / 0 / 2.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 35s | 0 / 0 / 5.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 44s | 0 / 0 / 6.3K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 49s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 13s | 0 / 0 / 4.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 19s | 0 / 0 / 4.0K |
@@ -6473,7 +8008,9 @@
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 37s | 0 / 0 / 4.7K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 50s | 0 / 0 / 3.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 35s | 0 / 0 / 3.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 5s | 0 / 0 / 13.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 53s | 0 / 0 / 4.5K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 5m 2s | 0 / 0 / 8.9K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 6m 54s | 0 / 0 / 18.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 9m 35s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 10m 40s | 0 / 0 / 20.6K |
@@ -6492,14 +8029,19 @@
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 19s | 0 / 0 / 2.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 26s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 30s | 0 / 0 / 2.7K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 38s | 0 / 0 / 4.8K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 52s | 0 / 0 / 3.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 9s | 0 / 0 / 7.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 9s | 0 / 0 / 2.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 22s | 0 / 0 / 7.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 49s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 3m 21s | 0 / 0 / 10.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 51s | 0 / 0 / 2.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 4m 55s | 0 / 0 / 6.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 25s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 53s | 0 / 0 / 22.3K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 6m 21s | 0 / 0 / 23.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 10m 0s | 0 / 0 / 16.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.9K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 26.9K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 16m 50s | 0 / 0 / 11.1K |
@@ -6511,13 +8053,17 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 37s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 45s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 55s | 0 / 0 / 1.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 3s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 6s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 7s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 7s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 18s | 0 / 0 / 2.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 34s | 0 / 0 / 5.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 41s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 42s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 42s | 0 / 0 / 1.7K |
@@ -6532,12 +8078,17 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 36s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 7s | 0 / 0 / 3.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 9s | 0 / 0 / 2.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 16s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 18s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 27s | 0 / 0 / 4.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 31s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 33s | 0 / 0 / 1.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 40s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 45s | 0 / 0 / 2.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 47s | 0 / 0 / 4.8K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 50s | 0 / 0 / 2.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 1s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 20s | 0 / 0 / 3.4K |
@@ -6556,14 +8107,19 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 18s | 0 / 0 / 543 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 20s | 0 / 0 / 690 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 23s | 0 / 0 / 651 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 27s | 0 / 0 / 764 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 30s | 0 / 0 / 1.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 37s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 39s | 0 / 0 / 902 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 41s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 41s | 0 / 0 / 1.0K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 41s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 41s | 0 / 0 / 1.0K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 42s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 42s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 45s | 0 / 0 / 794 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 55s | 0 / 0 / 497 |
@@ -6582,14 +8138,19 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 40s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 49s | 0 / 0 / 2.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 51s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 56s | 0 / 0 / 2.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 57s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 58s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 0s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 5s | 0 / 0 / 1.8K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 10s | 0 / 0 / 2.0K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 1m 11s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 14s | 0 / 0 / 2.0K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 17s | 0 / 0 / 1.0K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 20s | 0 / 0 / 3.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 22s | 0 / 0 / 10.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 27s | 0 / 0 / 2.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 42s | 0 / 0 / 1.4K |
@@ -6605,6 +8166,9 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 15s | 0 / 0 / 812 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 17s | 0 / 0 / 920 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 17s | 0 / 0 / 861 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 21s | 0 / 0 / 886 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 23s | 0 / 0 / 1.4K |
@@ -6618,6 +8182,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 3s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 3m 7s | 0 / 0 / 5.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 3m 40s | 0 / 0 / 7.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 6m 29s | 0 / 0 / 22.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 8m 46s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 10m 44s | 0 / 0 / 3.4K |
 
@@ -6628,14 +8193,19 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 5s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 29s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 39s | 0 / 0 / 1.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 41s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 55s | 0 / 0 / 3.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 3s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 15s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 16s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 21s | 0 / 0 / 2.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 23s | 0 / 0 / 5.0K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 37s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 38s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 39s | 0 / 0 / 2.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 47s | 0 / 0 / 5.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 50s | 0 / 0 / 2.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 46s | 0 / 0 / 2.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 55s | 0 / 0 / 2.6K |
@@ -6650,9 +8220,14 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 17s | 0 / 0 / 799 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 17s | 0 / 0 / 824 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 21s | 0 / 0 / 979 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 23s | 0 / 0 / 1.2K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 23s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 31s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 36s | 0 / 0 / 930 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 36s | 0 / 0 / 848 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 38s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 42s | 0 / 0 / 1.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 44s | 0 / 0 / 0 |
@@ -6673,11 +8248,16 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 11s | 0 / 0 / 365 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 13s | 0 / 0 / 588 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 14s | 0 / 0 / 643 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 14s | 0 / 0 / 323 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 15s | 0 / 0 / 556 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 639 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 869 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 20s | 0 / 0 / 541 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 22s | 0 / 0 / 506 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 29s | 0 / 0 / 810 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 30s | 0 / 0 / 779 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 30s | 0 / 0 / 862 |
@@ -6697,12 +8277,16 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 20s | 0 / 0 / 1.2K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 42s | 0 / 0 / 2.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 47s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 51s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 52s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 3s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 21s | 0 / 0 / 1.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 35s | 0 / 0 / 5.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 42s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 49s | 0 / 0 / 1.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 46s | 0 / 0 / 1.7K |
@@ -6719,11 +8303,15 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 3s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 23s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 36s | 0 / 0 / 3.0K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 48s | 0 / 0 / 6.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 57s | 0 / 0 / 3.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 2s | 0 / 0 / 7.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 15s | 0 / 0 / 8.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 16s | 0 / 0 / 3.0K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 23s | 0 / 0 / 9.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 4m 34s | 0 / 0 / 8.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 56s | 0 / 0 / 5.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 6m 28s | 0 / 0 / 18.6K |
@@ -6731,6 +8319,7 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 6m 59s | 0 / 0 / 5.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 10m 0s | 0 / 0 / 22.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 1s | 0 / 0 / 10.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 19m 20s | 0 / 0 / 30.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 23m 11s | 0 / 0 / 7.7K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 19.1K |
@@ -6741,10 +8330,14 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 30s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 33s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 1.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 55s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 9s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 12s | 0 / 0 / 1.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 14s | 0 / 0 / 3.9K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 16s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 31s | 0 / 0 / 1.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 34s | 0 / 0 / 1.5K |
@@ -6762,12 +8355,16 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 56s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 28s | 0 / 0 / 2.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 30s | 0 / 0 / 4.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 4s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 59s | 0 / 0 / 4.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 3s | 0 / 0 / 10.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 30s | 0 / 0 / 4.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 3m 37s | 0 / 0 / 14.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 3m 44s | 0 / 0 / 2.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 5m 11s | 0 / 0 / 20.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 6m 41s | 0 / 0 / 18.8K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 7m 50s | 0 / 0 / 25.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 9m 21s | 0 / 0 / 5.2K |
@@ -6784,9 +8381,13 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 14s | 0 / 0 / 777 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 15s | 0 / 0 / 737 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 16s | 0 / 0 / 844 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 23s | 0 / 0 / 1.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 32s | 0 / 0 / 1.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 36s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 43s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 47s | 0 / 0 / 1.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 47s | 0 / 0 / 866 |
@@ -6809,6 +8410,9 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 25s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 30s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 43s | 0 / 0 / 2.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 44s | 0 / 0 / 2.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 46s | 0 / 0 / 2.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 0s | 0 / 0 / 2.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 11s | 0 / 0 / 4.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 21s | 0 / 0 / 2.6K |
@@ -6819,6 +8423,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 53s | 0 / 0 / 2.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 3s | 0 / 0 / 7.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 6s | 0 / 0 / 1.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 17s | 0 / 0 / 13.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 5m 37s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 7m 35s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 17m 31s | 0 / 0 / 28.5K |
@@ -6829,9 +8434,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 44s | 0 / 0 / 2.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 55s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 58s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 3s | 0 / 0 / 1.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 5s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 28s | 0 / 0 / 5.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 29s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 43s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 1s | 0 / 0 / 1.5K |
@@ -6840,6 +8448,7 @@
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 21s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 46s | 0 / 0 / 4.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 12s | 0 / 0 / 7.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 37s | 0 / 0 / 15.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 4m 52s | 0 / 0 / 11.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 8s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 7m 40s | 0 / 0 / 15.8K |
@@ -6851,7 +8460,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 27s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 40s | 0 / 0 / 2.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 40s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 43s | 0 / 0 / 2.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 46s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 10s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 11s | 0 / 0 / 1.9K |
@@ -6863,6 +8475,7 @@
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 0s | 0 / 0 / 1.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 23s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 5m 38s | 0 / 0 / 4.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 7m 29s | 0 / 0 / 29.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 14m 18s | 0 / 0 / 8.8K |
 
 
@@ -6871,15 +8484,20 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 27s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 48s | 0 / 0 / 1.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 51s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 8s | 0 / 0 / 2.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 9s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 11s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 11s | 0 / 0 / 2.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 20s | 0 / 0 / 1.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 33s | 0 / 0 / 3.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 38s | 0 / 0 / 5.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 43s | 0 / 0 / 3.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 8s | 0 / 0 / 2.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 53s | 0 / 0 / 5.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 10s | 0 / 0 / 12.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 6m 5s | 0 / 0 / 1.9K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 22.4K |
@@ -6893,13 +8511,17 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 10s | 0 / 0 / 537 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 14s | 0 / 0 / 789 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 21s | 0 / 0 / 909 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 21s | 0 / 0 / 1.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 22s | 0 / 0 / 364 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 22s | 0 / 0 / 1.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 24s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 33s | 0 / 0 / 968 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 36s | 0 / 0 / 1.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 41s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 41s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 44s | 0 / 0 / 12.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 18s | 0 / 0 / 929 |
@@ -6916,12 +8538,15 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 13s | 0 / 0 / 566 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 16s | 0 / 0 / 690 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 21s | 0 / 0 / 860 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 28s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 52s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 52s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 57s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 6s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 17s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 26s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 12s | 0 / 0 / 4.0K |
@@ -6929,8 +8554,10 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 33s | 0 / 0 / 3.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 49s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 5m 26s | 0 / 0 / 19.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 7m 42s | 0 / 0 / 25.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 8m 9s | 0 / 0 / 5.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 9m 27s | 0 / 0 / 23.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 1s | 0 / 0 / 11.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 17.0K |
 
 
@@ -6938,7 +8565,9 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [reference-qwen36-35b-a3b-coding](#reference-qwen36-35b-a3b-coding) | ❌ | 0s | 0 / 0 / 0 |
 | [pi-qwen35-397b-coding](#pi-qwen35-397b-coding) | ❌ | 5s | 0 / 0 / 38 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 42s | 0 / 0 / 2.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 52s | 0 / 0 / 2.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 55s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 5s | 0 / 0 / 1.7K |
@@ -6948,14 +8577,18 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 18s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 39s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 4s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 2m 18s | 0 / 0 / 6.9K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 17s | 0 / 0 / 11.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 3m 35s | 0 / 0 / 29 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 36s | 0 / 0 / 2.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 51s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 0s | 0 / 0 / 3.6K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 4m 30s | 0 / 0 / 8.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 4m 49s | 0 / 0 / 3.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 50s | 0 / 0 / 11.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 29s | 0 / 0 / 3.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 7m 5s | 0 / 0 / 25.7K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 7m 18s | 0 / 0 / 24.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 8m 5s | 0 / 0 / 20.9K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 20.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 14m 44s | 0 / 0 / 18.0K |
@@ -6968,8 +8601,13 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ✅ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 2s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 16s | 0 / 0 / 2.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 19s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 20s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 27s | 0 / 0 / 4.6K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 45s | 0 / 0 / 2.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 15s | 0 / 0 / 3.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 32s | 0 / 0 / 9.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 55s | 0 / 0 / 9.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 3m 19s | 0 / 0 / 5.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 3m 21s | 0 / 0 / 11.8K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 3m 55s | 0 / 0 / 5.3K |
@@ -6989,10 +8627,14 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 17s | 0 / 0 / 783 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 19s | 0 / 0 / 869 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 24s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 30s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 1.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 41s | 0 / 0 / 1.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 50s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 50s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 51s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 54s | 0 / 0 / 1.3K |
@@ -7013,9 +8655,13 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 12s | 0 / 0 / 574 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 13s | 0 / 0 / 678 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 14s | 0 / 0 / 759 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 789 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 21s | 0 / 0 / 742 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 22s | 0 / 0 / 873 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 25s | 0 / 0 / 677 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 29s | 0 / 0 / 748 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 31s | 0 / 0 / 1.3K |
@@ -7023,6 +8669,7 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 34s | 0 / 0 / 963 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 35s | 0 / 0 / 994 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 36s | 0 / 0 / 406 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 45s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 3s | 0 / 0 / 900 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 14s | 0 / 0 / 940 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 49s | 0 / 0 / 1.1K |
@@ -7036,11 +8683,15 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 11s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 22s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 41s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 45s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 56s | 0 / 0 / 3.5K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 59s | 0 / 0 / 3.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 13s | 0 / 0 / 5.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 17s | 0 / 0 / 6.7K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 3m 15s | 0 / 0 / 6.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 3m 19s | 0 / 0 / 10.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 29s | 0 / 0 / 3.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 4m 22s | 0 / 0 / 10.5K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 4m 41s | 0 / 0 / 8.0K |
@@ -7050,6 +8701,7 @@
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 7m 21s | 0 / 0 / 4.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.2K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 17.2K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 17.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 11m 28s | 0 / 0 / 35.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 13m 17s | 0 / 0 / 9.3K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 15m 0s | 0 / 0 / 0 |
@@ -7059,12 +8711,17 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 17s | 0 / 0 / 905 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 17s | 0 / 0 / 872 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 19s | 0 / 0 / 910 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 22s | 0 / 0 / 976 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 38s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 46s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 50s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 54s | 0 / 0 / 1.8K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 58s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 7s | 0 / 0 / 1.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 15s | 0 / 0 / 1.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 19s | 0 / 0 / 3.1K |
@@ -7084,16 +8741,21 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 13s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 17s | 0 / 0 / 806 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 1.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 23s | 0 / 0 / 759 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 38s | 0 / 0 / 1.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 39s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 40s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 40s | 0 / 0 / 1.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 42s | 0 / 0 / 676 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 43s | 0 / 0 / 1.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 44s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 50s | 0 / 0 / 1.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 8s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 9s | 0 / 0 / 7.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 14s | 0 / 0 / 849 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 16s | 0 / 0 / 0 |
@@ -7109,18 +8771,23 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 27s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 28s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 28s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 44s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 49s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 49s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 51s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 53s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 2s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 9s | 0 / 0 / 1.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 21s | 0 / 0 / 0 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 30s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 51s | 0 / 0 / 1.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 57s | 0 / 0 / 4.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 25s | 0 / 0 / 3.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 35s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 36s | 0 / 0 / 1.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 43s | 0 / 0 / 9.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 58s | 0 / 0 / 3.4K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 4m 41s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 4m 54s | 0 / 0 / 2.9K |
@@ -7132,6 +8799,9 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 39s | 0 / 0 / 2.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 39s | 0 / 0 / 2.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 45s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 48s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 52s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 6s | 0 / 0 / 1.6K |
@@ -7140,6 +8810,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 44s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 55s | 0 / 0 / 9.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 12s | 0 / 0 / 6.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 19s | 0 / 0 / 7.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 39s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 11s | 0 / 0 / 7.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 55s | 0 / 0 / 2.4K |
@@ -7154,6 +8825,9 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 26s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 27s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 54s | 0 / 0 / 3.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 54s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 54s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 59s | 0 / 0 / 1.7K |
@@ -7162,6 +8836,7 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 31s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 0s | 0 / 0 / 3.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 28s | 0 / 0 / 2.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 36s | 0 / 0 / 8.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 18s | 0 / 0 / 1.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 4m 44s | 0 / 0 / 13.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 42s | 0 / 0 / 0 |
@@ -7175,8 +8850,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 26s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 30s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 32s | 0 / 0 / 1.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 33s | 0 / 0 / 1.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 35s | 0 / 0 / 1.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 36s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 42s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 49s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 53s | 0 / 0 / 1.5K |
@@ -7194,8 +8873,12 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 15s | 0 / 0 / 749 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 962 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 19s | 0 / 0 / 876 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 20s | 0 / 0 / 1.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 36s | 0 / 0 / 884 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 40s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 41s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 43s | 0 / 0 / 1.3K |
@@ -7203,6 +8886,7 @@
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 46s | 0 / 0 / 1.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 50s | 0 / 0 / 665 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 55s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 4s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 8s | 0 / 0 / 1.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 22s | 0 / 0 / 1.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 7s | 0 / 0 / 5.4K |
@@ -7219,18 +8903,23 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 26s | 0 / 0 / 1.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 32s | 0 / 0 / 932 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 35s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 6s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 7s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 23s | 0 / 0 / 24.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 39s | 0 / 0 / 6.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 9s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 22s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 28s | 0 / 0 / 4.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 28s | 0 / 0 / 8.3K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 4m 0s | 0 / 0 / 14.9K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 7m 54s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 10m 0s | 0 / 0 / 21.5K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 29.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 18.0K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ❌ | 10m 18s | 0 / 0 / 18.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 16m 31s | 0 / 0 / 13.9K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 18.4K |
@@ -7243,8 +8932,11 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 31s | 0 / 0 / 1.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 35s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 36s | 0 / 0 / 1.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 41s | 0 / 0 / 2.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 52s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 57s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 1s | 0 / 0 / 1.7K |
@@ -7255,6 +8947,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 45s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 26s | 0 / 0 / 1.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 57s | 0 / 0 / 1.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 4s | 0 / 0 / 10.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 5m 23s | 0 / 0 / 3.3K |
 
 
@@ -7262,13 +8955,18 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 20s | 0 / 0 / 1.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 21s | 0 / 0 / 950 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 25s | 0 / 0 / 1.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 40s | 0 / 0 / 2.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 44s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 44s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 45s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 53s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 3s | 0 / 0 / 1.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 6s | 0 / 0 / 2.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 15s | 0 / 0 / 617 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 17s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 18s | 0 / 0 / 18.8K |
@@ -7287,8 +8985,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 22s | 0 / 0 / 955 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 28s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 1.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 39s | 0 / 0 / 1.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 43s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 44s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 46s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 49s | 0 / 0 / 1.3K |
@@ -7307,7 +9009,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 23s | 0 / 0 / 1.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 35s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 38s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 2s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 4s | 0 / 0 / 1.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 6s | 0 / 0 / 1.0K |
@@ -7315,6 +9020,7 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 13s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 15s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 18s | 0 / 0 / 1.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 44s | 0 / 0 / 7.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 45s | 0 / 0 / 1.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 45s | 0 / 0 / 6.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 9s | 0 / 0 / 1.9K |
@@ -7328,15 +9034,20 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 31s | 0 / 0 / 2.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 44s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 57s | 0 / 0 / 11.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 5m 7s | 0 / 0 / 16.7K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 5m 10s | 0 / 0 / 16.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ❌ | 5m 11s | 0 / 0 / 686 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 6m 21s | 0 / 0 / 5.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 6m 30s | 0 / 0 / 6.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 7m 38s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 7m 57s | 0 / 0 / 12.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 8m 24s | 0 / 0 / 22.3K |
 | [pi-step-35-flash](#pi-step-35-flash) | ❌ | 8m 31s | 0 / 0 / 17.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 8m 35s | 0 / 0 / 29.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.4K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 19.2K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 15.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ❌ | 15m 5s | 0 / 0 / 10.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 16m 34s | 0 / 0 / 15.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 18m 47s | 0 / 0 / 33.8K |
@@ -7352,14 +9063,18 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 16s | 0 / 0 / 4.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 2s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 3s | 0 / 0 / 3.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 12s | 0 / 0 / 3.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 19s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 3m 30s | 0 / 0 / 11.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 55s | 0 / 0 / 6.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 33s | 0 / 0 / 2.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 7m 6s | 0 / 0 / 5.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 9m 20s | 0 / 0 / 8.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 9m 21s | 0 / 0 / 29.3K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 9m 44s | 0 / 0 / 31.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 24.4K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 27.6K |
@@ -7373,6 +9088,8 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 23s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 32s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 36s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 38s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 43s | 0 / 0 / 1.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 44s | 0 / 0 / 1.7K |
@@ -7380,8 +9097,10 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 45s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 47s | 0 / 0 / 1.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 48s | 0 / 0 / 662 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 50s | 0 / 0 / 2.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 55s | 0 / 0 / 2.3K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 1s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 2s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 5s | 0 / 0 / 1.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 30s | 0 / 0 / 1.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 20s | 0 / 0 / 1.3K |
@@ -7395,14 +9114,19 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 38s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 38s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 41s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 41s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 46s | 0 / 0 / 1.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 47s | 0 / 0 / 715 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 48s | 0 / 0 / 1.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 48s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 54s | 0 / 0 / 1.5K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 56s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 0s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 1s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 4s | 0 / 0 / 1.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 12s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 15s | 0 / 0 / 1.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 40s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 41s | 0 / 0 / 2.1K |
@@ -7421,6 +9145,9 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 21s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 36s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 42s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 1s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 5s | 0 / 0 / 1.5K |
@@ -7430,6 +9157,7 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 41s | 0 / 0 / 3.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 43s | 0 / 0 / 1.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 52s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 10s | 0 / 0 / 8.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 17s | 0 / 0 / 1.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 42s | 0 / 0 / 7.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 10s | 0 / 0 / 2.3K |
@@ -7443,8 +9171,13 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 25s | 0 / 0 / 288 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 0s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 3s | 0 / 0 / 2.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 6s | 0 / 0 / 4.1K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 8s | 0 / 0 / 4.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 10s | 0 / 0 / 4.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 56s | 0 / 0 / 3.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 59s | 0 / 0 / 6.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 59s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 59s | 0 / 0 / 3.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 30s | 0 / 0 / 2.6K |
@@ -7466,12 +9199,17 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 13s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ✅ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 59s | 0 / 0 / 3.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 2m 14s | 0 / 0 / 7.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 21s | 0 / 0 / 3.8K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 31s | 0 / 0 / 9.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 58s | 0 / 0 / 4.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 59s | 0 / 0 / 4.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 9s | 0 / 0 / 5.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 28s | 0 / 0 / 12.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 28s | 0 / 0 / 3.2K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 4m 18s | 0 / 0 / 16.2K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 4m 51s | 0 / 0 / 13.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 6m 9s | 0 / 0 / 10.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 7m 42s | 0 / 0 / 5.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 10m 0s | 0 / 0 / 5.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.5K |
@@ -7486,12 +9224,17 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 17s | 0 / 0 / 934 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 17s | 0 / 0 / 899 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 20s | 0 / 0 / 904 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 25s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 26s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 37s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 41s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 43s | 0 / 0 / 1.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 49s | 0 / 0 / 1.3K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 53s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 2s | 0 / 0 / 1.9K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 7s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 19s | 0 / 0 / 3.0K |
@@ -7512,7 +9255,11 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 13s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 20s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 24s | 0 / 0 / 1.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 32s | 0 / 0 / 723 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 33s | 0 / 0 / 1.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 39s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 58s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 33s | 0 / 0 / 5.8K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 34s | 0 / 0 / 2.7K |
@@ -7523,6 +9270,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 58s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 3m 3s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 6s | 0 / 0 / 2.6K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 33s | 0 / 0 / 6.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 34s | 0 / 0 / 7.9K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 6m 14s | 0 / 0 / 3.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 8m 19s | 0 / 0 / 19.4K |
@@ -7536,6 +9284,7 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 4s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 22s | 0 / 0 / 848 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 58s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 58s | 0 / 0 / 1.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 27s | 0 / 0 / 2.9K |
@@ -7544,13 +9293,17 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 38s | 0 / 0 / 2.9K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 58s | 0 / 0 / 0 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 11s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 21s | 0 / 0 / 7.9K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 53s | 0 / 0 / 10.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 17s | 0 / 0 / 4.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 21s | 0 / 0 / 3.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 7m 16s | 0 / 0 / 4.4K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 7m 39s | 0 / 0 / 15.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 7m 43s | 0 / 0 / 25.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 9m 7s | 0 / 0 / 29.4K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 20.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 24.2K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 17.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 17m 20s | 0 / 0 / 10.8K |
 
 
@@ -7558,14 +9311,19 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 44s | 0 / 0 / 2.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 1m 6s | 0 / 0 / 3.5K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 9s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 20s | 0 / 0 / 2.2K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 27s | 0 / 0 / 3.8K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 31s | 0 / 0 / 1.9K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 31s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 32s | 0 / 0 / 3.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 36s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 46s | 0 / 0 / 5.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 51s | 0 / 0 / 6.7K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 16s | 0 / 0 / 7.7K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 17s | 0 / 0 / 4.3K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 2m 25s | 0 / 0 / 4.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 39s | 0 / 0 / 5.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 3m 17s | 0 / 0 / 5.0K |
@@ -7585,6 +9343,9 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 37s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 49s | 0 / 0 / 3.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 57s | 0 / 0 / 3.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 7s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 8s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 15s | 0 / 0 / 2.3K |
@@ -7593,6 +9354,7 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 55s | 0 / 0 / 1.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 1s | 0 / 0 / 2.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 1s | 0 / 0 / 4.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 27s | 0 / 0 / 8.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 31s | 0 / 0 / 3.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 18s | 0 / 0 / 8.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 47s | 0 / 0 / 2.5K |
@@ -7608,14 +9370,19 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 59s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 3s | 0 / 0 / 2.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 22s | 0 / 0 / 4.7K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 31s | 0 / 0 / 5.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 33s | 0 / 0 / 5.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 43s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 3s | 0 / 0 / 3.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 7s | 0 / 0 / 4.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 26s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 33s | 0 / 0 / 4.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 57s | 0 / 0 / 2.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 3m 58s | 0 / 0 / 13.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 16s | 0 / 0 / 15.7K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 40s | 0 / 0 / 3.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 6m 20s | 0 / 0 / 14.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 6m 41s | 0 / 0 / 12.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 7m 23s | 0 / 0 / 3.3K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 9m 11s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
@@ -7628,8 +9395,11 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 12s | 0 / 0 / 573 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 17s | 0 / 0 / 954 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 1.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 32s | 0 / 0 / 870 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 38s | 0 / 0 / 1.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 41s | 0 / 0 / 1.8K |
@@ -7642,6 +9412,7 @@
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 24s | 0 / 0 / 2.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 2s | 0 / 0 / 1.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 6s | 0 / 0 / 4.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 11s | 0 / 0 / 7.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 43s | 0 / 0 / 1.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 
@@ -7651,10 +9422,14 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 25s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 38s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 55s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 8s | 0 / 0 / 1.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 18s | 0 / 0 / 3.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 19s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 41s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 47s | 0 / 0 / 3.1K |
@@ -7672,11 +9447,15 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 51s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 58s | 0 / 0 / 1.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 59s | 0 / 0 / 3.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 5s | 0 / 0 / 3.0K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 9s | 0 / 0 / 691 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 18s | 0 / 0 / 4.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 25s | 0 / 0 / 1.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 31s | 0 / 0 / 4.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 43s | 0 / 0 / 6.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 44s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 53s | 0 / 0 / 3.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 29s | 0 / 0 / 3.0K |
@@ -7693,16 +9472,21 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 37s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 40s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 42s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 44s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 3s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 6s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 9s | 0 / 0 / 1.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 13s | 0 / 0 / 1.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 14s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 16s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 56s | 0 / 0 / 3.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 2s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 6s | 0 / 0 / 3.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 10s | 0 / 0 / 1.2K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 24s | 0 / 0 / 4.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 3m 10s | 0 / 0 / 3.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 12s | 0 / 0 / 7.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 15s | 0 / 0 / 1.9K |
@@ -7716,7 +9500,10 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 27s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 30s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 53s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 55s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 55s | 0 / 0 / 1.8K |
@@ -7724,6 +9511,7 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 9s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 11s | 0 / 0 / 1.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 22s | 0 / 0 / 3.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 26s | 0 / 0 / 4.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 46s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 52s | 0 / 0 / 1.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 2s | 0 / 0 / 2.0K |
@@ -7737,10 +9525,14 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 26s | 0 / 0 / 907 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 36s | 0 / 0 / 2.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 47s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 53s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 55s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 3s | 0 / 0 / 3.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 7s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 8s | 0 / 0 / 1.9K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 3s | 0 / 0 / 5.7K |
@@ -7760,9 +9552,13 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 37s | 0 / 0 / 5.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 3m 38s | 0 / 0 / 6.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 3m 41s | 0 / 0 / 10.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 3m 51s | 0 / 0 / 11.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 3m 56s | 0 / 0 / 5.6K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 4m 2s | 0 / 0 / 6.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 5m 0s | 0 / 0 / 4.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 5m 9s | 0 / 0 / 14.9K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 5m 22s | 0 / 0 / 16.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 23s | 0 / 0 / 17.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 7m 10s | 0 / 0 / 10.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 7m 45s | 0 / 0 / 5.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 9m 53s | 0 / 0 / 21.3K |
@@ -7778,16 +9574,21 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 14s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 35s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 42s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 22s | 0 / 0 / 2.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 36s | 0 / 0 / 5.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 38s | 0 / 0 / 3.0K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 41s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 45s | 0 / 0 / 14.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 1s | 0 / 0 / 1.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 17s | 0 / 0 / 2.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 18s | 0 / 0 / 4.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 25s | 0 / 0 / 8.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 46s | 0 / 0 / 5.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 53s | 0 / 0 / 5.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 12s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 14s | 0 / 0 / 2.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 4m 18s | 0 / 0 / 12.7K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 5m 34s | 0 / 0 / 14.9K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 7m 47s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 10m 0s | 0 / 0 / 14.9K |
@@ -7799,11 +9600,15 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 31s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 36s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 2.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 38s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 2s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 5s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 10s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 12s | 0 / 0 / 4.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 12s | 0 / 0 / 3.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 13s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 16s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 29s | 0 / 0 / 2.0K |
@@ -7825,9 +9630,13 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 35s | 0 / 0 / 2.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 46s | 0 / 0 / 2.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 47s | 0 / 0 / 2.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 4m 15s | 0 / 0 / 10.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 4m 15s | 0 / 0 / 13.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 33s | 0 / 0 / 18.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 5m 30s | 0 / 0 / 13.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 5m 40s | 0 / 0 / 9.7K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 5m 40s | 0 / 0 / 14.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 48s | 0 / 0 / 15.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 5m 51s | 0 / 0 / 10.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 7m 25s | 0 / 0 / 0 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 10m 0s | 0 / 0 / 5.7K |
@@ -7843,6 +9652,9 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 26s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 1.7K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 35s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 48s | 0 / 0 / 1.2K |
@@ -7851,6 +9663,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 24s | 0 / 0 / 11.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 46s | 0 / 0 / 3.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 46s | 0 / 0 / 1.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 53s | 0 / 0 / 6.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 33s | 0 / 0 / 1.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 10s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 20s | 0 / 0 / 3.0K |
@@ -7867,15 +9680,19 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ❌ | 2m 2s | 0 / 0 / 478 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 45s | 0 / 0 / 4.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 3m 37s | 0 / 0 / 11.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 7m 47s | 0 / 0 / 15.8K |
 | [pi-step-35-flash](#pi-step-35-flash) | ❌ | 7m 58s | 0 / 0 / 17.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 8m 11s | 0 / 0 / 22.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 8m 13s | 0 / 0 / 5.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 9m 38s | 0 / 0 / 9.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ❌ | 9m 41s | 0 / 0 / 30.5K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 6.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 21.9K |
-| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 10m 0s | 0 / 0 / 23.7K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 10m 0s | 0 / 0 / 17.4K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 25.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 10m 10s | 0 / 0 / 17.8K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 10m 51s | 0 / 0 / 27.8K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ❌ | 19m 11s | 0 / 0 / 12.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 20m 23s | 0 / 0 / 29.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 28m 39s | 0 / 0 / 18.8K |
@@ -7888,8 +9705,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 18s | 0 / 0 / 1.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 21s | 0 / 0 / 1.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 23s | 0 / 0 / 1.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 30s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 30s | 0 / 0 / 1.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 37s | 0 / 0 / 1.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 38s | 0 / 0 / 570 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 44s | 0 / 0 / 1.2K |
@@ -7897,6 +9718,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 59s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 1s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 7s | 0 / 0 / 2.5K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 8s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 10s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 11s | 0 / 0 / 1.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 31s | 0 / 0 / 1.3K |
@@ -7912,7 +9734,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 15s | 0 / 0 / 776 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 28s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 2.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 2.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 40s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 44s | 0 / 0 / 1.3K |
@@ -7924,10 +9749,12 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 13s | 0 / 0 / 3.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 24s | 0 / 0 / 1.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 16s | 0 / 0 / 4.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 25s | 0 / 0 / 8.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 28s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 36s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 56s | 0 / 0 / 1.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 28s | 0 / 0 / 0 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 7m 54s | 0 / 0 / 12.4K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 18.4K |
 
 
@@ -7935,6 +9762,8 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 10s | 0 / 0 / 463 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 15s | 0 / 0 / 804 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 15s | 0 / 0 / 652 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 22s | 0 / 0 / 362 |
@@ -7943,9 +9772,11 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 31s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 35s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 4s | 0 / 0 / 4.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 14s | 0 / 0 / 8.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 26s | 0 / 0 / 5.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 35s | 0 / 0 / 2.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 10s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 24s | 0 / 0 / 11.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 50s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 58s | 0 / 0 / 6.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 1s | 0 / 0 / 2.9K |
@@ -7958,12 +9789,16 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 30s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 45s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 47s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 57s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 0s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 5s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 12s | 0 / 0 / 1.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 16s | 0 / 0 / 1.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 18s | 0 / 0 / 4.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 22s | 0 / 0 / 12.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 40s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 21s | 0 / 0 / 1.8K |
@@ -7973,6 +9808,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 14s | 0 / 0 / 4.1K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 4m 45s | 0 / 0 / 9.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 5m 15s | 0 / 0 / 12.2K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 5m 22s | 0 / 0 / 9.8K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 5m 48s | 0 / 0 / 19.3K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 9m 33s | 0 / 0 / 7.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.1K |
@@ -7982,9 +9818,14 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 9s | 0 / 0 / 437 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 10s | 0 / 0 / 401 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 11s | 0 / 0 / 583 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 14s | 0 / 0 / 684 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 21s | 0 / 0 / 1.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 21s | 0 / 0 / 772 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 22s | 0 / 0 / 691 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 25s | 0 / 0 / 713 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 26s | 0 / 0 / 439 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 27s | 0 / 0 / 752 |
@@ -8007,7 +9848,9 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 39s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 39s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 44s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 46s | 0 / 0 / 1.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 47s | 0 / 0 / 770 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 47s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 52s | 0 / 0 / 1.2K |
@@ -8015,10 +9858,12 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 59s | 0 / 0 / 1.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 5s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 8s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 19s | 0 / 0 / 3.5K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 19s | 0 / 0 / 1.9K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 25s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 35s | 0 / 0 / 14.8K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 41s | 0 / 0 / 5.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 46s | 0 / 0 / 2.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 48s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 2s | 0 / 0 / 1.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 15s | 0 / 0 / 1.2K |
@@ -8035,8 +9880,11 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 19s | 0 / 0 / 816 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 32s | 0 / 0 / 841 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 33s | 0 / 0 / 975 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 36s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 45s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 4s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 11s | 0 / 0 / 1.0K |
@@ -8046,7 +9894,9 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 17s | 0 / 0 / 993 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 44s | 0 / 0 / 6.7K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 3m 27s | 0 / 0 / 2.5K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 44s | 0 / 0 / 4.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 54s | 0 / 0 / 2.3K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 9s | 0 / 0 / 12.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 44s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 4m 49s | 0 / 0 / 1.6K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 10m 0s | 0 / 0 / 0 |
@@ -8057,8 +9907,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 25s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 37s | 0 / 0 / 2.3K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 41s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 53s | 0 / 0 / 1.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 4s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 5s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 6s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 13s | 0 / 0 / 1.4K |
@@ -8078,8 +9932,13 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 13s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 21s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 21s | 0 / 0 / 946 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 23s | 0 / 0 / 1.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 30s | 0 / 0 / 1.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 31s | 0 / 0 / 1.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 35s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 44s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 45s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 45s | 0 / 0 / 1.4K |
@@ -8100,8 +9959,12 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 3m 36s | 0 / 0 / 13.7K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 43s | 0 / 0 / 12.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 3m 45s | 0 / 0 / 6.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 4m 10s | 0 / 0 / 6.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 4m 24s | 0 / 0 / 17.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 15s | 0 / 0 / 18.8K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 9m 48s | 0 / 0 / 33.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 22.1K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 25.8K |
@@ -8120,7 +9983,11 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 38s | 0 / 0 / 2.6K |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 41s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 47s | 0 / 0 / 2.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 51s | 0 / 0 / 2.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 7s | 0 / 0 / 3.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 12s | 0 / 0 / 3.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 16s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 29s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 43s | 0 / 0 / 14.4K |
@@ -8128,6 +9995,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 59s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 3s | 0 / 0 / 2.7K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 18s | 0 / 0 / 7.2K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 24s | 0 / 0 / 4.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 31s | 0 / 0 / 6.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 3m 17s | 0 / 0 / 3.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 3m 19s | 0 / 0 / 0 |
@@ -8152,7 +10020,11 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 20s | 0 / 0 / 1.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 31s | 0 / 0 / 1.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 8s | 0 / 0 / 2.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 16s | 0 / 0 / 7.9K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 32s | 0 / 0 / 2.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 38s | 0 / 0 / 14.0K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 4m 0s | 0 / 0 / 12.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 4m 1s | 0 / 0 / 15.0K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 4m 7s | 0 / 0 / 8.0K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 50s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 5m 22s | 0 / 0 / 11.0K |
@@ -8160,6 +10032,7 @@
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 24.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 24.6K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 26.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 17.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 10m 41s | 0 / 0 / 7.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 26.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ❌ | 51m 13s | 0 / 0 / 41.5K |
@@ -8170,7 +10043,11 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 35s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 44s | 0 / 0 / 2.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 57s | 0 / 0 / 1.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 7s | 0 / 0 / 3.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 15s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 0s | 0 / 0 / 2.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 2s | 0 / 0 / 7.5K |
@@ -8185,6 +10062,7 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 8m 54s | 0 / 0 / 25.9K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 15.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 17.4K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 17.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 15.1K |
 
@@ -8193,7 +10071,10 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 19s | 0 / 0 / 902 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 30s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 32s | 0 / 0 / 1.8K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 53s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 58s | 0 / 0 / 1.5K |
@@ -8201,11 +10082,13 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 59s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 16s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 19s | 0 / 0 / 1.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 42s | 0 / 0 / 4.8K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 53s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 16s | 0 / 0 / 2.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 26s | 0 / 0 / 0 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 44s | 0 / 0 / 2.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 49s | 0 / 0 / 6.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 16s | 0 / 0 / 5.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 56s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 6m 23s | 0 / 0 / 3.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 7m 39s | 0 / 0 / 18.2K |
@@ -8218,14 +10101,19 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 25s | 0 / 0 / 934 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 41s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 47s | 0 / 0 / 2.4K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 54s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 0s | 0 / 0 / 1.2K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 5s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 11s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 11s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 14s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 25s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 36s | 0 / 0 / 2.3K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 39s | 0 / 0 / 4.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 43s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 55s | 0 / 0 / 4.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 4s | 0 / 0 / 1.5K |
@@ -8244,6 +10132,7 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 26s | 0 / 0 / 587 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 45s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 18s | 0 / 0 / 2.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 26s | 0 / 0 / 5.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 29s | 0 / 0 / 2.6K |
@@ -8252,8 +10141,12 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 0s | 0 / 0 / 4.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 22s | 30.9M / 26.5M / 800.6K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 34s | 0 / 0 / 4.6K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 45s | 0 / 0 / 5.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 6s | 0 / 0 / 3.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 12s | 0 / 0 / 11.7K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 4m 38s | 0 / 0 / 14.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 55s | 0 / 0 / 2.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 5m 3s | 0 / 0 / 18.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 6m 31s | 0 / 0 / 17.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 8m 41s | 0 / 0 / 4.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 2.2M / 3.4M / 39.6K |
@@ -8268,10 +10161,15 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 32s | 0 / 0 / 0 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 40s | 0 / 0 / 644 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 5s | 0 / 0 / 3.9K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 24s | 0 / 0 / 5.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 39s | 0 / 0 / 5.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 40s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 44s | 0 / 0 / 3.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 53s | 0 / 0 / 6.5K |
 | [pi-step-35-flash](#pi-step-35-flash) | ❌ | 2m 1s | 0 / 0 / 318 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 11s | 0 / 0 / 8.0K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 14s | 0 / 0 / 4.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 43s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 48s | 0 / 0 / 5.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 3m 3s | 0 / 0 / 6.0K |
@@ -8290,13 +10188,18 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 33s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 35s | 0 / 0 / 1.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 46s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 52s | 0 / 0 / 2.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 54s | 0 / 0 / 2.5K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 57s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 59s | 0 / 0 / 1.5K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 4s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 5s | 0 / 0 / 1.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 9s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 10s | 0 / 0 / 1.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 12s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 21s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 24s | 0 / 0 / 1.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 30s | 0 / 0 / 3.2K |
@@ -8320,9 +10223,13 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 1s | 0 / 0 / 3.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 3m 11s | 0 / 0 / 5.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 45s | 0 / 0 / 6.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 4m 8s | 0 / 0 / 15.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 37s | 0 / 0 / 2.8K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 4m 42s | 0 / 0 / 8.3K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 4m 45s | 0 / 0 / 16.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 5m 9s | 0 / 0 / 5.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 8m 4s | 0 / 0 / 29.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 8m 4s | 0 / 0 / 26.0K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 21.9K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 27.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 11m 29s | 0 / 0 / 10.3K |
@@ -8335,6 +10242,10 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 30s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 30s | 0 / 0 / 1.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 56s | 0 / 0 / 2.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 4s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 14s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 14s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 36s | 0 / 0 / 1.9K |
@@ -8358,21 +10269,25 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 5s | 0 / 0 / 2.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 19s | 0 / 0 / 5.6K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 38s | 0 / 0 / 3.9K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 39s | 0 / 0 / 8.0K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 41s | 0 / 0 / 6.9K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 3m 6s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 35s | 0 / 0 / 6.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 3m 51s | 0 / 0 / 5.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 4m 3s | 0 / 0 / 5.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 21s | 0 / 0 / 17.8K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 4m 30s | 0 / 0 / 7.0K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 31s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 33s | 0 / 0 / 10.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 4m 35s | 0 / 0 / 14.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 4m 37s | 0 / 0 / 2.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 5m 19s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 5m 21s | 0 / 0 / 4.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 28s | 0 / 0 / 14.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 6m 21s | 0 / 0 / 5.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 6m 33s | 0 / 0 / 9.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 9m 0s | 0 / 0 / 5.3K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 19.5K |
-| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 10m 0s | 0 / 0 / 29.5K |
 | [pi-step-35-flash](#pi-step-35-flash) | ❌ | 12m 37s | 0 / 0 / 18.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 21m 17s | 0 / 0 / 14.0K |
 
@@ -8383,15 +10298,20 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 23s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 30s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 31s | 0 / 0 / 1.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 34s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 46s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 51s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 54s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 58s | 0 / 0 / 1.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 5s | 0 / 0 / 1.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 9s | 0 / 0 / 2.5K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 11s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 12s | 0 / 0 / 1.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 17s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 33s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 5s | 0 / 0 / 1.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 13s | 0 / 0 / 2.1K |
@@ -8404,7 +10324,10 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 30s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 32s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 37s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 45s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 56s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 5s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 7s | 0 / 0 / 1.8K |
@@ -8413,6 +10336,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 37s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 4s | 0 / 0 / 1.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 5s | 0 / 0 / 2.0K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 27s | 0 / 0 / 7.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 42s | 0 / 0 / 7.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 49s | 0 / 0 / 2.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 5m 12s | 0 / 0 / 14.0K |
@@ -8426,8 +10350,12 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 13s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 23s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 27s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 32s | 0 / 0 / 1.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 33s | 0 / 0 / 834 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 41s | 0 / 0 / 1.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 46s | 0 / 0 / 1.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 51s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 51s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 17s | 0 / 0 / 1.6K |
@@ -8440,6 +10368,7 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 33s | 0 / 0 / 5.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 42s | 0 / 0 / 983 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 59s | 0 / 0 / 1.8K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 5s | 0 / 0 / 3.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 31s | 0 / 0 / 8.0K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 41s | 0 / 0 / 0 |
 
@@ -8448,13 +10377,17 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 17s | 0 / 0 / 980 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 27s | 0 / 0 / 1.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 54s | 0 / 0 / 2.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 59s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 0s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 7s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 13s | 0 / 0 / 2.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 15s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 16s | 0 / 0 / 5.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 1s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 3m 17s | 0 / 0 / 6.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 8m 3s | 0 / 0 / 11.1K |
@@ -8469,12 +10402,16 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 23s | 0 / 0 / 1.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 48s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 50s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 56s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 3s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 4s | 0 / 0 / 3.9K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 11s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 19s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 20s | 0 / 0 / 4.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 20s | 0 / 0 / 2.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 23s | 0 / 0 / 1.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 24s | 0 / 0 / 3.3K |
@@ -8482,6 +10419,7 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 41s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 44s | 0 / 0 / 1.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 44s | 0 / 0 / 1.6K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 57s | 0 / 0 / 5.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 5m 27s | 0 / 0 / 2.9K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 6m 13s | 0 / 0 / 5.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.1K |
@@ -8496,13 +10434,18 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 41s | 0 / 0 / 928 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 45s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 46s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 58s | 0 / 0 / 1.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 3s | 0 / 0 / 2.5K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 10s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 10s | 0 / 0 / 2.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 17s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 19s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 20s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 26s | 0 / 0 / 2.1K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 1m 33s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 43s | 0 / 0 / 2.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 48s | 0 / 0 / 4.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 56s | 0 / 0 / 1.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 3s | 0 / 0 / 0 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 6s | 0 / 0 / 2.4K |
@@ -8518,8 +10461,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 26s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 36s | 0 / 0 / 1.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 45s | 0 / 0 / 2.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 56s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 16s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 20s | 0 / 0 / 4.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 53s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 1s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 9s | 0 / 0 / 2.1K |
@@ -8539,12 +10486,17 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-qwen35-397b-coding](#pi-qwen35-397b-coding) | ❌ | 4s | 0 / 0 / 18 |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 24s | 0 / 0 / 788 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 32s | 0 / 0 / 859 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 35s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 37s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 44s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 48s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 48s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 52s | 0 / 0 / 1.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 52s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 52s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 56s | 0 / 0 / 1.3K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 57s | 0 / 0 / 1.9K |
@@ -8567,7 +10519,10 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 30s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.9K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 50s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 55s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 57s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 10s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 12s | 0 / 0 / 1.8K |
@@ -8577,6 +10532,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 50s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 51s | 0 / 0 / 2.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 12s | 0 / 0 / 1.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 28s | 0 / 0 / 8.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 2s | 0 / 0 / 1.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 10m 25s | 0 / 0 / 6.6K |
@@ -8587,6 +10543,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 36s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 47s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 48s | 0 / 0 / 2.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 49s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 59s | 0 / 0 / 1.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 7s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 13s | 0 / 0 / 1.3K |
@@ -8606,6 +10566,9 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 18s | 0 / 0 / 874 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 927 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 20s | 0 / 0 / 941 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 21s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 46s | 0 / 0 / 1.1K |
@@ -8613,6 +10576,7 @@
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 52s | 0 / 0 / 1.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 56s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 1s | 0 / 0 / 1.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 1s | 0 / 0 / 2.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 3s | 0 / 0 / 841 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 24s | 0 / 0 / 3.4K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 29s | 0 / 0 / 0 |
@@ -8629,15 +10593,20 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 6s | 0 / 0 / 3.9K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 31s | 0 / 0 / 2.3K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 52s | 0 / 0 / 5.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 28s | 0 / 0 / 2.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 42s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 3m 12s | 0 / 0 / 5.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 30s | 0 / 0 / 11.5K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 3m 53s | 0 / 0 / 319 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 5m 13s | 0 / 0 / 7.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 5m 14s | 0 / 0 / 18.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 11s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 6m 33s | 0 / 0 / 4.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 6m 35s | 0 / 0 / 10.0K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 8m 29s | 0 / 0 / 20.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 19.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 18.9K |
@@ -8651,9 +10620,12 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 16s | 0 / 0 / 665 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 24s | 0 / 0 / 870 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 36s | 0 / 0 / 2.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 43s | 0 / 0 / 2.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 44s | 0 / 0 / 2.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 52s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 53s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 4s | 0 / 0 / 1.8K |
@@ -8664,10 +10636,12 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 35s | 0 / 0 / 3.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 7s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 16s | 0 / 0 / 4.4K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 19s | 0 / 0 / 13.7K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 5m 8s | 0 / 0 / 12.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 9m 40s | 0 / 0 / 6.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 17.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 22m 27s | 0 / 0 / 12.0K |
 
 
@@ -8676,6 +10650,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 23s | 0 / 0 / 1.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 41s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 55s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 56s | 0 / 0 / 1.6K |
@@ -8683,8 +10658,11 @@
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 10s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 32s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 42s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 8s | 0 / 0 / 8.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 23s | 0 / 0 / 2.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 27s | 0 / 0 / 9.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 2s | 0 / 0 / 1.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 6s | 0 / 0 / 9.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 8s | 0 / 0 / 9.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 4m 15s | 0 / 0 / 17.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 22s | 0 / 0 / 9.4K |
@@ -8697,8 +10675,13 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 15s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 23s | 0 / 0 / 830 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 28s | 0 / 0 / 908 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 34s | 0 / 0 / 1.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 36s | 0 / 0 / 1.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 47s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 49s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 55s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 58s | 0 / 0 / 1.6K |
@@ -8720,11 +10703,15 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 17s | 0 / 0 / 966 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 20s | 0 / 0 / 1.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 21s | 0 / 0 / 939 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 23s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 27s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 31s | 0 / 0 / 820 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 33s | 0 / 0 / 927 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 36s | 0 / 0 / 931 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 41s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 54s | 0 / 0 / 1.1K |
@@ -8741,12 +10728,16 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 23s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 34s | 0 / 0 / 2.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 48s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 56s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 57s | 0 / 0 / 1.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 1s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 9s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 17s | 0 / 0 / 1.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 18s | 0 / 0 / 3.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 36s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 41s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 42s | 0 / 0 / 1.3K |
@@ -8760,7 +10751,10 @@
 
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 15s | 0 / 0 / 708 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 18s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 1.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 25s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 43s | 0 / 0 / 1.3K |
@@ -8773,10 +10767,12 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 21s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 33s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 34s | 0 / 0 / 3.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 1s | 0 / 0 / 7.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 28s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 36s | 0 / 0 / 6.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 53s | 0 / 0 / 1.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 33s | 0 / 0 / 0 |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 1s | 0 / 0 / 12.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 18.1K |
 
 
@@ -8786,12 +10782,17 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 13s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 26s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 28s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 28s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 35s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 49s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 52s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 0s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 8s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 13s | 0 / 0 / 5.9K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 29s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 50s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 50s | 0 / 0 / 4.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 59s | 0 / 0 / 1.6K |
@@ -8809,12 +10810,15 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 16s | 0 / 0 / 751 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 18s | 0 / 0 / 703 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 20s | 0 / 0 / 1.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 25s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 27s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 32s | 0 / 0 / 822 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 32s | 0 / 0 / 783 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 38s | 0 / 0 / 509 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 38s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 43s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 43s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 46s | 0 / 0 / 1.2K |
@@ -8822,6 +10826,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 7s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 22s | 0 / 0 / 1.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 10s | 0 / 0 / 1.3K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 17s | 0 / 0 / 5.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 8s | 0 / 0 / 6.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 14s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 30m 0s | 0 / 0 / 16.3K |
@@ -8832,11 +10837,15 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 28s | 0 / 0 / 5.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 35s | 0 / 0 / 2.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 18s | 0 / 0 / 6.6K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 3m 1s | 0 / 0 / 11.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 5s | 0 / 0 / 4.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 49s | 0 / 0 / 3.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 3s | 0 / 0 / 4.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 4m 10s | 0 / 0 / 6.8K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 5m 20s | 0 / 0 / 18.7K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 7m 14s | 0 / 0 / 26.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 8m 7s | 0 / 0 / 7.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 8m 18s | 0 / 0 / 5.0K |
@@ -8851,20 +10860,25 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 1m 33s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 47s | 0 / 0 / 2.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 3m 53s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 4m 10s | 0 / 0 / 6.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 5m 49s | 0 / 0 / 10.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 6m 15s | 0 / 0 / 9.9K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 6m 37s | 0 / 0 / 21.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 7m 4s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 7m 23s | 0 / 0 / 12.4K |
 | [pi-step-35-flash](#pi-step-35-flash) | ❌ | 7m 25s | 0 / 0 / 17.0K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 7m 49s | 0 / 0 / 24.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 7m 58s | 0 / 0 / 12.8K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 8m 0s | 0 / 0 / 28.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 8m 10s | 0 / 0 / 4.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 9m 40s | 0 / 0 / 27.9K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 11.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 19.6K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 21.3K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 11m 58s | 0 / 0 / 37.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 14m 51s | 0 / 0 / 13.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 16m 2s | 0 / 0 / 15.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 27.3K |
@@ -8875,12 +10889,17 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 23s | 0 / 0 / 4.1K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 24s | 0 / 0 / 3.4K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 48s | 0 / 0 / 4.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 29s | 0 / 0 / 4.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 37s | 0 / 0 / 6.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 39s | 0 / 0 / 9.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 1s | 0 / 0 / 7.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 2s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 4s | 0 / 0 / 5.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 3m 5s | 0 / 0 / 4.3K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 50s | 0 / 0 / 6.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 4m 45s | 0 / 0 / 4.5K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 5m 0s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 5m 1s | 0 / 0 / 8.2K |
@@ -8900,10 +10919,14 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 17s | 0 / 0 / 4.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 40s | 0 / 0 / 6.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 55s | 0 / 0 / 3.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 13s | 0 / 0 / 6.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 17s | 0 / 0 / 3.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 23s | 0 / 0 / 8.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 1s | 0 / 0 / 5.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 57s | 0 / 0 / 16.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 15s | 0 / 0 / 4.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 5m 23s | 0 / 0 / 9.9K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 6m 32s | 0 / 0 / 18.8K |
@@ -8913,6 +10936,7 @@
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 8m 15s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 8m 55s | 0 / 0 / 15.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 21.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 16.9K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 24.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 16.7K |
 
@@ -8922,11 +10946,15 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 31s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 33s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 1.9K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 54s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 57s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 12s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 21s | 0 / 0 / 2.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 22s | 0 / 0 / 3.5K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 26s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 27s | 0 / 0 / 1.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 40s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 47s | 0 / 0 / 2.4K |
@@ -8936,6 +10964,7 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 8s | 0 / 0 / 2.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 32s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 5m 9s | 0 / 0 / 2.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 5m 32s | 0 / 0 / 17.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 8m 16s | 0 / 0 / 18.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 9m 34s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 21m 39s | 0 / 0 / 15.0K |
@@ -8947,16 +10976,21 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 56s | 0 / 0 / 3.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 3s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 6s | 0 / 0 / 2.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 39s | 0 / 0 / 6.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 54s | 0 / 0 / 3.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 11s | 0 / 0 / 4.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 11s | 0 / 0 / 7.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 17s | 0 / 0 / 3.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 1s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 3m 7s | 0 / 0 / 5.8K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 56s | 0 / 0 / 14.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 45s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 6m 8s | 0 / 0 / 4.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 6m 14s | 0 / 0 / 12.8K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 8m 39s | 0 / 0 / 15.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 8m 56s | 0 / 0 / 7.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 24.4K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 30.0K |
@@ -8978,15 +11012,20 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 22s | 0 / 0 / 2.8K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 3m 34s | 0 / 0 / 2.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 45s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 4m 5s | 0 / 0 / 10.5K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 4m 19s | 0 / 0 / 7.1K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 37s | 0 / 0 / 15.3K |
+| [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 6m 0s | 0 / 0 / 14.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 6m 27s | 0 / 0 / 17.8K |
 | [pi-step-35-flash](#pi-step-35-flash) | ❌ | 7m 31s | 0 / 0 / 803 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 8m 35s | 0 / 0 / 26.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 22.4K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 26.4K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 12.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 15.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 11m 51s | 0 / 0 / 19.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 11m 57s | 0 / 0 / 3.5K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 12m 41s | 0 / 0 / 40.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 2s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 46m 32s | 0 / 0 / 50.1K |
 
@@ -8997,11 +11036,16 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 6s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 9s | 0 / 0 / 3.6K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 17s | 0 / 0 / 4.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 20s | 0 / 0 / 2.6K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 27s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 29s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 30s | 0 / 0 / 2.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 41s | 0 / 0 / 5.8K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 45s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 51s | 0 / 0 / 6.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 25s | 0 / 0 / 8.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 27s | 0 / 0 / 3.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 51s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 58s | 0 / 0 / 2.6K |
@@ -9019,8 +11063,11 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 23s | 0 / 0 / 848 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 1.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 46s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 54s | 0 / 0 / 2.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 58s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 4s | 0 / 0 / 1.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 8s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 11s | 0 / 0 / 2.0K |
@@ -9033,7 +11080,9 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 5s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 24s | 0 / 0 / 1.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 43s | 0 / 0 / 2.7K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 9s | 0 / 0 / 5.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 12s | 0 / 0 / 1.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 52s | 0 / 0 / 11.8K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 8m 46s | 0 / 0 / 6.8K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 9m 27s | 0 / 0 / 21.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 10m 10s | 0 / 0 / 7.3K |
@@ -9044,14 +11093,19 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 918 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 22s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 23s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 24s | 0 / 0 / 1.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 28s | 0 / 0 / 1.1K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 39s | 0 / 0 / 920 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 39s | 0 / 0 / 1.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 42s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 43s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 49s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 56s | 0 / 0 / 1.6K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 56s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 27s | 0 / 0 / 1.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 41s | 0 / 0 / 1.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 2s | 0 / 0 / 890 |
@@ -9068,10 +11122,15 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 10s | 0 / 0 / 438 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 11s | 0 / 0 / 449 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 11s | 0 / 0 / 399 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 14s | 0 / 0 / 440 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 14s | 0 / 0 / 701 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 16s | 0 / 0 / 688 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 18s | 0 / 0 / 632 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 18s | 0 / 0 / 291 |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 22s | 0 / 0 / 503 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 23s | 0 / 0 / 562 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 27s | 0 / 0 / 736 |
@@ -9091,11 +11150,15 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 22s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 24s | 0 / 0 / 1.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 55s | 0 / 0 / 1.7K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 7s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 8s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 10s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 16s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 50s | 0 / 0 / 3.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 1s | 0 / 0 / 7.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 13s | 0 / 0 / 4.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 28s | 0 / 0 / 2.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 36s | 0 / 0 / 9.9K |
@@ -9106,6 +11169,7 @@
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 7s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 7m 25s | 0 / 0 / 3.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 1s | 0 / 0 / 13.5K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 28m 32s | 0 / 0 / 18.1K |
 
 
@@ -9114,16 +11178,21 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ✅ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 42s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 0s | 0 / 0 / 1.5K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 1s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 11s | 0 / 0 / 3.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 16s | 0 / 0 / 3.8K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 16s | 0 / 0 / 7.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 29s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 34s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 43s | 0 / 0 / 2.7K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 55s | 0 / 0 / 4.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 58s | 0 / 0 / 3.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 17s | 0 / 0 / 5.2K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 35s | 0 / 0 / 4.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 50s | 0 / 0 / 0 |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 52s | 0 / 0 / 9.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 3m 28s | 0 / 0 / 2.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 37s | 0 / 0 / 3.4K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 3m 43s | 0 / 0 / 5.4K |
@@ -9139,10 +11208,14 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 55s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 1s | 0 / 0 / 2.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 2s | 0 / 0 / 3.2K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 14s | 0 / 0 / 4.1K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 8s | 0 / 0 / 7.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 19s | 0 / 0 / 2.5K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 34s | 0 / 0 / 9.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 23s | 0 / 0 / 3.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 3m 38s | 0 / 0 / 10.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 53s | 0 / 0 / 7.5K |
@@ -9160,17 +11233,22 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 47s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 8s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 18s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 4s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 8s | 0 / 0 / 4.9K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 52s | 0 / 0 / 12.8K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 4m 0s | 0 / 0 / 0 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 4m 10s | 0 / 0 / 4.6K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 16s | 0 / 0 / 18.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 5m 49s | 0 / 0 / 20.8K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 6m 22s | 0 / 0 / 19.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 8m 13s | 0 / 0 / 8.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 10m 0s | 0 / 0 / 18.5K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 23.2K |
+| [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 12.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 12m 37s | 0 / 0 / 4.3K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 16m 28s | 0 / 0 / 11.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 17m 43s | 0 / 0 / 23.3K |
@@ -9183,11 +11261,16 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 28s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 35s | 0 / 0 / 1.7K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 46s | 0 / 0 / 2.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 52s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 3s | 0 / 0 / 1.8K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 5s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 8s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 13s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 20s | 0 / 0 / 1.7K |
+| [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 32s | 0 / 0 / 2.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 44s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 46s | 0 / 0 / 4.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 51s | 0 / 0 / 1.7K |
@@ -9209,13 +11292,17 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 35s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 57s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 5s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 8s | 0 / 0 / 4.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 18s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 35s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 45s | 0 / 0 / 2.3K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 54s | 0 / 0 / 6.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 22s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 42s | 0 / 0 / 3.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 52s | 0 / 0 / 11.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 5s | 0 / 0 / 3.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 9s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 15s | 0 / 0 / 5.8K |
@@ -9232,7 +11319,10 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 48s | 0 / 0 / 1.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 56s | 0 / 0 / 997 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 59s | 0 / 0 / 2.6K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 3s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 6s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 9s | 0 / 0 / 3.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 24s | 0 / 0 / 1.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 37s | 0 / 0 / 3.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 50s | 0 / 0 / 3.0K |
@@ -9240,6 +11330,7 @@
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 1s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 14s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 26s | 0 / 0 / 4.0K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 3m 8s | 0 / 0 / 11.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 18s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 37s | 0 / 0 / 5.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 4m 8s | 0 / 0 / 12.4K |
@@ -9250,8 +11341,12 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 2s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 13s | 0 / 0 / 658 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 24s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 34s | 0 / 0 / 2.0K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 54s | 0 / 0 / 2.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 58s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 58s | 0 / 0 / 3.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 2s | 0 / 0 / 3.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 5s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 8s | 0 / 0 / 1.9K |
@@ -9273,6 +11368,10 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 10s | 0 / 0 / 4.0K |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 4m 38s | 0 / 0 / 17.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 4m 51s | 0 / 0 / 17.5K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 6m 22s | 0 / 0 / 17.8K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 6m 48s | 0 / 0 / 23.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 8m 13s | 0 / 0 / 13.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 8m 16s | 0 / 0 / 27.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 10m 0s | 0 / 0 / 17.7K |
@@ -9291,13 +11390,17 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 990 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 912 |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 17s | 0 / 0 / 930 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 20s | 0 / 0 / 1.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 24s | 0 / 0 / 1.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 35s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 36s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 38s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 41s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 50s | 0 / 0 / 1.1K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 53s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 55s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 56s | 0 / 0 / 1.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 58s | 0 / 0 / 925 |
@@ -9311,7 +11414,10 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
+| [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 22s | 0 / 0 / 4.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 6m 30s | 0 / 0 / 11.7K |
+| [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 7m 26s | 0 / 0 / 30.5K |
+| [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 9m 25s | 0 / 0 / 33.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.2K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 21.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ❌ | 10m 11s | 0 / 0 / 16.6K |
@@ -9323,6 +11429,7 @@
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 40m 40s | 0 / 0 / 50.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ❌ | 1h 0s | 0 / 0 / 39.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ❌ | 1h 0s | 0 / 0 / 49.1K |
+| [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2h 14m 59s | 0 / 0 / 69.6K |
 
 
 *Generated by BenchmarkResultAnalyzer*
