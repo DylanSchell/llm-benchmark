@@ -363,7 +363,12 @@ public class ReferenceAgent {
         // Get language handler
         LanguageHandler handler = handlerRegistry.getHandler(exercise);
 
-        // Prepare workspace (npm install, uv venv, etc.) - only needed once per language/benchmark run
+        // Prepare workspace (npm install, uv venv, etc.).
+        // This is called a second time here (the first call is in runReferenceSolution before runAgent)
+        // because the AI coding agent under test may have modified or destroyed the workspace
+        // (e.g., deleted node_modules, removed .venv, corrupted the build directory). Re-running
+        // ensures a clean, prepared workspace before executing tests so that test failures reflect
+        // the agent's solution quality rather than a missing dependency.
         try {
             prepareWorkspace(exercise, tempWorkDir);
         } catch (IOException e) {
@@ -563,11 +568,14 @@ public class ReferenceAgent {
             prompt.append("5. When you have validated the test cases execute correctly, the original test sources will be copied back into the workspace to make sure you did not tamper with them!");
         }
 
-        for (Path testPath : exercise.getTestPath()) {
-            if (exercise.getTestPath() != null && Files.exists(testPath)) {
-                String needle = "../polyglot-benchmark/" + exercise.getLanguage() + "/exercises/practice/" + exercise.getName();
-                String fixedTestPath = exercise.getTestPath().toString().replaceAll(needle, "/workspace");
-                prompt.append("Test file location: ").append(fixedTestPath).append("\n");
+        Iterable<Path> testPaths = exercise.getTestPath();
+        if (testPaths != null) {
+            for (Path testPath : testPaths) {
+                if (Files.exists(testPath)) {
+                    String needle = "../polyglot-benchmark/" + exercise.getLanguage() + "/exercises/practice/" + exercise.getName();
+                    String fixedTestPath = testPath.toString().replaceAll(needle, "/workspace");
+                    prompt.append("Test file location: ").append(fixedTestPath).append("\n");
+                }
             }
         }
 
