@@ -1,5 +1,6 @@
 package com.benchmark.web.service;
 
+import com.benchmark.config.Config;
 import com.benchmark.web.domain.BenchmarkSession;
 import com.benchmark.web.domain.RunStatus;
 import jakarta.annotation.PreDestroy;
@@ -19,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SessionManager {
     private static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
 
+    private final Config config;
     private final Map<String, BenchmarkSession> sessions = new ConcurrentHashMap<>();
 
     /**
@@ -30,9 +32,14 @@ public class SessionManager {
      * @param exerciseName The exercise name, or null for all exercises
      * @return The created session with its ID
      */
+    public SessionManager(Config config) {
+        this.config = config;
+    }
+
     public BenchmarkSession createSession(String agentName, String[] languages, String model, String exerciseName) {
         String sessionId = UUID.randomUUID().toString();
-        BenchmarkSession session = new BenchmarkSession(sessionId, agentName, languages, model, exerciseName);
+        long timeoutMs = config.getDocker().getTimeout() * 1000L;
+        BenchmarkSession session = new BenchmarkSession(sessionId, agentName, languages, model, exerciseName, timeoutMs);
         sessions.put(sessionId, session);
 
         logger.info("Created benchmark session: {} for {}/{} (model: {})", 

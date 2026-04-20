@@ -1,5 +1,7 @@
 package com.benchmark.web.domain;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -13,6 +15,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Tracks the state of a benchmark execution including status, configuration, and output streaming.
  */
 public class BenchmarkSession {
+    private static final Logger logger = LoggerFactory.getLogger(BenchmarkSession.class);
+
     private final String id;
     private final String agentName;
     private final String[] languages;
@@ -27,7 +31,7 @@ public class BenchmarkSession {
     private Instant endTime;
     private String errorMessage;
 
-    public BenchmarkSession(String id, String agentName, String[] languages, String model, String exerciseName) {
+    public BenchmarkSession(String id, String agentName, String[] languages, String model, String exerciseName, long timeoutMs) {
         this.id = id;
         this.agentName = agentName;
         this.languages = languages;
@@ -35,7 +39,7 @@ public class BenchmarkSession {
         this.exerciseName = exerciseName;
         this.startTime = Instant.now();
         this.status = RunStatus.PENDING;
-        this.sseEmitter = new SseEmitter(5 * 60 * 1000L); // 5 minute timeout
+        this.sseEmitter = new SseEmitter(timeoutMs);
         this.accumulatedOutput = new ArrayList<>();
         this.totalExercises = new AtomicInteger(0);
         this.completedExercises = new AtomicInteger(0);
@@ -114,6 +118,7 @@ public class BenchmarkSession {
 
     /**
      * Emits output line to SSE subscribers and accumulates it.
+     * Safe to call after completeOutput() - silently drops output if emitter is closed.
      */
     public void emitOutput(String line) {
         synchronized (accumulatedOutput) {
@@ -125,8 +130,12 @@ public class BenchmarkSession {
             String jsonPayload = "{\"data\":\"" + escapeJson(line) + "\"}";
             sseEmitter.send(SseEmitter.event()
                 .data(jsonPayload, MediaType.APPLICATION_JSON));
+        } catch (IllegalStateException e) {
+            // Emitter has already been completed (session finished) - drop the output
+            logger.debug("Dropping output for completed session {}: {}", id, line);
         } catch (Exception e) {
-            // Ignore - client may have disconnected
+            // Client may have disconnected
+            logger.debug("SSE send failed for session {}: {}", id, e.getMessage());
         }
     }
 

@@ -123,8 +123,8 @@ public class WebConfig implements WebMvcConfigurer {
      * SessionManager bean.
      */
     @Bean
-    public SessionManager sessionManager() {
-        return new SessionManager();
+    public SessionManager sessionManager(Config config) {
+        return new SessionManager(config);
     }
 
     /**
