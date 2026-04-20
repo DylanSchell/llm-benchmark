@@ -467,7 +467,7 @@ public class ReferenceAgent {
         if (Files.exists(exerciseDir.resolve("pom.xml"))) {
             return List.of("mvn", "test", "-q");
         } else if (Files.exists(exerciseDir.resolve("build.gradle"))) {
-            return List.of("/workspace/gradlew", "test", "--no-daemon", "-q");
+            return List.of("./gradlew", "test", "--no-daemon", "-q");
         } else if (Files.exists(exerciseDir.resolve("go.mod"))) {
             return List.of("go", "test");
         } else if (Files.exists(exerciseDir.resolve("package.json"))) {
@@ -555,11 +555,12 @@ public class ReferenceAgent {
             prompt.append("Please solve the following programming exercise.\n\n");
             prompt.append("Exercise: ").append(exercise.getName()).append("\n");
             prompt.append("Language: ").append(exercise.getLanguage()).append("\n\n");
-            prompt.append("Instructions:\n");
+            prompt.append("IMPORTANT RULES:\n");
             prompt.append("1. Implement the solution in the source files only, do not touch the test files.\n");
             prompt.append("2. Run the tests to verify your solution\n\n");
             prompt.append("3. The tests are validated to be correct, never assume the test to be wrong!\n\n");
             prompt.append("4. Do not run tests in the background, run them synchronously in the foreground.\n");
+            prompt.append("5. When you have validated the test cases execute correctly, the original test sources will be copied back into the workspace to make sure you did not tamper with them!");
         }
 
         for (Path testPath : exercise.getTestPath()) {
