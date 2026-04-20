@@ -48,7 +48,7 @@
                         <select id="agent" name="agent" required>
                             <option value="reference">Reference Agent</option>
                             <option value="claude">Claude Agent</option>
-                            <option value="pi">Pi Agent</option>
+                            <option value="pi" selected>Pi Agent</option>
                         </select>
                     </div>
 
@@ -60,23 +60,23 @@
                                 <span>Java</span>
                             </label>
                             <label class="language-checkbox">
-                                <input type="checkbox" name="language" value="go">
+                                <input type="checkbox" name="language" value="go" checked>
                                 <span>Go</span>
                             </label>
                             <label class="language-checkbox">
-                                <input type="checkbox" name="language" value="javascript">
+                                <input type="checkbox" name="language" value="javascript" checked>
                                 <span>JavaScript</span>
                             </label>
                             <label class="language-checkbox">
-                                <input type="checkbox" name="language" value="python">
+                                <input type="checkbox" name="language" value="python" checked>
                                 <span>Python</span>
                             </label>
                             <label class="language-checkbox">
-                                <input type="checkbox" name="language" value="rust">
+                                <input type="checkbox" name="language" value="rust" checked>
                                 <span>Rust</span>
                             </label>
                             <label class="language-checkbox">
-                                <input type="checkbox" name="language" value="cpp">
+                                <input type="checkbox" name="language" value="cpp" checked>
                                 <span>C++</span>
                             </label>
                         </div>
@@ -97,11 +97,11 @@
                         <label>Execution Mode</label>
                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
                             <label style="display: flex; align-items: center; cursor: pointer;">
-                                <input type="radio" name="mode" value="single" checked onchange="toggleExerciseMode()">
+                                <input type="radio" name="mode" value="single" onchange="toggleExerciseMode()">
                                 <span style="margin-left: 0.25rem;">Single exercise per language</span>
                             </label>
                             <label style="display: flex; align-items: center; cursor: pointer;">
-                                <input type="radio" name="mode" value="all" onchange="toggleExerciseMode()">
+                                <input type="radio" name="mode" value="all" checked onchange="toggleExerciseMode()">
                                 <span style="margin-left: 0.25rem;">All exercises per language</span>
                             </label>
                         </div>
@@ -149,6 +149,13 @@
                     const singleGroup = document.getElementById('single-exercise-group');
                     if (mode === 'single') {
                         singleGroup.style.display = 'block';
+                        // Pre-select all exercises for each selected language
+                        const selectedLanguages = Array.from(document.querySelectorAll('input[name="language"]:checked'))
+                            .map(cb => cb.value);
+                        selectedLanguages.forEach(lang => {
+                            const exercises = availableExercises[lang] || [];
+                            selectedExercises[lang] = new Set(exercises);
+                        });
                         updateExerciseList();
                     } else {
                         singleGroup.style.display = 'none';
