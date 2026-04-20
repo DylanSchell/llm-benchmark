@@ -97,11 +97,11 @@
                         <label>Execution Mode</label>
                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
                             <label style="display: flex; align-items: center; cursor: pointer;">
-                                <input type="radio" name="mode" value="single" onchange="toggleExerciseMode()">
+                                <input type="radio" name="mode" value="single" checked onchange="toggleExerciseMode()">
                                 <span style="margin-left: 0.25rem;">Single exercise per language</span>
                             </label>
                             <label style="display: flex; align-items: center; cursor: pointer;">
-                                <input type="radio" name="mode" value="all" checked onchange="toggleExerciseMode()">
+                                <input type="radio" name="mode" value="all" onchange="toggleExerciseMode()">
                                 <span style="margin-left: 0.25rem;">All exercises per language</span>
                             </label>
                         </div>
@@ -109,7 +109,7 @@
 
                     <div class="form-group" id="single-exercise-group">
                         <label for="exercise-select">Select Exercises</label>
-                        <div id="language-exercises" style="display: none;">
+                        <div id="language-exercises" style="display: block;">
                             <!-- Exercise lists will be populated here -->
                         </div>
                         <small style="color: #666;">Select exercises to run for each language</small>
