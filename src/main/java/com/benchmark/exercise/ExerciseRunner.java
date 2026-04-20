@@ -236,6 +236,8 @@ public class ExerciseRunner {
 
         List<Exercise> exercises = new ArrayList<>();
 
+        // Files.walk() does not follow symlinks by default, preventing infinite loops
+        // from circular symlinks. We document this explicitly for future maintainers.
         try (Stream<Path> paths = Files.walk(exercisesPath)) {
             paths.filter(Files::isDirectory)
                     .filter(this::isExerciseDirectory)
