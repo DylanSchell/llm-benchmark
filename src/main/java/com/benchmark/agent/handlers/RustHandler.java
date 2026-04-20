@@ -86,6 +86,7 @@ public class RustHandler implements LanguageHandler {
             return;
         }
 
+        int[] errorCount = {0};
         Files.walkFileTree(testsDir, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -96,11 +97,16 @@ public class RustHandler implements LanguageHandler {
                         updatedCode = updatedCode.replaceAll("#\\[ignore[(].*[)]", "");
                         Files.writeString(file, updatedCode);
                     } catch (IOException e) {
-                        logger.error("Error reading file {}", file);
+                        errorCount[0]++;
+                        logger.error("Failed to patch {}: {}", file.getFileName(), e.getMessage());
                     }
                 }
                 return FileVisitResult.CONTINUE;
             }
         });
+
+        if (errorCount[0] > 0) {
+            logger.warn("Failed to patch {} Rust test file(s) - some #[ignore] annotations may not have been removed", errorCount[0]);
+        }
     }
 }

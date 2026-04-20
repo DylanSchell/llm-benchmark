@@ -110,6 +110,7 @@ public class JavaHandler implements LanguageHandler {
             return;
         }
 
+        int[] errorCount = {0};
         Files.walkFileTree(testDir, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -119,11 +120,16 @@ public class JavaHandler implements LanguageHandler {
                         String updatedCode = testCode.replaceAll("@Disabled\\(.*\\)", "");
                         Files.writeString(file, updatedCode);
                     } catch (IOException e) {
-                        logger.error("Error reading file {}", file);
+                        errorCount[0]++;
+                        logger.error("Failed to patch {}: {}", file.getFileName(), e.getMessage());
                     }
                 }
                 return FileVisitResult.CONTINUE;
             }
         });
+
+        if (errorCount[0] > 0) {
+            logger.warn("Failed to patch {} Java test file(s) - some @Disabled annotations may not have been removed", errorCount[0]);
+        }
     }
 }

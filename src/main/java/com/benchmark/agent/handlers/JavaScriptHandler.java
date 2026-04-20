@@ -61,6 +61,7 @@ public class JavaScriptHandler implements LanguageHandler {
         logger.info("Replacing xtest( with test( in JavaScript tests");
 
         // Find and process all JavaScript/TypeScript test files
+        int[] errorCount = {0};
         try (var stream = Files.walk(tempWorkDir)) {
             stream.filter(Files::isRegularFile)
                     .filter(p -> {
@@ -79,9 +80,14 @@ public class JavaScriptHandler implements LanguageHandler {
                                 logger.info("Patched xtest in {}", testFile);
                             }
                         } catch (IOException e) {
-                            logger.error("Error reading file {}", testFile);
+                            errorCount[0]++;
+                            logger.error("Failed to patch {}: {}", testFile.getFileName(), e.getMessage());
                         }
                     });
+        }
+
+        if (errorCount[0] > 0) {
+            logger.warn("Failed to patch {} JavaScript/TypeScript test file(s) - some xtest() calls may not have been enabled", errorCount[0]);
         }
     }
 }
