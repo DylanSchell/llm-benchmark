@@ -88,13 +88,13 @@
                     e.preventDefault();
 
                     const formData = new FormData(this);
-                    const response = await fetch('/api/benchmark/run', {
+                    const response = await fetch('/api/benchmark/queue/schedule', {
                         method: 'POST',
                         body: formData
                     });
 
                     const data = await response.json();
-                    window.location.href = '/run?session=' + data.sessionId;
+                    window.location.href = '/';
                 });
             </script>
         </main>

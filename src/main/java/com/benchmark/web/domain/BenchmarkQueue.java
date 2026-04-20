@@ -126,15 +126,22 @@ public class BenchmarkQueue {
      * Cancel a specific item by ID.
      */
     public boolean cancelItem(String itemId) {
-        // Check pending queue
-        for (BenchmarkQueueItem item : pendingQueue) {
-            if (item.getId().equals(itemId)) {
+        // Check pending queue — use removeIf to avoid ConcurrentModificationException
+        // that would occur if we iterated and removed simultaneously.
+        final String targetId = itemId;
+        boolean foundInPending = pendingQueue.removeIf(item -> {
+            if (item.getId().equals(targetId)) {
                 item.setStatus(BenchmarkQueueItem.QueueItemStatus.CANCELLED);
-                pendingQueue.remove(item);
                 completedItems.add(item);
                 return true;
             }
+            return false;
+        });
+
+        if (foundInPending) {
+            return true;
         }
+
         // Check current running item
         BenchmarkQueueItem current = currentItem.get();
         if (current != null && current.getId().equals(itemId)) {
@@ -150,13 +157,8 @@ public class BenchmarkQueue {
      * Remove a specific item by ID (only if pending).
      */
     public boolean removeItem(String itemId) {
-        for (BenchmarkQueueItem item : pendingQueue) {
-            if (item.getId().equals(itemId)) {
-                pendingQueue.remove(item);
-                return true;
-            }
-        }
-        return false;
+        final String targetId = itemId;
+        return pendingQueue.removeIf(item -> item.getId().equals(targetId));
     }
 
     /**

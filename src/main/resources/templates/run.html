@@ -298,22 +298,21 @@
                         return;
                     }
 
-                    // For "all exercises" mode
+                    // For "all exercises" mode - schedule as individual queue items
+                    // so each exercise runs sequentially and the response returns immediately.
                     const formData = new FormData();
                     formData.append('agent', agent);
                     if (model) formData.append('model', model);
                     languages.forEach(lang => formData.append('language', lang));
-                    // exercise is null for "all exercises"
+                    // exercise is null for "all exercises" — scheduleBatch expands to individual items
 
-                    const response = await fetch('/api/benchmark/run', {
+                    const response = await fetch('/api/benchmark/queue/schedule', {
                         method: 'POST',
                         body: formData
                     });
 
                     const data = await response.json();
-                    if (data.sessionId) {
-                        window.location.href = '/benchmark/' + data.sessionId;
-                    } else if (data.items) {
+                    if (data.items) {
                         window.location.href = '/';
                     }
                 });

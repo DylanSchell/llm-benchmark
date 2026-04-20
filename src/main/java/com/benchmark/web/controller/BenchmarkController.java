@@ -83,37 +83,6 @@ public class BenchmarkController {
     }
 
     /**
-     * Start a benchmark run via API.
-     */
-    @PostMapping("/api/benchmark/run")
-    @ResponseBody
-    public Map<String, Object> startBenchmarkRun(
-            @RequestParam("agent") String agent,
-            @RequestParam("language") String[] languages,
-            @RequestParam(value = "model", required = false) String model,
-            @RequestParam(value = "exercise", required = false) String exercise) {
-
-        // Validate at least one language selected
-        if (languages == null || languages.length == 0) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("error", "At least one language must be selected");
-            return response;
-        }
-
-        logger.info("Starting benchmark: agent={}, model={}, languages={}, exercise={}", 
-                agent, model, String.join(",", languages), exercise);
-
-        String sessionId = benchmarkService.startBenchmark(agent, languages, model, exercise);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("sessionId", sessionId);
-        response.put("status", "started");
-        response.put("redirectUrl", "/benchmark/" + sessionId);
-
-        return response;
-    }
-
-    /**
      * View a benchmark session (running or completed).
      */
     @GetMapping("/benchmark/{id}")
@@ -279,12 +248,4 @@ public class BenchmarkController {
         return Arrays.asList("sonnet", "qwen3-coder-next");
     }
 
-    /**
-     * Get statistics from ResultService.
-     */
-    private Map<String, Object> getStatistics() {
-        // Delegate to ResultService via BenchmarkController for now
-        // In future, could be moved to a dedicated StatisticsService
-        return new HashMap<>();
-    }
 }

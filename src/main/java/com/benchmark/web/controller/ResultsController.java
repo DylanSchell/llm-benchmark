@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -70,49 +71,59 @@ public class ResultsController {
     }
 
     /**
-     * Result detail view by filename.
+     * Result detail view by agent/directory/language/exercise (e.g., /results/pi/pi-qwen35-122b/javascript/rational-numbers).
+     * The directory uniquely identifies each model run.
      */
-    @GetMapping("/{filename}")
-    public String resultDetail(@PathVariable String filename, Model model) {
+    @GetMapping("/{agent}/{directory}/{language}/{exercise}")
+    public String resultDetail(@PathVariable String agent, @PathVariable String directory, @PathVariable String language, @PathVariable String exercise, Model modelAttr) {
         try {
-            Map<String, Object> result = resultService.getResultByFilename(filename);
+            String key = directory + "/" + language + "/" + exercise;
+            Map<String, Object> result = resultService.getResultByFilename(key);
             if (result != null) {
-                model.addAttribute("result", result);
+                modelAttr.addAttribute("result", result);
             } else {
-                model.addAttribute("error", "Result not found");
+                modelAttr.addAttribute("error", "Result not found");
             }
         } catch (IOException e) {
             logger.error("Failed to load result: {}", e.getMessage());
-            model.addAttribute("error", "Failed to load result: " + e.getMessage());
+            modelAttr.addAttribute("error", "Failed to load result: " + e.getMessage());
         }
         return "result-detail";
     }
 
     /**
      * View trace HTML content for a result.
+     * Serves the HTML trace directly (not wrapped in a Thymeleaf template).
      */
-    @GetMapping("/{filename}/trace")
-    public String viewTrace(@PathVariable String filename, Model model) {
+    @GetMapping("/{agent}/{directory}/{language}/{exercise}/trace")
+    public void viewTrace(@PathVariable String agent, @PathVariable String directory, @PathVariable String language, @PathVariable String exercise, Model modelAttr, HttpServletResponse response) {
         try {
-            String traceContent = resultService.getTraceContent(filename);
+            String key = directory + "/" + language + "/" + exercise;
+            String traceContent = resultService.getTraceContent(key);
             if (traceContent != null) {
-                model.addAttribute("traceContent", traceContent);
-                return "trace-view";
+                response.setContentType("text/html; charset=UTF-8");
+                response.getWriter().write(traceContent);
             } else {
-                model.addAttribute("error", "Trace not found");
-                return "error";
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.setContentType("text/html; charset=UTF-8");
+                response.getWriter().write("<html><body><h1>Trace not found</h1><p>No trace file available for this result.</p></body></html>");
             }
         } catch (IOException e) {
             logger.error("Failed to load trace: {}", e.getMessage());
-            model.addAttribute("error", "Failed to load trace: " + e.getMessage());
-            return "error";
+            try {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.setContentType("text/html; charset=UTF-8");
+                response.getWriter().write("<html><body><h1>Error</h1><p>Failed to load trace: " + e.getMessage() + "</p></body></html>");
+            } catch (IOException ioEx) {
+                logger.error("Failed to write error response: {}", ioEx.getMessage());
+            }
         }
     }
 
     /**
-     * Exercise detail view.
+     * Exercise detail view (must be before /{directory}/{filename} since language is a known set of values).
      */
-    @GetMapping("/{language}/{exercise}")
+    @GetMapping("/{language:java|python|go|javascript|rust|cpp}/{exercise}")
     public String exerciseDetail(@PathVariable String language,
                                   @PathVariable String exercise,
                                   @RequestParam(value = "agent", required = false) String agent,
@@ -136,11 +147,12 @@ public class ResultsController {
     /**
      * API endpoint to get specific result data.
      */
-    @GetMapping("/api/{filename}")
+    @GetMapping("/api/{agent}/{directory}/{language}/{exercise}")
     @ResponseBody
-    public Map<String, Object> apiGetResult(@PathVariable String filename) {
+    public Map<String, Object> apiGetResult(@PathVariable String agent, @PathVariable String directory, @PathVariable String language, @PathVariable String exercise) {
         try {
-            return resultService.getResultByFilename(filename);
+            String key = directory + "/" + language + "/" + exercise;
+            return resultService.getResultByFilename(key);
         } catch (IOException e) {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Failed to load result: " + e.getMessage());

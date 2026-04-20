@@ -155,12 +155,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public com.benchmark.web.service.BenchmarkService benchmarkService(
             SessionManager sessionManager,
-            BenchmarkExecutor benchmarkExecutor,
             QueueProcessor queueProcessor,
             com.benchmark.web.service.ResultService resultService,
             ExerciseRunner exerciseRunner) {
         return new com.benchmark.web.service.BenchmarkService(
-                sessionManager, benchmarkExecutor, queueProcessor, resultService, exerciseRunner);
+                sessionManager, queueProcessor, resultService, exerciseRunner);
     }
 
     /**

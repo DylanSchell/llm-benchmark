@@ -5,9 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -116,6 +121,14 @@ public class BenchmarkSession {
         this.completedExercises.set(count);
     }
 
+    // Shared ObjectMapper for JSON serialization in emitOutput().
+    // Non-thread-safe, but we only use it in a single-threaded context
+    // (the thread that calls emitOutput, which is the Docker output reader thread).
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+    static {
+        JSON_MAPPER.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+    }
+
     /**
      * Emits output line to SSE subscribers and accumulates it.
      * Safe to call after completeOutput() - silently drops output if emitter is closed.
@@ -125,9 +138,12 @@ public class BenchmarkSession {
             accumulatedOutput.add(line);
         }
         try {
-            // Wrap data in JSON to preserve leading/trailing whitespace
-            // EventSource may trim whitespace from raw SSE data fields
-            String jsonPayload = "{\"data\":\"" + escapeJson(line) + "\"}";
+            // Wrap data in proper JSON to preserve leading/trailing whitespace
+            // and correctly escape all special characters (including control chars
+            // like \b, \f, and unprintable bytes that manual escaping would miss).
+            Map<String, String> payload = new LinkedHashMap<>();
+            payload.put("data", line);
+            String jsonPayload = JSON_MAPPER.writeValueAsString(payload);
             sseEmitter.send(SseEmitter.event()
                 .data(jsonPayload, MediaType.APPLICATION_JSON));
         } catch (IllegalStateException e) {
@@ -137,19 +153,6 @@ public class BenchmarkSession {
             // Client may have disconnected
             logger.debug("SSE send failed for session {}: {}", id, e.getMessage());
         }
-    }
-
-    /**
-     * Escapes special characters for JSON string values.
-     */
-    private String escapeJson(String value) {
-        if (value == null) return "";
-        return value
-            .replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-            .replace("\n", "\\n")
-            .replace("\r", "\\r")
-            .replace("\t", "\\t");
     }
 
     /**

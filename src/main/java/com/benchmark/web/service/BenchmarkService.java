@@ -15,37 +15,17 @@ import java.util.List;
 public class BenchmarkService {
 
     private final SessionManager sessionManager;
-    private final BenchmarkExecutor benchmarkExecutor;
     private final QueueProcessor queueProcessor;
     private final ResultService resultService;
     private final com.benchmark.exercise.ExerciseRunner exerciseRunner;
 
-    public BenchmarkService(SessionManager sessionManager, BenchmarkExecutor benchmarkExecutor,
+    public BenchmarkService(SessionManager sessionManager,
                            QueueProcessor queueProcessor, ResultService resultService,
                            com.benchmark.exercise.ExerciseRunner exerciseRunner) {
         this.sessionManager = sessionManager;
-        this.benchmarkExecutor = benchmarkExecutor;
         this.queueProcessor = queueProcessor;
         this.resultService = resultService;
         this.exerciseRunner = exerciseRunner;
-    }
-
-    /**
-     * Creates a new benchmark session and starts execution asynchronously.
-     *
-     * @param agentName    The agent to use ("reference" or "claude")
-     * @param languages    The programming languages (can be multiple)
-     * @param model        The model to use (optional, uses config default if null)
-     * @param exerciseName The exercise name, or null for all exercises
-     * @return The session ID
-     */
-    public String startBenchmark(String agentName, String[] languages, String model, String exerciseName) {
-        BenchmarkSession session = sessionManager.createSession(agentName, languages, model, exerciseName);
-
-        // Execute asynchronously via BenchmarkExecutor
-        benchmarkExecutor.execute(session);
-
-        return session.getId();
     }
 
     /**

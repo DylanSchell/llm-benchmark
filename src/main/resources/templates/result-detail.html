@@ -7,10 +7,6 @@
 <body>
     <div th:replace="~{layout :: layout(title='Result Detail', content=~{::main})}">
         <main>
-            <nav style="margin-bottom: 1rem;">
-                <a href="/results" class="btn">&larr; Back to Results</a>
-            </nav>
-
             <h2 style="margin-bottom: 0.5rem;">Result Details</h2>
 
             <div th:if="${error != null}" style="color: #e74c3c; margin-bottom: 1rem;">
@@ -18,10 +14,29 @@
             </div>
 
             <div th:if="${result != null}" class="card">
+                <!-- Breadcrumb: Results > agent > directory > language > exercise -->
+                <nav style="margin-bottom: 1rem; font-size: 0.875rem; color: #7f8c8d;">
+                    <a href="/results">Results</a>
+                    <span th:if="${result['agent']}">
+                        &gt; <a th:href="@{/results(agent=${result['agent']})}" style="color: #3498db; text-decoration: none;">[[${result['agent']}]]</a>
+                    </span>
+                    <span th:if="${result['directory']}">
+                        &gt; <a th:href="${result['detailUrl']}" style="color: #3498db; text-decoration: none;">[[${result['directory']}]]</a>
+                    </span>
+                    <span th:if="${result['language']}">
+                        &gt; <a th:href="@{/results(language=${result['language']})}" style="color: #3498db; text-decoration: none;">[[${result['language']}]]</a>
+                    </span>
+                    <span style="color: #333;"> &gt; <span th:text="${result['filename']}">result_xxx.json</span></span>
+                </nav>
+
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
                     <div>
                         <strong>Timestamp:</strong>
                         <div th:text="${result['timestamp'] != null ? result['timestamp'].replace('T', ' ').substring(0, 16) : ''}">2024-01-01 00:00</div>
+                    </div>
+                    <div>
+                        <strong>Model:</strong>
+                        <div th:text="${result['model']}">qwen35-122b</div>
                     </div>
                     <div>
                         <strong>Agent:</strong>
@@ -103,7 +118,8 @@
     </div>
 
     <script th:inline="javascript">
-        const resultFilename = [[${result['filename']}]];
+        const resultDetailUrl = [[${result['detailUrl']}]];
+        const resultTraceUrl = [[${result['traceUrl']}]];
 
         // Event delegation for View Trace buttons
         document.addEventListener('DOMContentLoaded', function() {
@@ -117,20 +133,26 @@
         });
 
         function openTrace(exerciseName, language) {
-            // Fetch the full result data to get the trace
-            fetch('/results/api/' + encodeURIComponent(resultFilename))
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.results) {
-                        const exercise = data.results.find(r => r.exerciseName === exerciseName);
-                        if (exercise && exercise.trace) {
-                            document.getElementById('trace-title').textContent = 'Trace: ' + exerciseName + ' (' + language + ')';
-                            document.getElementById('trace-content').innerHTML = exercise.trace;
-                            document.getElementById('trace-modal').style.display = 'block';
-                        } else {
-                            alert('No trace available for this exercise');
+            // Load the trace content from the trace endpoint
+            fetch(resultTraceUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error('Trace not found');
+                    return response.text();
+                })
+                .then(traceContent => {
+                    // Pretty-print JSONL content
+                    const lines = traceContent.split('\n').filter(l => l.trim());
+                    const formatted = lines.map((line, i) => {
+                        try {
+                            const obj = JSON.parse(line);
+                            return '<div class="trace-line" style="border-bottom:1px solid #eee;padding:0.25rem 0;"><span style="color:#999;font-size:0.75rem;">' + (i+1) + '</span> ' + JSON.stringify(obj, null, 2).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;') + '</div>';
+                        } catch {
+                            return '<div style="color:#999;">' + line.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
                         }
-                    }
+                    }).join('');
+                    document.getElementById('trace-title').textContent = 'Trace: ' + exerciseName + ' (' + language + ')';
+                    document.getElementById('trace-content').innerHTML = formatted;
+                    document.getElementById('trace-modal').style.display = 'block';
                 })
                 .catch(err => {
                     console.error('Failed to load trace:', err);
