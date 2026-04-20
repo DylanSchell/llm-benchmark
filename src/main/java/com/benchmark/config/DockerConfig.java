@@ -20,6 +20,9 @@ public class DockerConfig {
     @JsonProperty("timeout")
     private int timeout = 300;
 
+    @JsonProperty("per_command_timeout")
+    private int perCommandTimeout = 120;
+
     @JsonProperty("memory")
     private String memory = "2g";
 
@@ -36,6 +39,10 @@ public class DockerConfig {
 
     public int getTimeout() {
         return timeout;
+    }
+
+    public int getPerCommandTimeout() {
+        return perCommandTimeout;
     }
 
     public String getMemory() {
@@ -70,6 +77,10 @@ public class DockerConfig {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    public void setPerCommandTimeout(int perCommandTimeout) {
+        this.perCommandTimeout = perCommandTimeout;
     }
 
     public void setMemory(String memory) {
@@ -117,6 +128,10 @@ public class DockerConfig {
 
         if (timeout < 10) {
             throw new ConfigurationException("docker.timeout must be at least 10 seconds, got: " + timeout);
+        }
+
+        if (perCommandTimeout < 10) {
+            throw new ConfigurationException("docker.per_command_timeout must be at least 10 seconds, got: " + perCommandTimeout);
         }
 
         if (memory == null || memory.isBlank()) {

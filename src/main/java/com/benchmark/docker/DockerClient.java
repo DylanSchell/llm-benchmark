@@ -144,6 +144,12 @@ public class DockerClient {
         logger.info("Executing with memory limit {} and volume {}:/workspace: {}",
                 memory, hostDir, String.join(" ", fullCommand));
 
+        // Create the command watchdog for per-Bash-command timeout enforcement.
+        int perCommandTimeoutSec = config.getPerCommandTimeout();
+        CommandWatchdog watchdog = new CommandWatchdog(containerName, perCommandTimeoutSec);
+        // Wrap the output callback so the stream parser can intercept tool call boundaries.
+        Consumer<String> wrappedCallback = new StreamParser(outputCallback, watchdog);
+
         ProcessBuilder pb = new ProcessBuilder(fullCommand);
         pb.redirectErrorStream(true);
         Process process = pb.start();
@@ -154,8 +160,9 @@ public class DockerClient {
                 while (line != null) {
                     // Log each line with container identifier for visibility.
                     // logger.info("[{}] {}", containerName, line);
-                    // Forward the original line to the callback unchanged (JSON or not).
-                    outputCallback.accept(line);
+                    // Forward the original line through the wrapped callback so
+                    // the stream parser can detect Bash tool call boundaries.
+                    wrappedCallback.accept(line);
                     sb.append(line);
                     sb.append(System.lineSeparator());
                     line = reader.readLine();
@@ -168,6 +175,8 @@ public class DockerClient {
         readerThread.start();
         boolean completed = waitForProcess(process, timeout);
         readerThread.join();
+        // Shut down the watchdog so any pending timers are cancelled.
+        watchdog.close();
 
         // Always clean up the container, regardless of timeout or normal exit
         cleanupContainer(containerName);

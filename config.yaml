@@ -18,6 +18,9 @@ docker:
   work_dir: "/workspace"
   # Timeout for exercise execution in seconds
   timeout: 3600
+  # Maximum time allowed for any single Bash tool call inside the container (seconds).
+  # If a tool call exceeds this, it is terminated via docker exec pkill.
+  per_command_timeout: 120
   # Memory limit for container (e.g., "2g")
   memory: "2g"
   # Environment variables to be set inside the runner
