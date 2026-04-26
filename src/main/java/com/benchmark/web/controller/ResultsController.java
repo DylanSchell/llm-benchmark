@@ -35,25 +35,29 @@ public class ResultsController {
     public String resultsPage(@RequestParam(value = "language", required = false) String language,
                                @RequestParam(value = "agent", required = false) String agent,
                                @RequestParam(value = "model", required = false) String model,
+                               @RequestParam(value = "exercise", required = false) String exercise,
                                Model modelAttr) {
-        logger.info("resultsPage called with: language='{}', agent='{}', model='{}'", language, agent, model);
+        logger.info("resultsPage called with: language='{}', agent='{}', model='{}', exercise='{}'", language, agent, model, exercise);
         if (model != null) {
             logger.info("Model parameter bytes: {}", java.util.Arrays.toString(model.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
         }
-        List<Map<String, Object>> results = resultService.listResults(language, agent, model);
-        Map<String, Object> stats = resultService.getStatistics(language, agent, model);
+        List<Map<String, Object>> results = resultService.listResults(language, agent, model, exercise);
+        Map<String, Object> stats = resultService.getStatistics(language, agent, model, exercise);
         List<String> models = resultService.getModels();
+        List<String> exercises = resultService.getExercises(language);
 
         // Also get individual results for the selected filters
-        List<Map<String, Object>> individualResults = resultService.listIndividualResults(language, agent, model);
+        List<Map<String, Object>> individualResults = resultService.listIndividualResults(language, agent, model, exercise);
 
         modelAttr.addAttribute("results", results);
         modelAttr.addAttribute("individualResults", individualResults);
         modelAttr.addAttribute("stats", stats);
         modelAttr.addAttribute("models", models);
+        modelAttr.addAttribute("exercises", exercises);
         modelAttr.addAttribute("filterLanguage", language != null ? language : "");
         modelAttr.addAttribute("filterAgent", agent != null ? agent : "");
         modelAttr.addAttribute("filterModel", model != null ? model : "");
+        modelAttr.addAttribute("filterExercise", exercise != null ? exercise : "");
 
         return "results";
     }
@@ -66,8 +70,9 @@ public class ResultsController {
     public List<Map<String, Object>> apiListResults(
             @RequestParam(value = "language", required = false) String language,
             @RequestParam(value = "agent", required = false) String agent,
-            @RequestParam(value = "model", required = false) String model) {
-        return resultService.listResults(language, agent, model);
+            @RequestParam(value = "model", required = false) String model,
+            @RequestParam(value = "exercise", required = false) String exercise) {
+        return resultService.listResults(language, agent, model, exercise);
     }
 
     /**
@@ -193,9 +198,10 @@ public class ResultsController {
     public String resultsTableFragment(@RequestParam(value = "language", required = false) String language,
                                         @RequestParam(value = "agent", required = false) String agent,
                                         @RequestParam(value = "model", required = false) String model,
+                                        @RequestParam(value = "exercise", required = false) String exercise,
                                         Model modelAttr) {
-        List<Map<String, Object>> results = resultService.listResults(language, agent, model);
-        List<Map<String, Object>> individualResults = resultService.listIndividualResults(language, agent, model);
+        List<Map<String, Object>> results = resultService.listResults(language, agent, model, exercise);
+        List<Map<String, Object>> individualResults = resultService.listIndividualResults(language, agent, model, exercise);
         modelAttr.addAttribute("results", results);
         modelAttr.addAttribute("individualResults", individualResults);
         return "fragments/results-table :: resultsTableRows";

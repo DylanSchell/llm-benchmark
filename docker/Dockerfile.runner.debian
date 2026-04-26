@@ -72,6 +72,6 @@ COPY gradle-8.7-bin.zip /opt/gradle/gradle-8.7-bin.zip
 
 # Ensure gradle daemon is disabled
 RUN mkdir -p /home/runner/.gradle && echo "org.gradle.daemon=false" >> /home/runner/.gradle/gradle.properties
-
+COPY runner/.pi/agent/extensions/bash-timeout/index.ts /home/runner/.pi/agent/extensions/bash-timeout/index.ts
 # Default command
 CMD ["/bin/bash"]

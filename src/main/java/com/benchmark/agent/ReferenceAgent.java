@@ -6,11 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -602,6 +605,15 @@ public class ReferenceAgent {
         }
 
         prompt.append("<important>Check that no tests are skipped, enable any tests that shows as skipped in the test results! Any skipped tests will result in failure!</important>\n");
+
+        String content = new String(
+                Objects.requireNonNull(getClass().getClassLoader()
+                                .getResourceAsStream("prompt.md"))
+                        .readAllBytes(),
+                StandardCharsets.UTF_8
+        );
+        prompt.append(content);
+
         return prompt.toString();
     }
 

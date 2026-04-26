@@ -7,12 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -36,7 +38,7 @@ public class PiAgent extends ReferenceAgent {
             PiMessageProcessor processor = new PiMessageProcessor(getOutputConsumer());
             // Create models.json configuration for pi inside the container
             createModelsJson(tempWorkDir);
-
+            installPiExtensions(tempWorkDir);
             // Create exercise prompt for pi
             String prompt = createExercisePrompt(exercise, tempWorkDir);
             patchTests(exercise, tempWorkDir);
@@ -102,6 +104,22 @@ public class PiAgent extends ReferenceAgent {
         }
     }
 
+    private void installPiExtensions(Path tempWorkDir) throws IOException {
+        Path piExtensionDir = tempWorkDir.resolve(".pi")
+                .resolve("agent")
+                .resolve("extensions")
+                .resolve("bash-timeout");
+        Files.createDirectories(piExtensionDir);
+        Path targetPath = piExtensionDir.resolve("index.ts");
+        String content = new String(
+                Objects.requireNonNull(getClass().getClassLoader()
+                                .getResourceAsStream("bash-timeout.ts"))
+                        .readAllBytes(),
+                StandardCharsets.UTF_8
+        );
+        Files.writeString(targetPath,content);
+    }
+
     /**
      * Creates the models.json configuration file for pi inside the working directory.
      * This configures pi to use the OpenAI endpoint (which works with Anthropic-compatible APIs).
@@ -113,10 +131,10 @@ public class PiAgent extends ReferenceAgent {
 
         // Read environment configuration from Docker config (same as what's passed to container)
         Map<String, String> envVars = getDockerClient().getConfig().getEnvironmentMap();
-        
+
         // Use OpenAI endpoint (derived from ANTHROPIC_BASE_URL with /v1 suffix)
         String baseUrl = envVars.getOrDefault("OPENAI_BASE_URL", "http://host.docker.internal:8000/v1");
-        
+
         String apiKey = envVars.getOrDefault("OPENAI_API_KEY", "api-key");
         if (apiKey.isEmpty()) {
             apiKey = envVars.getOrDefault("ANTHROPIC_AUTH_TOKEN", "placeholder-key");
@@ -128,17 +146,17 @@ public class PiAgent extends ReferenceAgent {
         // Pi prefers OpenAI endpoint which is compatible with Anthropic's API
         String modelsJson = String.format(
                 "{" +
-                "  \"providers\": {" +
-                "    \"openai\": {" +
-                "      \"baseUrl\": \"%s\"," +
-                "      \"apiKey\": \"%s\"," +
-                "      \"api\": \"openai-completions\"," +
-                "      \"models\": [" +
-                "        { \"id\": \"%s\" }" +
-                "      ]" +
-                "    }" +
-                "  }" +
-                "}",
+                        "  \"providers\": {" +
+                        "    \"openai\": {" +
+                        "      \"baseUrl\": \"%s\"," +
+                        "      \"apiKey\": \"%s\"," +
+                        "      \"api\": \"openai-completions\"," +
+                        "      \"models\": [" +
+                        "        { \"id\": \"%s\" }" +
+                        "      ]" +
+                        "    }" +
+                        "  }" +
+                        "}",
                 escapeJson(baseUrl), escapeJson(apiKey), escapeJson(model)
         );
 
@@ -153,10 +171,10 @@ public class PiAgent extends ReferenceAgent {
     private String escapeJson(String value) {
         if (value == null) return "";
         return value.replace("\\", "\\\\")
-                   .replace("\"", "\\\"")
-                   .replace("\n", "\\n")
-                   .replace("\r", "\\r")
-                   .replace("\t", "\\t");
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 
     /**
@@ -186,7 +204,7 @@ public class PiAgent extends ReferenceAgent {
         // The .pi directory is mounted at tempWorkDir/.pi on the host
         // Inside container: /home/runner/.pi/agent/sessions
         // On host (mounted): tempWorkDir/.pi/agent/sessions
-        
+
         Path piSessionsDir = tempWorkDir.resolve(".pi").resolve("agent").resolve("sessions");
 
         if (!Files.exists(piSessionsDir)) {
@@ -196,7 +214,7 @@ public class PiAgent extends ReferenceAgent {
         }
 
         logger.info("Found pi sessions directory at: {}", piSessionsDir);
-        
+
         List<String> htmlTraces = new ArrayList<>();
         List<Path> jsonlFiles = new ArrayList<>();
 
@@ -236,64 +254,64 @@ public class PiAgent extends ReferenceAgent {
         // Export JSONL files to HTML using pi --export command
         if (!jsonlFiles.isEmpty()) {
             logger.info("Exporting {} JSONL trace file(s) to HTML", jsonlFiles.size());
-            
+
             // Base path for .pi directory on host and in container
             Path hostPiBase = tempWorkDir.resolve(".pi");
             String containerPiBase = "/home/runner/.pi";
-            
+
             for (Path jsonlFile : jsonlFiles) {
                 try {
                     String baseName = jsonlFile.getFileName().toString().replace(".jsonl", "");
-                    
+
                     // Relativize the discovered path against tempWorkDir/.pi to get relative path
                     Path relativePath = hostPiBase.relativize(jsonlFile);
                     logger.info("Relative path from .pi: {}", relativePath);
-                    
+
                     // Construct container paths by prepending /home/runner/.pi
                     Path containerJsonlPath = Paths.get(containerPiBase).resolve(relativePath);
                     Path containerHtmlPath = containerJsonlPath.getParent().resolve(baseName + ".html");
-                    
-                    logger.info("Exporting from {} to {} (container paths)", 
-                        containerJsonlPath, containerHtmlPath);
-                    
+
+                    logger.info("Exporting from {} to {} (container paths)",
+                            containerJsonlPath, containerHtmlPath);
+
                     // Run: pi --export <jsonl_file> <html_file> using CONTAINER paths
-                    List<String> exportCommand = List.of("pi", "--export", 
-                        containerJsonlPath.toString(),
-                        containerHtmlPath.toString());
-                    
+                    List<String> exportCommand = List.of("pi", "--export",
+                            containerJsonlPath.toString(),
+                            containerHtmlPath.toString());
+
                     logger.info("Running export command: {}", String.join(" ", exportCommand));
-                    
+
                     ProcessResult exportResult = getDockerClient().runCommandWithLimitsAndVolume(
-                        null,
-                        "/workspace",
-                        exportCommand,
-                        60,  // 60 second timeout for export
-                        null,
-                        tempWorkDir.toAbsolutePath().toString(),
-                        line -> logger.info("[Export] {}", line)  // Log all output, not just debug
+                            null,
+                            "/workspace",
+                            exportCommand,
+                            60,  // 60 second timeout for export
+                            null,
+                            tempWorkDir.toAbsolutePath().toString(),
+                            line -> logger.info("[Export] {}", line)  // Log all output, not just debug
                     );
-                    
-                    logger.info("Export completed. Success: {}, Exit code: {}", 
-                        exportResult.isSuccess(), exportResult.exitCode());
+
+                    logger.info("Export completed. Success: {}, Exit code: {}",
+                            exportResult.isSuccess(), exportResult.exitCode());
                     if (!exportResult.output().isEmpty()) {
                         String preview = exportResult.output().substring(0, Math.min(500, exportResult.output().length()));
                         logger.info("Export output preview: {}", preview);
                     }
-                    
+
                     // Check if HTML file exists on host side using same relative path
                     Path hostHtmlFile = hostPiBase.resolve(relativePath.getParent()).resolve(baseName + ".html");
                     logger.info("Looking for HTML at: {}", hostHtmlFile);
-                    
+
                     if (Files.exists(hostHtmlFile)) {
                         logger.info("Found HTML file at: {}", hostHtmlFile);
                         String htmlContent = Files.readString(hostHtmlFile);
                         htmlTraces.add(htmlContent);
                         logger.info("Read HTML trace with {} chars", htmlContent.length());
-                        
+
                         // Also copy to results directory for persistence with standard naming
                         String htmlTargetName = "trace_" + exercise.getLanguage() + "_" + exercise.getName() + ".html";
-                        Files.copy(hostHtmlFile, resultsDir.resolve(htmlTargetName), 
-                            StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(hostHtmlFile, resultsDir.resolve(htmlTargetName),
+                                StandardCopyOption.REPLACE_EXISTING);
                         logger.info("Copied HTML trace to results directory: {}", htmlTargetName);
                     } else {
                         logger.warn("HTML file not found at: {}", hostHtmlFile);
@@ -302,7 +320,7 @@ public class PiAgent extends ReferenceAgent {
                         if (Files.exists(sessionsDir)) {
                             try (Stream<Path> ls = Files.list(sessionsDir)) {
                                 String contents = ls.map(p -> p.getFileName().toString()).collect(
-                                    java.util.stream.Collectors.joining(", "));
+                                        java.util.stream.Collectors.joining(", "));
                                 logger.info("Contents of sessions dir [{}]: {}", sessionsDir, contents);
                             }
                         } else {
@@ -320,7 +338,7 @@ public class PiAgent extends ReferenceAgent {
         } else {
             logger.info("Found/generated {} HTML trace(s)", htmlTraces.size());
         }
-        
+
         return htmlTraces.isEmpty() ? "" : htmlTraces.getFirst();
     }
 

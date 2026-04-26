@@ -31,6 +31,10 @@
                         </div>
                         <div class="stat-label">Success Rate</div>
                     </div>
+                    <div class="stat-card">
+                        <div class="stat-value" th:text="${stats['total_duration_formatted'] ?: '0s'}">0s</div>
+                        <div class="stat-label">Total Time</div>
+                    </div>
                 </div>
             </div>
 
@@ -65,6 +69,14 @@
                         <select id="filter-model" name="model">
                             <option value="">All Models</option>
                             <option th:each="m : ${models}" th:value="${m}" th:text="${m}" th:selected="${filterModel == m}">reference-r2</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+                        <label for="filter-exercise">Exercise</label>
+                        <select id="filter-exercise" name="exercise">
+                            <option value="">All Exercises</option>
+                            <option th:each="e : ${exercises}" th:value="${e}" th:text="${e}" th:selected="${filterExercise == e}">exercise_name</option>
                         </select>
                     </div>
 
@@ -113,7 +125,8 @@
                 <p style="color: #7f8c8d; margin-bottom: 1rem;" 
                    th:if="${(filterLanguage != null and !#strings.isEmpty(filterLanguage)) or 
                            (filterAgent != null and !#strings.isEmpty(filterAgent)) or 
-                           (filterModel != null and !#strings.isEmpty(filterModel))}">
+                           (filterModel != null and !#strings.isEmpty(filterModel)) or
+                           (filterExercise != null and !#strings.isEmpty(filterExercise))}">
                     Showing exercises matching filters
                 </p>
                 <style>
@@ -124,21 +137,23 @@
                 <table class="sortable-table">
                     <thead>
                         <tr>
-                            <th onclick="sortTable('individual-body', 0)" style="cursor: pointer;">Timestamp &#x2195;</th>
-                            <th onclick="sortTable('individual-body', 1)" style="cursor: pointer;">Agent &#x2195;</th>
-                            <th onclick="sortTable('individual-body', 2)" style="cursor: pointer;">Language &#x2195;</th>
-                            <th onclick="sortTable('individual-body', 3)" style="cursor: pointer;">Exercise &#x2195;</th>
-                            <th onclick="sortTable('individual-body', 4, true)" style="cursor: pointer;">Duration &#x2195;</th>
-                            <th onclick="sortTable('individual-body', 5)" style="cursor: pointer;">Success &#x2195;</th>
-                            <th onclick="sortTable('individual-body', 6)" style="cursor: pointer;">Actions</th>
+                            <th onclick="sortTable(this, false)" style="cursor: pointer;">Timestamp &#x2195;</th>
+                            <th th:if="${filterAgent == null or #strings.isEmpty(filterAgent)}" onclick="sortTable(this, false)" style="cursor: pointer;">Agent &#x2195;</th>
+                            <th th:if="${filterModel == null or #strings.isEmpty(filterModel)}" onclick="sortTable(this, false)" style="cursor: pointer;">Model &#x2195;</th>
+                            <th th:if="${filterLanguage == null or #strings.isEmpty(filterLanguage)}" onclick="sortTable(this, false)" style="cursor: pointer;">Language &#x2195;</th>
+                            <th th:if="${filterExercise == null or #strings.isEmpty(filterExercise)}" onclick="sortTable(this, false)" style="cursor: pointer;">Exercise &#x2195;</th>
+                            <th onclick="sortTable(this, true)" style="cursor: pointer;">Duration &#x2195;</th>
+                            <th onclick="sortTable(this, false)" style="cursor: pointer;">Success &#x2195;</th>
+                            <th onclick="sortTable(this, false)" style="cursor: pointer;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="individual-body">
                         <tr th:each="indResult : ${individualResults}">
                             <td class="timestamp-cell" th:text="${indResult['timestamp'] != null ? indResult['timestamp'].replace('T', ' ').substring(0, 16) : ''}">2024-01-01 00:00</td>
-                            <td th:text="${indResult['agent']}">reference</td>
-                            <td th:text="${indResult['language']}">java</td>
-                            <td th:text="${indResult['exercise']}">exercise_name</td>
+                            <td th:if="${filterAgent == null or #strings.isEmpty(filterAgent)}" th:text="${indResult['agent']}">reference</td>
+                            <td th:if="${filterModel == null or #strings.isEmpty(filterModel)}" th:text="${indResult['model']}">model</td>
+                            <td th:if="${filterLanguage == null or #strings.isEmpty(filterLanguage)}" th:text="${indResult['language']}">java</td>
+                            <td th:if="${filterExercise == null or #strings.isEmpty(filterExercise)}" th:text="${indResult['exercise']}">exercise_name</td>
                             <td th:attr="data-sort=${indResult['sortDuration'] != null ? indResult['sortDuration'] : 0}" th:text="${indResult['duration'] != null ? indResult['duration'] : '-'}">0s</td>
                             <td th:text="${indResult['success'] ? '✓' : '✗'}">✓</td>
                             <td>
@@ -161,43 +176,36 @@
                 // Table sorting function for results page
                 let sortDirections = {};
 
-                function sortTable(elementId, columnIdx) {
-                    // elementId can be either the table or tbody id
-                    let element = document.getElementById(elementId);
-                    if (!element) return;
-                    
-                    // If it's a tbody, find its parent table
-                    let tbody = element;
-                    if (element.tagName === 'TBODY') {
-                        tbody = element;
-                        element = element.closest('table');
-                    }
-                    
-                    if (!element || !tbody) return;
-                    
+                function sortTable(thEl, isNumeric) {
+                    // thEl is the clicked <th>; derive column index from its cellIndex
+                    const columnIdx = thEl.cellIndex;
+                    const table = thEl.closest('table');
+                    if (!table) return;
+
+                    const tbody = table.querySelector('tbody');
+                    if (!tbody) return;
+
                     const rows = Array.from(tbody.querySelectorAll('tr'));
                     if (rows.length === 0) return;
-                    
-                    const isNumeric = columnIdx !== 0 && columnIdx !== 1 && columnIdx !== 2;
-                    const isTimestamp = columnIdx === 0;
 
-                    if (!sortDirections[elementId]) {
-                        sortDirections[elementId] = [];
+                    const isTimestamp = thEl.textContent.trim().startsWith('Timestamp');
+                    const key = columnIdx;
+
+                    if (!sortDirections[key]) {
+                        sortDirections[key] = false;
                     }
-                    sortDirections[elementId][columnIdx] = !sortDirections[elementId][columnIdx];
-                    const ascending = sortDirections[elementId][columnIdx];
+                    sortDirections[key] = !sortDirections[key];
+                    const ascending = sortDirections[key];
 
                     rows.sort((a, b) => {
-                        // Skip empty rows
                         if (a.children.length === 0 || b.children.length === 0) return 0;
-                        
+
                         let aVal, bVal;
 
                         if (isTimestamp) {
                             aVal = new Date(a.children[columnIdx].textContent.trim().replace(' ', 'T'));
                             bVal = new Date(b.children[columnIdx].textContent.trim().replace(' ', 'T'));
                         } else if (isNumeric) {
-                            // Use data-sort attribute for numeric sorting if available
                             let aSort = a.children[columnIdx].getAttribute('data-sort');
                             let bSort = b.children[columnIdx].getAttribute('data-sort');
                             if (aSort !== null && bSort !== null) {
@@ -208,10 +216,8 @@
                                 bVal = parseFloat(b.children[columnIdx].textContent.trim().replace(/[^0-9.]/g, '')) || 0;
                             }
                         } else {
-                            aVal = a.children[columnIdx].textContent.trim();
-                            bVal = b.children[columnIdx].textContent.trim();
-                            aVal = aVal.toLowerCase();
-                            bVal = bVal.toLowerCase();
+                            aVal = a.children[columnIdx].textContent.trim().toLowerCase();
+                            bVal = b.children[columnIdx].textContent.trim().toLowerCase();
                         }
 
                         if (aVal < bVal) return ascending ? -1 : 1;

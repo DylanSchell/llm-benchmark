@@ -355,7 +355,7 @@ public class ResultService {
     /**
      * Lists all cachedResult files with optional filtering.
      */
-    public List<Map<String, Object>> listResults(String language, String agent, String model) {
+    public List<Map<String, Object>> listResults(String language, String agent, String model, String exercise) {
         List<Map<String, Object>> results = new ArrayList<>();
 
         for (CachedResult cached : cachedResults.values()) {
@@ -365,8 +365,10 @@ public class ResultService {
                     (cached.agent != null && cached.agent.equals(agent));
             boolean matchesModel = model == null || model.isEmpty() ||
                     (cached.model != null && cached.model.equals(model));
+            boolean matchesExercise = exercise == null || exercise.isEmpty() ||
+                    (cached.exercise != null && cached.exercise.equals(exercise));
 
-            if (matchesLanguage && matchesAgent && matchesModel) {
+            if (matchesLanguage && matchesAgent && matchesModel && matchesExercise) {
                 results.add(toMetadataMap(cached));
             }
         }
@@ -392,10 +394,25 @@ public class ResultService {
     }
 
     /**
-     * Lists individual result files (result_*.json) filtered by agent, language, and model.
+     * Gets list of all exercise names, optionally filtered by language.
+     */
+    public List<String> getExercises(String language) {
+        List<String> exercises = new ArrayList<>();
+        for (CachedResult cached : cachedResults.values()) {
+            boolean matchesLanguage = language == null || language.isEmpty() ||
+                    (cached.language != null && cached.language.equals(language));
+            if (matchesLanguage && cached.exercise != null) {
+                exercises.add(cached.exercise);
+            }
+        }
+        return exercises.stream().distinct().sorted().toList();
+    }
+
+    /**
+     * Lists individual result files (result_*.json) filtered by agent, language, model, and exercise.
      * These are the detailed runs for each exercise.
      */
-    public List<Map<String, Object>> listIndividualResults(String language, String agent, String model) {
+    public List<Map<String, Object>> listIndividualResults(String language, String agent, String model, String exercise) {
         List<Map<String, Object>> results = new ArrayList<>();
 
         for (CachedResult cached : cachedResults.values()) {
@@ -403,8 +420,10 @@ public class ResultService {
             boolean matchesAgent = agent == null || agent.isEmpty() || cached.agent.equals(agent);
             boolean matchesModel = model == null || model.isEmpty() ||
                     (cached.model != null && cached.model.equals(model));
+            boolean matchesExercise = exercise == null || exercise.isEmpty() ||
+                    (cached.exercise != null && cached.exercise.equals(exercise));
 
-            if (matchesLanguage && matchesAgent && matchesModel) {
+            if (matchesLanguage && matchesAgent && matchesModel && matchesExercise) {
                 Map<String, Object> individualResult = new HashMap<>();
                 individualResult.put("filename", cached.filename);
                 individualResult.put("detailUrl", "/results/" + cached.agent + "/" + cached.directory + "/" + cached.language + "/" + cached.exercise);
@@ -591,16 +610,17 @@ public class ResultService {
      * Gets aggregate statistics.
      */
     public Map<String, Object> getStatistics() {
-        return getStatistics(null, null, null);
+        return getStatistics(null, null, null, null);
     }
 
     /**
      * Gets filtered aggregate statistics from cached data.
      */
-    public Map<String, Object> getStatistics(String language, String agent, String model) {
+    public Map<String, Object> getStatistics(String language, String agent, String model, String exercise) {
         int totalRuns = 0;
         int totalExercises = 0;
         int successfulExercises = 0;
+        double totalDurationSeconds = 0.0;
         Map<String, Integer> byLanguage = new HashMap<>();
         Map<String, Integer> successByLanguage = new HashMap<>();
         Map<String, Double> durationByLanguage = new HashMap<>();
@@ -611,7 +631,7 @@ public class ResultService {
         Map<String, Integer> successByModel = new HashMap<>();
         Map<String, Double> durationByModel = new HashMap<>();
 
-        logger.info("getStatistics called with: language='{}', agent='{}', model='{}'", language, agent, model);
+        logger.info("getStatistics called with: language='{}', agent='{}', model='{}', exercise='{}'", language, agent, model, exercise);
         logger.info("Cache size: {} entries", cachedResults.size());
         logger.info("Unique cached models: {}", cachedModels);
         
@@ -648,6 +668,8 @@ public class ResultService {
                     (cached.agent != null && cached.agent.equals(agent));
             boolean matchesModel = model == null || model.isEmpty() ||
                     (cached.model != null && cached.model.equals(model));
+            boolean matchesExercise = exercise == null || exercise.isEmpty() ||
+                    (cached.exercise != null && cached.exercise.equals(exercise));
 
             if (model != null && !model.isEmpty() && cached.model != null && !matchesModel) {
                 modelMismatchCount++;
@@ -656,7 +678,7 @@ public class ResultService {
                 }
             }
 
-            if (!matchesLanguage || !matchesAgent || !matchesModel) {
+            if (!matchesLanguage || !matchesAgent || !matchesModel || !matchesExercise) {
                 continue;
             }
             
@@ -688,6 +710,9 @@ public class ResultService {
 
             totalExercises += cached.totalExercises;
 
+            // Accumulate total duration
+            totalDurationSeconds += cached.durationByLanguage.values().stream().mapToDouble(Double::doubleValue).sum();
+
             // By agent
             byAgent.putIfAbsent(cached.agent, 0);
             byAgent.put(cached.agent, byAgent.get(cached.agent) + cached.totalExercises);
@@ -718,6 +743,8 @@ public class ResultService {
         stats.put("total_exercises", totalExercises);
         stats.put("successful_exercises", successfulExercises);
         stats.put("success_rate", totalExercises > 0 ? (double) successfulExercises / totalExercises * 100 : 0.0);
+        stats.put("total_duration", totalDurationSeconds);
+        stats.put("total_duration_formatted", formatDuration(totalDurationSeconds));
         stats.put("by_language", byLanguage);
         stats.put("success_by_language", successByLanguage);
         stats.put("duration_by_language", durationByLanguage);
