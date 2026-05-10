@@ -1,0 +1,131 @@
+package io.schell.llm.benchmark.web.service;
+
+import io.schell.llm.benchmark.web.domain.BenchmarkQueue;
+import io.schell.llm.benchmark.web.domain.BenchmarkQueueItem;
+import io.schell.llm.benchmark.web.domain.BenchmarkSession;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Facade service for benchmark operations.
+ * Coordinates between SessionManager, BenchmarkExecutor, and QueueProcessor.
+ */
+@Service
+public class BenchmarkService {
+
+    private final SessionManager sessionManager;
+    private final QueueProcessor queueProcessor;
+    private final ResultService resultService;
+    private final io.schell.llm.benchmark.exercise.ExerciseRunner exerciseRunner;
+
+    public BenchmarkService(SessionManager sessionManager,
+                           QueueProcessor queueProcessor, ResultService resultService,
+                           io.schell.llm.benchmark.exercise.ExerciseRunner exerciseRunner) {
+        this.sessionManager = sessionManager;
+        this.queueProcessor = queueProcessor;
+        this.resultService = resultService;
+        this.exerciseRunner = exerciseRunner;
+    }
+
+    /**
+     * Gets a session by ID.
+     */
+    public BenchmarkSession getSession(String sessionId) {
+        return sessionManager.getSession(sessionId);
+    }
+
+    /**
+     * Gets all sessions.
+     */
+    public java.util.Map<String, BenchmarkSession> getAllSessions() {
+        return sessionManager.getAllSessions();
+    }
+
+    /**
+     * Cancels a running session.
+     */
+    public boolean cancelSession(String sessionId) {
+        return sessionManager.cancelSession(sessionId);
+    }
+
+    /**
+     * Removes a completed session.
+     */
+    public void removeSession(String sessionId) {
+        sessionManager.removeSession(sessionId);
+    }
+
+    // =============================================================================
+    // Queue Management - Delegates to QueueProcessor
+    // =============================================================================
+
+    /**
+     * Schedule a batch of benchmark runs.
+     */
+    public List<BenchmarkQueueItem> scheduleBatch(String agentName, String[] languages,
+                                                   String model, String exercise) {
+        return queueProcessor.scheduleBatch(agentName, languages, model, exercise);
+    }
+
+    /**
+     * Get the benchmark queue.
+     */
+    public BenchmarkQueue getQueue() {
+        return queueProcessor.getQueue();
+    }
+
+    /**
+     * Cancel a queue item.
+     */
+    public boolean cancelQueueItem(String itemId) {
+        return queueProcessor.cancelQueueItem(itemId);
+    }
+
+    /**
+     * Get all queue items.
+     */
+    public List<BenchmarkQueueItem> getQueueItems() {
+        return queueProcessor.getQueueItems();
+    }
+
+    /**
+     * Clear pending items from queue.
+     */
+    public void clearPendingQueue() {
+        queueProcessor.clearPendingQueue();
+    }
+
+    /**
+     * Clear completed and cancelled items from the queue.
+     * @return Number of items removed
+     */
+    public int clearCompletedAndCancelled() {
+        return queueProcessor.clearCompletedAndCancelled();
+    }
+
+    /**
+     * Retry a failed queue item.
+     */
+    public BenchmarkQueueItem retryQueueItem(String itemId) {
+        return queueProcessor.retryItem(itemId);
+    }
+
+    // =============================================================================
+    // Result Service Access
+    // =============================================================================
+
+    /**
+     * Refreshes the result cache.
+     */
+    public void refreshResultCache() {
+        resultService.refreshCache();
+    }
+
+    /**
+     * Gets the ExerciseRunner for discovering exercises.
+     */
+    public io.schell.llm.benchmark.exercise.ExerciseRunner getExerciseRunner() {
+        return exerciseRunner;
+    }
+}

@@ -174,10 +174,10 @@ The benchmark supports multiple languages through the **Strategy Pattern** with 
 Create a new handler in `src/main/java/com/benchmark/agent/handlers/`:
 
 ```java
-package com.benchmark.agent.handlers;
+package io.schell.llm.benchmark.agent.handlers;
 
-import com.benchmark.agent.LanguageHandler;
-import com.benchmark.exercise.Exercise;
+import io.schell.llm.benchmark.agent.LanguageHandler;
+import io.schell.llm.benchmark.exercise.Exercise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -282,9 +282,9 @@ Agents implement the `Agent` interface and are created via `AgentFactory`.
 ### Step 1: Create Agent Implementation
 
 ```java
-package com.benchmark.agent;
+package io.schell.llm.benchmark.agent;
 
-import com.benchmark.config.Config;
+import io.schell.llm.benchmark.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -325,9 +325,9 @@ public class GeminiAgent implements Agent {
 ### Step 2: Create Agent Factory
 
 ```java
-package com.benchmark.agent;
+package io.schell.llm.benchmark.agent;
 
-import com.benchmark.config.Config;
+import io.schell.llm.benchmark.config.Config;
 import org.springframework.stereotype.Component;
 
 @Component
