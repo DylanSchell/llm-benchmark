@@ -244,7 +244,7 @@ public class BenchmarkResultAnalyzer {
     }
 
     public void generateReport() throws IOException {
-        // Sort by completion percentage (desc), then by total duration (desc) for ties
+        // Sort by completion percentage (desc), then by total duration (asc) for ties
         List<BenchmarkStats> sortedStats = new ArrayList<>(statsByBenchmark.values());
         sortedStats.sort(this::sortByCountAndPercentage);
 
@@ -349,7 +349,7 @@ public class BenchmarkResultAnalyzer {
         double compB = (statsB.successResults * 100.0) / statsB.totalResults;
         int cmp = Double.compare(compB, compA); // descending
         if (cmp != 0) return cmp;
-        return Double.compare(statsB.totalDuration, statsA.totalDuration); // descending
+        return Double.compare(statsA.totalDuration, statsB.totalDuration); // ascending
     }
 
     private int sortByCountAndPercentage(BenchmarkStats statsA, BenchmarkStats statsB) {
@@ -359,7 +359,7 @@ public class BenchmarkResultAnalyzer {
         double compB = (statsB.successResults * 100.0) / statsB.totalResults;
         cmp = Double.compare(compB, compA); // descending
         if (cmp != 0) return cmp;
-        return Double.compare(statsB.totalDuration, statsA.totalDuration); // descending
+        return Double.compare(statsA.totalDuration, statsB.totalDuration); // ascending
     }
 
 

@@ -96,6 +96,21 @@ public class BenchmarkService {
         queueProcessor.clearPendingQueue();
     }
 
+    /**
+     * Clear completed and cancelled items from the queue.
+     * @return Number of items removed
+     */
+    public int clearCompletedAndCancelled() {
+        return queueProcessor.clearCompletedAndCancelled();
+    }
+
+    /**
+     * Retry a failed queue item.
+     */
+    public BenchmarkQueueItem retryQueueItem(String itemId) {
+        return queueProcessor.retryItem(itemId);
+    }
+
     // =============================================================================
     // Result Service Access
     // =============================================================================

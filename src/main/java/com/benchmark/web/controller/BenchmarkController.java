@@ -1,6 +1,7 @@
 package com.benchmark.web.controller;
 
 import com.benchmark.config.Config;
+import com.benchmark.web.domain.BenchmarkQueueItem;
 import com.benchmark.web.domain.BenchmarkSession;
 import com.benchmark.web.domain.RunStatus;
 import com.benchmark.web.service.BenchmarkService;
@@ -52,16 +53,55 @@ public class BenchmarkController {
      * Dashboard page.
      */
     @GetMapping("/")
-    public String dashboard(Model model) {
+    public String dashboard(@RequestParam(value = "quick", required = false, defaultValue = "false") boolean quickOnly, Model model) {
         // Get statistics from ResultService (aggregates all individual result files)
-        Map<String, Object> stats = resultService.getStatistics();
+        Map<String, Object> stats = resultService.getStatistics(null, null, null, null, quickOnly);
         model.addAttribute("stats", stats);
         List<BenchmarkSession> activeSessions = benchmarkService.getAllSessions().values().stream()
                 .filter(s -> s.getStatus() == RunStatus.RUNNING || s.getStatus() == RunStatus.PENDING)
                 .toList();
         model.addAttribute("activeRuns", activeSessions.size());
         model.addAttribute("activeSessions", activeSessions);
-        model.addAttribute("queueItems", benchmarkService.getQueueItems());
+        List<BenchmarkQueueItem> queueItems = benchmarkService.getQueueItems();
+        model.addAttribute("queueItems", queueItems);
+
+        // Count items by status for progress bar
+        long runningCount = queueItems.stream().filter(i -> i.getStatus() == BenchmarkQueueItem.QueueItemStatus.RUNNING).count();
+        long pendingCount = queueItems.stream().filter(i -> i.getStatus() == BenchmarkQueueItem.QueueItemStatus.PENDING).count();
+        long completedCount = queueItems.stream().filter(i -> i.getStatus() == BenchmarkQueueItem.QueueItemStatus.COMPLETED).count();
+        long failedCount = queueItems.stream().filter(i -> i.getStatus() == BenchmarkQueueItem.QueueItemStatus.FAILED).count();
+        long cancelledCount = queueItems.stream().filter(i -> i.getStatus() == BenchmarkQueueItem.QueueItemStatus.CANCELLED).count();
+
+        model.addAttribute("runningCount", runningCount);
+        model.addAttribute("pendingCount", pendingCount);
+        model.addAttribute("completedCount", completedCount);
+        model.addAttribute("failedCount", failedCount);
+        model.addAttribute("cancelledCount", cancelledCount);
+
+        // Pre-compute percentage widths for progress bar segments
+        int total = queueItems.size();
+        double runningPct = total > 0 ? runningCount * 100.0 / total : 0;
+        double pendingPct = total > 0 ? pendingCount * 100.0 / total : 0;
+        double completedPct = total > 0 ? completedCount * 100.0 / total : 0;
+        double failedPct = total > 0 ? failedCount * 100.0 / total : 0;
+        double cancelledPct = total > 0 ? cancelledCount * 100.0 / total : 0;
+
+        // Clamp the last visible segment so totals don't exceed 100% due to rounding
+        double sum = runningPct + pendingPct + completedPct + failedPct + cancelledPct;
+        if (sum > 100.0) {
+            if (cancelledCount > 0) cancelledPct -= (sum - 100.0);
+            else if (failedCount > 0) failedPct -= (sum - 100.0);
+            else if (completedCount > 0) completedPct -= (sum - 100.0);
+            else if (pendingCount > 0) pendingPct -= (sum - 100.0);
+            else runningPct -= (sum - 100.0);
+        }
+
+        model.addAttribute("runningWidth", runningPct);
+        model.addAttribute("pendingWidth", pendingPct);
+        model.addAttribute("completedWidth", completedPct);
+        model.addAttribute("failedWidth", failedPct);
+        model.addAttribute("cancelledWidth", cancelledPct);
+
         return "dashboard";
     }
 

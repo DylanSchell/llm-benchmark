@@ -51,5 +51,10 @@ public class CostCalculator {
         System.out.println("Cost per 1M tokens output for Qwen 3.5 35B-A3B-Q8_0: "+cost);
         cost = CostCalculator.calculateTokenGenerationCost(0.25,1800,150,1000_000);
         System.out.println("Cost per 1M tokens input for Qwen 3.5 35B-A3B-Q8_0: "+cost);
+        // mac-mini 56W 44t/s on qwen 35b
+        cost = CostCalculator.calculateTokenGenerationCost(0.25,778,83,1000_000);
+        System.out.println("Cost per 1M tokens input for Qwen 3.6 35B on mac mini m4: "+cost);
+        cost = CostCalculator.calculateTokenGenerationCost(0.25,45,56,1000_000);
+        System.out.println("Cost per 1M  tokens output for Qwen 3.6 35B on mac mini m4: "+cost);
     }
 }

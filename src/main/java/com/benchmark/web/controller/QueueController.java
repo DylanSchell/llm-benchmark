@@ -27,6 +27,21 @@ public class QueueController {
     }
 
     /**
+     * Resolves the exercise parameter based on execution mode.
+     * 
+     * @param mode Execution mode: "single", "all", or "quick"
+     * @param exercise The exercise name (used for "single" mode)
+     * @return Internal exercise representation: null for all, "__quick__" for quick bench, or the exercise name
+     */
+    private String resolveExerciseParam(String mode, String exercise) {
+        return switch (mode) {
+            case "single" -> exercise;
+            case "quick" -> "__quick__";
+            default -> null; // "all" mode
+        };
+    }
+
+    /**
      * Get the current benchmark queue.
      */
     @GetMapping("/api/benchmark/queue")
@@ -37,6 +52,11 @@ public class QueueController {
 
     /**
      * Schedule a batch of benchmark runs.
+     * 
+     * Execution modes:
+     * - "single": exercise param specifies which exercise to run per language
+     * - "all": no exercise param — all exercises for selected languages
+     * - "quick": special marker — runs curated list of fast exercises (< 60s each)
      */
     @PostMapping("/api/benchmark/queue/schedule")
     @ResponseBody
@@ -44,12 +64,16 @@ public class QueueController {
             @RequestParam("agent") String agent,
             @RequestParam("language") String[] languages,
             @RequestParam(value = "model", required = false) String model,
-            @RequestParam(value = "exercise", required = false) String exercise) {
+            @RequestParam(value = "exercise", required = false) String exercise,
+            @RequestParam(value = "mode", defaultValue = "all") String mode) {
 
-        logger.info("Scheduling batch benchmark: agent={}, model={}, languages={}, exercise={}",
-                agent, model, String.join(",", languages), exercise);
+        // Translate frontend mode + exercise into the internal representation
+        String effectiveExercise = resolveExerciseParam(mode, exercise);
 
-        List<BenchmarkQueueItem> items = benchmarkService.scheduleBatch(agent, languages, model, exercise);
+        logger.info("Scheduling batch benchmark: agent={}, model={}, languages={}, mode={}, exercise={}",
+                agent, model, String.join(",", languages), mode, effectiveExercise);
+
+        List<BenchmarkQueueItem> items = benchmarkService.scheduleBatch(agent, languages, model, effectiveExercise);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", "scheduled");
@@ -90,6 +114,43 @@ public class QueueController {
         Map<String, Object> response = new HashMap<>();
         response.put("status", "ok");
         response.put("message", "Pending queue items cleared");
+
+        return response;
+    }
+
+    /**
+     * Clear completed and cancelled items from the queue.
+     */
+    @PostMapping("/api/benchmark/queue/clear-terminal")
+    @ResponseBody
+    public Map<String, Object> clearCompletedAndCancelled() {
+        int removed = benchmarkService.clearCompletedAndCancelled();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "ok");
+        response.put("message", String.format("%d completed/cancelled items cleared", removed));
+        response.put("removed", removed);
+
+        return response;
+    }
+
+    /**
+     * Retry a failed queue item.
+     */
+    @PostMapping("/api/benchmark/queue/retry/{itemId}")
+    @ResponseBody
+    public Map<String, Object> retryQueueItem(@PathVariable String itemId) {
+        Map<String, Object> response = new HashMap<>();
+        BenchmarkQueueItem newItem = benchmarkService.retryQueueItem(itemId);
+
+        if (newItem != null) {
+            response.put("status", "retried");
+            response.put("itemId", newItem.getId());
+            response.put("message", "Item re-queued for retry");
+        } else {
+            response.put("status", "error");
+            response.put("message", "Could not retry - item not found or not in failed state");
+        }
 
         return response;
     }

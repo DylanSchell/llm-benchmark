@@ -2,6 +2,7 @@ package com.benchmark.web.service;
 
 import com.benchmark.BenchmarkRunner;
 import com.benchmark.config.Config;
+import com.benchmark.config.QuickBenchConfig;
 import com.benchmark.exercise.ExerciseRunner;
 import com.benchmark.web.domain.BenchmarkQueue;
 import com.benchmark.web.domain.BenchmarkQueueItem;
@@ -210,7 +211,8 @@ public class QueueProcessor {
      * @param agentName   The agent to use
      * @param model       The model to use (can be null)
      * @param languages   Array of languages
-     * @param exercise    Exercise name, or null for all exercises per language
+     * @param exercise    Exercise name, or null for all exercises per language,
+     *                    or "__quick__" for quick bench mode
      * @return List of queue items created
      */
     public List<BenchmarkQueueItem> scheduleBatch(String agentName, String[] languages,
@@ -221,7 +223,30 @@ public class QueueProcessor {
         List<BenchmarkQueueItem> items = new java.util.ArrayList<>();
         int skippedCount = 0;
 
-        if (exercise != null && !exercise.isEmpty()) {
+        if ("__quick__".equals(exercise)) {
+            // Quick bench mode - use curated list of fast exercises (< 60s)
+            for (String language : languages) {
+                List<String> quickExercises = QuickBenchConfig.getExercisesForLanguage(language);
+                if (quickExercises.isEmpty()) {
+                    logger.warn("No quick-bench exercises defined for language: {}", language);
+                    continue;
+                }
+                for (String exerciseName : quickExercises) {
+                    if (benchmarkRunner.resultFileSuccess(exerciseName, agentName, effectiveModel, language, languages)) {
+                        logger.debug("Skipping quick-bench exercise: {} for language: {} (already completed successfully)", 
+                                exerciseName, language);
+                        skippedCount++;
+                        continue;
+                    }
+
+                    String targetDir = config.getOutput().getResultsDir(agentName, effectiveModel,
+                            new String[]{language});
+                    BenchmarkQueueItem item = new BenchmarkQueueItem(targetDir, agentName,
+                            model, language, exerciseName);
+                    items.add(item);
+                }
+            }
+        } else if (exercise != null && !exercise.isEmpty()) {
             // Single exercise specified - create one item per language for that exercise
             for (String language : languages) {
                 // Check if this exercise has already been completed successfully using the same logic as BenchmarkRunner
@@ -314,6 +339,14 @@ public class QueueProcessor {
     }
 
     /**
+     * Clear completed and cancelled items from the queue.
+     * @return Number of items removed
+     */
+    public int clearCompletedAndCancelled() {
+        return queue.clearTerminalItems();
+    }
+
+    /**
      * Check if currently processing any queue items.
      */
     public boolean isProcessingItem() {
@@ -332,5 +365,14 @@ public class QueueProcessor {
      */
     public int getParallelismLimit() {
         return config.getParallelism();
+    }
+
+    /**
+     * Retry a failed queue item by re-adding it to the pending queue.
+     * @param itemId The ID of the failed item to retry
+     * @return The new queue item, or null if not found
+     */
+    public BenchmarkQueueItem retryItem(String itemId) {
+        return queue.retryItem(itemId);
     }
 }

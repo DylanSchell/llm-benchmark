@@ -1,6 +1,7 @@
 package com.benchmark.web.service;
 
 import com.benchmark.config.Config;
+import com.benchmark.config.QuickBenchConfig;
 import com.benchmark.exercise.ExerciseResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -355,7 +356,7 @@ public class ResultService {
     /**
      * Lists all cachedResult files with optional filtering.
      */
-    public List<Map<String, Object>> listResults(String language, String agent, String model, String exercise) {
+    public List<Map<String, Object>> listResults(String language, String agent, String model, String exercise, boolean quickOnly) {
         List<Map<String, Object>> results = new ArrayList<>();
 
         for (CachedResult cached : cachedResults.values()) {
@@ -412,7 +413,7 @@ public class ResultService {
      * Lists individual result files (result_*.json) filtered by agent, language, model, and exercise.
      * These are the detailed runs for each exercise.
      */
-    public List<Map<String, Object>> listIndividualResults(String language, String agent, String model, String exercise) {
+    public List<Map<String, Object>> listIndividualResults(String language, String agent, String model, String exercise, boolean quickOnly) {
         List<Map<String, Object>> results = new ArrayList<>();
 
         for (CachedResult cached : cachedResults.values()) {
@@ -610,13 +611,22 @@ public class ResultService {
      * Gets aggregate statistics.
      */
     public Map<String, Object> getStatistics() {
-        return getStatistics(null, null, null, null);
+        return getStatistics(null, null, null, null, false);
+    }
+
+    /**
+     * Checks whether a language/exercise pair is in the quick-bench set.
+     */
+    private boolean isQuickBenchExercise(String language, String exercise) {
+        if (language == null || exercise == null) return false;
+        List<String> exercises = QuickBenchConfig.getExercisesForLanguage(language);
+        return !exercises.isEmpty() && exercises.contains(exercise);
     }
 
     /**
      * Gets filtered aggregate statistics from cached data.
      */
-    public Map<String, Object> getStatistics(String language, String agent, String model, String exercise) {
+    public Map<String, Object> getStatistics(String language, String agent, String model, String exercise, boolean quickOnly) {
         int totalRuns = 0;
         int totalExercises = 0;
         int successfulExercises = 0;
@@ -678,7 +688,9 @@ public class ResultService {
                 }
             }
 
-            if (!matchesLanguage || !matchesAgent || !matchesModel || !matchesExercise) {
+            // Apply quick-bench filter
+            boolean matchesQuick = !quickOnly || isQuickBenchExercise(cached.language, cached.exercise);
+            if (!matchesLanguage || !matchesAgent || !matchesModel || !matchesExercise || !matchesQuick) {
                 continue;
             }
             

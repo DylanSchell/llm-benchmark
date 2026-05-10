@@ -269,6 +269,83 @@ tr:hover {
     100% { transform: rotate(360deg); }
 }
 
+/* Queue Progress Bar */
+.queue-progress-bar {
+    display: flex;
+    height: 28px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #ecf0f1;
+    margin-bottom: 0.75rem;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.queue-progress-segment {
+    display: block;
+    height: 100%;
+    transition: width 0.4s ease;
+    min-width: 0;
+}
+
+.queue-progress-segment.running {
+    background: #3498db;
+}
+
+.queue-progress-segment.pending {
+    background: #f39c12;
+}
+
+.queue-progress-segment.completed {
+    background: #27ae60;
+}
+
+.queue-progress-segment.failed {
+    background: #e74c3c;
+}
+
+.queue-progress-segment.cancelled {
+    background: #95a5a6;
+}
+
+/* Collapsible sections */
+.collapsible-toggle {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.chevron {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: #7f8c8d;
+    cursor: pointer;
+}
+
+.chevron::before {
+    content: '▸';
+}
+
+.chevron.expanded::before {
+    content: '▾';
+}
+
+.collapsible-body {
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.2s ease;
+    max-height: 5000px;
+}
+
+.collapsible-body.collapsed {
+    max-height: 0 !important;
+    opacity: 0;
+}
+
+.collapsible-body.expanded {
+    opacity: 1;
+}
+
 /* Utility Classes */
 .text-center { text-align: center; }
 .text-muted { color: #7f8c8d; }

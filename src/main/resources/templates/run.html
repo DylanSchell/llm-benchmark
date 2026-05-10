@@ -95,16 +95,23 @@
 
                     <div class="form-group">
                         <label>Execution Mode</label>
-                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
                             <label style="display: flex; align-items: center; cursor: pointer;">
-                                <input type="radio" name="mode" value="single" checked onchange="toggleExerciseMode()">
+                                <input type="radio" name="mode" value="quick" onchange="toggleExerciseMode()">
+                                <span style="margin-left: 0.25rem;">Quick bench</span>
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="mode" value="single" onchange="toggleExerciseMode()">
                                 <span style="margin-left: 0.25rem;">Single exercise per language</span>
                             </label>
                             <label style="display: flex; align-items: center; cursor: pointer;">
-                                <input type="radio" name="mode" value="all" onchange="toggleExerciseMode()">
+                                <input type="radio" name="mode" value="all" checked onchange="toggleExerciseMode()">
                                 <span style="margin-left: 0.25rem;">All exercises per language</span>
                             </label>
                         </div>
+                        <small style="color: #666; display: block; margin-top: 0.25rem;" id="mode-hint">
+                            Select one or more languages to run all their exercises
+                        </small>
                     </div>
 
                     <div class="form-group" id="single-exercise-group">
@@ -144,9 +151,18 @@
                     updateExerciseList();
                 });
 
+                const modeHints = {
+                    quick: "Runs a curated set of fast exercises (< 60s each) across selected languages",
+                    single: "Select specific exercises to run for each language",
+                    all: "Select one or more languages to run all their exercises"
+                };
+
                 function toggleExerciseMode() {
                     const mode = document.querySelector('input[name="mode"]:checked').value;
                     const singleGroup = document.getElementById('single-exercise-group');
+                    const modeHint = document.getElementById('mode-hint');
+                    if (modeHint) modeHint.textContent = modeHints[mode] || '';
+
                     if (mode === 'single') {
                         singleGroup.style.display = 'block';
                         // Pre-select all exercises for each selected language
@@ -257,6 +273,23 @@
                         return;
                     }
 
+                    // Quick bench mode: no exercise selection needed, just languages
+                    if (mode === 'quick') {
+                        const formData = new FormData();
+                        formData.append('agent', agent);
+                        if (model) formData.append('model', model);
+                        languages.forEach(lang => formData.append('language', lang));
+                        formData.append('mode', 'quick');
+
+                        await fetch('/api/benchmark/queue/schedule', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        window.location.href = '/';
+                        return;
+                    }
+
                     if (mode === 'single') {
                         // Build queue items from selected exercises
                         const items = [];
@@ -305,6 +338,7 @@
                     if (model) formData.append('model', model);
                     languages.forEach(lang => formData.append('language', lang));
                     // exercise is null for "all exercises" — scheduleBatch expands to individual items
+                    formData.append('mode', 'all');
 
                     const response = await fetch('/api/benchmark/queue/schedule', {
                         method: 'POST',

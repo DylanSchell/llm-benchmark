@@ -48,7 +48,7 @@ public class ResultController {
     @GetMapping("/api/recent-results")
     @ResponseBody
     public List<Map<String, Object>> getRecentResults() {
-        return resultService.listResults(null, null, null, null);
+        return resultService.listResults(null, null, null, null, false);
     }
 
     /**
@@ -56,7 +56,7 @@ public class ResultController {
      */
     @GetMapping("/recent-results-fragment")
     public String recentResultsFragment(Model model) {
-        List<Map<String, Object>> results = resultService.listResults(null, null, null, null);
+        List<Map<String, Object>> results = resultService.listResults(null, null, null, null, false);
         model.addAttribute("results", results);
         return "fragments/recent-results :: recentResultsRows";
     }
@@ -79,8 +79,9 @@ public class ResultController {
             @RequestParam(required = false) String language,
             @RequestParam(required = false) String agent,
             @RequestParam(required = false) String model,
-            @RequestParam(required = false) String exercise) {
-        return resultService.listResults(language, agent, model, exercise);
+            @RequestParam(required = false) String exercise,
+            @RequestParam(required = false, defaultValue = "false") boolean quick) {
+        return resultService.listResults(language, agent, model, exercise, quick);
     }
 
     /**
@@ -92,8 +93,9 @@ public class ResultController {
             @RequestParam(required = false) String language,
             @RequestParam(required = false) String agent,
             @RequestParam(required = false) String model,
-            @RequestParam(required = false) String exercise) {
-        return resultService.listIndividualResults(language, agent, model, exercise);
+            @RequestParam(required = false) String exercise,
+            @RequestParam(required = false, defaultValue = "false") boolean quick) {
+        return resultService.listIndividualResults(language, agent, model, exercise, quick);
     }
 
     /**

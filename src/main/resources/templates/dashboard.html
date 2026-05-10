@@ -31,6 +31,18 @@
     <main class="container">
         <h2 style="margin-bottom: 1.5rem;">Dashboard</h2>
 
+        <!-- Quick Bench Toggle -->
+        <div class="card" style="margin-bottom: 1rem;">
+            <label style="display: flex; align-items: center; cursor: pointer; font-size: 1.1rem; font-weight: 600;">
+                <input type="checkbox" id="quick-bench-toggle"
+                       th:checked="${param.quick != null && param.quick[0] == 'true'}"
+                       onchange="toggleQuickBench()"
+                       style="margin-right: 0.75rem; width: auto; height: 1.2rem;">
+                <span>Quick bench only</span>
+            </label>
+            <small style="color: #666; display: block; margin-top: 0.25rem;">Show only the curated set of fast exercises (&lt; 60s each)</small>
+        </div>
+
         <!-- Statistics Grid -->
         <div class="stats-grid" style="margin-bottom: 2rem;">
             <div class="stat-card">
@@ -60,6 +72,7 @@
                 <a th:href="@{/run}" class="btn btn-primary">New Benchmark Run</a>
                 <a th:href="@{/results}" class="btn btn-primary">View Results</a>
                 <button onclick="refreshResults()" class="btn btn-primary">Reload Results</button>
+                <button onclick="clearCompletedQueue()" class="btn btn-secondary">Clear Completed/Cancelled</button>
             </div>
         </div>
 
@@ -101,14 +114,50 @@
 
         <!-- Benchmark Queue -->
         <div class="card" style="margin-bottom: 1rem;">
-            <h3 style="margin-bottom: 1rem;">
+            <h3 style="margin-bottom: 0.75rem; cursor: pointer; user-select: none;" onclick="toggleQueue()">
+                <span id="queue-chevron" class="chevron collapsed" style="display:inline-block; font-size:1.25rem; line-height:1; color:#7f8c8d; margin-right:6px;">▸</span>
                 Benchmark Queue
-                <span th:if="${#lists.isEmpty(queueItems)}" style="font-size: 0.875rem; color: #7f8c8d; font-weight: normal;">(empty)</span>
+                <span th:if="${!#lists.isEmpty(queueItems)}" style="font-size: 0.875rem; color: #7f8c8d; font-weight: normal;">
+                    (<span th:text="${#lists.size(queueItems)}">0</span> items)
+                </span>
             </h3>
-            <div th:if="${#lists.isEmpty(queueItems)}" style="color: #7f8c8d;">
-                No items in queue
+
+            <!-- Progress Bar -->
+            <div class="queue-progress-bar" th:if="${!#lists.isEmpty(queueItems)}" id="queue-progress"
+                 style="display:flex; height:28px; border-radius:6px; overflow:hidden; background:#ecf0f1; margin-bottom:0.75rem; box-shadow:inset 0 1px 3px rgba(0,0,0,0.1);">
+                <div class="queue-progress-segment running" id="seg-running"
+                     th:data-count="${runningCount}"
+                     th:style="|width:${runningWidth}%; background:#3498db; height:100%; display:block; border-radius:6px 0 0 6px;|"
+                     th:title="'Running (' + ${runningCount} + ')'"
+                     th:if="${runningCount > 0}"></div>
+                <div class="queue-progress-segment pending" id="seg-pending"
+                     th:data-count="${pendingCount}"
+                     th:style="|width:${pendingWidth}%; background:#f39c12; height:100%; display:block;|"
+                     th:title="'Pending (' + ${pendingCount} + ')'"
+                     th:if="${pendingCount > 0}"></div>
+                <div class="queue-progress-segment completed" id="seg-completed"
+                     th:data-count="${completedCount}"
+                     th:style="|width:${completedWidth}%; background:#27ae60; height:100%; display:block;|"
+                     th:title="'Completed (' + ${completedCount} + ')'"
+                     th:if="${completedCount > 0}"></div>
+                <div class="queue-progress-segment failed" id="seg-failed"
+                     th:data-count="${failedCount}"
+                     th:style="|width:${failedWidth}%; background:#e74c3c; height:100%; display:block;|"
+                     th:title="'Failed (' + ${failedCount} + ')'"
+                     th:if="${failedCount > 0}"></div>
+                <div class="queue-progress-segment cancelled" id="seg-cancelled"
+                     th:data-count="${cancelledCount}"
+                     th:style="|width:${cancelledWidth}%; background:#95a5a6; height:100%; display:block; border-radius:0 6px 6px 0;|"
+                     th:title="'Cancelled (' + ${cancelledCount} + ')'"
+                     th:if="${cancelledCount > 0}"></div>
             </div>
-            <table th:unless="${#lists.isEmpty(queueItems)}" style="width: 100%; border-collapse: collapse;">
+
+            <!-- Collapsible Table Body -->
+            <div id="queue-table-body" style="display:none; max-height:5000px; overflow:hidden; transition:max-height 0.3s ease, opacity 0.2s ease;">
+                <div th:if="${#lists.isEmpty(queueItems)}" style="color: #7f8c8d; padding: 1rem 0;">
+                    No items in queue
+                </div>
+                <table th:unless="${#lists.isEmpty(queueItems)}" style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
                         <th style="padding: 0.5rem; text-align: left;">Status</th>
@@ -124,7 +173,7 @@
                     <tr th:each="item : ${queueItems}" style="border-bottom: 1px solid #eee;">
                         <td style="padding: 0.5rem;">
                             <span class="status-badge"
-                                  th:classappend="${item.status.name() == 'RUNNING'} ? 'status-completed' : (${item.status.name() == 'PENDING'} ? 'status-pending' : '')"
+                                  th:classappend="${item.status.name() == 'RUNNING'} ? 'status-running' : (${item.status.name() == 'COMPLETED'} ? 'status-completed' : (${item.status.name() == 'FAILED'} ? 'status-failed' : (${item.status.name() == 'CANCELLED'} ? 'status-cancelled' : 'status-pending')))"
                                   th:text="${item.status.name()}">PENDING</span>
                         </td>
                         <td style="padding: 0.5rem;" th:text="${item.agentName}">reference</td>
@@ -140,11 +189,19 @@
                                     onclick="cancelQueueItem(this.getAttribute('data-item-id'))">
                                 Cancel
                             </button>
-                            <span th:if="${item.status.name() != 'PENDING'}" style="color: #7f8c8d; font-size: 0.75rem;">-</span>
+                            <button th:if="${item.status.name() == 'FAILED'}"
+                                    class="btn btn-primary"
+                                    style="font-size: 0.75rem; padding: 0.25rem 0.5rem;"
+                                    th:attr="data-item-id=${item.id}"
+                                    onclick="retryQueueItem(this.getAttribute('data-item-id'))">
+                                Retry
+                            </button>
+                            <span th:if="${item.status.name() != 'PENDING' && item.status.name() != 'FAILED'}" style="color: #7f8c8d; font-size: 0.75rem;">-</span>
                         </td>
                     </tr>
                 </tbody>
             </table>
+            </div>
         </div>
 
         <!-- By Language -->
@@ -231,6 +288,35 @@
     </footer>
 
     <script>
+        // Quick bench toggle - reloads page with ?quick=true/false
+        function toggleQuickBench() {
+            const checked = document.getElementById('quick-bench-toggle').checked;
+            const url = new URL(window.location.href);
+            if (checked) {
+                url.searchParams.set('quick', 'true');
+            } else {
+                url.searchParams.delete('quick');
+            }
+            window.location.href = url.toString();
+        }
+
+        // Queue collapsible toggle
+        let queueCollapsed = true;
+
+        function toggleQueue() {
+            const body = document.getElementById('queue-table-body');
+            const chevron = document.getElementById('queue-chevron');
+            queueCollapsed = !queueCollapsed;
+
+            if (queueCollapsed) {
+                body.style.display = 'none';
+                chevron.textContent = '▸';
+            } else {
+                body.style.display = 'block';
+                chevron.textContent = '▾';
+            }
+        }
+
         // Refresh results from disk
         async function refreshResults() {
             const btn = event.target;
@@ -262,6 +348,40 @@
                 });
                 const data = await response.json();
                 // Reload page to show updated queue (regardless of success or failure)
+                window.location.reload();
+            } catch (e) {
+                // Reload page anyway
+                window.location.reload();
+            }
+        }
+
+        // Clear completed and cancelled queue items
+        async function clearCompletedQueue() {
+            if (!confirm('Clear all completed and cancelled items from the queue?')) return;
+
+            try {
+                const response = await fetch('/api/benchmark/queue/clear-terminal', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                alert(data.message);
+                window.location.reload();
+            } catch (e) {
+                console.error('Error clearing completed items:', e);
+                alert('Failed to clear completed items');
+            }
+        }
+
+        // Retry a failed queue item
+        async function retryQueueItem(itemId) {
+            if (!confirm('Retry this failed item?')) return;
+
+            try {
+                const response = await fetch(`/api/benchmark/queue/retry/${itemId}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                // Reload page to show updated queue
                 window.location.reload();
             } catch (e) {
                 // Reload page anyway

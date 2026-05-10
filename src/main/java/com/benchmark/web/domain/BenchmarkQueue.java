@@ -46,7 +46,7 @@ public class BenchmarkQueue {
     }
 
     /**
-     * Mark the current item as completed.
+     * Mark the current item as completed and keep it in the queue for review.
      */
     public void completeCurrent() {
         BenchmarkQueueItem item = currentItem.getAndSet(null);
@@ -57,7 +57,7 @@ public class BenchmarkQueue {
     }
 
     /**
-     * Mark the current item as failed.
+     * Mark the current item as failed and keep it in the queue for review.
      */
     public void failCurrent() {
         BenchmarkQueueItem item = currentItem.getAndSet(null);
@@ -165,7 +165,21 @@ public class BenchmarkQueue {
      * Clear all completed items.
      */
     public void clearCompleted() {
-        completedItems.clear();
+        completedItems.removeIf(item ->
+                item.getStatus() == BenchmarkQueueItem.QueueItemStatus.COMPLETED
+                        || item.getStatus() == BenchmarkQueueItem.QueueItemStatus.CANCELLED);
+    }
+
+    /**
+     * Clear all items that are in a terminal state (completed, failed, or cancelled).
+     * Keeps pending and running items intact.
+     */
+    public int clearTerminalItems() {
+        int before = completedItems.size();
+        completedItems.removeIf(item ->
+                item.getStatus() == BenchmarkQueueItem.QueueItemStatus.COMPLETED
+                        || item.getStatus() == BenchmarkQueueItem.QueueItemStatus.CANCELLED);
+        return before - completedItems.size();
     }
 
     /**
@@ -173,5 +187,43 @@ public class BenchmarkQueue {
      */
     public int getTotalCount() {
         return pendingQueue.size() + (currentItem.get() != null ? 1 : 0) + completedItems.size();
+    }
+
+    /**
+     * Retry a failed item by re-adding it to the pending queue.
+     * Creates a new queue item with the same parameters.
+     * Returns the new item, or null if the original item is not found.
+     */
+    public BenchmarkQueueItem retryItem(String itemId) {
+        BenchmarkQueueItem failedItem = null;
+
+        // Find the failed item in completedItems
+        for (BenchmarkQueueItem item : completedItems) {
+            if (item.getId().equals(itemId) && item.getStatus() == BenchmarkQueueItem.QueueItemStatus.FAILED) {
+                failedItem = item;
+                break;
+            }
+        }
+
+        if (failedItem == null) {
+            return null;
+        }
+
+        // Create a new queue item with the same parameters
+        BenchmarkQueueItem newItem = new BenchmarkQueueItem(
+                failedItem.getTargetDirectory(),
+                failedItem.getAgentName(),
+                failedItem.getModel(),
+                failedItem.getLanguage(),
+                failedItem.getExercise()
+        );
+
+        // Move the failed item to CANCELLED status
+        failedItem.setStatus(BenchmarkQueueItem.QueueItemStatus.CANCELLED);
+
+        // Add the new item to the pending queue
+        pendingQueue.offer(newItem);
+
+        return newItem;
     }
 }
