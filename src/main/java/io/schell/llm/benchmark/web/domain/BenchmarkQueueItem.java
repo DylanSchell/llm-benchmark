@@ -14,6 +14,7 @@ public class BenchmarkQueueItem {
     private final String model;
     private final String language;
     private final String exercise;
+    private final boolean retry;
     private final Instant queuedAt;
     private QueueItemStatus status;
     private String sessionId;
@@ -31,12 +32,18 @@ public class BenchmarkQueueItem {
 
     public BenchmarkQueueItem(String targetDirectory, String agentName, String model,
                                String language, String exercise) {
+        this(targetDirectory, agentName, model, language, exercise, false);
+    }
+
+    public BenchmarkQueueItem(String targetDirectory, String agentName, String model,
+                               String language, String exercise, boolean retry) {
         this.id = UUID.randomUUID().toString();
         this.targetDirectory = targetDirectory;
         this.agentName = agentName;
         this.model = model;
         this.language = language;
         this.exercise = exercise;
+        this.retry = retry;
         this.queuedAt = Instant.now();
         this.status = QueueItemStatus.PENDING;
     }
@@ -63,6 +70,10 @@ public class BenchmarkQueueItem {
 
     public String getExercise() {
         return exercise;
+    }
+
+    public boolean isRetry() {
+        return retry;
     }
 
     public Instant getQueuedAt() {

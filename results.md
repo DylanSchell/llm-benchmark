@@ -11,6 +11,7 @@
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | 225 | 225 | 0 | 100.0% | 8h 49m 49s | 0 / 0 / 610.7K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | 225 | 225 | 0 | 100.0% | 10h 50m 31s | 0 / 0 / 613.2K |
 | [pi-qwen35-397b-coding-nospec](#pi-qwen35-397b-coding-nospec) | 225 | 225 | 0 | 100.0% | 12h 11m 33s | 0 / 0 / 633.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | 225 | 225 | 0 | 100.0% | 12h 46m 37s | 0 / 0 / 807.2K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | 225 | 224 | 1 | 99.6% | 5h 33m 51s | 0 / 0 / 1.1M |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | 225 | 224 | 1 | 99.6% | 6h 24m 3s | 0 / 0 / 1.0M |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | 225 | 224 | 1 | 99.6% | 9h 4m 7s | 0 / 0 / 783.9K |
@@ -35,17 +36,21 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | 176 | 174 | 2 | 98.9% | 4h 37m 29s | 0 / 0 / 693.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | 169 | 121 | 48 | 71.6% | 15h 29m 36s | 21.1M / 36.0M / 385.0K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | 169 | 90 | 79 | 53.3% | 5h 28m 18s | 30.9M / 26.5M / 800.6K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | 162 | 159 | 3 | 98.1% | 2h 44m 13s | 0 / 0 / 468.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | 157 | 157 | 0 | 100.0% | 8h 39m 36s | 0 / 0 / 586.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | 145 | 140 | 5 | 96.6% | 7h 57m 23s | 0 / 0 / 695.5K |
 | [pi-kimi-linear](#pi-kimi-linear) | 136 | 82 | 54 | 60.3% | 1d 45m 47s | 0 / 0 / 1.4M |
 | [pi-minimax-m27](#pi-minimax-m27) | 128 | 96 | 32 | 75.0% | 8h 38m 13s | 0 / 0 / 789.0K |
 | [reference-reference](#reference-reference) | 47 | 47 | 0 | 100.0% | 0s | 0 / 0 / 0 |
 | [pi-step-35-flash](#pi-step-35-flash) | 45 | 32 | 13 | 71.1% | 4h 1m 3s | 0 / 0 / 442.4K |
 | [pi-qwen36-35b-a3b-llmfan-heretic](#pi-qwen36-35b-a3b-llmfan-heretic) | 34 | 32 | 2 | 94.1% | 1h 9m 32s | 0 / 0 / 192.2K |
-| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | 18 | 15 | 3 | 83.3% | 40m 11s | 0 / 0 / 94.1K |
+| [pi-mimo-25](#pi-mimo-25) | 14 | 14 | 0 | 100.0% | 1h 27m 9s | 0 / 0 / 0 |
 | [pi-qwen35-397b-coding](#pi-qwen35-397b-coding) | 6 | 0 | 6 | 0.0% | 1m 24s | 0 / 0 / 519 |
 | [reference-qwen36-35b-a3b-coding](#reference-qwen36-35b-a3b-coding) | 3 | 2 | 1 | 66.7% | 0s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b](#pi-qwen36-35b-a3b) | 2 | 2 | 0 | 100.0% | 1m 14s | 0 / 0 / 1.7K |
+| [pi-deepseek-v4-flash](#pi-deepseek-v4-flash) | 2 | 2 | 0 | 100.0% | 4m 34s | 0 / 0 / 3.7K |
 | [pi-gpt-oss-120b](#pi-gpt-oss-120b) | 1 | 1 | 0 | 100.0% | 1m 53s | 0 / 0 / 2.6K |
+| [pi-deepseek-reasoner](#pi-deepseek-reasoner) | 1 | 1 | 0 | 100.0% | 3m 2s | 0 / 0 / 1.8K |
 | [pi-gemma-4-31b](#pi-gemma-4-31b) | 1 | 1 | 0 | 100.0% | 6m 46s | 0 / 0 / 3.9K |
 | [pi-Qwen3_5-35B-A3B-8bit](#pi-Qwen3_5-35B-A3B-8bit) | 1 | 0 | 1 | 0.0% | 25s | 0 / 0 / 0 |
 | [pi-cydonia-24b](#pi-cydonia-24b) | 1 | 0 | 1 | 0.0% | 1m 18s | 0 / 0 / 1.3K |
@@ -3794,8 +3799,152 @@
 | [go-counting_java](#go-counting_java) | ✅ | 1m 21s | 0 / 0 / 5.1K |
 | [hangman_java](#hangman_java) | ✅ | 3m 58s | 0 / 0 / 13.3K |
 | [house_java](#house_java) | ✅ | 1m 49s | 0 / 0 / 5.7K |
-| [kindergarten-garden_java](#kindergarten-garden_java) | ❌ | 47s | 0 / 0 / 1.8K |
 | [bowling_java](#bowling_java) | ✅ | 6m 40s | 0 / 0 / 21.0K |
+| [kindergarten-garden_java](#kindergarten-garden_java) | ✅ | 37s | 0 / 0 / 1.3K |
+| [ocr-numbers_java](#ocr-numbers_java) | ✅ | 45s | 0 / 0 / 1.8K |
+| [palindrome-products_java](#palindrome-products_java) | ✅ | 53s | 0 / 0 / 1.7K |
+| [phone-number_java](#phone-number_java) | ✅ | 48s | 0 / 0 / 2.2K |
+| [pig-latin_java](#pig-latin_java) | ✅ | 1m 35s | 0 / 0 / 4.7K |
+| [protein-translation_java](#protein-translation_java) | ✅ | 32s | 0 / 0 / 1.1K |
+| [pythagorean-triplet_java](#pythagorean-triplet_java) | ✅ | 43s | 0 / 0 / 1.8K |
+| [queen-attack_java](#queen-attack_java) | ✅ | 37s | 0 / 0 / 1.3K |
+| [resistor-color-trio_java](#resistor-color-trio_java) | ✅ | 1m 0s | 0 / 0 / 3.0K |
+| [satellite_java](#satellite_java) | ✅ | 1m 28s | 0 / 0 / 3.7K |
+| [series_java](#series_java) | ✅ | 30s | 0 / 0 / 824 |
+| [simple-linked-list_java](#simple-linked-list_java) | ✅ | 1m 8s | 0 / 0 / 3.1K |
+| [state-of-tic-tac-toe_java](#state-of-tic-tac-toe_java) | ✅ | 1m 13s | 0 / 0 / 3.6K |
+| [transpose_java](#transpose_java) | ✅ | 1m 18s | 0 / 0 / 4.0K |
+| [tree-building_java](#tree-building_java) | ✅ | 1m 22s | 0 / 0 / 3.5K |
+| [twelve-days_java](#twelve-days_java) | ✅ | 58s | 0 / 0 / 2.1K |
+| [two-bucket_java](#two-bucket_java) | ✅ | 1m 43s | 0 / 0 / 5.3K |
+| [word-search_java](#word-search_java) | ✅ | 1m 14s | 0 / 0 / 3.2K |
+| [beer-song_go](#beer-song_go) | ✅ | 1m 4s | 0 / 0 / 3.6K |
+| [bottle-song_go](#bottle-song_go) | ✅ | 21s | 0 / 0 / 1.3K |
+| [crypto-square_go](#crypto-square_go) | ✅ | 17s | 0 / 0 / 971 |
+| [dnd-character_go](#dnd-character_go) | ✅ | 14s | 0 / 0 / 772 |
+| [dominoes_go](#dominoes_go) | ✅ | 30s | 0 / 0 / 1.7K |
+| [error-handling_go](#error-handling_go) | ✅ | 36s | 0 / 0 / 2.0K |
+| [food-chain_go](#food-chain_go) | ✅ | 42s | 0 / 0 / 2.2K |
+| [hexadecimal_go](#hexadecimal_go) | ✅ | 25s | 0 / 0 / 1.5K |
+| [octal_go](#octal_go) | ✅ | 16s | 0 / 0 / 884 |
+| [paasio_go](#paasio_go) | ✅ | 1m 15s | 0 / 0 / 3.5K |
+| [palindrome-products_go](#palindrome-products_go) | ✅ | 25s | 0 / 0 / 1.5K |
+| [pig-latin_go](#pig-latin_go) | ✅ | 44s | 0 / 0 / 2.9K |
+| [protein-translation_go](#protein-translation_go) | ✅ | 37s | 0 / 0 / 2.2K |
+| [say_go](#say_go) | ✅ | 20s | 0 / 0 / 1.3K |
+| [simple-linked-list_go](#simple-linked-list_go) | ✅ | 59s | 0 / 0 / 2.7K |
+| [sublist_go](#sublist_go) | ✅ | 19s | 0 / 0 / 969 |
+| [transpose_go](#transpose_go) | ✅ | 1m 57s | 0 / 0 / 7.2K |
+| [tree-building_go](#tree-building_go) | ✅ | 41s | 0 / 0 / 2.4K |
+| [trinary_go](#trinary_go) | ✅ | 12s | 0 / 0 / 679 |
+| [two-bucket_go](#two-bucket_go) | ✅ | 42s | 0 / 0 / 2.5K |
+| [variable-length-quantity_go](#variable-length-quantity_go) | ✅ | 19s | 0 / 0 / 1.1K |
+| [word-search_go](#word-search_go) | ✅ | 38s | 0 / 0 / 2.3K |
+| [wordy_go](#wordy_go) | ✅ | 45s | 0 / 0 / 2.8K |
+| [affine-cipher_javascript](#affine-cipher_javascript) | ✅ | 22s | 0 / 0 / 1.2K |
+| [alphametics_javascript](#alphametics_javascript) | ✅ | 38s | 0 / 0 / 2.3K |
+| [beer-song_javascript](#beer-song_javascript) | ✅ | 24s | 0 / 0 / 764 |
+| [binary_javascript](#binary_javascript) | ✅ | 17s | 0 / 0 / 705 |
+| [book-store_javascript](#book-store_javascript) | ✅ | 22s | 0 / 0 / 1.0K |
+| [bottle-song_javascript](#bottle-song_javascript) | ✅ | 24s | 0 / 0 / 1.0K |
+| [food-chain_javascript](#food-chain_javascript) | ✅ | 1m 1s | 0 / 0 / 3.6K |
+| [go-counting_javascript](#go-counting_javascript) | ✅ | 50s | 0 / 0 / 3.0K |
+| [grade-school_javascript](#grade-school_javascript) | ✅ | 20s | 0 / 0 / 948 |
+| [grep_javascript](#grep_javascript) | ✅ | 42s | 0 / 0 / 1.9K |
+| [killer-sudoku-helper_javascript](#killer-sudoku-helper_javascript) | ✅ | 21s | 0 / 0 / 912 |
+| [list-ops_javascript](#list-ops_javascript) | ✅ | 30s | 0 / 0 / 1.6K |
+| [meetup_javascript](#meetup_javascript) | ✅ | 27s | 0 / 0 / 1.0K |
+| [ocr-numbers_javascript](#ocr-numbers_javascript) | ✅ | 27s | 0 / 0 / 1.4K |
+| [palindrome-products_javascript](#palindrome-products_javascript) | ✅ | 46s | 0 / 0 / 1.3K |
+| [phone-number_javascript](#phone-number_javascript) | ✅ | 26s | 0 / 0 / 1.3K |
+| [book-store_go](#book-store_go) | ✅ | 38s | 0 / 0 / 2.1K |
+| [pig-latin_javascript](#pig-latin_javascript) | ✅ | 35s | 0 / 0 / 1.9K |
+| [promises_javascript](#promises_javascript) | ✅ | 46s | 0 / 0 / 2.9K |
+| [queen-attack_javascript](#queen-attack_javascript) | ✅ | 35s | 0 / 0 / 1.8K |
+| [rational-numbers_javascript](#rational-numbers_javascript) | ✅ | 42s | 0 / 0 / 2.1K |
+| [rectangles_javascript](#rectangles_javascript) | ✅ | 24s | 0 / 0 / 1.3K |
+| [resistor-color-trio_javascript](#resistor-color-trio_javascript) | ✅ | 27s | 0 / 0 / 1.5K |
+| [robot-name_javascript](#robot-name_javascript) | ✅ | 1m 32s | 0 / 0 / 4.3K |
+| [say_javascript](#say_javascript) | ✅ | 24s | 0 / 0 / 1.4K |
+| [scale-generator_javascript](#scale-generator_javascript) | ✅ | 2m 9s | 0 / 0 / 7.8K |
+| [simple-linked-list_javascript](#simple-linked-list_javascript) | ✅ | 17s | 0 / 0 / 804 |
+| [space-age_javascript](#space-age_javascript) | ✅ | 16s | 0 / 0 / 729 |
+| [state-of-tic-tac-toe_javascript](#state-of-tic-tac-toe_javascript) | ✅ | 30s | 0 / 0 / 1.6K |
+| [sum-of-multiples_javascript](#sum-of-multiples_javascript) | ✅ | 18s | 0 / 0 / 670 |
+| [tournament_javascript](#tournament_javascript) | ✅ | 23s | 0 / 0 / 1.1K |
+| [transpose_javascript](#transpose_javascript) | ✅ | 26s | 0 / 0 / 1.2K |
+| [triangle_javascript](#triangle_javascript) | ✅ | 15s | 0 / 0 / 635 |
+| [twelve-days_javascript](#twelve-days_javascript) | ✅ | 22s | 0 / 0 / 942 |
+| [two-bucket_javascript](#two-bucket_javascript) | ✅ | 52s | 0 / 0 / 3.1K |
+| [variable-length-quantity_javascript](#variable-length-quantity_javascript) | ✅ | 33s | 0 / 0 / 1.5K |
+| [word-search_javascript](#word-search_javascript) | ✅ | 25s | 0 / 0 / 1.0K |
+| [wordy_javascript](#wordy_javascript) | ✅ | 1m 59s | 0 / 0 / 6.7K |
+| [zipper_javascript](#zipper_javascript) | ✅ | 3m 21s | 0 / 0 / 10.8K |
+| [affine-cipher_python](#affine-cipher_python) | ✅ | 19s | 0 / 0 / 1.1K |
+| [beer-song_python](#beer-song_python) | ✅ | 45s | 0 / 0 / 1.8K |
+| [book-store_python](#book-store_python) | ✅ | 5m 19s | 0 / 0 / 19.2K |
+| [bottle-song_python](#bottle-song_python) | ✅ | 25s | 0 / 0 / 1.3K |
+| [dominoes_python](#dominoes_python) | ✅ | 46s | 0 / 0 / 2.8K |
+| [food-chain_python](#food-chain_python) | ✅ | 1m 36s | 0 / 0 / 5.0K |
+| [go-counting_python](#go-counting_python) | ✅ | 42s | 0 / 0 / 2.6K |
+| [grade-school_python](#grade-school_python) | ✅ | 18s | 0 / 0 / 955 |
+| [grep_python](#grep_python) | ✅ | 36s | 0 / 0 / 2.1K |
+| [list-ops_python](#list-ops_python) | ✅ | 29s | 0 / 0 / 1.8K |
+| [phone-number_python](#phone-number_python) | ✅ | 21s | 0 / 0 / 1.2K |
+| [pig-latin_python](#pig-latin_python) | ✅ | 33s | 0 / 0 / 2.2K |
+| [proverb_python](#proverb_python) | ✅ | 12s | 0 / 0 / 596 |
+| [rest-api_python](#rest-api_python) | ✅ | 1m 54s | 0 / 0 / 6.7K |
+| [robot-name_python](#robot-name_python) | ✅ | 13s | 0 / 0 / 721 |
+| [simple-linked-list_python](#simple-linked-list_python) | ✅ | 21s | 0 / 0 / 1.3K |
+| [transpose_python](#transpose_python) | ✅ | 13s | 0 / 0 / 648 |
+| [tree-building_python](#tree-building_python) | ✅ | 48s | 0 / 0 / 2.6K |
+| [two-bucket_python](#two-bucket_python) | ✅ | 31s | 0 / 0 / 2.0K |
+| [variable-length-quantity_python](#variable-length-quantity_python) | ✅ | 19s | 0 / 0 / 1.0K |
+| [wordy_python](#wordy_python) | ✅ | 1m 24s | 0 / 0 / 4.5K |
+| [zebra-puzzle_python](#zebra-puzzle_python) | ✅ | 1m 42s | 0 / 0 / 6.7K |
+| [zipper_python](#zipper_python) | ✅ | 4m 34s | 0 / 0 / 15.3K |
+| [accumulate_rust](#accumulate_rust) | ✅ | 29s | 0 / 0 / 1.7K |
+| [acronym_rust](#acronym_rust) | ✅ | 1m 22s | 0 / 0 / 5.4K |
+| [alphametics_rust](#alphametics_rust) | ✅ | 56s | 0 / 0 / 2.7K |
+| [book-store_rust](#book-store_rust) | ✅ | 3m 45s | 0 / 0 / 14.3K |
+| [dot-dsl_rust](#dot-dsl_rust) | ✅ | 38s | 0 / 0 / 2.5K |
+| [gigasecond_rust](#gigasecond_rust) | ✅ | 12s | 0 / 0 / 613 |
+| [grade-school_rust](#grade-school_rust) | ✅ | 15s | 0 / 0 / 934 |
+| [grep_rust](#grep_rust) | ✅ | 52s | 0 / 0 / 2.9K |
+| [luhn-from_rust](#luhn-from_rust) | ✅ | 30s | 0 / 0 / 2.0K |
+| [macros_rust](#macros_rust) | ✅ | 27s | 0 / 0 / 1.6K |
+| [nucleotide-codons_rust](#nucleotide-codons_rust) | ✅ | 41s | 0 / 0 / 2.8K |
+| [parallel-letter-frequency_rust](#parallel-letter-frequency_rust) | ✅ | 33s | 0 / 0 / 1.4K |
+| [pig-latin_rust](#pig-latin_rust) | ✅ | 28s | 0 / 0 / 2.0K |
+| [robot-name_rust](#robot-name_rust) | ✅ | 2m 20s | 0 / 0 / 9.0K |
+| [say_rust](#say_rust) | ✅ | 1m 18s | 0 / 0 / 4.8K |
+| [two-bucket_rust](#two-bucket_rust) | ✅ | 29s | 0 / 0 / 1.9K |
+| [variable-length-quantity_rust](#variable-length-quantity_rust) | ✅ | 1m 2s | 0 / 0 / 4.1K |
+| [word-count_rust](#word-count_rust) | ✅ | 27s | 0 / 0 / 1.8K |
+| [all-your-base_cpp](#all-your-base_cpp) | ✅ | 30s | 0 / 0 / 1.6K |
+| [allergies_cpp](#allergies_cpp) | ✅ | 35s | 0 / 0 / 1.9K |
+| [bank-account_cpp](#bank-account_cpp) | ✅ | 33s | 0 / 0 / 1.8K |
+| [binary-search-tree_cpp](#binary-search-tree_cpp) | ✅ | 1m 3s | 0 / 0 / 3.9K |
+| [circular-buffer_cpp](#circular-buffer_cpp) | ✅ | 26s | 0 / 0 / 1.4K |
+| [clock_cpp](#clock_cpp) | ✅ | 1m 49s | 0 / 0 / 3.5K |
+| [crypto-square_cpp](#crypto-square_cpp) | ✅ | 1m 9s | 0 / 0 / 4.4K |
+| [diamond_cpp](#diamond_cpp) | ✅ | 28s | 0 / 0 / 1.4K |
+| [dnd-character_cpp](#dnd-character_cpp) | ✅ | 48s | 0 / 0 / 2.6K |
+| [gigasecond_cpp](#gigasecond_cpp) | ✅ | 1m 1s | 0 / 0 / 3.5K |
+| [grade-school_cpp](#grade-school_cpp) | ✅ | 25s | 0 / 0 / 1.3K |
+| [kindergarten-garden_cpp](#kindergarten-garden_cpp) | ✅ | 53s | 0 / 0 / 2.1K |
+| [knapsack_cpp](#knapsack_cpp) | ✅ | 30s | 0 / 0 / 1.6K |
+| [linked-list_cpp](#linked-list_cpp) | ✅ | 39s | 0 / 0 / 2.0K |
+| [parallel-letter-frequency_cpp](#parallel-letter-frequency_cpp) | ✅ | 1m 13s | 0 / 0 / 2.9K |
+| [perfect-numbers_cpp](#perfect-numbers_cpp) | ✅ | 26s | 0 / 0 / 1.4K |
+| [phone-number_cpp](#phone-number_cpp) | ✅ | 43s | 0 / 0 / 2.7K |
+| [queen-attack_cpp](#queen-attack_cpp) | ✅ | 26s | 0 / 0 / 1.5K |
+| [robot-name_cpp](#robot-name_cpp) | ✅ | 1m 1s | 0 / 0 / 3.6K |
+| [spiral-matrix_cpp](#spiral-matrix_cpp) | ✅ | 30s | 0 / 0 / 1.6K |
+| [sublist_cpp](#sublist_cpp) | ✅ | 35s | 0 / 0 / 2.1K |
+| [yacht_cpp](#yacht_cpp) | ✅ | 35s | 0 / 0 / 2.1K |
+| [space-age_cpp](#space-age_cpp) | ✅ | 51s | 0 / 0 / 0 |
+| [connect_javascript](#connect_javascript) | ❌ | 6m 20s | 0 / 0 / 0 |
 
 
 # pi-qwen36-35b-a3b-q4-coding
@@ -4544,6 +4693,237 @@
 | [zipper_java](#zipper_java) | ✅ | 0s | 0 / 0 / 0 |
 
 
+# pi-deepseek-chat
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 4m 47s | 0 / 0 / 4.9K |
+| [all-your-base_java](#all-your-base_java) | ✅ | 1m 56s | 0 / 0 / 1.5K |
+| [bank-account_java](#bank-account_java) | ✅ | 1m 49s | 0 / 0 / 1.4K |
+| [book-store_java](#book-store_java) | ✅ | 2m 22s | 0 / 0 / 1.9K |
+| [bottle-song_java](#bottle-song_java) | ✅ | 4m 24s | 0 / 0 / 4.4K |
+| [change_java](#change_java) | ✅ | 1m 23s | 0 / 0 / 1.1K |
+| [circular-buffer_java](#circular-buffer_java) | ✅ | 1m 54s | 0 / 0 / 1.4K |
+| [custom-set_java](#custom-set_java) | ✅ | 2m 15s | 0 / 0 / 1.8K |
+| [dominoes_java](#dominoes_java) | ✅ | 1m 49s | 0 / 0 / 1.5K |
+| [house_java](#house_java) | ✅ | 2m 21s | 0 / 0 / 2.1K |
+| [kindergarten-garden_java](#kindergarten-garden_java) | ✅ | 1m 20s | 0 / 0 / 1.1K |
+| [ocr-numbers_java](#ocr-numbers_java) | ✅ | 3m 50s | 0 / 0 / 4.0K |
+| [palindrome-products_java](#palindrome-products_java) | ✅ | 1m 34s | 0 / 0 / 1.1K |
+| [phone-number_java](#phone-number_java) | ✅ | 1m 57s | 0 / 0 / 1.7K |
+| [pig-latin_java](#pig-latin_java) | ✅ | 3m 57s | 0 / 0 / 4.4K |
+| [protein-translation_java](#protein-translation_java) | ✅ | 1m 59s | 0 / 0 / 1.4K |
+| [pythagorean-triplet_java](#pythagorean-triplet_java) | ✅ | 2m 50s | 0 / 0 / 2.8K |
+| [queen-attack_java](#queen-attack_java) | ✅ | 1m 42s | 0 / 0 / 1.4K |
+| [resistor-color-trio_java](#resistor-color-trio_java) | ✅ | 1m 38s | 0 / 0 / 1.3K |
+| [satellite_java](#satellite_java) | ✅ | 1m 45s | 0 / 0 / 1.4K |
+| [series_java](#series_java) | ✅ | 1m 23s | 0 / 0 / 1.1K |
+| [simple-linked-list_java](#simple-linked-list_java) | ✅ | 1m 39s | 0 / 0 / 1.4K |
+| [state-of-tic-tac-toe_java](#state-of-tic-tac-toe_java) | ✅ | 2m 1s | 0 / 0 / 1.7K |
+| [transpose_java](#transpose_java) | ✅ | 12m 10s | 0 / 0 / 14.6K |
+| [tree-building_java](#tree-building_java) | ✅ | 1m 53s | 0 / 0 / 1.6K |
+| [twelve-days_java](#twelve-days_java) | ✅ | 1m 34s | 0 / 0 / 1.2K |
+| [two-bucket_java](#two-bucket_java) | ✅ | 1m 58s | 0 / 0 / 1.8K |
+| [word-search_java](#word-search_java) | ✅ | 2m 25s | 0 / 0 / 1.7K |
+| [beer-song_go](#beer-song_go) | ✅ | 2m 7s | 0 / 0 / 2.1K |
+| [book-store_go](#book-store_go) | ✅ | 1m 36s | 0 / 0 / 1.5K |
+| [bottle-song_go](#bottle-song_go) | ✅ | 1m 39s | 0 / 0 / 1.5K |
+| [crypto-square_go](#crypto-square_go) | ✅ | 1m 6s | 0 / 0 / 997 |
+| [dnd-character_go](#dnd-character_go) | ✅ | 2m 45s | 0 / 0 / 2.9K |
+| [dominoes_go](#dominoes_go) | ✅ | 2m 10s | 0 / 0 / 2.3K |
+| [error-handling_go](#error-handling_go) | ✅ | 56s | 0 / 0 / 757 |
+| [food-chain_go](#food-chain_go) | ✅ | 1m 40s | 0 / 0 / 1.8K |
+| [hexadecimal_go](#hexadecimal_go) | ✅ | 1m 19s | 0 / 0 / 1.3K |
+| [octal_go](#octal_go) | ✅ | 51s | 0 / 0 / 783 |
+| [paasio_go](#paasio_go) | ✅ | 3m 10s | 0 / 0 / 3.0K |
+| [palindrome-products_go](#palindrome-products_go) | ✅ | 1m 18s | 0 / 0 / 1.3K |
+| [pig-latin_go](#pig-latin_go) | ✅ | 1m 25s | 0 / 0 / 1.4K |
+| [protein-translation_go](#protein-translation_go) | ✅ | 1m 11s | 0 / 0 / 1.1K |
+| [say_go](#say_go) | ✅ | 1m 49s | 0 / 0 / 1.8K |
+| [simple-linked-list_go](#simple-linked-list_go) | ✅ | 1m 41s | 0 / 0 / 1.8K |
+| [sublist_go](#sublist_go) | ✅ | 1m 30s | 0 / 0 / 1.4K |
+| [transpose_go](#transpose_go) | ✅ | 10m 0s | 0 / 0 / 13.1K |
+| [tree-building_go](#tree-building_go) | ✅ | 1m 19s | 0 / 0 / 1.2K |
+| [trinary_go](#trinary_go) | ✅ | 1m 25s | 0 / 0 / 1.5K |
+| [two-bucket_go](#two-bucket_go) | ✅ | 4m 6s | 0 / 0 / 4.6K |
+| [variable-length-quantity_go](#variable-length-quantity_go) | ✅ | 2m 7s | 0 / 0 / 2.2K |
+| [word-search_go](#word-search_go) | ✅ | 2m 11s | 0 / 0 / 2.2K |
+| [wordy_go](#wordy_go) | ✅ | 1m 31s | 0 / 0 / 1.4K |
+| [affine-cipher_javascript](#affine-cipher_javascript) | ✅ | 2m 54s | 0 / 0 / 3.2K |
+| [alphametics_javascript](#alphametics_javascript) | ✅ | 3m 43s | 0 / 0 / 4.2K |
+| [beer-song_javascript](#beer-song_javascript) | ✅ | 2m 2s | 0 / 0 / 1.8K |
+| [binary_javascript](#binary_javascript) | ✅ | 54s | 0 / 0 / 764 |
+| [book-store_javascript](#book-store_javascript) | ✅ | 1m 35s | 0 / 0 / 1.5K |
+| [bottle-song_javascript](#bottle-song_javascript) | ✅ | 1m 0s | 0 / 0 / 828 |
+| [connect_javascript](#connect_javascript) | ✅ | 12m 2s | 0 / 0 / 15.8K |
+| [food-chain_javascript](#food-chain_javascript) | ✅ | 4m 43s | 0 / 0 / 5.7K |
+| [go-counting_javascript](#go-counting_javascript) | ✅ | 2m 42s | 0 / 0 / 3.0K |
+| [grade-school_javascript](#grade-school_javascript) | ✅ | 1m 41s | 0 / 0 / 1.6K |
+| [grep_javascript](#grep_javascript) | ✅ | 6m 59s | 0 / 0 / 7.8K |
+| [killer-sudoku-helper_javascript](#killer-sudoku-helper_javascript) | ✅ | 1m 51s | 0 / 0 / 1.8K |
+| [list-ops_javascript](#list-ops_javascript) | ✅ | 1m 55s | 0 / 0 / 2.0K |
+| [meetup_javascript](#meetup_javascript) | ✅ | 1m 43s | 0 / 0 / 1.5K |
+| [ocr-numbers_javascript](#ocr-numbers_javascript) | ✅ | 1m 13s | 0 / 0 / 1.1K |
+| [palindrome-products_javascript](#palindrome-products_javascript) | ✅ | 2m 5s | 0 / 0 / 1.9K |
+| [phone-number_javascript](#phone-number_javascript) | ✅ | 1m 13s | 0 / 0 / 1.1K |
+| [pig-latin_javascript](#pig-latin_javascript) | ✅ | 1m 52s | 0 / 0 / 1.8K |
+| [promises_javascript](#promises_javascript) | ✅ | 1m 59s | 0 / 0 / 2.0K |
+| [queen-attack_javascript](#queen-attack_javascript) | ✅ | 1m 34s | 0 / 0 / 1.6K |
+| [rational-numbers_javascript](#rational-numbers_javascript) | ✅ | 2m 2s | 0 / 0 / 2.0K |
+| [rectangles_javascript](#rectangles_javascript) | ✅ | 1m 40s | 0 / 0 / 1.6K |
+| [resistor-color-trio_javascript](#resistor-color-trio_javascript) | ✅ | 2m 47s | 0 / 0 / 3.3K |
+| [robot-name_javascript](#robot-name_javascript) | ✅ | 2m 0s | 0 / 0 / 1.9K |
+| [say_javascript](#say_javascript) | ✅ | 1m 15s | 0 / 0 / 1.2K |
+| [scale-generator_javascript](#scale-generator_javascript) | ✅ | 6m 4s | 0 / 0 / 7.7K |
+| [simple-linked-list_javascript](#simple-linked-list_javascript) | ✅ | 1m 12s | 0 / 0 / 1.1K |
+| [space-age_javascript](#space-age_javascript) | ✅ | 1m 4s | 0 / 0 / 963 |
+| [state-of-tic-tac-toe_javascript](#state-of-tic-tac-toe_javascript) | ✅ | 1m 26s | 0 / 0 / 1.3K |
+| [sum-of-multiples_javascript](#sum-of-multiples_javascript) | ✅ | 49s | 0 / 0 / 660 |
+| [tournament_javascript](#tournament_javascript) | ✅ | 2m 52s | 0 / 0 / 2.9K |
+| [transpose_javascript](#transpose_javascript) | ✅ | 8m 54s | 0 / 0 / 11.7K |
+| [triangle_javascript](#triangle_javascript) | ✅ | 1m 8s | 0 / 0 / 1.0K |
+| [twelve-days_javascript](#twelve-days_javascript) | ✅ | 1m 9s | 0 / 0 / 955 |
+| [two-bucket_javascript](#two-bucket_javascript) | ✅ | 1m 57s | 0 / 0 / 2.0K |
+| [variable-length-quantity_javascript](#variable-length-quantity_javascript) | ✅ | 1m 49s | 0 / 0 / 1.7K |
+| [word-search_javascript](#word-search_javascript) | ✅ | 1m 35s | 0 / 0 / 1.3K |
+| [wordy_javascript](#wordy_javascript) | ✅ | 5m 7s | 0 / 0 / 6.0K |
+| [zipper_javascript](#zipper_javascript) | ✅ | 1m 37s | 0 / 0 / 1.6K |
+| [affine-cipher_python](#affine-cipher_python) | ✅ | 1m 22s | 0 / 0 / 1.3K |
+| [beer-song_python](#beer-song_python) | ✅ | 1m 38s | 0 / 0 / 1.2K |
+| [book-store_python](#book-store_python) | ✅ | 1m 19s | 0 / 0 / 1.2K |
+| [bottle-song_python](#bottle-song_python) | ✅ | 1m 57s | 0 / 0 / 1.8K |
+| [dominoes_python](#dominoes_python) | ✅ | 2m 55s | 0 / 0 / 3.1K |
+| [food-chain_python](#food-chain_python) | ✅ | 2m 52s | 0 / 0 / 2.8K |
+| [go-counting_python](#go-counting_python) | ✅ | 1m 42s | 0 / 0 / 1.7K |
+| [grade-school_python](#grade-school_python) | ✅ | 1m 8s | 0 / 0 / 977 |
+| [grep_python](#grep_python) | ✅ | 1m 17s | 0 / 0 / 1.0K |
+| [list-ops_python](#list-ops_python) | ✅ | 1m 20s | 0 / 0 / 1.2K |
+| [phone-number_python](#phone-number_python) | ✅ | 1m 15s | 0 / 0 / 1.1K |
+| [pig-latin_python](#pig-latin_python) | ✅ | 1m 3s | 0 / 0 / 886 |
+| [proverb_python](#proverb_python) | ✅ | 58s | 0 / 0 / 841 |
+| [rest-api_python](#rest-api_python) | ✅ | 1m 26s | 0 / 0 / 1.4K |
+| [robot-name_python](#robot-name_python) | ✅ | 52s | 0 / 0 / 766 |
+| [simple-linked-list_python](#simple-linked-list_python) | ✅ | 1m 8s | 0 / 0 / 1.1K |
+| [transpose_python](#transpose_python) | ✅ | 8m 33s | 0 / 0 / 11.1K |
+| [tree-building_python](#tree-building_python) | ✅ | 1m 36s | 0 / 0 / 1.3K |
+| [two-bucket_python](#two-bucket_python) | ✅ | 1m 41s | 0 / 0 / 1.8K |
+| [variable-length-quantity_python](#variable-length-quantity_python) | ✅ | 1m 31s | 0 / 0 / 1.4K |
+| [wordy_python](#wordy_python) | ✅ | 5m 37s | 0 / 0 / 6.6K |
+| [zebra-puzzle_python](#zebra-puzzle_python) | ✅ | 1m 43s | 0 / 0 / 1.9K |
+| [zipper_python](#zipper_python) | ✅ | 1m 29s | 0 / 0 / 1.4K |
+| [accumulate_rust](#accumulate_rust) | ✅ | 45s | 0 / 0 / 580 |
+| [acronym_rust](#acronym_rust) | ✅ | 1m 10s | 0 / 0 / 1.2K |
+| [alphametics_rust](#alphametics_rust) | ✅ | 5m 0s | 0 / 0 / 5.6K |
+| [book-store_rust](#book-store_rust) | ✅ | 1m 32s | 0 / 0 / 1.6K |
+| [dot-dsl_rust](#dot-dsl_rust) | ✅ | 1m 29s | 0 / 0 / 1.5K |
+| [gigasecond_rust](#gigasecond_rust) | ✅ | 1m 51s | 0 / 0 / 1.1K |
+| [grade-school_rust](#grade-school_rust) | ✅ | 1m 24s | 0 / 0 / 1.3K |
+| [grep_rust](#grep_rust) | ✅ | 1m 38s | 0 / 0 / 1.4K |
+| [luhn-from_rust](#luhn-from_rust) | ✅ | 1m 28s | 0 / 0 / 1.3K |
+| [macros_rust](#macros_rust) | ✅ | 1m 50s | 0 / 0 / 1.8K |
+| [nucleotide-codons_rust](#nucleotide-codons_rust) | ✅ | 2m 18s | 0 / 0 / 2.6K |
+| [parallel-letter-frequency_rust](#parallel-letter-frequency_rust) | ✅ | 1m 24s | 0 / 0 / 1.4K |
+| [pig-latin_rust](#pig-latin_rust) | ✅ | 2m 5s | 0 / 0 / 2.3K |
+| [robot-name_rust](#robot-name_rust) | ✅ | 1m 22s | 0 / 0 / 1.5K |
+| [say_rust](#say_rust) | ✅ | 1m 55s | 0 / 0 / 2.0K |
+| [two-bucket_rust](#two-bucket_rust) | ✅ | 1m 37s | 0 / 0 / 1.7K |
+| [variable-length-quantity_rust](#variable-length-quantity_rust) | ✅ | 1m 21s | 0 / 0 / 1.3K |
+| [word-count_rust](#word-count_rust) | ✅ | 1m 36s | 0 / 0 / 1.6K |
+| [all-your-base_cpp](#all-your-base_cpp) | ✅ | 1m 46s | 0 / 0 / 1.7K |
+| [allergies_cpp](#allergies_cpp) | ✅ | 1m 48s | 0 / 0 / 1.6K |
+| [bank-account_cpp](#bank-account_cpp) | ✅ | 1m 33s | 0 / 0 / 1.5K |
+| [binary-search-tree_cpp](#binary-search-tree_cpp) | ✅ | 4m 40s | 0 / 0 / 4.5K |
+| [circular-buffer_cpp](#circular-buffer_cpp) | ✅ | 1m 38s | 0 / 0 / 1.5K |
+| [clock_cpp](#clock_cpp) | ✅ | 1m 36s | 0 / 0 / 1.5K |
+| [crypto-square_cpp](#crypto-square_cpp) | ✅ | 4m 56s | 0 / 0 / 6.0K |
+| [diamond_cpp](#diamond_cpp) | ✅ | 2m 5s | 0 / 0 / 2.0K |
+| [dnd-character_cpp](#dnd-character_cpp) | ✅ | 2m 8s | 0 / 0 / 2.0K |
+| [gigasecond_cpp](#gigasecond_cpp) | ✅ | 4m 8s | 0 / 0 / 3.9K |
+| [grade-school_cpp](#grade-school_cpp) | ✅ | 1m 36s | 0 / 0 / 1.4K |
+| [kindergarten-garden_cpp](#kindergarten-garden_cpp) | ✅ | 1m 46s | 0 / 0 / 1.7K |
+| [knapsack_cpp](#knapsack_cpp) | ✅ | 2m 1s | 0 / 0 / 1.8K |
+| [linked-list_cpp](#linked-list_cpp) | ✅ | 1m 46s | 0 / 0 / 1.7K |
+| [parallel-letter-frequency_cpp](#parallel-letter-frequency_cpp) | ✅ | 3m 17s | 0 / 0 / 2.7K |
+| [perfect-numbers_cpp](#perfect-numbers_cpp) | ✅ | 1m 17s | 0 / 0 / 1.1K |
+| [phone-number_cpp](#phone-number_cpp) | ✅ | 1m 59s | 0 / 0 / 1.8K |
+| [queen-attack_cpp](#queen-attack_cpp) | ✅ | 1m 39s | 0 / 0 / 1.6K |
+| [robot-name_cpp](#robot-name_cpp) | ✅ | 1m 41s | 0 / 0 / 1.5K |
+| [space-age_cpp](#space-age_cpp) | ✅ | 1m 42s | 0 / 0 / 1.7K |
+| [spiral-matrix_cpp](#spiral-matrix_cpp) | ✅ | 1m 30s | 0 / 0 / 1.4K |
+| [sublist_cpp](#sublist_cpp) | ✅ | 1m 59s | 0 / 0 / 1.7K |
+| [yacht_cpp](#yacht_cpp) | ✅ | 1m 54s | 0 / 0 / 1.9K |
+| [alphametics_java](#alphametics_java) | ✅ | 2m 16s | 0 / 0 / 2.0K |
+| [bowling_java](#bowling_java) | ✅ | 8m 6s | 0 / 0 / 8.1K |
+| [connect_java](#connect_java) | ✅ | 22m 0s | 0 / 0 / 26.9K |
+| [food-chain_java](#food-chain_java) | ✅ | 2m 39s | 0 / 0 / 2.2K |
+| [forth_java](#forth_java) | ✅ | 6m 4s | 0 / 0 / 6.2K |
+| [go-counting_java](#go-counting_java) | ✅ | 3m 2s | 0 / 0 / 2.8K |
+| [hangman_java](#hangman_java) | ✅ | 31m 11s | 0 / 0 / 23.5K |
+| [ledger_java](#ledger_java) | ✅ | 6m 48s | 0 / 0 / 7.7K |
+| [mazy-mice_java](#mazy-mice_java) | ✅ | 4m 6s | 0 / 0 / 4.4K |
+| [poker_java](#poker_java) | ✅ | 7m 34s | 0 / 0 / 8.3K |
+| [rational-numbers_java](#rational-numbers_java) | ✅ | 4m 18s | 0 / 0 / 4.0K |
+| [react_java](#react_java) | ✅ | 3m 27s | 0 / 0 / 3.4K |
+| [rest-api_java](#rest-api_java) | ✅ | 4m 41s | 0 / 0 / 5.1K |
+| [sgf-parsing_java](#sgf-parsing_java) | ✅ | 9m 36s | 0 / 0 / 11.5K |
+| [variable-length-quantity_java](#variable-length-quantity_java) | ✅ | 1m 50s | 0 / 0 / 1.4K |
+| [wordy_java](#wordy_java) | ✅ | 2m 33s | 0 / 0 / 2.3K |
+| [zebra-puzzle_java](#zebra-puzzle_java) | ✅ | 8m 36s | 0 / 0 / 9.6K |
+| [zipper_java](#zipper_java) | ✅ | 2m 45s | 0 / 0 / 2.6K |
+| [pov_java](#pov_java) | ✅ | 6m 52s | 0 / 0 / 7.4K |
+| [alphametics_go](#alphametics_go) | ✅ | 17m 46s | 0 / 0 / 22.1K |
+| [bowling_go](#bowling_go) | ✅ | 7m 18s | 0 / 0 / 8.7K |
+| [connect_go](#connect_go) | ✅ | 3m 44s | 0 / 0 / 4.4K |
+| [counter_go](#counter_go) | ✅ | 13m 22s | 0 / 0 / 14.6K |
+| [forth_go](#forth_go) | ✅ | 6m 27s | 0 / 0 / 6.9K |
+| [kindergarten-garden_go](#kindergarten-garden_go) | ✅ | 1m 41s | 0 / 0 / 1.6K |
+| [ledger_go](#ledger_go) | ✅ | 2m 39s | 0 / 0 / 2.7K |
+| [markdown_go](#markdown_go) | ✅ | 2m 18s | 0 / 0 / 2.3K |
+| [matrix_go](#matrix_go) | ✅ | 4m 42s | 0 / 0 / 5.4K |
+| [poker_go](#poker_go) | ✅ | 7m 31s | 0 / 0 / 7.9K |
+| [react_go](#react_go) | ✅ | 2m 40s | 0 / 0 / 3.0K |
+| [robot-simulator_go](#robot-simulator_go) | ✅ | 21m 14s | 0 / 0 / 22.5K |
+| [scale-generator_go](#scale-generator_go) | ✅ | 4m 29s | 0 / 0 / 5.4K |
+| [zebra-puzzle_go](#zebra-puzzle_go) | ✅ | 5m 52s | 0 / 0 / 7.7K |
+| [pov_go](#pov_go) | ✅ | 4m 4s | 0 / 0 / 4.8K |
+| [bowling_javascript](#bowling_javascript) | ✅ | 4m 6s | 0 / 0 / 4.2K |
+| [complex-numbers_javascript](#complex-numbers_javascript) | ✅ | 2m 53s | 0 / 0 / 3.1K |
+| [forth_javascript](#forth_javascript) | ✅ | 4m 5s | 0 / 0 / 3.9K |
+| [house_javascript](#house_javascript) | ✅ | 1m 26s | 0 / 0 / 1.3K |
+| [ledger_javascript](#ledger_javascript) | ✅ | 5m 56s | 0 / 0 / 6.9K |
+| [parallel-letter-frequency_javascript](#parallel-letter-frequency_javascript) | ✅ | 1m 6s | 0 / 0 / 779 |
+| [poker_javascript](#poker_javascript) | ✅ | 1m 58s | 0 / 0 / 2.0K |
+| [react_javascript](#react_javascript) | ✅ | 6m 50s | 0 / 0 / 8.4K |
+| [rest-api_javascript](#rest-api_javascript) | ✅ | 1m 56s | 0 / 0 / 1.8K |
+| [zebra-puzzle_javascript](#zebra-puzzle_javascript) | ✅ | 1m 48s | 0 / 0 / 2.0K |
+| [bowling_python](#bowling_python) | ✅ | 7m 39s | 0 / 0 / 8.7K |
+| [connect_python](#connect_python) | ✅ | 9m 7s | 0 / 0 / 12.1K |
+| [dot-dsl_python](#dot-dsl_python) | ✅ | 1m 54s | 0 / 0 / 1.9K |
+| [forth_python](#forth_python) | ✅ | 4m 41s | 0 / 0 / 5.0K |
+| [hangman_python](#hangman_python) | ✅ | 3m 3s | 0 / 0 / 3.5K |
+| [paasio_python](#paasio_python) | ✅ | 3m 50s | 0 / 0 / 4.1K |
+| [poker_python](#poker_python) | ✅ | 2m 39s | 0 / 0 / 2.1K |
+| [react_python](#react_python) | ✅ | 6m 58s | 0 / 0 / 8.3K |
+| [scale-generator_python](#scale-generator_python) | ✅ | 1m 36s | 0 / 0 / 1.7K |
+| [sgf-parsing_python](#sgf-parsing_python) | ✅ | 3m 50s | 0 / 0 / 4.2K |
+| [pov_python](#pov_python) | ✅ | 4m 38s | 0 / 0 / 5.7K |
+| [bowling_rust](#bowling_rust) | ✅ | 6m 7s | 0 / 0 / 7.6K |
+| [decimal_rust](#decimal_rust) | ✅ | 11m 58s | 0 / 0 / 13.7K |
+| [doubly-linked-list_rust](#doubly-linked-list_rust) | ✅ | 7m 12s | 0 / 0 / 8.5K |
+| [fizzy_rust](#fizzy_rust) | ✅ | 3m 32s | 0 / 0 / 4.0K |
+| [forth_rust](#forth_rust) | ✅ | 14m 38s | 0 / 0 / 17.9K |
+| [ocr-numbers_rust](#ocr-numbers_rust) | ✅ | 1m 20s | 0 / 0 / 1.3K |
+| [poker_rust](#poker_rust) | ✅ | 5m 1s | 0 / 0 / 5.2K |
+| [react_rust](#react_rust) | ✅ | 7m 7s | 0 / 0 / 8.2K |
+| [scale-generator_rust](#scale-generator_rust) | ✅ | 3m 25s | 0 / 0 / 4.0K |
+| [simple-cipher_rust](#simple-cipher_rust) | ✅ | 1m 26s | 0 / 0 / 1.4K |
+| [wordy_rust](#wordy_rust) | ✅ | 6m 15s | 0 / 0 / 7.5K |
+| [xorcism_rust](#xorcism_rust) | ✅ | 5m 1s | 0 / 0 / 4.6K |
+| [complex-numbers_cpp](#complex-numbers_cpp) | ✅ | 2m 3s | 0 / 0 / 1.9K |
+| [meetup_cpp](#meetup_cpp) | ✅ | 6m 40s | 0 / 0 / 6.3K |
+| [zebra-puzzle_cpp](#zebra-puzzle_cpp) | ✅ | 2m 48s | 0 / 0 / 3.1K |
+
+
 # pi-qwen35-122b-q4-coding
 
 | Exercise | Success | Duration | Tokens |
@@ -4787,6 +5167,13 @@
 | Exercise | Success | Duration | Tokens |
 |----------|---------|----------|--------|
 | [alphametics_javascript](#alphametics_javascript) | ✅ | 1m 53s | 0 / 0 / 2.6K |
+
+
+# pi-deepseek-reasoner
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 3m 2s | 0 / 0 / 1.8K |
 
 
 # pi-gemma-4-31b
@@ -5931,6 +6318,14 @@
 | [meetup_cpp](#meetup_cpp) | ✅ | 28m 50s | 0 / 0 / 15.8K |
 
 
+# pi-deepseek-v4-flash
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 2m 40s | 0 / 0 / 2.2K |
+| [all-your-base_java](#all-your-base_java) | ✅ | 1m 54s | 0 / 0 / 1.5K |
+
+
 # pi-qwen36-27b-no-thinking
 
 | Exercise | Success | Duration | Tokens |
@@ -6160,6 +6555,169 @@
 | [yacht_cpp](#yacht_cpp) | ✅ | 1m 41s | 0 / 0 / 1.3K |
 | [zebra-puzzle_cpp](#zebra-puzzle_cpp) | ✅ | 4m 43s | 0 / 0 / 4.8K |
 | [react_rust](#react_rust) | ✅ | 20m 50s | 0 / 0 / 30.8K |
+
+
+# pi-ds4-flash
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 2m 37s | 0 / 0 / 2.1K |
+| [all-your-base_java](#all-your-base_java) | ✅ | 2m 34s | 0 / 0 / 2.4K |
+| [bank-account_java](#bank-account_java) | ✅ | 2m 34s | 0 / 0 / 2.2K |
+| [book-store_java](#book-store_java) | ✅ | 2m 48s | 0 / 0 / 2.8K |
+| [bottle-song_java](#bottle-song_java) | ✅ | 3m 51s | 0 / 0 / 4.0K |
+| [change_java](#change_java) | ✅ | 1m 44s | 0 / 0 / 1.6K |
+| [circular-buffer_java](#circular-buffer_java) | ✅ | 3m 30s | 0 / 0 / 3.8K |
+| [custom-set_java](#custom-set_java) | ✅ | 3m 10s | 0 / 0 / 3.5K |
+| [dominoes_java](#dominoes_java) | ✅ | 6m 0s | 0 / 0 / 7.3K |
+| [house_java](#house_java) | ✅ | 3m 58s | 0 / 0 / 4.7K |
+| [kindergarten-garden_java](#kindergarten-garden_java) | ✅ | 1m 37s | 0 / 0 / 1.5K |
+| [ocr-numbers_java](#ocr-numbers_java) | ✅ | 2m 42s | 0 / 0 / 2.8K |
+| [palindrome-products_java](#palindrome-products_java) | ✅ | 1m 44s | 0 / 0 / 1.5K |
+| [phone-number_java](#phone-number_java) | ✅ | 2m 19s | 0 / 0 / 2.4K |
+| [pig-latin_java](#pig-latin_java) | ✅ | 5m 47s | 0 / 0 / 7.1K |
+| [protein-translation_java](#protein-translation_java) | ✅ | 2m 4s | 0 / 0 / 1.9K |
+| [pythagorean-triplet_java](#pythagorean-triplet_java) | ✅ | 2m 28s | 0 / 0 / 2.6K |
+| [queen-attack_java](#queen-attack_java) | ✅ | 1m 40s | 0 / 0 / 1.6K |
+| [resistor-color-trio_java](#resistor-color-trio_java) | ✅ | 3m 5s | 0 / 0 / 3.5K |
+| [satellite_java](#satellite_java) | ✅ | 2m 31s | 0 / 0 / 2.4K |
+| [series_java](#series_java) | ✅ | 1m 17s | 0 / 0 / 1.2K |
+| [simple-linked-list_java](#simple-linked-list_java) | ✅ | 2m 38s | 0 / 0 / 2.6K |
+| [state-of-tic-tac-toe_java](#state-of-tic-tac-toe_java) | ✅ | 3m 30s | 0 / 0 / 3.8K |
+| [transpose_java](#transpose_java) | ✅ | 8m 44s | 0 / 0 / 11.0K |
+| [tree-building_java](#tree-building_java) | ✅ | 3m 46s | 0 / 0 / 4.0K |
+| [twelve-days_java](#twelve-days_java) | ✅ | 2m 8s | 0 / 0 / 1.8K |
+| [two-bucket_java](#two-bucket_java) | ✅ | 4m 15s | 0 / 0 / 4.9K |
+| [word-search_java](#word-search_java) | ✅ | 2m 53s | 0 / 0 / 2.3K |
+| [beer-song_go](#beer-song_go) | ✅ | 4m 37s | 0 / 0 / 5.5K |
+| [book-store_go](#book-store_go) | ✅ | 8m 56s | 0 / 0 / 11.7K |
+| [bottle-song_go](#bottle-song_go) | ✅ | 2m 13s | 0 / 0 / 2.5K |
+| [crypto-square_go](#crypto-square_go) | ✅ | 3m 41s | 0 / 0 / 4.5K |
+| [dnd-character_go](#dnd-character_go) | ✅ | 2m 39s | 0 / 0 / 2.8K |
+| [dominoes_go](#dominoes_go) | ✅ | 3m 44s | 0 / 0 / 4.5K |
+| [error-handling_go](#error-handling_go) | ✅ | 2m 5s | 0 / 0 / 2.4K |
+| [food-chain_go](#food-chain_go) | ✅ | 3m 37s | 0 / 0 / 4.4K |
+| [hexadecimal_go](#hexadecimal_go) | ✅ | 2m 3s | 0 / 0 / 2.4K |
+| [octal_go](#octal_go) | ✅ | 1m 12s | 0 / 0 / 1.3K |
+| [paasio_go](#paasio_go) | ✅ | 2m 43s | 0 / 0 / 3.1K |
+| [palindrome-products_go](#palindrome-products_go) | ✅ | 1m 49s | 0 / 0 / 2.0K |
+| [pig-latin_go](#pig-latin_go) | ✅ | 3m 6s | 0 / 0 / 3.7K |
+| [protein-translation_go](#protein-translation_go) | ✅ | 1m 12s | 0 / 0 / 1.1K |
+| [say_go](#say_go) | ✅ | 2m 1s | 0 / 0 / 2.3K |
+| [simple-linked-list_go](#simple-linked-list_go) | ✅ | 2m 41s | 0 / 0 / 3.1K |
+| [sublist_go](#sublist_go) | ✅ | 1m 51s | 0 / 0 / 1.9K |
+| [tree-building_go](#tree-building_go) | ✅ | 3m 15s | 0 / 0 / 3.8K |
+| [trinary_go](#trinary_go) | ✅ | 1m 21s | 0 / 0 / 1.5K |
+| [two-bucket_go](#two-bucket_go) | ✅ | 5m 32s | 0 / 0 / 6.9K |
+| [variable-length-quantity_go](#variable-length-quantity_go) | ✅ | 5m 30s | 0 / 0 / 6.7K |
+| [word-search_go](#word-search_go) | ✅ | 2m 45s | 0 / 0 / 3.0K |
+| [wordy_go](#wordy_go) | ✅ | 2m 28s | 0 / 0 / 2.9K |
+| [affine-cipher_javascript](#affine-cipher_javascript) | ✅ | 4m 12s | 0 / 0 / 5.2K |
+| [alphametics_javascript](#alphametics_javascript) | ✅ | 1m 32s | 0 / 0 / 1.5K |
+| [beer-song_javascript](#beer-song_javascript) | ✅ | 1m 36s | 0 / 0 / 1.2K |
+| [binary_javascript](#binary_javascript) | ✅ | 58s | 0 / 0 / 848 |
+| [book-store_javascript](#book-store_javascript) | ✅ | 2m 15s | 0 / 0 / 2.5K |
+| [bottle-song_javascript](#bottle-song_javascript) | ✅ | 2m 30s | 0 / 0 / 2.7K |
+| [connect_javascript](#connect_javascript) | ✅ | 8m 23s | 0 / 0 / 11.1K |
+| [food-chain_javascript](#food-chain_javascript) | ✅ | 7m 23s | 0 / 0 / 9.4K |
+| [go-counting_javascript](#go-counting_javascript) | ✅ | 3m 3s | 0 / 0 / 3.6K |
+| [grade-school_javascript](#grade-school_javascript) | ✅ | 3m 15s | 0 / 0 / 3.8K |
+| [grep_javascript](#grep_javascript) | ✅ | 7m 9s | 0 / 0 / 8.8K |
+| [killer-sudoku-helper_javascript](#killer-sudoku-helper_javascript) | ✅ | 1m 16s | 0 / 0 / 1.2K |
+| [list-ops_javascript](#list-ops_javascript) | ✅ | 2m 36s | 0 / 0 / 3.0K |
+| [meetup_javascript](#meetup_javascript) | ✅ | 1m 44s | 0 / 0 / 1.4K |
+| [ocr-numbers_javascript](#ocr-numbers_javascript) | ✅ | 2m 27s | 0 / 0 / 2.9K |
+| [palindrome-products_javascript](#palindrome-products_javascript) | ✅ | 5m 41s | 0 / 0 / 7.3K |
+| [phone-number_javascript](#phone-number_javascript) | ✅ | 2m 27s | 0 / 0 / 2.9K |
+| [pig-latin_javascript](#pig-latin_javascript) | ✅ | 5m 18s | 0 / 0 / 6.7K |
+| [promises_javascript](#promises_javascript) | ✅ | 3m 12s | 0 / 0 / 3.8K |
+| [rational-numbers_javascript](#rational-numbers_javascript) | ✅ | 5m 53s | 0 / 0 / 5.0K |
+| [rectangles_javascript](#rectangles_javascript) | ✅ | 2m 35s | 0 / 0 / 1.8K |
+| [resistor-color-trio_javascript](#resistor-color-trio_javascript) | ✅ | 4m 3s | 0 / 0 / 1.7K |
+| [robot-name_javascript](#robot-name_javascript) | ✅ | 2m 10s | 0 / 0 / 1.9K |
+| [say_javascript](#say_javascript) | ✅ | 1m 13s | 0 / 0 / 1.2K |
+| [scale-generator_javascript](#scale-generator_javascript) | ✅ | 5m 4s | 0 / 0 / 6.4K |
+| [simple-linked-list_javascript](#simple-linked-list_javascript) | ✅ | 2m 21s | 0 / 0 / 2.6K |
+| [space-age_javascript](#space-age_javascript) | ✅ | 1m 6s | 0 / 0 / 1.0K |
+| [state-of-tic-tac-toe_javascript](#state-of-tic-tac-toe_javascript) | ✅ | 4m 12s | 0 / 0 / 5.1K |
+| [sum-of-multiples_javascript](#sum-of-multiples_javascript) | ✅ | 1m 18s | 0 / 0 / 1.4K |
+| [tournament_javascript](#tournament_javascript) | ✅ | 3m 13s | 0 / 0 / 3.8K |
+| [transpose_javascript](#transpose_javascript) | ✅ | 13m 36s | 0 / 0 / 17.9K |
+| [triangle_javascript](#triangle_javascript) | ✅ | 1m 52s | 0 / 0 / 2.1K |
+| [twelve-days_javascript](#twelve-days_javascript) | ✅ | 1m 25s | 0 / 0 / 1.3K |
+| [two-bucket_javascript](#two-bucket_javascript) | ✅ | 6m 34s | 0 / 0 / 8.3K |
+| [variable-length-quantity_javascript](#variable-length-quantity_javascript) | ✅ | 5m 4s | 0 / 0 / 6.5K |
+| [word-search_javascript](#word-search_javascript) | ✅ | 3m 18s | 0 / 0 / 3.7K |
+| [wordy_javascript](#wordy_javascript) | ✅ | 4m 11s | 0 / 0 / 5.2K |
+| [zipper_javascript](#zipper_javascript) | ✅ | 7m 31s | 0 / 0 / 9.3K |
+| [affine-cipher_python](#affine-cipher_python) | ✅ | 1m 38s | 0 / 0 / 1.7K |
+| [beer-song_python](#beer-song_python) | ✅ | 1m 24s | 0 / 0 / 1.0K |
+| [book-store_python](#book-store_python) | ✅ | 2m 13s | 0 / 0 / 2.4K |
+| [bottle-song_python](#bottle-song_python) | ✅ | 2m 15s | 0 / 0 / 2.3K |
+| [dominoes_python](#dominoes_python) | ✅ | 6m 8s | 0 / 0 / 7.7K |
+| [food-chain_python](#food-chain_python) | ✅ | 2m 38s | 0 / 0 / 3.1K |
+| [go-counting_python](#go-counting_python) | ✅ | 2m 48s | 0 / 0 / 3.4K |
+| [grade-school_python](#grade-school_python) | ✅ | 1m 41s | 0 / 0 / 1.7K |
+| [grep_python](#grep_python) | ✅ | 1m 25s | 0 / 0 / 1.2K |
+| [list-ops_python](#list-ops_python) | ✅ | 2m 59s | 0 / 0 / 3.6K |
+| [phone-number_python](#phone-number_python) | ✅ | 1m 29s | 0 / 0 / 1.4K |
+| [pig-latin_python](#pig-latin_python) | ✅ | 2m 35s | 0 / 0 / 3.1K |
+| [proverb_python](#proverb_python) | ✅ | 1m 3s | 0 / 0 / 1.0K |
+| [rest-api_python](#rest-api_python) | ✅ | 3m 39s | 0 / 0 / 4.4K |
+| [robot-name_python](#robot-name_python) | ✅ | 2m 39s | 0 / 0 / 3.2K |
+| [simple-linked-list_python](#simple-linked-list_python) | ✅ | 2m 11s | 0 / 0 / 2.5K |
+| [transpose_python](#transpose_python) | ✅ | 5m 3s | 0 / 0 / 6.5K |
+| [tree-building_python](#tree-building_python) | ✅ | 3m 21s | 0 / 0 / 3.7K |
+| [two-bucket_python](#two-bucket_python) | ✅ | 7m 7s | 0 / 0 / 9.2K |
+| [variable-length-quantity_python](#variable-length-quantity_python) | ✅ | 2m 11s | 0 / 0 / 2.3K |
+| [wordy_python](#wordy_python) | ✅ | 6m 58s | 0 / 0 / 8.7K |
+| [zebra-puzzle_python](#zebra-puzzle_python) | ✅ | 1m 52s | 0 / 0 / 2.2K |
+| [zipper_python](#zipper_python) | ✅ | 1m 58s | 0 / 0 / 2.1K |
+| [accumulate_rust](#accumulate_rust) | ✅ | 1m 56s | 0 / 0 / 2.2K |
+| [acronym_rust](#acronym_rust) | ✅ | 2m 52s | 0 / 0 / 3.2K |
+| [alphametics_rust](#alphametics_rust) | ✅ | 2m 44s | 0 / 0 / 2.8K |
+| [book-store_rust](#book-store_rust) | ✅ | 3m 16s | 0 / 0 / 4.0K |
+| [dot-dsl_rust](#dot-dsl_rust) | ✅ | 2m 37s | 0 / 0 / 3.0K |
+| [gigasecond_rust](#gigasecond_rust) | ✅ | 1m 11s | 0 / 0 / 1.1K |
+| [grade-school_rust](#grade-school_rust) | ✅ | 1m 19s | 0 / 0 / 1.4K |
+| [grep_rust](#grep_rust) | ✅ | 3m 22s | 0 / 0 / 3.8K |
+| [luhn-from_rust](#luhn-from_rust) | ✅ | 2m 47s | 0 / 0 / 3.5K |
+| [macros_rust](#macros_rust) | ✅ | 4m 19s | 0 / 0 / 5.3K |
+| [nucleotide-codons_rust](#nucleotide-codons_rust) | ✅ | 4m 42s | 0 / 0 / 4.8K |
+| [parallel-letter-frequency_rust](#parallel-letter-frequency_rust) | ✅ | 2m 13s | 0 / 0 / 2.6K |
+| [pig-latin_rust](#pig-latin_rust) | ✅ | 5m 9s | 0 / 0 / 6.6K |
+| [robot-name_rust](#robot-name_rust) | ✅ | 3m 58s | 0 / 0 / 5.1K |
+| [say_rust](#say_rust) | ✅ | 3m 25s | 0 / 0 / 4.2K |
+| [two-bucket_rust](#two-bucket_rust) | ✅ | 5m 13s | 0 / 0 / 6.6K |
+| [variable-length-quantity_rust](#variable-length-quantity_rust) | ✅ | 3m 8s | 0 / 0 / 3.8K |
+| [word-count_rust](#word-count_rust) | ✅ | 3m 11s | 0 / 0 / 3.9K |
+| [all-your-base_cpp](#all-your-base_cpp) | ✅ | 2m 17s | 0 / 0 / 2.4K |
+| [allergies_cpp](#allergies_cpp) | ✅ | 2m 35s | 0 / 0 / 2.8K |
+| [bank-account_cpp](#bank-account_cpp) | ✅ | 2m 13s | 0 / 0 / 2.1K |
+| [binary-search-tree_cpp](#binary-search-tree_cpp) | ✅ | 4m 40s | 0 / 0 / 5.6K |
+| [circular-buffer_cpp](#circular-buffer_cpp) | ✅ | 3m 7s | 0 / 0 / 3.6K |
+| [clock_cpp](#clock_cpp) | ✅ | 1m 57s | 0 / 0 / 2.0K |
+| [crypto-square_cpp](#crypto-square_cpp) | ✅ | 5m 19s | 0 / 0 / 6.6K |
+| [diamond_cpp](#diamond_cpp) | ✅ | 2m 42s | 0 / 0 / 2.9K |
+| [dnd-character_cpp](#dnd-character_cpp) | ✅ | 2m 56s | 0 / 0 / 2.8K |
+| [gigasecond_cpp](#gigasecond_cpp) | ✅ | 3m 51s | 0 / 0 / 4.1K |
+| [grade-school_cpp](#grade-school_cpp) | ✅ | 2m 22s | 0 / 0 / 2.1K |
+| [kindergarten-garden_cpp](#kindergarten-garden_cpp) | ✅ | 2m 22s | 0 / 0 / 2.4K |
+| [knapsack_cpp](#knapsack_cpp) | ✅ | 2m 9s | 0 / 0 / 2.0K |
+| [linked-list_cpp](#linked-list_cpp) | ✅ | 2m 24s | 0 / 0 / 2.3K |
+| [parallel-letter-frequency_cpp](#parallel-letter-frequency_cpp) | ✅ | 3m 44s | 0 / 0 / 3.3K |
+| [perfect-numbers_cpp](#perfect-numbers_cpp) | ✅ | 2m 30s | 0 / 0 / 2.7K |
+| [phone-number_cpp](#phone-number_cpp) | ✅ | 2m 26s | 0 / 0 / 2.6K |
+| [queen-attack_cpp](#queen-attack_cpp) | ✅ | 2m 10s | 0 / 0 / 2.3K |
+| [robot-name_cpp](#robot-name_cpp) | ✅ | 2m 59s | 0 / 0 / 3.1K |
+| [space-age_cpp](#space-age_cpp) | ✅ | 2m 21s | 0 / 0 / 2.3K |
+| [spiral-matrix_cpp](#spiral-matrix_cpp) | ✅ | 1m 58s | 0 / 0 / 2.0K |
+| [sublist_cpp](#sublist_cpp) | ✅ | 4m 22s | 0 / 0 / 4.1K |
+| [yacht_cpp](#yacht_cpp) | ✅ | 3m 11s | 0 / 0 / 3.6K |
+| [transpose_go](#transpose_go) | ✅ | 6m 59s | 0 / 0 / 8.2K |
+| [queen-attack_javascript](#queen-attack_javascript) | ✅ | 1m 50s | 0 / 0 / 1.8K |
+| [alphametics_java](#alphametics_java) | ✅ | 5m 16s | 0 / 0 / 6.1K |
+| [bowling_java](#bowling_java) | ✅ | 10m 27s | 0 / 0 / 11.9K |
 
 
 # pi-qwen35-397b-coding-nospec
@@ -7233,6 +7791,26 @@
 | [zebra-puzzle_cpp](#zebra-puzzle_cpp) | ✅ | 3m 42s | 0 / 0 / 4.6K |
 | [robot-simulator_go](#robot-simulator_go) | ❌ | 14m 5s | 0 / 0 / 254 |
 | [book-store_javascript](#book-store_javascript) | ✅ | 3m 8s | 0 / 0 / 3.8K |
+
+
+# pi-mimo-25
+
+| Exercise | Success | Duration | Tokens |
+|----------|---------|----------|--------|
+| [affine-cipher_java](#affine-cipher_java) | ✅ | 4m 16s | 0 / 0 / 0 |
+| [all-your-base_java](#all-your-base_java) | ✅ | 53s | 0 / 0 / 0 |
+| [alphametics_java](#alphametics_java) | ✅ | 9m 43s | 0 / 0 / 0 |
+| [bank-account_java](#bank-account_java) | ✅ | 1m 2s | 0 / 0 / 0 |
+| [book-store_java](#book-store_java) | ✅ | 9m 49s | 0 / 0 / 0 |
+| [bottle-song_java](#bottle-song_java) | ✅ | 1m 26s | 0 / 0 / 0 |
+| [bowling_java](#bowling_java) | ✅ | 14m 48s | 0 / 0 / 0 |
+| [change_java](#change_java) | ✅ | 1m 31s | 0 / 0 / 0 |
+| [circular-buffer_java](#circular-buffer_java) | ✅ | 3m 39s | 0 / 0 / 0 |
+| [connect_java](#connect_java) | ✅ | 15m 59s | 0 / 0 / 0 |
+| [custom-set_java](#custom-set_java) | ✅ | 2m 55s | 0 / 0 / 0 |
+| [dominoes_java](#dominoes_java) | ✅ | 10m 56s | 0 / 0 / 0 |
+| [food-chain_java](#food-chain_java) | ✅ | 2m 56s | 0 / 0 / 0 |
+| [forth_java](#forth_java) | ✅ | 7m 9s | 0 / 0 / 0 |
 
 
 # pi-qwen36-27b-q4-no-thinking
@@ -8399,6 +8977,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 28s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 30s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 32s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 50s | 0 / 0 / 3.0K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 56s | 0 / 0 / 3.5K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 56s | 0 / 0 / 3.7K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 9s | 0 / 0 / 4.2K |
@@ -8414,8 +8993,10 @@
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 2m 3s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 2m 30s | 0 / 0 / 2.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 34s | 0 / 0 / 2.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 42s | 0 / 0 / 3.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 46s | 0 / 0 / 10.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 0s | 0 / 0 / 1.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 3s | 0 / 0 / 3.6K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 3m 7s | 0 / 0 / 4.1K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 11s | 0 / 0 / 11.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 19s | 0 / 0 / 9.3K |
@@ -8458,6 +9039,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 28s | 0 / 0 / 1.8K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 36s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 41s | 0 / 0 / 2.9K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 41s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 44s | 0 / 0 / 2.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 55s | 0 / 0 / 4.6K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 1s | 0 / 0 / 3.7K |
@@ -8490,6 +9072,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 2m 15s | 0 / 0 / 8.4K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 2m 20s | 0 / 0 / 4.3K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 30s | 0 / 0 / 9.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 48s | 0 / 0 / 3.1K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 3m 42s | 0 / 0 / 4.6K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 3m 48s | 0 / 0 / 5.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 4m 12s | 0 / 0 / 7.3K |
@@ -8523,6 +9106,7 @@
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 22s | 0 / 0 / 810 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 22s | 0 / 0 / 939 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 27s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 27s | 0 / 0 / 1.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 29s | 0 / 0 / 809 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 40s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 47s | 0 / 0 / 820 |
@@ -8541,6 +9125,8 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 23s | 0 / 0 / 839 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 30s | 0 / 0 / 1.0K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 38s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 43s | 0 / 0 / 1.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 44s | 0 / 0 / 1.4K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 2m 2s | 0 / 0 / 1.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 43s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 45s | 0 / 0 / 1.9K |
@@ -8571,6 +9157,7 @@
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 43s | 0 / 0 / 2.0K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 46s | 0 / 0 / 5.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 53s | 0 / 0 / 1.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 56s | 0 / 0 / 1.8K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 2m 9s | 0 / 0 / 2.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 28s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 2m 34s | 0 / 0 / 4.5K |
@@ -8599,6 +9186,7 @@
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 11s | 0 / 0 / 414 |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 11s | 0 / 0 / 551 |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 11s | 0 / 0 / 488 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 12s | 0 / 0 / 613 |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 12s | 0 / 0 / 563 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 13s | 0 / 0 / 463 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 13s | 0 / 0 / 700 |
@@ -8624,7 +9212,9 @@
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 47s | 0 / 0 / 577 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 54s | 0 / 0 / 815 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 0s | 0 / 0 / 1.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 11s | 0 / 0 / 1.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 33s | 0 / 0 / 932 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 51s | 0 / 0 / 1.1K |
 
 
 # trinary_go
@@ -8632,6 +9222,7 @@
 | Model | Success | Duration | Tokens |
 |-------|---------|----------|--------|
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 12s | 0 / 0 / 711 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 12s | 0 / 0 / 679 |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 15s | 0 / 0 / 772 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 15s | 0 / 0 / 788 |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 15s | 0 / 0 / 750 |
@@ -8660,7 +9251,9 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 6s | 0 / 0 / 2.0K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 8s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 12s | 0 / 0 / 2.2K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 21s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 24s | 0 / 0 / 1.9K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 25s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 59s | 0 / 0 / 2.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 29s | 0 / 0 / 6.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 31s | 0 / 0 / 1.5K |
@@ -8703,10 +9296,13 @@
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 14s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 14s | 0 / 0 / 1.9K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 16s | 0 / 0 / 968 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 23s | 0 / 0 / 1.1K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 26s | 0 / 0 / 1.3K |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 1m 31s | 0 / 0 / 0 |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 36s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 37s | 0 / 0 / 1.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 37s | 0 / 0 / 1.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 44s | 0 / 0 / 1.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 50s | 0 / 0 / 4.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 33s | 0 / 0 / 1.7K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 39s | 0 / 0 / 1.5K |
@@ -8730,6 +9326,7 @@
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 16s | 0 / 0 / 892 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 17s | 0 / 0 / 896 |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 17s | 0 / 0 / 975 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 17s | 0 / 0 / 971 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 1.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 27s | 0 / 0 / 665 |
@@ -8745,6 +9342,7 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 55s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 57s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 5s | 0 / 0 / 1.9K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 6s | 0 / 0 / 997 |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 9s | 0 / 0 / 2.4K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 11s | 0 / 0 / 744 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 16s | 0 / 0 / 3.1K |
@@ -8755,6 +9353,7 @@
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 0s | 0 / 0 / 1.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 5s | 0 / 0 / 7.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 23s | 0 / 0 / 1.7K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 41s | 0 / 0 / 4.5K |
 
 
 # protein-translation_java
@@ -8771,6 +9370,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 27s | 0 / 0 / 1.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 30s | 0 / 0 / 1.0K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 30s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 32s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 34s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 34s | 0 / 0 / 1.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 37s | 0 / 0 / 0 |
@@ -8794,7 +9394,9 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 49s | 0 / 0 / 1.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 52s | 0 / 0 / 0 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 54s | 0 / 0 / 1.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 59s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 1s | 0 / 0 / 1.8K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 4s | 0 / 0 / 1.9K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 2m 5s | 0 / 0 / 4.4K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 2m 6s | 0 / 0 / 2.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 43s | 0 / 0 / 1.6K |
@@ -8812,6 +9414,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 37s | 0 / 0 / 1.9K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 39s | 0 / 0 / 1.9K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 41s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 48s | 0 / 0 / 2.6K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 51s | 0 / 0 / 2.8K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 51s | 0 / 0 / 2.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 0s | 0 / 0 / 3.4K |
@@ -8829,8 +9432,10 @@
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 45s | 0 / 0 / 3.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 53s | 0 / 0 / 1.8K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 3s | 0 / 0 / 1.9K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 8s | 0 / 0 / 2.0K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 9s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 22s | 0 / 0 / 3.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 56s | 0 / 0 / 2.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 8s | 0 / 0 / 1.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 8s | 0 / 0 / 7.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 46s | 0 / 0 / 2.4K |
@@ -8859,6 +9464,7 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 6m 14s | 0 / 0 / 7.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 6m 27s | 0 / 0 / 10.9K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 6m 38s | 0 / 0 / 7.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 6m 52s | 0 / 0 / 7.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ❌ | 7m 33s | 0 / 0 / 10.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 9m 17s | 0 / 0 / 14.8K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 9m 29s | 0 / 0 / 32.9K |
@@ -8897,6 +9503,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 13s | 0 / 0 / 522 |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 14s | 0 / 0 / 702 |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 16s | 0 / 0 / 631 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 16s | 0 / 0 / 729 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 952 |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 19s | 0 / 0 / 420 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 20s | 0 / 0 / 579 |
@@ -8915,6 +9522,8 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 46s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 55s | 0 / 0 / 778 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 57s | 0 / 0 / 720 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 4s | 0 / 0 / 963 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 6s | 0 / 0 / 1.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 6s | 0 / 0 / 659 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 10s | 0 / 0 / 1.6K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 20s | 0 / 0 / 794 |
@@ -8938,6 +9547,7 @@
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 34s | 0 / 0 / 1.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 36s | 0 / 0 / 1.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 37s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 37s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-a3b-llmfan-heretic](#pi-qwen36-35b-a3b-llmfan-heretic) | ✅ | 39s | 0 / 0 / 1.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 49s | 0 / 0 / 1.7K |
@@ -8959,6 +9569,8 @@
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 16s | 0 / 0 / 1.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 25s | 0 / 0 / 1.2K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 27s | 0 / 0 / 0 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 40s | 0 / 0 / 1.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 42s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 47s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 50s | 0 / 0 / 1.2K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 1m 53s | 0 / 0 / 3.9K |
@@ -8988,6 +9600,7 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 43s | 0 / 0 / 784 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 45s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 46s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 46s | 0 / 0 / 2.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 48s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 54s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 55s | 0 / 0 / 10.4K |
@@ -9001,9 +9614,11 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 23s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 42s | 0 / 0 / 1.3K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 10s | 0 / 0 / 7.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 55s | 0 / 0 / 3.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 12s | 0 / 0 / 2.3K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 20s | 0 / 0 / 12.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 4s | 0 / 0 / 3.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 6m 8s | 0 / 0 / 7.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 
 
@@ -9019,6 +9634,7 @@
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 14s | 0 / 0 / 736 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 16s | 0 / 0 / 687 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 844 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 17s | 0 / 0 / 804 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 17s | 0 / 0 / 955 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 17s | 0 / 0 / 1.0K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 18s | 0 / 0 / 607 |
@@ -9036,12 +9652,14 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 58s | 0 / 0 / 770 |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 0s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 6s | 0 / 0 / 1.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 12s | 0 / 0 / 1.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 22s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 27s | 0 / 0 / 1.3K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 28s | 0 / 0 / 1.9K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 36s | 0 / 0 / 2.9K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 52s | 0 / 0 / 3.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 6s | 0 / 0 / 5.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 21s | 0 / 0 / 2.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 28s | 0 / 0 / 5.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 30s | 0 / 0 / 2.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 40s | 0 / 0 / 0 |
@@ -9070,6 +9688,7 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 3m 19s | 0 / 0 / 2.8K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 3m 24s | 0 / 0 / 5.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 3m 40s | 0 / 0 / 5.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 41s | 0 / 0 / 5.1K |
 | [pi-qwen36-35b-a3b-llmfan-heretic](#pi-qwen36-35b-a3b-llmfan-heretic) | ✅ | 4m 57s | 0 / 0 / 16.2K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 5m 1s | 0 / 0 / 6.1K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ❌ | 5m 3s | 0 / 0 / 210 |
@@ -9108,6 +9727,7 @@
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 37s | 0 / 0 / 851 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 38s | 0 / 0 / 2.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 42s | 0 / 0 / 694 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 44s | 0 / 0 / 2.9K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 46s | 0 / 0 / 2.8K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 47s | 0 / 0 / 3.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 49s | 0 / 0 / 2.0K |
@@ -9125,12 +9745,14 @@
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 1m 16s | 0 / 0 / 5.0K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 19s | 0 / 0 / 2.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 20s | 0 / 0 / 3.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 25s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 28s | 0 / 0 / 1.1K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 32s | 0 / 0 / 1.9K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 39s | 0 / 0 / 3.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 31s | 0 / 0 / 2.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 52s | 0 / 0 / 1.9K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 4s | 0 / 0 / 1.8K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 6s | 0 / 0 / 3.7K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 24.3K |
 
 
@@ -9162,16 +9784,19 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 37s | 0 / 0 / 3.4K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 40s | 0 / 0 / 3.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 41s | 0 / 0 / 5.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 43s | 0 / 0 / 5.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 43s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 44s | 0 / 0 / 3.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 45s | 0 / 0 / 3.8K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 55s | 0 / 0 / 2.0K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 58s | 0 / 0 / 1.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 58s | 0 / 0 / 1.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 37s | 0 / 0 / 2.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 16s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 30s | 0 / 0 / 1.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 59s | 0 / 0 / 2.4K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 4m 6s | 0 / 0 / 13.1K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 4m 15s | 0 / 0 / 4.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 4m 49s | 0 / 0 / 9.7K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 5m 6s | 0 / 0 / 8.5K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 6m 34s | 0 / 0 / 3.0K |
@@ -9191,6 +9816,7 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 23s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 28s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 28s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 31s | 0 / 0 / 820 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 43s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 45s | 0 / 0 / 1.0K |
@@ -9208,9 +9834,11 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 37s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 46s | 0 / 0 / 3.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 55s | 0 / 0 / 2.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 5s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 19s | 0 / 0 / 1.9K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 2m 33s | 0 / 0 / 3.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 34s | 0 / 0 / 6.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 9s | 0 / 0 / 6.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 14s | 0 / 0 / 3.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 5m 15s | 0 / 0 / 17.6K |
 
@@ -9246,6 +9874,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 3s | 0 / 0 / 6.4K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 2m 21s | 0 / 0 / 8.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 56s | 0 / 0 / 2.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 3s | 0 / 0 / 3.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 24s | 0 / 0 / 1.9K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 3m 33s | 0 / 0 / 4.7K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 5m 4s | 0 / 0 / 5.2K |
@@ -9276,6 +9905,7 @@
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 3m 0s | 0 / 0 / 11.6K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 3m 20s | 0 / 0 / 4.6K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 3m 24s | 0 / 0 / 5.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 25s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 4m 9s | 0 / 0 / 7.4K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 6m 0s | 0 / 0 / 7.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 6m 18s | 0 / 0 / 5.5K |
@@ -9300,6 +9930,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 24s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 25s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 26s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 26s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 26s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 27s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 29s | 0 / 0 / 1.4K |
@@ -9320,11 +9951,13 @@
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 22s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 25s | 0 / 0 / 1.1K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 26s | 0 / 0 / 1.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 38s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 54s | 0 / 0 / 3.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 55s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 3s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 2m 3s | 0 / 0 / 7.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 23s | 0 / 0 / 1.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 7s | 0 / 0 / 3.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 6m 3s | 0 / 0 / 3.3K |
 
 
@@ -9341,6 +9974,7 @@
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 19s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 20s | 0 / 0 / 1.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 21s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 24s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 25s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.4K |
@@ -9358,7 +9992,9 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 6s | 0 / 0 / 3.5K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 8s | 0 / 0 / 913 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 9s | 0 / 0 / 1.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 15s | 0 / 0 / 1.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 19s | 0 / 0 / 1.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 29s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 42s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 54s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 5s | 0 / 0 / 1.5K |
@@ -9398,6 +10034,7 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 25s | 0 / 0 / 3.8K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 29s | 0 / 0 / 5.3K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 34s | 0 / 0 / 4.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 50s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 59s | 0 / 0 / 1.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 25s | 0 / 0 / 2.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 33s | 0 / 0 / 0 |
@@ -9427,11 +10064,13 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 29s | 0 / 0 / 1.8K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 30s | 0 / 0 / 1.9K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 30s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 36s | 0 / 0 / 2.0K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 41s | 0 / 0 / 0 |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 46s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 46s | 0 / 0 / 9.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 52s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 54s | 0 / 0 / 3.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 56s | 0 / 0 / 757 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 1s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 6s | 0 / 0 / 1.9K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 8s | 0 / 0 / 1.5K |
@@ -9441,6 +10080,7 @@
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 1m 27s | 0 / 0 / 2.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 37s | 0 / 0 / 1.7K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 50s | 0 / 0 / 2.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 5s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 2m 13s | 0 / 0 / 5.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 36s | 0 / 0 / 1.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 39s | 0 / 0 / 0 |
@@ -9470,6 +10110,7 @@
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 21s | 0 / 0 / 996 |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 21s | 0 / 0 / 848 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 22s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 24s | 0 / 0 / 1.0K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 29s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 31s | 0 / 0 / 693 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 39s | 0 / 0 / 1.1K |
@@ -9481,6 +10122,7 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 53s | 0 / 0 / 839 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 53s | 0 / 0 / 1.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 57s | 0 / 0 / 2.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 0s | 0 / 0 / 828 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 6s | 0 / 0 / 996 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 13s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 17s | 0 / 0 / 707 |
@@ -9491,6 +10133,7 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 34s | 0 / 0 / 3.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 56s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 14s | 0 / 0 / 1.1K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 30s | 0 / 0 / 2.7K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 6m 0s | 0 / 0 / 4.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 
@@ -9515,15 +10158,18 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 57s | 0 / 0 / 1.7K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 58s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 0s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 1s | 0 / 0 / 3.6K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 11s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 14s | 0 / 0 / 1.2K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 14s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 16s | 0 / 0 / 1.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 41s | 0 / 0 / 1.5K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 48s | 0 / 0 / 2.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 52s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 57s | 0 / 0 / 1.6K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 13s | 0 / 0 / 2.4K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 2m 40s | 0 / 0 / 3.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 59s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 3m 45s | 0 / 0 / 7.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 4m 16s | 0 / 0 / 8.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 5m 52s | 0 / 0 / 14.9K |
@@ -9555,6 +10201,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 48s | 0 / 0 / 1.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 52s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 52s | 0 / 0 / 1.2K |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 53s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 54s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-a3b-llmfan-heretic](#pi-qwen36-35b-a3b-llmfan-heretic) | ✅ | 55s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 57s | 0 / 0 / 1.2K |
@@ -9574,10 +10221,13 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 30s | 0 / 0 / 1.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 36s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 52s | 0 / 0 / 1.4K |
+| [pi-deepseek-v4-flash](#pi-deepseek-v4-flash) | ✅ | 1m 54s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 55s | 0 / 0 / 1.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 56s | 0 / 0 / 1.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 13s | 0 / 0 / 2.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 2m 30s | 0 / 0 / 26 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 31s | 0 / 0 / 1.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 34s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 10s | 0 / 0 / 1.2K |
 
 
@@ -9592,6 +10242,7 @@
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 20s | 0 / 0 / 991 |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 20s | 0 / 0 / 980 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 20s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 21s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 24s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 27s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 27s | 0 / 0 / 1.5K |
@@ -9614,9 +10265,11 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 29s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 32s | 0 / 0 / 3.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 32s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 39s | 0 / 0 / 1.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 39s | 0 / 0 / 0 |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 40s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 54s | 0 / 0 / 1.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 13s | 0 / 0 / 2.5K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 39s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 9s | 0 / 0 / 3.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 56s | 0 / 0 / 2.3K |
@@ -9635,6 +10288,7 @@
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 36s | 0 / 0 / 2.6K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 39s | 0 / 0 / 2.5K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 39s | 0 / 0 / 2.7K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 41s | 0 / 0 / 2.8K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 44s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 50s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 52s | 0 / 0 / 3.1K |
@@ -9652,12 +10306,14 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 0s | 0 / 0 / 3.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 2s | 0 / 0 / 6.0K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 2m 6s | 0 / 0 / 3.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 18s | 0 / 0 / 2.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 22s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 38s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 25s | 0 / 0 / 3.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 40s | 0 / 0 / 2.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 0s | 0 / 0 / 9.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 27s | 0 / 0 / 2.8K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 4m 42s | 0 / 0 / 4.8K |
 
 
 # parallel-letter-frequency_javascript
@@ -9685,6 +10341,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 1m 0s | 0 / 0 / 3.2K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 4s | 0 / 0 / 908 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 5s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 6s | 0 / 0 / 779 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 1m 9s | 0 / 0 / 3.8K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 18s | 0 / 0 / 3.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 19s | 0 / 0 / 3.1K |
@@ -9731,6 +10388,7 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 8s | 0 / 0 / 747 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 1m 10s | 0 / 0 / 4.2K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 1m 26s | 0 / 0 / 3.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 26s | 0 / 0 / 1.3K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 32s | 0 / 0 / 1.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 41s | 0 / 0 / 1.2K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 45s | 0 / 0 / 1.3K |
@@ -9758,6 +10416,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 16s | 0 / 0 / 924 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 24s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 25s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 26s | 0 / 0 / 1.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.4K |
@@ -9780,7 +10439,9 @@
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 47s | 0 / 0 / 2.9K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 47s | 0 / 0 / 4.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 50s | 0 / 0 / 1.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 57s | 0 / 0 / 1.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 9s | 0 / 0 / 1.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 15s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 34s | 0 / 0 / 1.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 49s | 0 / 0 / 0 |
 
@@ -9799,6 +10460,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 16s | 0 / 0 / 745 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 18s | 0 / 0 / 974 |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 18s | 0 / 0 / 840 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 18s | 0 / 0 / 955 |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 18s | 0 / 0 / 851 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 20s | 0 / 0 / 1.2K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
@@ -9816,8 +10478,10 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 49s | 0 / 0 / 734 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 51s | 0 / 0 / 1.5K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 54s | 0 / 0 / 2.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 8s | 0 / 0 / 977 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 8s | 0 / 0 / 915 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 15s | 0 / 0 / 3.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 41s | 0 / 0 / 1.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 48s | 0 / 0 / 1.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 3s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 33s | 0 / 0 / 880 |
@@ -9838,6 +10502,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 27s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 27s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 30s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 32s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 38s | 0 / 0 / 894 |
@@ -9857,7 +10522,9 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 47s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 52s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 58s | 0 / 0 / 1.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 1s | 0 / 0 / 1.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 3s | 0 / 0 / 4.2K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 9s | 0 / 0 / 2.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 46s | 0 / 0 / 1.6K |
 
 
@@ -9888,6 +10555,7 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ❌ | 15m 52s | 0 / 0 / 7.1K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 18m 37s | 0 / 0 / 29.5K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 20m 24s | 0 / 0 / 50.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 21m 14s | 0 / 0 / 22.5K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 27m 0s | 0 / 0 / 13.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 0 |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 32m 20s | 0 / 0 / 30.0K |
@@ -9943,7 +10611,9 @@
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 28.4K |
 | [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 15.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 11m 19s | 0 / 0 / 3.7K |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 15m 59s | 0 / 0 / 0 |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 16m 0s | 0 / 0 / 16.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 22m 0s | 0 / 0 / 26.9K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 49.8K |
 
 
@@ -9978,6 +10648,8 @@
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 5m 41s | 0 / 0 / 17.2K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 5m 59s | 0 / 0 / 5.7K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 6m 2s | 0 / 0 / 20.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 6m 4s | 0 / 0 / 6.2K |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 7m 9s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 7m 30s | 0 / 0 / 4.1K |
 | [pi-step-35-flash](#pi-step-35-flash) | ❌ | 7m 49s | 0 / 0 / 16.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 7m 55s | 0 / 0 / 9.0K |
@@ -10005,6 +10677,7 @@
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 30s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 35s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 35s | 0 / 0 / 949 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 38s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 43s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 48s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 50s | 0 / 0 / 1.3K |
@@ -10017,6 +10690,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 16s | 0 / 0 / 1.7K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 16s | 0 / 0 / 1.3K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 30s | 0 / 0 / 1.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 32s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 32s | 0 / 0 / 3.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 33s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 47s | 0 / 0 / 6.6K |
@@ -10029,6 +10703,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 2m 35s | 0 / 0 / 9.9K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 56s | 0 / 0 / 2.7K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 3m 3s | 0 / 0 / 11.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 43s | 0 / 0 / 4.2K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 3m 46s | 0 / 0 / 13.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 48s | 0 / 0 / 2.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 44s | 0 / 0 / 3.6K |
@@ -10057,13 +10732,16 @@
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 7s | 0 / 0 / 4.2K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 8s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 13s | 0 / 0 / 2.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 22s | 0 / 0 / 1.5K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 30s | 0 / 0 / 1.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 35s | 0 / 0 / 5.8K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 7s | 0 / 0 / 2.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 10s | 0 / 0 / 2.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 2m 20s | 0 / 0 / 9.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 18s | 0 / 0 / 1.7K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 28s | 0 / 0 / 2.1K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 32s | 0 / 0 / 13.7K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 58s | 0 / 0 / 5.1K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 24s | 0 / 0 / 12.0K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 4m 50s | 0 / 0 / 1.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 5m 47s | 0 / 0 / 6.2K |
@@ -10091,6 +10769,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 29s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 31s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 41s | 0 / 0 / 699 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 45s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 49s | 0 / 0 / 835 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 50s | 0 / 0 / 561 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 51s | 0 / 0 / 1.1K |
@@ -10104,7 +10783,9 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 13s | 0 / 0 / 1.2K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 15s | 0 / 0 / 644 |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 19s | 0 / 0 / 922 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 24s | 0 / 0 / 1.0K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 27s | 0 / 0 / 2.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 38s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 47s | 0 / 0 / 1.0K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 48s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 15s | 0 / 0 / 1.6K |
@@ -10147,6 +10828,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 9s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 2m 11s | 0 / 0 / 3.5K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 2m 20s | 0 / 0 / 2.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 33s | 0 / 0 / 2.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 48s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 50s | 0 / 0 / 2.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 3m 8s | 0 / 0 / 3.7K |
@@ -10165,6 +10847,7 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 19s | 0 / 0 / 0 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 2m 28s | 0 / 0 / 7.1K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 2m 42s | 0 / 0 / 8.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 5m 1s | 0 / 0 / 4.6K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 5s | 0 / 0 / 14.7K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ❌ | 5m 57s | 0 / 0 / 207 |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 6m 4s | 0 / 0 / 21.3K |
@@ -10224,6 +10907,7 @@
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 5m 47s | 0 / 0 / 10.6K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 6m 22s | 0 / 0 / 7.1K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 6m 40s | 0 / 0 / 21.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 7m 31s | 0 / 0 / 7.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 7m 32s | 0 / 0 / 6.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 7m 48s | 0 / 0 / 6.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 8m 25s | 0 / 0 / 20.1K |
@@ -10245,6 +10929,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 24s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 24s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 27s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 29s | 0 / 0 / 1.9K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 32s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 1.9K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 2.0K |
@@ -10262,6 +10947,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 21s | 0 / 0 / 1.8K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 22s | 0 / 0 / 1.6K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 26s | 0 / 0 / 1.9K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 37s | 0 / 0 / 1.7K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 4s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 20s | 0 / 0 / 4.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 21s | 0 / 0 / 1.9K |
@@ -10269,6 +10955,7 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 3m 19s | 0 / 0 / 3.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 37s | 0 / 0 / 2.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 54s | 0 / 0 / 4.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 13s | 0 / 0 / 6.6K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 7m 22s | 0 / 0 / 14.1K |
 
 
@@ -10287,6 +10974,7 @@
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 20s | 0 / 0 / 942 |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 20s | 0 / 0 / 969 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 21s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 22s | 0 / 0 / 1.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 27s | 18.9M / 32.7M / 345.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 29s | 0 / 0 / 1.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 32s | 0 / 0 / 1.9K |
@@ -10309,8 +10997,10 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 25s | 0 / 0 / 13.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 41s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 50s | 0 / 0 / 1.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 54s | 0 / 0 / 3.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 47s | 0 / 0 / 2.4K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 4m 4s | 0 / 0 / 0 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 4m 12s | 0 / 0 / 5.2K |
 | [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 2s | 0 / 0 / 14.5K |
 
 
@@ -10341,17 +11031,20 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 3s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 4s | 0 / 0 / 1.7K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 1m 7s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 8s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 16s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 17s | 0 / 0 / 2.1K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 17s | 0 / 0 / 1.2K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 24s | 0 / 0 / 1.5K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 27s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 30s | 0 / 0 / 11.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 39s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 40s | 0 / 0 / 1.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 48s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 57s | 0 / 0 / 2.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 2m 6s | 0 / 0 / 1.9K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 15s | 0 / 0 / 1.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 38s | 0 / 0 / 2.6K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 3m 3s | 0 / 0 / 3.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 20s | 0 / 0 / 2.0K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 10s | 0 / 0 / 9.0K |
@@ -10396,14 +11089,19 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 7s | 0 / 0 / 1.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 18s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 21s | 0 / 0 / 2.1K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 37s | 0 / 0 / 2.1K |
+| [pi-deepseek-v4-flash](#pi-deepseek-v4-flash) | ✅ | 2m 40s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 43s | 0 / 0 / 4.8K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 2m 55s | 0 / 0 / 1.7K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 56s | 0 / 0 / 4.9K |
+| [pi-deepseek-reasoner](#pi-deepseek-reasoner) | ✅ | 3m 2s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 6s | 0 / 0 / 6.1K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 3m 25s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 3m 32s | 0 / 0 / 0 |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 4m 16s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 21s | 0 / 0 / 0 |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 4m 41s | 0 / 0 / 9.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 47s | 0 / 0 / 4.9K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 6m 24s | 0 / 0 / 1.8K |
 | [pi-gemma-4-31b](#pi-gemma-4-31b) | ✅ | 6m 46s | 0 / 0 / 3.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 7m 17s | 0 / 0 / 0 |
@@ -10425,12 +11123,14 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 1m 15s | 0 / 0 / 3.9K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 1m 19s | 0 / 0 / 6.5K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 23s | 0 / 0 / 1.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 26s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 35s | 0 / 0 / 2.8K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 38s | 0 / 0 / 4.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 42s | 0 / 0 / 2.8K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 1m 44s | 0 / 0 / 6.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 46s | 0 / 0 / 3.3K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 51s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 54s | 0 / 0 / 6.7K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 1m 56s | 0 / 0 / 7.9K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 2m 12s | 0 / 0 / 8.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 23s | 0 / 0 / 2.5K |
@@ -10438,6 +11138,7 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 59s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 3m 20s | 0 / 0 / 5.5K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 3m 38s | 0 / 0 / 11.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 39s | 0 / 0 / 4.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 3m 42s | 0 / 0 / 4.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 3s | 0 / 0 / 9.4K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 4m 4s | 0 / 0 / 3.6K |
@@ -10467,6 +11168,7 @@
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 8s | 0 / 0 / 4.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 18s | 0 / 0 / 4.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 24s | 0 / 0 / 1.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 36s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 38s | 0 / 0 / 2.5K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 38s | 0 / 0 / 2.0K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 1m 43s | 0 / 0 / 6.9K |
@@ -10512,6 +11214,7 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 54s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 56s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 58s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 59s | 0 / 0 / 2.7K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 59s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 0s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 1s | 0 / 0 / 1.1K |
@@ -10521,9 +11224,11 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 16s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 28s | 0 / 0 / 9.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 30s | 0 / 0 / 1.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 41s | 0 / 0 / 1.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 50s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 10s | 0 / 0 / 0 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 35s | 0 / 0 / 1.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 41s | 0 / 0 / 3.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 42s | 0 / 0 / 6.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 44s | 0 / 0 / 3.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 4m 28s | 0 / 0 / 2.3K |
@@ -10550,16 +11255,19 @@
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 51s | 0 / 0 / 880 |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 53s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 0s | 0 / 0 / 3.7K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 2s | 0 / 0 / 4.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 3s | 0 / 0 / 1.9K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 4s | 0 / 0 / 1.2K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 7s | 0 / 0 / 857 |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 11s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 11s | 0 / 0 / 4.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 20s | 0 / 0 / 1.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 21s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 26s | 0 / 0 / 2.6K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 32s | 0 / 0 / 5.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 42s | 0 / 0 / 1.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 50s | 0 / 0 / 1.7K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 8s | 0 / 0 / 3.8K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 15s | 0 / 0 / 1.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 28s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 48s | 0 / 0 / 2.8K |
@@ -10574,6 +11282,7 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 14s | 0 / 0 / 0 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 20s | 0 / 0 / 1.3K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 20s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 21s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 23s | 0 / 0 / 941 |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 28s | 0 / 0 / 1.4K |
@@ -10602,6 +11311,8 @@
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 23s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 31s | 0 / 0 / 1.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 45s | 0 / 0 / 1.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 49s | 0 / 0 / 1.8K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 1s | 0 / 0 / 2.3K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 1s | 0 / 0 / 3.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 6s | 0 / 0 / 1.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 56s | 0 / 0 / 12.5K |
@@ -10640,6 +11351,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 3m 17s | 0 / 0 / 11.8K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ❌ | 4m 1s | 0 / 0 / 3.4K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 4m 3s | 0 / 0 / 14.9K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 42s | 0 / 0 / 5.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ❌ | 5m 7s | 0 / 0 / 6.5K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 5m 23s | 0 / 0 / 6.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 5m 41s | 0 / 0 / 5.8K |
@@ -10678,14 +11390,17 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 2s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 6s | 0 / 0 / 1.9K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 8s | 0 / 0 / 900 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 19s | 0 / 0 / 1.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 30s | 0 / 0 / 4.8K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 32s | 0 / 0 / 1.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 37s | 0 / 0 / 1.6K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 54s | 0 / 0 / 2.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 55s | 0 / 0 / 7.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 1s | 0 / 0 / 1.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 13s | 0 / 0 / 2.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 22s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 4m 46s | 0 / 0 / 18.5K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 5m 19s | 0 / 0 / 19.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 5m 22s | 0 / 0 / 3.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 22s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 6m 51s | 0 / 0 / 17.1K |
@@ -10706,6 +11421,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 20s | 0 / 0 / 1.3K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 21s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 23s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 47s | 0 / 0 / 1.0K |
@@ -10717,11 +11433,13 @@
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 1m 5s | 0 / 0 / 818 |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 6s | 0 / 0 / 897 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 7s | 0 / 0 / 2.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 8s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 12s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 25s | 0 / 0 / 6.7K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 36s | 0 / 0 / 5.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 38s | 0 / 0 / 2.9K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 43s | 0 / 0 / 4.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 11s | 0 / 0 / 2.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 14s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 32s | 0 / 0 / 2.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 0s | 0 / 0 / 3.0K |
@@ -10737,6 +11455,7 @@
 |-------|---------|----------|--------|
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 27s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 30s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 30s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 32s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 45s | 0 / 0 / 2.9K |
@@ -10756,12 +11475,14 @@
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 50s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 2m 3s | 0 / 0 / 3.6K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 9s | 0 / 0 / 8.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 10s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 25s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 2m 26s | 0 / 0 / 10.0K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 28s | 0 / 0 / 9.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 40s | 0 / 0 / 1.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 12s | 0 / 0 / 3.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 3m 15s | 0 / 0 / 12.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 44s | 0 / 0 / 4.5K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 5m 4s | 0 / 0 / 18.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 5m 10s | 0 / 0 / 4.1K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 5m 53s | 0 / 0 / 10.2K |
@@ -10786,6 +11507,7 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 33s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 34s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 35s | 0 / 0 / 2.1K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 39s | 0 / 0 / 1.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 51s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 52s | 0 / 0 / 2.3K |
@@ -10804,9 +11526,11 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 44s | 0 / 0 / 3.6K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 49s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 49s | 0 / 0 / 1.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 59s | 0 / 0 / 1.7K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 6s | 0 / 0 / 1.8K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 3m 21s | 0 / 0 / 2.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 4m 20s | 0 / 0 / 2.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 4m 22s | 0 / 0 / 4.1K |
 
 
 # zipper_java
@@ -10828,6 +11552,7 @@
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 2m 22s | 0 / 0 / 2.6K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 2m 24s | 0 / 0 / 7.5K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 27s | 0 / 0 / 4.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 45s | 0 / 0 / 2.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 50s | 0 / 0 / 9.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 1s | 0 / 0 / 4.7K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 3m 17s | 0 / 0 / 10.5K |
@@ -10882,7 +11607,9 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 12s | 0 / 0 / 2.1K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 19s | 0 / 0 / 8.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 20s | 0 / 0 / 4.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 22s | 0 / 0 / 1.9K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 47s | 0 / 0 / 8.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 48s | 0 / 0 / 2.8K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 51s | 0 / 0 / 2.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 3s | 0 / 0 / 0 |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 24s | 0 / 0 / 6.7K |
@@ -10893,6 +11620,7 @@
 | [pi-qwen36-35b-a3b-llmfan-heretic](#pi-qwen36-35b-a3b-llmfan-heretic) | ✅ | 6m 46s | 0 / 0 / 22.4K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 7m 17s | 0 / 0 / 14.6K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 9m 40s | 0 / 0 / 8.4K |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 9m 49s | 0 / 0 / 0 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 1.7K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 10.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 22.9K |
@@ -10916,6 +11644,7 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 20s | 0 / 0 / 651 |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 20s | 0 / 0 / 768 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 21s | 0 / 0 / 912 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 28s | 0 / 0 / 715 |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 31s | 0 / 0 / 1.4K |
@@ -10932,8 +11661,10 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 56s | 0 / 0 / 697 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 2s | 0 / 0 / 0 |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 10s | 0 / 0 / 1.2K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 16s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 28s | 0 / 0 / 1.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 44s | 0 / 0 / 986 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 51s | 0 / 0 / 1.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 0s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 15s | 0 / 0 / 2.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 26s | 0 / 0 / 1.0K |
@@ -10949,6 +11680,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 46s | 0 / 0 / 2.5K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 53s | 0 / 0 / 3.4K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 55s | 0 / 0 / 3.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 3s | 0 / 0 / 3.9K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 1m 26s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 26s | 0 / 0 / 2.6K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 1m 45s | 0 / 0 / 6.9K |
@@ -10962,6 +11694,8 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 38s | 0 / 0 / 3.7K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 3m 49s | 0 / 0 / 13.1K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 4m 36s | 0 / 0 / 10.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 4m 40s | 0 / 0 / 5.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 40s | 0 / 0 / 4.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 41s | 0 / 0 / 2.9K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 4m 41s | 0 / 0 / 5.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 5m 12s | 0 / 0 / 3.1K |
@@ -11009,6 +11743,7 @@
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 4m 21s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 5m 19s | 0 / 0 / 9.0K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 11s | 0 / 0 / 0 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 6m 58s | 0 / 0 / 8.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 7m 10s | 0 / 0 / 6.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 8m 18s | 0 / 0 / 6.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 24.5K |
@@ -11039,6 +11774,7 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 12s | 0 / 0 / 987 |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 1m 14s | 0 / 0 / 4.4K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 27s | 0 / 0 / 1.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 37s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 56s | 0 / 0 / 14.2K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 57s | 0 / 0 / 2.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 10s | 0 / 0 / 8.1K |
@@ -11047,9 +11783,11 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 2m 36s | 0 / 0 / 9.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 48s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 3m 16s | 0 / 0 / 12.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 3m 21s | 0 / 0 / 10.8K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 4m 32s | 0 / 0 / 16.8K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 6m 43s | 0 / 0 / 12.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 7m 7s | 0 / 0 / 20.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 7m 31s | 0 / 0 / 9.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 8m 53s | 0 / 0 / 13.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 9m 31s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 18.7K |
@@ -11071,6 +11809,7 @@
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 17s | 0 / 0 / 814 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 17s | 0 / 0 / 976 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 19s | 0 / 0 / 1.0K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 20s | 0 / 0 / 747 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 30s | 0 / 0 / 1.2K |
@@ -11088,8 +11827,10 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 16s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 1m 20s | 0 / 0 / 826 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 27s | 0 / 0 / 1.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 31s | 0 / 0 / 1.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 34s | 0 / 0 / 4.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 35s | 0 / 0 / 1.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 11s | 0 / 0 / 2.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 13s | 0 / 0 / 1.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 21s | 0 / 0 / 0 |
 
@@ -11111,6 +11852,7 @@
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 35s | 0 / 0 / 979 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 38s | 0 / 0 / 2.7K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 38s | 0 / 0 / 2.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 42s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 43s | 0 / 0 / 1.3K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 44s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 45s | 0 / 0 / 1.1K |
@@ -11126,6 +11868,7 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 12s | 0 / 0 / 1.4K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 17s | 0 / 0 / 0 |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 29s | 0 / 0 / 1.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 40s | 0 / 0 / 1.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 6s | 0 / 0 / 0 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 25s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 31s | 0 / 0 / 1.8K |
@@ -11133,6 +11876,7 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 42s | 0 / 0 / 2.9K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 48s | 0 / 0 / 9.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 5s | 0 / 0 / 7.2K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 37s | 0 / 0 / 4.4K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 4m 29s | 0 / 0 / 2.4K |
 
 
@@ -11150,6 +11894,7 @@
 | [pi-qwen36-35b-a3b-llmfan-heretic](#pi-qwen36-35b-a3b-llmfan-heretic) | ✅ | 2m 2s | 0 / 0 / 5.8K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 9s | 0 / 0 / 5.7K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 2m 19s | 0 / 0 / 7.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 27s | 0 / 0 / 3.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 3m 30s | 0 / 0 / 11.3K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 3m 31s | 0 / 0 / 4.2K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 4m 1s | 0 / 0 / 15.4K |
@@ -11200,6 +11945,7 @@
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 5s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 6s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 9s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 9s | 0 / 0 / 4.4K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 12s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 15s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 17s | 0 / 0 / 2.2K |
@@ -11211,6 +11957,8 @@
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 2m 8s | 0 / 0 / 6.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 35s | 0 / 0 / 1.7K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 40s | 0 / 0 / 1.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 56s | 0 / 0 / 6.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 19s | 0 / 0 / 6.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 8m 33s | 0 / 0 / 23.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.3K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 11m 6s | 0 / 0 / 35.7K |
@@ -11238,6 +11986,7 @@
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 51s | 0 / 0 / 817 |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 53s | 0 / 0 / 1.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 53s | 0 / 0 / 3.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 1s | 0 / 0 / 3.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 2s | 0 / 0 / 2.6K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 6s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 6s | 0 / 0 / 1.9K |
@@ -11255,6 +12004,8 @@
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 13s | 0 / 0 / 6.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 4m 3s | 0 / 0 / 1.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 28s | 0 / 0 / 10.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 43s | 0 / 0 / 5.7K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 7m 23s | 0 / 0 / 9.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 17.7K |
 
@@ -11284,6 +12035,7 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 31s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 35s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 41s | 0 / 0 / 1.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 3s | 0 / 0 / 1.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 5s | 0 / 0 / 1.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 10s | 0 / 0 / 5.7K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 15s | 0 / 0 / 2.0K |
@@ -11328,6 +12080,7 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 4m 22s | 0 / 0 / 3.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 5m 36s | 0 / 0 / 5.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 5m 44s | 0 / 0 / 14.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 6m 15s | 0 / 0 / 7.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 8m 6s | 0 / 0 / 4.9K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 9m 54s | 0 / 0 / 30.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 15m 26s | 0 / 0 / 9.6K |
@@ -11349,6 +12102,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 21s | 0 / 0 / 851 |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 22s | 0 / 0 / 730 |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 24s | 0 / 0 / 751 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 24s | 0 / 0 / 764 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 27s | 0 / 0 / 706 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 30s | 0 / 0 / 538 |
@@ -11364,11 +12118,13 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 16s | 0 / 0 / 648 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 20s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 29s | 0 / 0 / 940 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 36s | 0 / 0 / 1.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 40s | 0 / 0 / 3.6K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 41s | 0 / 0 / 1.4K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 44s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 55s | 0 / 0 / 1.0K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 2m 2s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 2s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 49s | 0 / 0 / 1.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 50s | 0 / 0 / 1.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
@@ -11393,6 +12149,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 34s | 0 / 0 / 1.7K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 51s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 51s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 52s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 3s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 4s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 5s | 0 / 0 / 1.6K |
@@ -11406,7 +12163,9 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 20s | 0 / 0 / 1.2K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 25s | 0 / 0 / 1.3K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 34s | 0 / 0 / 1.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 38s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 53s | 0 / 0 / 1.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 22s | 0 / 0 / 3.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 52s | 0 / 0 / 8.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 54s | 0 / 0 / 2.9K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 6m 40s | 0 / 0 / 4.7K |
@@ -11437,6 +12196,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 1m 42s | 0 / 0 / 5.9K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 45s | 0 / 0 / 2.4K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 1m 52s | 0 / 0 / 6.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 54s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 2s | 0 / 0 / 3.8K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 2m 15s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 23s | 0 / 0 / 4.3K |
@@ -11471,6 +12231,7 @@
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 3m 43s | 0 / 0 / 11.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 52s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 4m 3s | 0 / 0 / 7.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 4s | 0 / 0 / 4.8K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 4m 27s | 0 / 0 / 13.0K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 4m 29s | 0 / 0 / 7.6K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 5m 20s | 0 / 0 / 6.0K |
@@ -11514,9 +12275,11 @@
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 27s | 0 / 0 / 410 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 28s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 29s | 0 / 0 / 606 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 29s | 0 / 0 / 1.7K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 39s | 0 / 0 / 513 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 41s | 0 / 0 / 1.3K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 44s | 0 / 0 / 819 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 45s | 0 / 0 / 580 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 46s | 0 / 0 / 1.8K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 49s | 0 / 0 / 779 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 49s | 0 / 0 / 1.5K |
@@ -11524,6 +12287,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 53s | 0 / 0 / 11.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 56s | 0 / 0 / 908 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 5s | 0 / 0 / 1.2K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 56s | 0 / 0 / 2.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 58s | 0 / 0 / 1.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 59s | 0 / 0 / 2.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 16s | 0 / 0 / 1.4K |
@@ -11553,6 +12317,7 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 54s | 0 / 0 / 3.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 8s | 0 / 0 / 9.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 14s | 0 / 0 / 6.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 32s | 0 / 0 / 4.0K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 4m 2s | 0 / 0 / 20.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 11s | 0 / 0 / 5.5K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 4m 17s | 0 / 0 / 5.2K |
@@ -11603,6 +12368,7 @@
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 10m 0s | 0 / 0 / 23.7K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 10m 0s | 0 / 0 / 14.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 13m 22s | 0 / 0 / 14.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 16m 31s | 0 / 0 / 18.3K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 30m 0s | 0 / 0 / 19.9K |
 
@@ -11638,6 +12404,7 @@
 | [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 20s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 21s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 24s | 0 / 0 / 3.0K |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 1m 26s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 29s | 0 / 0 / 1.3K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 29s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 34s | 0 / 0 / 2.3K |
@@ -11652,6 +12419,8 @@
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 29s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 36s | 0 / 0 / 2.1K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 3m 25s | 0 / 0 / 6.8K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 51s | 0 / 0 / 4.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 24s | 0 / 0 / 4.4K |
 
 
 # perfect-numbers_cpp
@@ -11664,6 +12433,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 24s | 0 / 0 / 983 |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 25s | 0 / 0 / 988 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 25s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 26s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 26s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 29s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.5K |
@@ -11684,9 +12454,11 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 6s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 10s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 14s | 0 / 0 / 901 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 17s | 0 / 0 / 1.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 36s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 56s | 0 / 0 / 1.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 19s | 0 / 0 / 1.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 30s | 0 / 0 / 2.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 7s | 0 / 0 / 1.7K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 15m 42s | 0 / 0 / 0 |
 
@@ -11703,6 +12475,7 @@
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 17s | 0 / 0 / 791 |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 18s | 0 / 0 / 665 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 18s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 19s | 0 / 0 / 969 |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 957 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 20s | 0 / 0 / 1.0K |
@@ -11727,7 +12500,9 @@
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 8s | 0 / 0 / 0 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 13s | 0 / 0 / 1.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 26s | 0 / 0 / 1.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 30s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 34s | 0 / 0 / 3.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 51s | 0 / 0 / 1.9K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 57s | 0 / 0 / 956 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 9s | 0 / 0 / 1.2K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 2m 35s | 0 / 0 / 1.3K |
@@ -11771,7 +12546,9 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 27s | 0 / 0 / 5.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 36s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 38s | 0 / 0 / 2.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 39s | 0 / 0 / 2.2K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 2m 52s | 0 / 0 / 4.8K |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 2m 56s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 11s | 0 / 0 / 2.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 46s | 0 / 0 / 2.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 20.5K |
@@ -11794,6 +12571,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 21s | 0 / 0 / 1.4K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 25s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 30s | 0 / 0 / 2.0K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 30s | 0 / 0 / 1.9K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 34s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 36s | 0 / 0 / 1.0K |
@@ -11811,7 +12589,9 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 15s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 22s | 0 / 0 / 1.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 26s | 0 / 0 / 1.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 28s | 0 / 0 / 1.3K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 42s | 0 / 0 / 2.1K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 47s | 0 / 0 / 3.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 39s | 0 / 0 / 2.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 4m 54s | 0 / 0 / 3.6K |
 
@@ -11834,6 +12614,7 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 3m 37s | 0 / 0 / 12.8K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 3m 51s | 0 / 0 / 3.7K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 4m 35s | 0 / 0 / 17.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 38s | 0 / 0 / 5.7K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 4m 54s | 0 / 0 / 7.2K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ❌ | 5m 5s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 5m 40s | 0 / 0 / 17.9K |
@@ -11885,6 +12666,7 @@
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 6m 42s | 0 / 0 / 9.8K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 7m 46s | 0 / 0 / 14.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 9m 4s | 0 / 0 / 6.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 9m 7s | 0 / 0 / 12.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 24.4K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 28.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 1s | 0 / 0 / 0 |
@@ -11914,9 +12696,11 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 3s | 0 / 0 / 1.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 3s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 5s | 0 / 0 / 2.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 10s | 0 / 0 / 1.2K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 15s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 15s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 20s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 22s | 0 / 0 / 5.4K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 23s | 0 / 0 / 5.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 23s | 0 / 0 / 1.7K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 34s | 0 / 0 / 1.5K |
@@ -11924,6 +12708,7 @@
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 44s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 56s | 0 / 0 / 3.8K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 2m 38s | 0 / 0 / 3.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 52s | 0 / 0 / 3.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 11s | 0 / 0 / 2.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 37s | 0 / 0 / 2.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 7m 13s | 0 / 0 / 19.8K |
@@ -11955,6 +12740,7 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 6m 6s | 0 / 0 / 4.2K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 6m 18s | 0 / 0 / 7.7K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ❌ | 6m 53s | 0 / 0 / 182 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 7m 18s | 0 / 0 / 8.7K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 8m 50s | 0 / 0 / 12.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 9m 16s | 0 / 0 / 31.0K |
 | [pi-minimax-m27](#pi-minimax-m27) | ❌ | 9m 52s | 0 / 0 / 16.7K |
@@ -11988,10 +12774,10 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 30s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 33s | 0 / 0 / 979 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 34s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 37s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 38s | 0 / 0 / 1.3K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 40s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 42s | 0 / 0 / 887 |
-| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ❌ | 47s | 0 / 0 / 1.8K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 52s | 0 / 0 / 642 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 56s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 56s | 0 / 0 / 1.5K |
@@ -12006,8 +12792,10 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 16s | 0 / 0 / 584 |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 16s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 18s | 0 / 0 / 1.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 20s | 0 / 0 / 1.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 28s | 0 / 0 / 970 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 1m 35s | 0 / 0 / 3.7K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 37s | 0 / 0 / 1.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 41s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 51s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 52s | 0 / 0 / 1.5K |
@@ -12033,6 +12821,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 24s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 25s | 0 / 0 / 1.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 28s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 31s | 0 / 0 / 2.0K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 43s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 46s | 0 / 0 / 1.5K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 47s | 0 / 0 / 2.4K |
@@ -12048,11 +12837,13 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 32s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 36s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 1m 39s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 41s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 50s | 0 / 0 / 2.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 25s | 0 / 0 / 2.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 21s | 0 / 0 / 4.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 54s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 6m 29s | 0 / 0 / 11.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 7m 7s | 0 / 0 / 9.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 0 |
 
 
@@ -12068,6 +12859,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 10s | 0 / 0 / 427 |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 10s | 0 / 0 / 502 |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 11s | 0 / 0 / 609 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 12s | 0 / 0 / 596 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 12s | 0 / 0 / 513 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 12s | 0 / 0 / 688 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 13s | 0 / 0 / 670 |
@@ -12090,6 +12882,8 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 36s | 0 / 0 / 545 |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 41s | 0 / 0 / 2.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 56s | 0 / 0 / 476 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 58s | 0 / 0 / 841 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 3s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 13s | 0 / 0 / 720 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 36s | 0 / 0 / 904 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
@@ -12107,6 +12901,7 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 22s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 23s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 25s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 26s | 0 / 0 / 1.5K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 28s | 0 / 0 / 872 |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 28s | 0 / 0 / 796 |
@@ -12126,11 +12921,13 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 12s | 0 / 0 / 2.8K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 15s | 0 / 0 / 1.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 16s | 0 / 0 / 1.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 19s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 19s | 0 / 0 / 2.7K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 29s | 0 / 0 / 2.1K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 34s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 47s | 0 / 0 / 3.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 57s | 0 / 0 / 1.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 3s | 0 / 0 / 2.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 9s | 0 / 0 / 0 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 32s | 0 / 0 / 1.5K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 4m 16s | 0 / 0 / 2.7K |
@@ -12151,6 +12948,7 @@
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 21s | 0 / 0 / 1.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 22s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 24s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 27s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 34s | 0 / 0 / 1.0K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 38s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 38s | 0 / 0 / 980 |
@@ -12161,6 +12959,7 @@
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 1s | 0 / 0 / 1.0K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 3s | 0 / 0 / 1.1K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 9s | 0 / 0 / 1.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 13s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 14s | 0 / 0 / 1.6K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 16s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 20s | 0 / 0 / 2.5K |
@@ -12170,6 +12969,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 43s | 0 / 0 / 1.4K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 8s | 0 / 0 / 6.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 12s | 0 / 0 / 5.2K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 27s | 0 / 0 / 2.9K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 33s | 0 / 0 / 0 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 35s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 3m 41s | 0 / 0 / 13.9K |
@@ -12208,6 +13008,7 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 55s | 0 / 0 / 4.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 4s | 0 / 0 / 3.9K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 4m 11s | 0 / 0 / 13.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 41s | 0 / 0 / 5.0K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 4m 41s | 0 / 0 / 10.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 51s | 0 / 0 / 3.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 7m 3s | 0 / 0 / 0 |
@@ -12228,6 +13029,7 @@
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 26s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 31s | 0 / 0 / 1.8K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 31s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 42s | 0 / 0 / 2.1K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 42s | 0 / 0 / 2.1K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 43s | 0 / 0 / 2.5K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 50s | 0 / 0 / 2.8K |
@@ -12247,6 +13049,7 @@
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 35s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 43s | 0 / 0 / 2.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 57s | 0 / 0 / 6.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 2s | 0 / 0 / 2.0K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 18s | 0 / 0 / 2.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 54s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 56s | 0 / 0 / 2.4K |
@@ -12254,6 +13057,7 @@
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 24s | 0 / 0 / 3.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 37s | 0 / 0 / 2.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 41s | 0 / 0 / 6.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 53s | 0 / 0 / 5.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 6m 0s | 0 / 0 / 3.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 6m 49s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 7m 25s | 0 / 0 / 3.0K |
@@ -12273,6 +13077,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 5m 43s | 0 / 0 / 23.4K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 6m 17s | 0 / 0 / 22.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 6m 58s | 0 / 0 / 17.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 7m 7s | 0 / 0 / 8.2K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ❌ | 9m 9s | 0 / 0 / 15.0K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 9m 28s | 0 / 0 / 33.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 22.2K |
@@ -12314,6 +13119,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 18s | 0 / 0 / 1.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 19s | 0 / 0 / 1.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 20s | 0 / 0 / 948 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 24s | 0 / 0 / 985 |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 25s | 0 / 0 / 989 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 30s | 0 / 0 / 892 |
@@ -12331,9 +13137,11 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 8s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 1m 8s | 0 / 0 / 955 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 15s | 0 / 0 / 965 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 41s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 49s | 0 / 0 / 3.9K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 52s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 6s | 0 / 0 / 987 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 15s | 0 / 0 / 3.8K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 5m 35s | 0 / 0 / 3.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 31s | 0 / 0 / 0 |
 
@@ -12357,6 +13165,7 @@
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 42s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 42s | 0 / 0 / 907 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 48s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 53s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 55s | 0 / 0 / 1.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 56s | 0 / 0 / 867 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 56s | 0 / 0 / 2.0K |
@@ -12372,8 +13181,10 @@
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 18s | 0 / 0 / 1.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 20s | 0 / 0 / 1.0K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 1m 30s | 0 / 0 / 4.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 34s | 0 / 0 / 1.1K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 41s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 41s | 0 / 0 / 965 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 44s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 46s | 0 / 0 / 996 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 49s | 0 / 0 / 1.2K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 53s | 0 / 0 / 2.2K |
@@ -12403,6 +13214,7 @@
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 1m 36s | 0 / 0 / 2.2K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 1m 46s | 0 / 0 / 4.6K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 1m 58s | 0 / 0 / 6.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 15s | 0 / 0 / 1.8K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 2m 19s | 0 / 0 / 2.1K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 2m 21s | 0 / 0 / 2.1K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 27s | 0 / 0 / 2.0K |
@@ -12411,8 +13223,10 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 31s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 33s | 0 / 0 / 3.8K |
 | [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 2m 46s | 0 / 0 / 9.4K |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 2m 55s | 0 / 0 / 0 |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 7s | 0 / 0 / 5.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 8s | 0 / 0 / 2.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 10s | 0 / 0 / 3.5K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 3m 20s | 0 / 0 / 0 |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 3m 27s | 0 / 0 / 7.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ❌ | 4m 3s | 0 / 0 / 6.0K |
@@ -12450,6 +13264,7 @@
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 44s | 0 / 0 / 6.3K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 1m 44s | 0 / 0 / 6.4K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 49s | 0 / 0 / 0 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 2m 9s | 0 / 0 / 7.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 13s | 0 / 0 / 4.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 19s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 28s | 0 / 0 / 4.7K |
@@ -12461,6 +13276,8 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 5s | 0 / 0 / 13.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 53s | 0 / 0 / 4.5K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 5m 2s | 0 / 0 / 8.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 4s | 0 / 0 / 6.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 6m 4s | 0 / 0 / 7.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 6m 54s | 0 / 0 / 18.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 9m 35s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 10m 40s | 0 / 0 / 20.6K |
@@ -12492,6 +13309,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 9s | 0 / 0 / 2.1K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 2m 10s | 0 / 0 / 8.6K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 2m 14s | 0 / 0 / 4.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 18s | 0 / 0 / 2.3K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 22s | 0 / 0 / 7.6K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 41s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 49s | 0 / 0 / 2.2K |
@@ -12521,6 +13339,7 @@
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 26s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 26s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 30s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 33s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 33s | 0 / 0 / 1.9K |
@@ -12539,10 +13358,12 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 12s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 18s | 0 / 0 / 2.1K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 25s | 0 / 0 / 1.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 30s | 0 / 0 / 1.4K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 34s | 0 / 0 / 5.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 41s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 42s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 42s | 0 / 0 / 1.7K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 58s | 0 / 0 / 2.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 24s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 2m 28s | 0 / 0 / 7.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 13s | 0 / 0 / 10.2K |
@@ -12565,6 +13386,7 @@
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 7s | 0 / 0 / 3.0K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 9s | 0 / 0 / 2.2K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 1m 13s | 0 / 0 / 3.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 14s | 0 / 0 / 3.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 16s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 18s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 27s | 0 / 0 / 4.7K |
@@ -12582,9 +13404,11 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 2m 10s | 0 / 0 / 6.3K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 20s | 0 / 0 / 3.4K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 2m 24s | 0 / 0 / 1.9K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 25s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 26s | 0 / 0 / 1.6K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 2m 34s | 0 / 0 / 2.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 38s | 0 / 0 / 1.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 53s | 0 / 0 / 2.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 10s | 0 / 0 / 2.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 37s | 0 / 0 / 1.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 29s | 0 / 0 / 0 |
@@ -12611,6 +13435,7 @@
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 27s | 0 / 0 / 764 |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 27s | 0 / 0 / 468 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 30s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 30s | 0 / 0 / 824 |
 | [pi-qwen36-35b-a3b-llmfan-heretic](#pi-qwen36-35b-a3b-llmfan-heretic) | ✅ | 31s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 31s | 0 / 0 / 905 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 34s | 0 / 0 / 921 |
@@ -12630,7 +13455,9 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 55s | 0 / 0 / 497 |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 58s | 0 / 0 / 784 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 14s | 0 / 0 / 939 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 17s | 0 / 0 / 1.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 19s | 0 / 0 / 864 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 23s | 0 / 0 / 1.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 25s | 0 / 0 / 0 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 44s | 0 / 0 / 962 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 58s | 0 / 0 / 1.3K |
@@ -12672,12 +13499,15 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 20s | 0 / 0 / 3.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 22s | 0 / 0 / 10.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 27s | 0 / 0 / 2.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 28s | 0 / 0 / 3.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 42s | 0 / 0 / 1.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 45s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 52s | 0 / 0 / 1.6K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 55s | 0 / 0 / 2.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 58s | 0 / 0 / 4.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 58s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 14s | 0 / 0 / 1.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 31s | 0 / 0 / 2.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 53s | 0 / 0 / 1.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 58s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 17m 31s | 0 / 0 / 14.9K |
@@ -12700,6 +13530,7 @@
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 21s | 0 / 0 / 1.3K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 23s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 29s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 35s | 0 / 0 / 903 |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 42s | 0 / 0 / 655 |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 43s | 0 / 0 / 838 |
@@ -12710,9 +13541,11 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 57s | 0 / 0 / 2.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 2s | 0 / 0 / 724 |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 2s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 20s | 0 / 0 / 1.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 32s | 0 / 0 / 986 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 16s | 0 / 0 / 1.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 21s | 0 / 0 / 0 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 59s | 0 / 0 / 3.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 3s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 3m 7s | 0 / 0 / 5.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 3m 40s | 0 / 0 / 7.2K |
@@ -12739,6 +13572,7 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 41s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 55s | 0 / 0 / 3.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 3s | 0 / 0 / 2.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 4s | 0 / 0 / 3.6K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 1m 7s | 0 / 0 / 1.6K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 13s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 15s | 0 / 0 / 1.8K |
@@ -12754,9 +13588,11 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 47s | 0 / 0 / 5.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 50s | 0 / 0 / 2.1K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 52s | 0 / 0 / 1.9K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 7s | 0 / 0 / 2.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 46s | 0 / 0 / 2.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 55s | 0 / 0 / 2.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 27s | 0 / 0 / 2.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 4m 37s | 0 / 0 / 5.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 15s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 5m 56s | 0 / 0 / 2.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 5m 56s | 0 / 0 / 6.3K |
@@ -12777,6 +13613,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 21s | 0 / 0 / 979 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 23s | 0 / 0 / 1.2K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 23s | 0 / 0 / 0 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 23s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 27s | 0 / 0 / 1.3K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 31s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 31s | 0 / 0 / 781 |
@@ -12799,6 +13636,8 @@
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 8s | 0 / 0 / 1.2K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 2m 27s | 0 / 0 / 1.8K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 46s | 0 / 0 / 0 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 52s | 0 / 0 / 2.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 13s | 0 / 0 / 3.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 53s | 0 / 0 / 8.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 4m 17s | 0 / 0 / 9.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 52s | 0 / 0 / 0 |
@@ -12822,6 +13661,7 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 15s | 0 / 0 / 556 |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 639 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 869 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 17s | 0 / 0 / 705 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 20s | 0 / 0 / 541 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 22s | 0 / 0 / 506 |
@@ -12836,7 +13676,9 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 35s | 0 / 0 / 419 |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 35s | 0 / 0 / 578 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 38s | 0 / 0 / 0 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 54s | 0 / 0 / 764 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 56s | 0 / 0 / 909 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 58s | 0 / 0 / 848 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 0s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 8s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 16s | 0 / 0 / 797 |
@@ -12869,14 +13711,17 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 3s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 1m 3s | 0 / 0 / 3.7K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 14s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 18s | 0 / 0 / 4.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 21s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 22s | 0 / 0 / 1.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 35s | 0 / 0 / 5.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 42s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 49s | 0 / 0 / 1.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 55s | 0 / 0 / 2.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 46s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 6s | 0 / 0 / 2.1K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 3m 8s | 0 / 0 / 11.8K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 25s | 0 / 0 / 4.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 4m 24s | 0 / 0 / 12.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 5m 20s | 0 / 0 / 5.9K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 7m 57s | 0 / 0 / 5.1K |
@@ -12914,6 +13759,7 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 5m 46s | 0 / 0 / 7.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 6m 28s | 0 / 0 / 18.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 6m 36s | 0 / 0 / 3.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 6m 50s | 0 / 0 / 8.4K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ❌ | 6m 51s | 0 / 0 / 127 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 6m 59s | 0 / 0 / 5.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
@@ -12938,6 +13784,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 1.9K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 38s | 0 / 0 / 2.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 39s | 0 / 0 / 2.0K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 39s | 0 / 0 / 1.8K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 39s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 55s | 0 / 0 / 1.6K |
@@ -12950,9 +13797,11 @@
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 27s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 31s | 0 / 0 / 1.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 34s | 0 / 0 / 1.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 46s | 0 / 0 / 1.7K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 47s | 0 / 0 / 2.0K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 2m 6s | 0 / 0 / 2.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 14s | 0 / 0 / 1.8K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 24s | 0 / 0 / 2.3K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 28s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 31s | 0 / 0 / 1.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 0s | 0 / 0 / 8.5K |
@@ -12982,6 +13831,7 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 30s | 0 / 0 / 4.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 3m 37s | 0 / 0 / 14.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 3m 44s | 0 / 0 / 2.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 50s | 0 / 0 / 4.1K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 5m 11s | 0 / 0 / 20.5K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ❌ | 5m 26s | 0 / 0 / 104 |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 5m 39s | 0 / 0 / 7.1K |
@@ -13014,6 +13864,7 @@
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 16s | 0 / 0 / 844 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 16s | 0 / 0 / 964 |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 19s | 0 / 0 / 930 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 19s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 20s | 0 / 0 / 1.3K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 22s | 0 / 0 / 985 |
@@ -13034,8 +13885,10 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 58s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 4s | 0 / 0 / 1.5K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 13s | 0 / 0 / 1.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 22s | 0 / 0 / 1.3K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 26s | 0 / 0 / 3.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 33s | 0 / 0 / 1.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 38s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 8s | 0 / 0 / 1.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 49s | 0 / 0 / 1.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 57s | 0 / 0 / 0 |
@@ -13066,6 +13919,7 @@
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 34s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 43s | 0 / 0 / 3.2K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 58s | 0 / 0 / 2.5K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 59s | 0 / 0 / 6.7K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 1m 59s | 0 / 0 / 7.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 1s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 12s | 0 / 0 / 8.0K |
@@ -13074,8 +13928,10 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 38s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 46s | 0 / 0 / 4.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 12s | 0 / 0 / 7.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 4m 11s | 0 / 0 / 5.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 37s | 0 / 0 / 15.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 4m 52s | 0 / 0 / 11.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 5m 7s | 0 / 0 / 6.0K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 8s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 7m 40s | 0 / 0 / 15.8K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 10m 0s | 0 / 0 / 0 |
@@ -13098,6 +13954,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 44s | 0 / 0 / 2.3K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 46s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 48s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 52s | 0 / 0 / 3.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 0s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 3s | 0 / 0 / 1.7K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 6s | 0 / 0 / 1.3K |
@@ -13110,11 +13967,13 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 33s | 0 / 0 / 1.9K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 36s | 0 / 0 / 1.4K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 54s | 0 / 0 / 0 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 57s | 0 / 0 / 2.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 53s | 0 / 0 / 2.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 3s | 0 / 0 / 7.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 6s | 0 / 0 / 1.9K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 17s | 0 / 0 / 13.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 5m 37s | 0 / 0 / 0 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 6m 34s | 0 / 0 / 8.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 7m 35s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 17m 31s | 0 / 0 / 28.5K |
 
@@ -13136,6 +13995,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 43s | 0 / 0 / 2.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 46s | 0 / 0 / 2.3K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 48s | 0 / 0 / 3.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 53s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 56s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 58s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 10s | 0 / 0 / 1.9K |
@@ -13147,7 +14007,9 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 25s | 0 / 0 / 1.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 25s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 25s | 0 / 0 / 2.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 46s | 0 / 0 / 1.7K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 4s | 0 / 0 / 1.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 22s | 0 / 0 / 2.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 0s | 0 / 0 / 1.7K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 3m 17s | 0 / 0 / 4.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 23s | 0 / 0 / 2.0K |
@@ -13168,6 +14030,7 @@
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 26s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 27s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 33s | 0 / 0 / 869 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 38s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 48s | 0 / 0 / 1.4K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 51s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 55s | 0 / 0 / 1.2K |
@@ -13181,6 +14044,7 @@
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 1m 28s | 0 / 0 / 6.7K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 31s | 0 / 0 / 1.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 33s | 0 / 0 / 3.9K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 36s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 38s | 0 / 0 / 5.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 43s | 0 / 0 / 3.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 8s | 0 / 0 / 2.1K |
@@ -13189,6 +14053,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 10s | 0 / 0 / 12.3K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 3m 38s | 0 / 0 / 4.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 6m 5s | 0 / 0 / 1.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 8m 56s | 0 / 0 / 11.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 22.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 24.0K |
@@ -13205,6 +14070,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 10s | 0 / 0 / 537 |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 12s | 0 / 0 / 570 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 12s | 0 / 0 / 567 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 13s | 0 / 0 / 721 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 14s | 0 / 0 / 730 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 14s | 0 / 0 / 789 |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 17s | 0 / 0 / 913 |
@@ -13226,6 +14092,7 @@
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 45s | 0 / 0 / 563 |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 47s | 0 / 0 / 940 |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 49s | 0 / 0 / 1.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 52s | 0 / 0 / 766 |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 56s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 18s | 0 / 0 / 929 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 18s | 0 / 0 / 2.3K |
@@ -13233,6 +14100,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 32s | 0 / 0 / 1.5K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 39s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 23s | 0 / 0 / 0 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 39s | 0 / 0 / 3.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 4m 55s | 0 / 0 / 2.7K |
 
 
@@ -13251,6 +14119,7 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 21s | 0 / 0 / 860 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 25s | 0 / 0 / 559 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 26s | 0 / 0 / 1.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 28s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 34s | 0 / 0 / 683 |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 41s | 0 / 0 / 605 |
@@ -13272,8 +14141,10 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 5m 26s | 0 / 0 / 19.9K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 7m 42s | 0 / 0 / 25.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 8m 9s | 0 / 0 / 5.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 8m 54s | 0 / 0 / 11.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 9m 27s | 0 / 0 / 23.4K |
 | [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 1s | 0 / 0 / 11.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 13m 36s | 0 / 0 / 17.9K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 17.0K |
 
 
@@ -13305,6 +14176,7 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 4m 42s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 5m 20s | 0 / 0 / 18.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 5m 40s | 0 / 0 / 16.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 5m 56s | 0 / 0 / 6.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 6m 36s | 0 / 0 / 5.2K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 7m 35s | 0 / 0 / 24.3K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 7m 42s | 0 / 0 / 22.1K |
@@ -13347,6 +14219,7 @@
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 59s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 4s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 2m 7s | 0 / 0 / 5.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 16s | 0 / 0 / 2.0K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 2m 18s | 0 / 0 / 6.9K |
 | [pi-qwen36-35b-a3b-llmfan-heretic](#pi-qwen36-35b-a3b-llmfan-heretic) | ✅ | 2m 43s | 0 / 0 / 9.4K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 17s | 0 / 0 / 11.0K |
@@ -13358,10 +14231,12 @@
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 4m 36s | 0 / 0 / 15.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 4m 49s | 0 / 0 / 3.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 4m 50s | 0 / 0 / 11.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 16s | 0 / 0 / 6.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 29s | 0 / 0 / 3.3K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 7m 5s | 0 / 0 / 25.7K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 7m 18s | 0 / 0 / 24.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 8m 5s | 0 / 0 / 20.9K |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 9m 43s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 20.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 14m 44s | 0 / 0 / 18.0K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 15m 48s | 0 / 0 / 22.4K |
@@ -13379,6 +14254,7 @@
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 22s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 24s | 0 / 0 / 1.0K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 24s | 0 / 0 / 0 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 25s | 0 / 0 / 1.0K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 27s | 0 / 0 / 982 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 29s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 30s | 0 / 0 / 1.0K |
@@ -13400,9 +14276,11 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 12s | 0 / 0 / 11.0K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 12s | 0 / 0 / 1.1K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 24s | 0 / 0 / 1.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 35s | 0 / 0 / 1.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 54s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 59s | 0 / 0 / 6.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 38s | 0 / 0 / 1.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 18s | 0 / 0 / 3.7K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 5m 47s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 8m 5s | 0 / 0 / 0 |
 
@@ -13420,6 +14298,7 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 14s | 0 / 0 / 759 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 15s | 0 / 0 / 835 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 15s | 0 / 0 / 858 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 15s | 0 / 0 / 635 |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 789 |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 18s | 0 / 0 / 773 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 20s | 0 / 0 / 788 |
@@ -13441,8 +14320,10 @@
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 45s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 50s | 0 / 0 / 638 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 3s | 0 / 0 / 900 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 8s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 14s | 0 / 0 / 940 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 49s | 0 / 0 / 1.1K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 52s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 20s | 0 / 0 / 3.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 10s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 16.4K |
@@ -13484,6 +14365,7 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 5m 45s | 0 / 0 / 4.4K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 6m 35s | 0 / 0 / 3.9K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 7m 21s | 0 / 0 / 4.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 7m 34s | 0 / 0 / 8.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.2K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 17.2K |
 | [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 17.3K |
@@ -13508,6 +14390,7 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 22s | 0 / 0 / 976 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 24s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 26s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 34s | 0 / 0 / 947 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 38s | 0 / 0 / 1.1K |
@@ -13519,7 +14402,9 @@
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 58s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 7s | 0 / 0 / 1.6K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 8s | 0 / 0 / 1.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 13s | 0 / 0 / 1.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 15s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 15s | 0 / 0 / 1.2K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 16s | 0 / 0 / 1.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 19s | 0 / 0 / 3.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 23s | 0 / 0 / 1.2K |
@@ -13553,6 +14438,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 24s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 30s | 0 / 0 / 783 |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 37s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 38s | 0 / 0 / 1.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 39s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 40s | 0 / 0 / 1.1K |
@@ -13567,6 +14453,8 @@
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 7s | 0 / 0 / 1.2K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 8s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 9s | 0 / 0 / 7.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 11s | 0 / 0 / 1.1K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 12s | 0 / 0 / 1.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 14s | 0 / 0 / 849 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 16s | 0 / 0 / 0 |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 20s | 0 / 0 / 1.2K |
@@ -13604,6 +14492,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 9s | 0 / 0 / 1.3K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 13s | 0 / 0 / 1.3K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 14s | 0 / 0 / 961 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 15s | 0 / 0 / 3.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 21s | 0 / 0 / 0 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 30s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 51s | 0 / 0 / 1.3K |
@@ -13611,7 +14500,9 @@
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 25s | 0 / 0 / 3.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 35s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 36s | 0 / 0 / 1.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 43s | 0 / 0 / 3.1K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 43s | 0 / 0 / 9.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 10s | 0 / 0 / 3.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 58s | 0 / 0 / 3.4K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 4m 41s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 4m 54s | 0 / 0 / 2.9K |
@@ -13630,6 +14521,7 @@
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 28s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 39s | 0 / 0 / 2.2K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 39s | 0 / 0 / 2.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 42s | 0 / 0 / 2.6K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 43s | 0 / 0 / 2.6K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 45s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 48s | 0 / 0 / 1.4K |
@@ -13643,12 +14535,14 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 11s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 14s | 0 / 0 / 2.4K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 17s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 42s | 0 / 0 / 1.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 44s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 51s | 0 / 0 / 3.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 55s | 0 / 0 / 9.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 12s | 0 / 0 / 6.4K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 19s | 0 / 0 / 7.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 39s | 0 / 0 / 1.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 48s | 0 / 0 / 3.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 11s | 0 / 0 / 7.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 55s | 0 / 0 / 2.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 59s | 0 / 0 / 2.2K |
@@ -13678,15 +14572,18 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 22s | 0 / 0 / 1.8K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 26s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 1m 29s | 0 / 0 / 5.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 29s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 31s | 0 / 0 / 1.7K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 31s | 0 / 0 / 0 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 1m 39s | 0 / 0 / 6.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 58s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 0s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 2m 24s | 0 / 0 / 2.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 28s | 0 / 0 / 2.4K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 36s | 0 / 0 / 8.4K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 49s | 0 / 0 / 2.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 18s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 4m 34s | 0 / 0 / 15.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 4m 44s | 0 / 0 / 13.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 42s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 6m 58s | 0 / 0 / 24.4K |
@@ -13702,6 +14599,7 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 25s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 26s | 0 / 0 / 1.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 26s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 26s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 28s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 28s | 0 / 0 / 1.2K |
@@ -13727,7 +14625,9 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 18s | 0 / 0 / 2.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 32s | 0 / 0 / 1.5K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 32s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 39s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 56s | 0 / 0 / 1.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 10s | 0 / 0 / 2.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 12s | 0 / 0 / 1.9K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 38s | 0 / 0 / 2.2K |
 
@@ -13748,6 +14648,7 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 20s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 23s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 24s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 26s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 33s | 0 / 0 / 860 |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 36s | 0 / 0 / 884 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 40s | 0 / 0 / 1.1K |
@@ -13764,9 +14665,11 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 1s | 0 / 0 / 812 |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 4s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 8s | 0 / 0 / 1.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 13s | 0 / 0 / 1.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 22s | 0 / 0 / 1.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 7s | 0 / 0 / 5.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 23s | 0 / 0 / 1.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 27s | 0 / 0 / 2.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 35s | 0 / 0 / 6.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 39s | 0 / 0 / 1.4K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 4m 39s | 0 / 0 / 0 |
@@ -13800,15 +14703,18 @@
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 4m 25s | 0 / 0 / 16.0K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 4m 33s | 0 / 0 / 16.7K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ❌ | 5m 44s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ❌ | 6m 20s | 0 / 0 / 0 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ❌ | 6m 33s | 0 / 0 / 2.9K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 7m 54s | 0 / 0 / 0 |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 8m 8s | 0 / 0 / 10.7K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 8m 23s | 0 / 0 / 11.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 10m 0s | 0 / 0 / 21.5K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 29.1K |
 | [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 18.0K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ❌ | 10m 18s | 0 / 0 / 18.7K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 10m 38s | 0 / 0 / 14.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 12m 2s | 0 / 0 / 15.8K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 15m 37s | 0 / 0 / 16.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 16m 31s | 0 / 0 / 13.9K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 18.4K |
@@ -13833,6 +14739,7 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 2.0K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 41s | 0 / 0 / 2.6K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 41s | 0 / 0 / 2.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 43s | 0 / 0 / 2.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 52s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 56s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 57s | 0 / 0 / 1.5K |
@@ -13846,7 +14753,9 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 30s | 0 / 0 / 1.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 31s | 0 / 0 / 1.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 45s | 0 / 0 / 1.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 59s | 0 / 0 / 1.8K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 4s | 0 / 0 / 1.7K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 26s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 26s | 0 / 0 / 1.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 57s | 0 / 0 / 1.7K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 4s | 0 / 0 / 10.3K |
@@ -13868,6 +14777,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 24s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 25s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 28s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 30s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 37s | 0 / 0 / 876 |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 40s | 0 / 0 / 2.5K |
@@ -13886,8 +14796,10 @@
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 18s | 0 / 0 / 18.8K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 42s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 54s | 0 / 0 / 1.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 55s | 0 / 0 / 2.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 0s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 16s | 0 / 0 / 5.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 36s | 0 / 0 / 3.0K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 2m 48s | 0 / 0 / 3.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 10s | 0 / 0 / 1.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 38s | 0 / 0 / 0 |
@@ -13906,6 +14818,7 @@
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 24s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 24s | 0 / 0 / 998 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 24s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 25s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 28s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 31s | 0 / 0 / 1.7K |
@@ -13927,7 +14840,9 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 17s | 0 / 0 / 1.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 29s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 30s | 0 / 0 / 1.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 36s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 46s | 0 / 0 / 1.1K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 22s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 33s | 0 / 0 / 1.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 44s | 0 / 0 / 1.6K |
 
@@ -13943,6 +14858,7 @@
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 23s | 0 / 0 / 949 |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 24s | 0 / 0 / 993 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 24s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 28s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 30s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.8K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 35s | 0 / 0 / 1.8K |
@@ -13963,6 +14879,8 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 19s | 0 / 0 / 1.5K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 44s | 0 / 0 / 7.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 45s | 0 / 0 / 1.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 5s | 0 / 0 / 2.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 42s | 0 / 0 / 2.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 45s | 0 / 0 / 6.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 9s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 44s | 0 / 0 / 2.5K |
@@ -13991,6 +14909,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 2m 29s | 0 / 0 / 9.2K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 31s | 0 / 0 / 3.1K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 3m 30s | 0 / 0 / 11.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 50s | 0 / 0 / 4.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 55s | 0 / 0 / 6.2K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 3m 57s | 0 / 0 / 4.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 33s | 0 / 0 / 2.8K |
@@ -14015,6 +14934,7 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 31s | 0 / 0 / 2.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 44s | 0 / 0 / 0 |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 57s | 0 / 0 / 11.9K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 6s | 0 / 0 / 4.4K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 4m 7s | 0 / 0 / 4.8K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 4m 10s | 0 / 0 / 15.1K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 4m 50s | 0 / 0 / 14.1K |
@@ -14083,10 +15003,13 @@
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 7s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 1m 21s | 0 / 0 / 1.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 30s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 36s | 0 / 0 / 5.0K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 37s | 0 / 0 / 1.8K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 43s | 0 / 0 / 1.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 20s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 26s | 0 / 0 / 1.2K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 38s | 0 / 0 / 3.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 52s | 0 / 0 / 2.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 4m 2s | 0 / 0 / 2.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 9m 1s | 0 / 0 / 0 |
 
@@ -14130,8 +15053,11 @@
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 43s | 0 / 0 / 1.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 53s | 0 / 0 / 1.7K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 54s | 0 / 0 / 0 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 54s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 14s | 0 / 0 / 1.6K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 2m 21s | 0 / 0 / 150 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 30s | 0 / 0 / 3.8K |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 3m 39s | 0 / 0 / 0 |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 3m 53s | 0 / 0 / 8.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 53s | 0 / 0 / 2.3K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 7m 45s | 0 / 0 / 5.9K |
@@ -14164,6 +15090,7 @@
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 1m 9s | 0 / 0 / 4.7K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 13s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 13s | 0 / 0 / 2.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 20s | 0 / 0 / 1.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 41s | 0 / 0 / 3.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 43s | 0 / 0 / 1.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 52s | 0 / 0 / 1.5K |
@@ -14208,6 +15135,7 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 5m 39s | 0 / 0 / 4.8K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 40s | 0 / 0 / 0 |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 5m 48s | 0 / 0 / 7.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 5m 52s | 0 / 0 / 7.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 25.4K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 27.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 10m 0s | 0 / 0 / 5.1K |
@@ -14232,6 +15160,7 @@
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 22s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 25s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 26s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 27s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 28s | 0 / 0 / 721 |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 35s | 0 / 0 / 795 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 37s | 0 / 0 / 1.1K |
@@ -14253,7 +15182,9 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 41s | 0 / 0 / 860 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 19s | 0 / 0 / 1.4K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 2m 24s | 0 / 0 / 1.9K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 47s | 0 / 0 / 3.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 39s | 0 / 0 / 0 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 4m 3s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 4m 8s | 0 / 0 / 1.5K |
 
 
@@ -14272,6 +15203,7 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 2m 14s | 0 / 0 / 7.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 21s | 0 / 0 / 3.8K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 31s | 0 / 0 / 9.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 39s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 58s | 0 / 0 / 4.7K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 59s | 0 / 0 / 4.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 9s | 0 / 0 / 5.4K |
@@ -14304,6 +15236,7 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 13s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 18s | 0 / 0 / 900 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 19s | 0 / 0 / 1.1K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 20s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 21s | 0 / 0 / 1.1K |
@@ -14329,11 +15262,13 @@
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 41s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 50s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 58s | 0 / 0 / 3.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 7s | 0 / 0 / 2.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 58s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 3m 3s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 6s | 0 / 0 / 2.6K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 33s | 0 / 0 / 6.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 34s | 0 / 0 / 7.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 30s | 0 / 0 / 6.7K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 6m 14s | 0 / 0 / 3.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 8m 19s | 0 / 0 / 19.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 10m 13s | 0 / 0 / 5.3K |
@@ -14362,6 +15297,7 @@
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 3s | 0 / 0 / 914 |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 5s | 0 / 0 / 758 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 1m 10s | 0 / 0 / 3.7K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 18s | 0 / 0 / 4.0K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 18s | 0 / 0 / 1.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 27s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 33s | 0 / 0 / 2.8K |
@@ -14376,10 +15312,12 @@
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 7m 16s | 0 / 0 / 4.4K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 7m 39s | 0 / 0 / 15.2K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 7m 43s | 0 / 0 / 25.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 8m 44s | 0 / 0 / 11.0K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 9m 7s | 0 / 0 / 29.4K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 20.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 24.2K |
 | [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 17.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 12m 10s | 0 / 0 / 14.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 17m 20s | 0 / 0 / 10.8K |
 
 
@@ -14417,6 +15355,7 @@
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 17s | 0 / 0 / 4.3K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 2m 25s | 0 / 0 / 4.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 39s | 0 / 0 / 5.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 2s | 0 / 0 / 2.8K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 3m 17s | 0 / 0 / 5.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 3m 21s | 0 / 0 / 6.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 55s | 0 / 0 / 3.9K |
@@ -14440,6 +15379,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 49s | 0 / 0 / 3.1K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 52s | 0 / 0 / 3.1K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 55s | 0 / 0 / 4.0K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 56s | 0 / 0 / 2.7K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 57s | 0 / 0 / 3.4K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 1m 0s | 0 / 0 / 3.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 7s | 0 / 0 / 1.7K |
@@ -14458,9 +15398,11 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 1s | 0 / 0 / 4.8K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 27s | 0 / 0 / 8.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 31s | 0 / 0 / 3.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 44s | 0 / 0 / 2.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 18s | 0 / 0 / 8.1K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 4m 7s | 0 / 0 / 6.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 47s | 0 / 0 / 2.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 5m 0s | 0 / 0 / 5.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 25.2K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 35m 2s | 0 / 0 / 42.8K |
@@ -14496,6 +15438,7 @@
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 3m 37s | 0 / 0 / 3.8K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 3m 58s | 0 / 0 / 13.9K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 3m 59s | 0 / 0 / 14.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 5s | 0 / 0 / 3.9K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 16s | 0 / 0 / 15.7K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 40s | 0 / 0 / 3.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 6m 20s | 0 / 0 / 14.4K |
@@ -14524,6 +15467,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 32s | 0 / 0 / 870 |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 32s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 33s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 38s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 38s | 0 / 0 / 2.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 41s | 0 / 0 / 1.8K |
@@ -14532,6 +15476,7 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 46s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 53s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 59s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 3s | 0 / 0 / 886 |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 4s | 0 / 0 / 830 |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 4s | 0 / 0 / 1.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 6s | 0 / 0 / 827 |
@@ -14543,6 +15488,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 2s | 0 / 0 / 1.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 6s | 0 / 0 / 4.9K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 11s | 0 / 0 / 7.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 35s | 0 / 0 / 3.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 43s | 0 / 0 / 1.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 10m 0s | 0 / 0 / 0 |
 
@@ -14558,6 +15504,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 29s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 34s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 35s | 0 / 0 / 1.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 1.8K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 38s | 0 / 0 / 1.4K |
@@ -14575,11 +15522,13 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 30s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 41s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 47s | 0 / 0 / 3.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 48s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 55s | 0 / 0 / 4.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 20s | 0 / 0 / 2.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 21s | 0 / 0 / 2.1K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 2m 22s | 0 / 0 / 2.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 32s | 0 / 0 / 1.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 35s | 0 / 0 / 2.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 44s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 49s | 0 / 0 / 2.1K |
 
@@ -14604,6 +15553,7 @@
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 18s | 0 / 0 / 4.7K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 1m 21s | 0 / 0 / 1.0K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 23s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 24s | 0 / 0 / 4.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 25s | 0 / 0 / 1.4K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 31s | 0 / 0 / 4.4K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 1m 39s | 0 / 0 / 6.4K |
@@ -14618,8 +15568,10 @@
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 4s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 3m 11s | 0 / 0 / 5.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 6s | 0 / 0 / 2.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 5m 37s | 0 / 0 / 6.6K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 5m 46s | 0 / 0 / 9.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 6m 19s | 0 / 0 / 13.8K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 6m 58s | 0 / 0 / 8.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 7m 5s | 0 / 0 / 0 |
 
 
@@ -14635,6 +15587,7 @@
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 35s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 37s | 0 / 0 / 1.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 40s | 0 / 0 / 2.0K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 41s | 0 / 0 / 2.4K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 42s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 44s | 0 / 0 / 2.2K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 45s | 0 / 0 / 2.9K |
@@ -14647,6 +15600,7 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 13s | 0 / 0 / 1.8K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 14s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 16s | 0 / 0 / 1.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 19s | 0 / 0 / 1.2K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 21s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 56s | 0 / 0 / 3.2K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 59s | 0 / 0 / 1.8K |
@@ -14658,6 +15612,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 3m 10s | 0 / 0 / 3.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 12s | 0 / 0 / 7.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 15s | 0 / 0 / 1.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 15s | 0 / 0 / 3.8K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 3m 19s | 0 / 0 / 4.0K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 43s | 0 / 0 / 0 |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 4m 7s | 0 / 0 / 0 |
@@ -14679,6 +15634,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 31s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 31s | 0 / 0 / 1.8K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 33s | 0 / 0 / 1.8K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 45s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 51s | 0 / 0 / 1.3K |
@@ -14694,9 +15650,11 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 19s | 0 / 0 / 1.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 22s | 0 / 0 / 3.7K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 26s | 0 / 0 / 4.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 33s | 0 / 0 / 1.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 46s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 52s | 0 / 0 / 1.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 2s | 0 / 0 / 2.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 13s | 0 / 0 / 2.1K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 26s | 0 / 0 / 1.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 1s | 0 / 0 / 1.8K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 15m 12s | 0 / 0 / 0 |
@@ -14730,6 +15688,7 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 8s | 0 / 0 / 1.9K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 21s | 0 / 0 / 1.5K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 26s | 0 / 0 / 1.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 26s | 0 / 0 / 1.4K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 3s | 0 / 0 / 5.7K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 9s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 10s | 0 / 0 / 1.5K |
@@ -14762,6 +15721,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 5m 22s | 0 / 0 / 16.4K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 23s | 0 / 0 / 17.1K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 6m 2s | 0 / 0 / 17.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 6m 40s | 0 / 0 / 6.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 7m 10s | 0 / 0 / 10.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 7m 45s | 0 / 0 / 5.8K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 8m 9s | 0 / 0 / 11.5K |
@@ -14815,6 +15775,7 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 10m 0s | 0 / 0 / 14.9K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 24.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 12m 44s | 0 / 0 / 11.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 17m 46s | 0 / 0 / 22.1K |
 
 
 # space-age_cpp
@@ -14833,6 +15794,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 2.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 38s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 51s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 51s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 2s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 5s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 9s | 0 / 0 / 1.6K |
@@ -14846,8 +15808,10 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 22s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 26s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 29s | 0 / 0 / 2.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 42s | 0 / 0 / 1.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 59s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 16s | 0 / 0 / 2.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 21s | 0 / 0 / 2.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 17s | 0 / 0 / 2.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 6m 37s | 0 / 0 / 3.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 9m 58s | 0 / 0 / 24.7K |
@@ -14882,6 +15846,7 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 5m 51s | 0 / 0 / 10.3K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 7m 4s | 0 / 0 / 9.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 7m 25s | 0 / 0 / 0 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 7m 39s | 0 / 0 / 8.7K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 10m 0s | 0 / 0 / 5.7K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 27.2K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 13m 8s | 0 / 0 / 8.4K |
@@ -14905,6 +15870,7 @@
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 28s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 29s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 30s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 30s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 31s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 33s | 0 / 0 / 1.7K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.8K |
@@ -14921,8 +15887,10 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 17s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 24s | 0 / 0 / 11.0K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 46s | 0 / 0 / 3.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 46s | 0 / 0 / 1.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 46s | 0 / 0 / 1.5K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 53s | 0 / 0 / 6.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 17s | 0 / 0 / 2.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 33s | 0 / 0 / 1.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 10s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 20s | 0 / 0 / 3.0K |
@@ -14973,6 +15941,7 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 20m 23s | 0 / 0 / 29.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 28m 39s | 0 / 0 / 18.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 0s | 0 / 0 / 42.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 31m 11s | 0 / 0 / 23.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ❌ | 1h 0s | 0 / 0 / 0 |
 
 
@@ -14982,6 +15951,7 @@
 |-------|---------|----------|--------|
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 3s | 0 / 0 / 0 |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 13s | 0 / 0 / 728 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 14s | 0 / 0 / 772 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 14s | 0 / 0 / 792 |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 15s | 0 / 0 / 709 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 15s | 0 / 0 / 772 |
@@ -15015,6 +15985,8 @@
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 52s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 0s | 0 / 0 / 1.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 38s | 0 / 0 / 1.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 39s | 0 / 0 / 2.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 45s | 0 / 0 / 2.9K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 53s | 0 / 0 / 1.9K |
 
 
@@ -15028,6 +16000,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 11s | 0 / 0 / 478 |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 12s | 0 / 0 / 583 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 13s | 0 / 0 / 765 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 13s | 0 / 0 / 648 |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 15s | 0 / 0 / 804 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 15s | 0 / 0 / 652 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
@@ -15053,7 +16026,9 @@
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 50s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 58s | 0 / 0 / 6.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 1s | 0 / 0 / 2.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 3s | 0 / 0 / 6.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 5m 53s | 0 / 0 / 14.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 8m 33s | 0 / 0 / 11.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ❌ | 10m 0s | 0 / 0 / 0 |
 
 
@@ -15073,6 +16048,7 @@
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 29s | 0 / 0 / 716 |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 2.1K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 35s | 0 / 0 / 2.5K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 35s | 0 / 0 / 1.9K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 37s | 0 / 0 / 2.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 38s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 39s | 0 / 0 / 790 |
@@ -15089,12 +16065,14 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 13s | 0 / 0 / 3.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 24s | 0 / 0 / 1.1K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 49s | 0 / 0 / 2.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 52s | 0 / 0 / 1.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 16s | 0 / 0 / 4.8K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 25s | 0 / 0 / 8.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 28s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 36s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 56s | 0 / 0 / 1.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 28s | 0 / 0 / 0 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 18s | 0 / 0 / 6.7K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 7m 54s | 0 / 0 / 12.4K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 30m 0s | 0 / 0 / 18.4K |
 
@@ -15113,6 +16091,7 @@
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 38s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 41s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 45s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 45s | 0 / 0 / 1.8K |
 | [pi-qwen36-35b-a3b-llmfan-heretic](#pi-qwen36-35b-a3b-llmfan-heretic) | ✅ | 46s | 0 / 0 / 1.9K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 47s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 57s | 0 / 0 / 1.5K |
@@ -15131,8 +16110,10 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 21s | 0 / 0 / 1.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 39s | 0 / 0 / 0 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 41s | 0 / 0 / 0 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 42s | 0 / 0 / 2.8K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 2m 49s | 0 / 0 / 9.1K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 3m 28s | 0 / 0 / 3.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 50s | 0 / 0 / 4.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 4m 1s | 0 / 0 / 2.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 14s | 0 / 0 / 4.1K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 4m 24s | 0 / 0 / 4.4K |
@@ -15159,6 +16140,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 13s | 0 / 0 / 725 |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 14s | 0 / 0 / 684 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 15s | 0 / 0 / 852 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 16s | 0 / 0 / 884 |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 17s | 0 / 0 / 417 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 21s | 0 / 0 / 1.2K |
@@ -15178,8 +16160,10 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 40s | 0 / 0 / 1.2K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 42s | 0 / 0 / 566 |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 45s | 0 / 0 / 1.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 51s | 0 / 0 / 783 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 58s | 0 / 0 / 907 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 9s | 0 / 0 / 801 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 12s | 0 / 0 / 1.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 16s | 0 / 0 / 875 |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 26s | 0 / 0 / 0 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 41s | 0 / 0 / 1.0K |
@@ -15226,8 +16210,10 @@
 | [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 49s | 0 / 0 / 5.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 2s | 0 / 0 / 1.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 15s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 21s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 42s | 0 / 0 / 1.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 49s | 0 / 0 / 5.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 58s | 0 / 0 / 4.7K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 5m 19s | 0 / 0 / 10.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 14m 51s | 0 / 0 / 9.0K |
 
@@ -15258,9 +16244,12 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 11s | 0 / 0 / 1.0K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 27s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 30s | 0 / 0 / 7.7K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 32s | 0 / 0 / 4.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 33s | 0 / 0 / 3.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 39s | 0 / 0 / 1.2K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 49s | 0 / 0 / 1.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 0s | 0 / 0 / 1.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 10s | 0 / 0 / 1.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 17s | 0 / 0 / 993 |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 2m 36s | 0 / 0 / 2.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 44s | 0 / 0 / 6.7K |
@@ -15285,6 +16274,7 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 25s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 26s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 26s | 0 / 0 / 637 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 27s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 28s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 33s | 0 / 0 / 1.9K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 37s | 0 / 0 / 2.3K |
@@ -15306,7 +16296,9 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 37s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 40s | 0 / 0 / 2.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 49s | 0 / 0 / 1.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 50s | 0 / 0 / 1.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 51s | 0 / 0 / 1.1K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 4m 19s | 0 / 0 / 5.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 22.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 26m 21s | 0 / 0 / 17.9K |
 
@@ -15326,6 +16318,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 21s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 21s | 0 / 0 / 946 |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 23s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 25s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 26s | 0 / 0 / 1.5K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 30s | 0 / 0 / 1.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 31s | 0 / 0 / 1.1K |
@@ -15345,8 +16338,10 @@
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 10s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 10s | 0 / 0 / 2.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 16s | 0 / 0 / 1.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 18s | 0 / 0 / 1.3K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 44s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 44s | 0 / 0 / 2.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 49s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 56s | 0 / 0 / 1.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 16s | 0 / 0 / 2.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 50s | 0 / 0 / 2.4K |
@@ -15380,6 +16375,7 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 10m 46s | 0 / 0 / 15.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 13m 6s | 0 / 0 / 13.7K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 13m 47s | 0 / 0 / 21.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 14m 38s | 0 / 0 / 17.9K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 15m 56s | 0 / 0 / 0 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 16m 42s | 0 / 0 / 8.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 21m 11s | 0 / 0 / 26.6K |
@@ -15415,6 +16411,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 43s | 0 / 0 / 14.4K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 48s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 48s | 0 / 0 / 3.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 49s | 0 / 0 / 1.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 59s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 3s | 0 / 0 / 2.7K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 2m 4s | 0 / 0 / 2.1K |
@@ -15430,9 +16427,11 @@
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 4m 19s | 0 / 0 / 7.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 28s | 0 / 0 / 2.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 0s | 0 / 0 / 2.9K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 6m 0s | 0 / 0 / 7.3K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 6m 57s | 0 / 0 / 13.6K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 8m 22s | 0 / 0 / 6.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 10m 0s | 0 / 0 / 22.8K |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 10m 56s | 0 / 0 / 0 |
 
 
 # connect_go
@@ -15458,6 +16457,7 @@
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 3m 35s | 0 / 0 / 13.3K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 3m 38s | 0 / 0 / 13.3K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 38s | 0 / 0 / 14.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 44s | 0 / 0 / 4.4K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 4m 0s | 0 / 0 / 12.8K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 4m 1s | 0 / 0 / 15.0K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 4m 3s | 0 / 0 / 5.2K |
@@ -15489,6 +16489,7 @@
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 34s | 0 / 0 / 2.3K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 35s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 40s | 0 / 0 / 2.6K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 42s | 0 / 0 / 2.5K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 44s | 0 / 0 / 2.6K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 50s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 54s | 0 / 0 / 1.4K |
@@ -15508,7 +16509,9 @@
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 53s | 0 / 0 / 4.9K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 4s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 3m 45s | 0 / 0 / 6.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 6s | 0 / 0 / 4.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 15s | 0 / 0 / 3.2K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 32s | 0 / 0 / 6.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 6m 32s | 0 / 0 / 5.8K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 8m 18s | 0 / 0 / 14.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 8m 54s | 0 / 0 / 25.9K |
@@ -15534,6 +16537,7 @@
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 32s | 0 / 0 / 1.8K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 1.9K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 34s | 0 / 0 / 2.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 38s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 48s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 52s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 53s | 0 / 0 / 1.4K |
@@ -15548,10 +16552,12 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 42s | 0 / 0 / 4.8K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 44s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 53s | 0 / 0 / 1.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 11s | 0 / 0 / 2.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 16s | 0 / 0 / 2.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 26s | 0 / 0 / 0 |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 2m 30s | 0 / 0 / 3.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 44s | 0 / 0 / 2.2K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 45s | 0 / 0 / 3.0K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 49s | 0 / 0 / 6.3K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 16s | 0 / 0 / 5.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 56s | 0 / 0 / 2.3K |
@@ -15576,6 +16582,7 @@
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 43s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 46s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 47s | 0 / 0 / 2.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 48s | 0 / 0 / 2.2K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 49s | 0 / 0 / 2.7K |
 | [pi-qwen36-35b-a3b-llmfan-heretic](#pi-qwen36-35b-a3b-llmfan-heretic) | ✅ | 52s | 0 / 0 / 2.5K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 54s | 0 / 0 / 0 |
@@ -15595,8 +16602,10 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 39s | 0 / 0 / 4.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 43s | 0 / 0 / 0 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 55s | 0 / 0 / 4.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 57s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 4s | 0 / 0 / 1.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 14s | 0 / 0 / 2.1K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 19s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 2m 29s | 0 / 0 / 2.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 33s | 0 / 0 / 4.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 46s | 0 / 0 / 2.3K |
@@ -15628,6 +16637,7 @@
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 2m 22s | 30.9M / 26.5M / 800.6K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 2m 34s | 0 / 0 / 4.6K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 45s | 0 / 0 / 5.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 53s | 0 / 0 / 3.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 6s | 0 / 0 / 3.0K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 3m 12s | 0 / 0 / 11.7K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 3m 16s | 0 / 0 / 10.7K |
@@ -15684,6 +16694,7 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 6m 44s | 0 / 0 / 18.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 7m 44s | 0 / 0 / 6.6K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 7m 56s | 0 / 0 / 29.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 8m 36s | 0 / 0 / 9.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.3K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 16m 4s | 0 / 0 / 42.6K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 17m 10s | 0 / 0 / 48.3K |
@@ -15716,6 +16727,7 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 10s | 0 / 0 / 1.7K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 10s | 0 / 0 / 1.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 12s | 0 / 0 / 3.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 13s | 0 / 0 / 3.6K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 1m 19s | 0 / 0 / 4.5K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 20s | 0 / 0 / 1.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 21s | 0 / 0 / 2.2K |
@@ -15726,12 +16738,14 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 39s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 45s | 0 / 0 / 3.0K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 1m 52s | 0 / 0 / 3.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 1s | 0 / 0 / 1.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 4s | 0 / 0 / 1.9K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 10s | 0 / 0 / 1.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 34s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 2m 43s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 57s | 0 / 0 / 2.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 22s | 0 / 0 / 2.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 30s | 0 / 0 / 3.8K |
 
 
 # bowling_rust
@@ -15760,6 +16774,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 5m 3s | 0 / 0 / 17.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 5m 9s | 0 / 0 / 5.5K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ❌ | 5m 26s | 0 / 0 / 198 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 6m 7s | 0 / 0 / 7.6K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 6m 53s | 0 / 0 / 20.6K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 8m 4s | 0 / 0 / 29.1K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 8m 4s | 0 / 0 / 26.0K |
@@ -15797,6 +16812,7 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 47s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 13s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 21s | 0 / 0 / 1.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 39s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 56s | 0 / 0 / 5.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 59s | 0 / 0 / 9.7K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 1s | 0 / 0 / 6.3K |
@@ -15845,6 +16861,7 @@
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 28s | 0 / 0 / 14.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 6m 21s | 0 / 0 / 5.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 6m 33s | 0 / 0 / 9.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 6m 48s | 0 / 0 / 7.7K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 8m 19s | 0 / 0 / 20.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 9m 0s | 0 / 0 / 5.3K |
 | [pi-qwen36-35b-a3b-llmfan-heretic](#pi-qwen36-35b-a3b-llmfan-heretic) | ✅ | 9m 49s | 0 / 0 / 31.9K |
@@ -15863,6 +16880,7 @@
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 21s | 0 / 0 / 1.2K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 23s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 30s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 30s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 31s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 31s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 31s | 0 / 0 / 1.5K |
@@ -15887,11 +16905,13 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 15s | 0 / 0 / 985 |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 17s | 0 / 0 / 4.0K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 26s | 0 / 0 / 1.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 26s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 33s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 5s | 0 / 0 / 1.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 13s | 0 / 0 / 2.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 39s | 0 / 0 / 1.6K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 36s | 0 / 0 / 0 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 4m 12s | 0 / 0 / 5.1K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 7m 50s | 0 / 0 / 5.4K |
 
 
@@ -15902,6 +16922,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 30s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 32s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 33s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 35s | 0 / 0 / 2.1K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 37s | 0 / 0 / 1.9K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 37s | 0 / 0 / 2.1K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 37s | 0 / 0 / 1.7K |
@@ -15922,9 +16943,11 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 36s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 37s | 0 / 0 / 2.0K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 41s | 0 / 0 / 1.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 54s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 4s | 0 / 0 / 1.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 5s | 0 / 0 / 2.0K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 27s | 0 / 0 / 7.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 11s | 0 / 0 / 3.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 42s | 0 / 0 / 7.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 49s | 0 / 0 / 2.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 5m 12s | 0 / 0 / 14.0K |
@@ -15949,6 +16972,7 @@
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 44s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 44s | 0 / 0 / 1.7K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 46s | 0 / 0 / 1.0K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 46s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 46s | 0 / 0 / 1.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 51s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 51s | 0 / 0 / 1.3K |
@@ -15965,12 +16989,14 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 57s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 1s | 0 / 0 / 2.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 3s | 0 / 0 / 1.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 5s | 0 / 0 / 1.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 7s | 0 / 0 / 1.2K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 33s | 0 / 0 / 5.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 42s | 0 / 0 / 983 |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 59s | 0 / 0 / 1.8K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 5s | 0 / 0 / 3.2K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 3m 31s | 0 / 0 / 8.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 41s | 0 / 0 / 7.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 41s | 0 / 0 / 0 |
 
 
@@ -15996,11 +17022,14 @@
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 13s | 0 / 0 / 2.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 15s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 16s | 0 / 0 / 5.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 32s | 0 / 0 / 1.6K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 39s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 1s | 0 / 0 / 3.7K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 2m 48s | 0 / 0 / 5.1K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 3m 11s | 0 / 0 / 3.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 16s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 3m 17s | 0 / 0 / 6.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 3m 45s | 0 / 0 / 14.3K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ❌ | 5m 25s | 0 / 0 / 193 |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 7m 5s | 0 / 0 / 23.6K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 8m 3s | 0 / 0 / 11.1K |
@@ -16025,6 +17054,7 @@
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 27s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 33s | 0 / 0 / 899 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 35s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 45s | 0 / 0 / 2.8K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 48s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 50s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 54s | 0 / 0 / 1.3K |
@@ -16042,9 +17072,11 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 24s | 0 / 0 / 3.3K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 25s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 26s | 0 / 0 / 2.5K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 31s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 32s | 0 / 0 / 1.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 41s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 44s | 0 / 0 / 1.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 28s | 0 / 0 / 2.9K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 44s | 0 / 0 / 1.6K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 2m 57s | 0 / 0 / 5.4K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 5m 27s | 0 / 0 / 2.9K |
@@ -16071,6 +17103,7 @@
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 58s | 0 / 0 / 1.0K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 58s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 58s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 58s | 0 / 0 / 2.1K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 3s | 0 / 0 / 2.5K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 8s | 0 / 0 / 994 |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 1m 10s | 0 / 0 / 1.9K |
@@ -16083,12 +17116,14 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 26s | 0 / 0 / 990 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 26s | 0 / 0 / 2.1K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 1m 33s | 0 / 0 / 2.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 34s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 43s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 47s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 48s | 0 / 0 / 4.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 56s | 0 / 0 / 1.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 2m 3s | 0 / 0 / 0 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 6s | 0 / 0 / 2.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 8s | 0 / 0 / 1.8K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 2m 14s | 0 / 0 / 1.6K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 2m 31s | 0 / 0 / 4.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 47s | 0 / 0 / 1.7K |
@@ -16118,8 +17153,11 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 20s | 0 / 0 / 983 |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 20s | 0 / 0 / 4.8K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 23s | 0 / 0 / 1.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 36s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 1m 45s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 49s | 0 / 0 / 3.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 53s | 0 / 0 / 1.7K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 57s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 2m 1s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 1s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 9s | 0 / 0 / 2.1K |
@@ -16165,6 +17203,7 @@
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 56s | 0 / 0 / 1.3K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 57s | 0 / 0 / 1.9K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 0s | 0 / 0 / 874 |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 1m 2s | 0 / 0 / 0 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 8s | 0 / 0 / 1.3K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 8s | 0 / 0 / 805 |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 9s | 0 / 0 / 1.2K |
@@ -16174,8 +17213,10 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 41s | 0 / 0 / 1.5K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 1m 42s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 44s | 0 / 0 / 6.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 49s | 0 / 0 / 1.4K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 54s | 0 / 0 / 1.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 28s | 0 / 0 / 1.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 34s | 0 / 0 / 2.2K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 27s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 3m 41s | 0 / 0 / 2.9K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 4m 18s | 0 / 0 / 9.9K |
@@ -16197,6 +17238,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 34s | 0 / 0 / 1.9K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 36s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 40s | 0 / 0 / 882 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 48s | 0 / 0 / 2.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 50s | 0 / 0 / 2.1K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 51s | 0 / 0 / 2.9K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 54s | 0 / 0 / 916 |
@@ -16208,6 +17250,7 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 15s | 0 / 0 / 2.0K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 23s | 0 / 0 / 3.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 29s | 0 / 0 / 1.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 36s | 0 / 0 / 1.3K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 48s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 50s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 51s | 0 / 0 / 2.0K |
@@ -16216,6 +17259,7 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 12s | 0 / 0 / 1.9K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 28s | 0 / 0 / 8.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 2s | 0 / 0 / 1.7K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 21s | 0 / 0 / 3.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ❌ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 10m 25s | 0 / 0 / 6.6K |
 
@@ -16236,6 +17280,7 @@
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 59s | 0 / 0 / 934 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 59s | 0 / 0 / 1.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 7s | 0 / 0 / 2.2K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 13s | 0 / 0 / 2.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 13s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 1m 21s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 1m 28s | 0 / 0 / 3.3K |
@@ -16252,8 +17297,10 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 23s | 0 / 0 / 1.7K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 2m 25s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 27s | 0 / 0 / 1.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 17s | 0 / 0 / 2.7K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 3m 18s | 0 / 0 / 7.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 29s | 0 / 0 / 1.7K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 44s | 0 / 0 / 3.3K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 9m 9s | 0 / 0 / 28.3K |
 
 
@@ -16273,6 +17320,7 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 21s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 23s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 33s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 36s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 37s | 0 / 0 / 822 |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 46s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 49s | 0 / 0 / 1.3K |
@@ -16286,7 +17334,9 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 1s | 0 / 0 / 2.6K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 3s | 0 / 0 / 841 |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 17s | 0 / 0 / 927 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 17s | 0 / 0 / 1.0K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 24s | 0 / 0 / 3.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 25s | 0 / 0 / 1.2K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 1m 29s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 34s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 36s | 0 / 0 / 2.0K |
@@ -16325,6 +17375,7 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 5m 13s | 0 / 0 / 7.3K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 5m 14s | 0 / 0 / 18.7K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 11s | 0 / 0 / 0 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 6m 27s | 0 / 0 / 6.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 6m 33s | 0 / 0 / 4.9K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 6m 35s | 0 / 0 / 10.0K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 8m 29s | 0 / 0 / 20.2K |
@@ -16367,12 +17418,15 @@
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 1m 14s | 0 / 0 / 5.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 30s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 35s | 0 / 0 / 3.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 57s | 0 / 0 / 7.2K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 2m 2s | 0 / 0 / 2.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 7s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 16s | 0 / 0 / 4.4K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 4m 19s | 0 / 0 / 13.7K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 5m 8s | 0 / 0 / 12.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 6m 59s | 0 / 0 / 8.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 9m 40s | 0 / 0 / 6.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 10m 0s | 0 / 0 / 13.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 10m 0s | 0 / 0 / 0 |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 23.9K |
 | [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 17.4K |
@@ -16387,6 +17441,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 23s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 26s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 29s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 38s | 0 / 0 / 2.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 41s | 0 / 0 / 2.5K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 41s | 0 / 0 / 2.6K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 41s | 0 / 0 / 2.4K |
@@ -16397,6 +17452,7 @@
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 56s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 2s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 10s | 0 / 0 / 2.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 29s | 0 / 0 / 1.5K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 32s | 0 / 0 / 1.5K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 33s | 0 / 0 / 1.8K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 35s | 0 / 0 / 1.8K |
@@ -16407,6 +17463,7 @@
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 2m 8s | 0 / 0 / 8.2K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 23s | 0 / 0 / 2.4K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 27s | 0 / 0 / 9.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 37s | 0 / 0 / 3.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 2s | 0 / 0 / 1.9K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 6s | 0 / 0 / 9.8K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 8s | 0 / 0 / 9.0K |
@@ -16443,6 +17500,7 @@
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 55s | 0 / 0 / 1.5K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 55s | 0 / 0 / 734 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 58s | 0 / 0 / 1.6K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 0s | 0 / 0 / 3.0K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 0s | 0 / 0 / 735 |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 0s | 0 / 0 / 886 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 4s | 0 / 0 / 1.7K |
@@ -16453,11 +17511,13 @@
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 1m 29s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 30s | 0 / 0 / 20.8K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 35s | 0 / 0 / 1.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 38s | 0 / 0 / 1.3K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 1m 42s | 0 / 0 / 0 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 47s | 0 / 0 / 1.5K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 2m 1s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 4s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 18s | 0 / 0 / 1.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 5s | 0 / 0 / 3.5K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 27s | 0 / 0 / 2.1K |
 
 
@@ -16475,6 +17535,7 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 20s | 0 / 0 / 1.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 21s | 0 / 0 / 939 |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 23s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 27s | 0 / 0 / 1.8K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 27s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 28s | 0 / 0 / 721 |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 29s | 0 / 0 / 1.9K |
@@ -16492,10 +17553,12 @@
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 1m 18s | 0 / 0 / 2.3K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 22s | 0 / 0 / 1.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 35s | 0 / 0 / 1.0K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 36s | 0 / 0 / 1.6K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 36s | 0 / 0 / 1.1K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 57s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 0s | 0 / 0 / 905 |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 3m 8s | 0 / 0 / 2.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 11s | 0 / 0 / 3.9K |
 
 
 # parallel-letter-frequency_rust
@@ -16512,6 +17575,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 31s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 32s | 0 / 0 / 900 |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 33s | 0 / 0 / 1.8K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 33s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 34s | 0 / 0 / 2.1K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 48s | 0 / 0 / 2.1K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 55s | 0 / 0 / 1.0K |
@@ -16523,12 +17587,14 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 18s | 0 / 0 / 3.9K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 1m 22s | 0 / 0 / 5.1K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 24s | 0 / 0 / 1.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 24s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 31s | 0 / 0 / 1.8K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 1m 34s | 0 / 0 / 2.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 36s | 0 / 0 / 1.4K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 40s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 41s | 0 / 0 / 3.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 42s | 0 / 0 / 1.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 13s | 0 / 0 / 2.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 16s | 0 / 0 / 2.3K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 2m 30s | 0 / 0 / 2.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 48s | 0 / 0 / 1.7K |
@@ -16548,6 +17614,7 @@
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 18s | 0 / 0 / 703 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 20s | 0 / 0 / 1.0K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 20s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 22s | 0 / 0 / 942 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 25s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 27s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 30s | 0 / 0 / 717 |
@@ -16566,8 +17633,10 @@
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 1s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 3s | 0 / 0 / 834 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 7s | 0 / 0 / 1.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 9s | 0 / 0 / 955 |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 16s | 0 / 0 / 1.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 22s | 0 / 0 / 1.1K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 25s | 0 / 0 / 1.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 10s | 0 / 0 / 1.3K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 17s | 0 / 0 / 5.0K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 8s | 0 / 0 / 6.5K |
@@ -16590,6 +17659,7 @@
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 21s | 0 / 0 / 1.3K |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 21s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 22s | 0 / 0 / 1.4K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 24s | 0 / 0 / 1.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 25s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 42s | 0 / 0 / 1.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 43s | 0 / 0 / 1.3K |
@@ -16608,8 +17678,10 @@
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 21s | 0 / 0 / 1.3K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 33s | 0 / 0 / 1.4K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 34s | 0 / 0 / 3.9K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 40s | 0 / 0 / 1.6K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 1s | 0 / 0 / 7.3K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 28s | 0 / 0 / 1.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 35s | 0 / 0 / 1.8K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 36s | 0 / 0 / 6.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 53s | 0 / 0 / 1.5K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 4m 33s | 0 / 0 / 0 |
@@ -16634,6 +17706,7 @@
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 39s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 41s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 41s | 0 / 0 / 2.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 46s | 0 / 0 / 2.9K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 47s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 47s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 49s | 0 / 0 / 1.4K |
@@ -16649,7 +17722,9 @@
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 50s | 0 / 0 / 1.5K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 50s | 0 / 0 / 4.5K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 57s | 0 / 0 / 1.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 59s | 0 / 0 / 2.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 59s | 0 / 0 / 1.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 12s | 0 / 0 / 3.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 3m 39s | 0 / 0 / 1.4K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 5m 16s | 0 / 0 / 3.3K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 6m 31s | 0 / 0 / 17.2K |
@@ -16681,6 +17756,7 @@
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 4m 0s | 0 / 0 / 6.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 3s | 0 / 0 / 4.1K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 4m 10s | 0 / 0 / 6.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 5m 1s | 0 / 0 / 5.2K |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 5m 13s | 0 / 0 / 7.5K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 5m 20s | 0 / 0 / 18.7K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 7m 14s | 0 / 0 / 26.1K |
@@ -16727,6 +17803,7 @@
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 8m 0s | 0 / 0 / 28.3K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 8m 7s | 0 / 0 / 12.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 8m 10s | 0 / 0 / 4.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 9m 36s | 0 / 0 / 11.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 9m 40s | 0 / 0 / 27.9K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 11.1K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 19.6K |
@@ -16768,6 +17845,7 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 3m 41s | 0 / 0 / 2.9K |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 50s | 0 / 0 / 6.0K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 3m 55s | 0 / 0 / 11.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 18s | 0 / 0 / 4.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 4m 45s | 0 / 0 / 4.5K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 5m 0s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 5m 1s | 0 / 0 / 8.2K |
@@ -16809,6 +17887,7 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 3m 45s | 0 / 0 / 5.5K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 57s | 0 / 0 / 16.3K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 4m 15s | 0 / 0 / 4.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 29s | 0 / 0 / 5.4K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 5m 23s | 0 / 0 / 9.9K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 5m 53s | 0 / 0 / 6.9K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 6m 32s | 0 / 0 / 18.8K |
@@ -16835,6 +17914,7 @@
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 33s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 36s | 0 / 0 / 1.7K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 37s | 0 / 0 / 1.9K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 42s | 0 / 0 / 1.9K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 49s | 0 / 0 / 2.8K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 50s | 0 / 0 / 3.1K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 54s | 0 / 0 / 0 |
@@ -16860,6 +17940,8 @@
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 32s | 0 / 0 / 2.0K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 5m 9s | 0 / 0 / 2.1K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 5m 32s | 0 / 0 / 17.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 6m 59s | 0 / 0 / 7.8K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 7m 9s | 0 / 0 / 8.8K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 8m 16s | 0 / 0 / 18.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 9m 34s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 21m 39s | 0 / 0 / 15.0K |
@@ -16885,6 +17967,7 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 17s | 0 / 0 / 3.1K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 2m 23s | 0 / 0 / 2.8K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 2m 27s | 0 / 0 / 8.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 40s | 0 / 0 / 3.0K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 2m 45s | 0 / 0 / 4.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 1s | 0 / 0 / 3.0K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 3m 7s | 0 / 0 / 5.8K |
@@ -16941,14 +18024,17 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 6m 27s | 0 / 0 / 17.8K |
 | [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 6m 40s | 0 / 0 / 21.0K |
 | [pi-step-35-flash](#pi-step-35-flash) | ❌ | 7m 31s | 0 / 0 / 803 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 8m 6s | 0 / 0 / 8.1K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 8m 35s | 0 / 0 / 26.6K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ❌ | 10m 0s | 0 / 0 / 22.4K |
 | [pi-omnicoder](#pi-omnicoder) | ❌ | 10m 0s | 0 / 0 / 26.4K |
 | [pi-minimax-m27](#pi-minimax-m27) | ❌ | 10m 0s | 0 / 0 / 12.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ❌ | 10m 0s | 0 / 0 / 15.8K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 10m 27s | 0 / 0 / 11.9K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 11m 51s | 0 / 0 / 19.0K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 11m 57s | 0 / 0 / 3.5K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 12m 41s | 0 / 0 / 40.2K |
+| [pi-mimo-25](#pi-mimo-25) | ✅ | 14m 48s | 0 / 0 / 0 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ❌ | 30m 2s | 0 / 0 / 0 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 46m 32s | 0 / 0 / 50.1K |
 
@@ -16980,6 +18066,7 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 51s | 0 / 0 / 6.2K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 1m 51s | 0 / 0 / 6.0K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 55s | 0 / 0 / 1.6K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 58s | 0 / 0 / 2.0K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 2m 25s | 0 / 0 / 8.0K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 27s | 0 / 0 / 3.7K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 51s | 0 / 0 / 2.4K |
@@ -17012,6 +18099,7 @@
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 26s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 26s | 0 / 0 / 1.5K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 28s | 0 / 0 / 1.1K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 35s | 0 / 0 / 1.8K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 35s | 0 / 0 / 912 |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 39s | 0 / 0 / 920 |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 39s | 0 / 0 / 1.1K |
@@ -17026,7 +18114,9 @@
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 3s | 0 / 0 / 1.1K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 7s | 0 / 0 / 870 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 27s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 34s | 0 / 0 / 1.6K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 41s | 0 / 0 / 1.5K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 50s | 0 / 0 / 1.8K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 2s | 0 / 0 / 890 |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 2m 3s | 0 / 0 / 2.5K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 2m 42s | 0 / 0 / 6.5K |
@@ -17067,6 +18157,7 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 26s | 0 / 0 / 2.5K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 1m 30s | 0 / 0 / 5.3K |
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 34s | 0 / 0 / 3.5K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 35s | 0 / 0 / 4.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 1m 36s | 0 / 0 / 3.9K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 40s | 0 / 0 / 2.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 5s | 0 / 0 / 2.0K |
@@ -17076,6 +18167,8 @@
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 3m 9s | 0 / 0 / 5.8K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 3m 12s | 0 / 0 / 1.9K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 52s | 0 / 0 / 11.8K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 3m 57s | 0 / 0 / 4.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 47s | 0 / 0 / 7.1K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 8m 46s | 0 / 0 / 6.8K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 9m 27s | 0 / 0 / 21.7K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 10m 10s | 0 / 0 / 7.3K |
@@ -17100,6 +18193,7 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 14s | 0 / 0 / 701 |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 16s | 0 / 0 / 688 |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 18s | 0 / 0 / 632 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 18s | 0 / 0 / 670 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 18s | 0 / 0 / 291 |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 21s | 0 / 0 / 476 |
 | [pi-minimax-m27](#pi-minimax-m27) | ✅ | 22s | 0 / 0 / 503 |
@@ -17114,9 +18208,11 @@
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 38s | 0 / 0 / 425 |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 40s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 40s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 49s | 0 / 0 / 660 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 1m 1s | 0 / 0 / 733 |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 1s | 0 / 0 / 877 |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 1m 12s | 0 / 0 / 832 |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 18s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 52s | 0 / 0 / 2.6K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 1m 53s | 0 / 0 / 1.1K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 5m 40s | 0 / 0 / 0 |
@@ -17142,6 +18238,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 1m 8s | 0 / 0 / 3.7K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 11s | 0 / 0 / 1.6K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 14s | 0 / 0 / 4.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 48s | 0 / 0 / 2.0K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 2m 2s | 0 / 0 / 7.7K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 2m 8s | 0 / 0 / 7.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 2m 19s | 0 / 0 / 2.5K |
@@ -17170,6 +18267,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 20s | 0 / 0 / 963 |
 | [pi-Bonsai-8B_gguf](#pi-Bonsai-8B_gguf) | ❌ | 20s | 0 / 0 / 0 |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 22s | 0 / 0 / 1.3K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 22s | 0 / 0 / 1.0K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 24s | 0 / 0 / 1.1K |
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ✅ | 24s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 39s | 0 / 0 / 1.1K |
@@ -17182,11 +18280,13 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 8s | 0 / 0 / 2.4K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 1m 10s | 0 / 0 / 2.2K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 16s | 0 / 0 / 2.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 35s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 1m 37s | 0 / 0 / 7.0K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 50s | 0 / 0 / 3.6K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 52s | 0 / 0 / 1.7K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 2m 1s | 0 / 0 / 7.2K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 2m 13s | 0 / 0 / 4.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 15s | 0 / 0 / 2.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 28s | 0 / 0 / 2.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 2m 36s | 0 / 0 / 9.9K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 2m 39s | 0 / 0 / 1.8K |
@@ -17221,11 +18321,13 @@
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 1m 16s | 0 / 0 / 3.8K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 16s | 0 / 0 / 7.1K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 1m 20s | 0 / 0 / 2.9K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 22s | 0 / 0 / 3.5K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 26s | 0 / 0 / 1.2K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 1m 29s | 0 / 0 / 2.5K |
 | [pi-qwen35-122b-q4-q4kv-coding](#pi-qwen35-122b-q4-q4kv-coding) | ✅ | 1m 34s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 1m 43s | 0 / 0 / 2.7K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 45s | 0 / 0 / 1.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 53s | 0 / 0 / 1.6K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 55s | 0 / 0 / 4.9K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 58s | 0 / 0 / 3.3K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 2m 2s | 0 / 0 / 2.0K |
@@ -17238,6 +18340,7 @@
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 3m 28s | 0 / 0 / 2.5K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 3m 37s | 0 / 0 / 3.4K |
 | [pi-step-35-flash](#pi-step-35-flash) | ✅ | 3m 43s | 0 / 0 / 5.4K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 46s | 0 / 0 / 4.0K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 4m 43s | 0 / 0 / 3.4K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 5m 29s | 0 / 0 / 3.0K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 6m 40s | 0 / 0 / 6.7K |
@@ -17268,6 +18371,7 @@
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 3m 40s | 0 / 0 / 12.0K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 3m 52s | 0 / 0 / 12.8K |
 | [claude-gpt-oss-120b](#claude-gpt-oss-120b) | ✅ | 4m 0s | 0 / 0 / 0 |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 6s | 0 / 0 / 4.2K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 4m 10s | 0 / 0 / 4.6K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ❌ | 4m 58s | 0 / 0 / 151 |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 5m 16s | 0 / 0 / 18.9K |
@@ -17296,6 +18400,7 @@
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 28s | 0 / 0 / 1.2K |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 32s | 0 / 0 / 1.4K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 35s | 0 / 0 / 1.7K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 43s | 0 / 0 / 1.8K |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 45s | 0 / 0 / 1.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 46s | 0 / 0 / 2.3K |
 | [pi-qwen36-35b-a3b-q4-q4kv-no-thinking](#pi-qwen36-35b-a3b-q4-q4kv-no-thinking) | ✅ | 47s | 0 / 0 / 2.2K |
@@ -17320,7 +18425,9 @@
 | [pi-qwen35-9b](#pi-qwen35-9b) | ✅ | 1m 46s | 0 / 0 / 4.0K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 1m 51s | 0 / 0 / 1.7K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 2m 26s | 0 / 0 / 5.7K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 2m 28s | 0 / 0 / 2.6K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 36s | 0 / 0 / 4.2K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 2m 50s | 0 / 0 / 2.8K |
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ✅ | 2m 54s | 0 / 0 / 1.9K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 3m 2s | 0 / 0 / 0 |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 3m 5s | 0 / 0 / 6.5K |
@@ -17353,7 +18460,10 @@
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 35s | 0 / 0 / 2.1K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 1m 38s | 0 / 0 / 2.2K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 1m 39s | 0 / 0 / 1.5K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 42s | 0 / 0 / 6.7K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 43s | 0 / 0 / 1.9K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 45s | 0 / 0 / 2.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 52s | 0 / 0 / 2.2K |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 1m 54s | 0 / 0 / 6.5K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 2m 9s | 0 / 0 / 1.6K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 2m 22s | 0 / 0 / 2.1K |
@@ -17381,6 +18491,7 @@
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 49s | 0 / 0 / 2.1K |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 56s | 0 / 0 / 997 |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 59s | 0 / 0 / 2.6K |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 1m 1s | 0 / 0 / 3.5K |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 1m 3s | 0 / 0 / 3.2K |
 | [pi-qwen35-122b](#pi-qwen35-122b) | ✅ | 1m 6s | 0 / 0 / 1.3K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 1m 9s | 0 / 0 / 3.1K |
@@ -17403,7 +18514,9 @@
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ❌ | 3m 8s | 0 / 0 / 11.2K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 3m 18s | 0 / 0 / 1.9K |
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 3m 37s | 0 / 0 / 5.3K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 3m 51s | 0 / 0 / 4.1K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 4m 8s | 0 / 0 / 12.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 4m 8s | 0 / 0 / 3.9K |
 | [pi-qwen36-27b-no-thinking](#pi-qwen36-27b-no-thinking) | ✅ | 4m 37s | 0 / 0 / 3.7K |
 
 
@@ -17421,6 +18534,7 @@
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 26s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-mtp-coding-0_8](#pi-qwen36-35b-mtp-coding-0_8) | ✅ | 26s | 0 / 0 / 1.4K |
 | [pi-qwen35-122b-q4-q8kv-no-thinking](#pi-qwen35-122b-q4-q8kv-no-thinking) | ✅ | 31s | 0 / 0 / 787 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 33s | 0 / 0 / 1.5K |
 | [pi-qwen36-35b-a3b-q4-coding](#pi-qwen36-35b-a3b-q4-coding) | ✅ | 34s | 0 / 0 / 2.0K |
 | [pi-qwen36-27b-mtp-no-thinking](#pi-qwen36-27b-mtp-no-thinking) | ✅ | 50s | 0 / 0 / 825 |
 | [pi-qwen35-122b-heretic-no-thinking](#pi-qwen35-122b-heretic-no-thinking) | ✅ | 51s | 0 / 0 / 1.2K |
@@ -17437,11 +18551,13 @@
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 30s | 0 / 0 / 3.4K |
 | [pi-qwen35-122b-q3-q4kv-coding](#pi-qwen35-122b-q3-q4kv-coding) | ✅ | 1m 37s | 0 / 0 / 3.0K |
 | [pi-qwen36-27b-q4-coding](#pi-qwen36-27b-q4-coding) | ✅ | 1m 49s | 0 / 0 / 2.1K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 49s | 0 / 0 / 1.7K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 2m 5s | 0 / 0 / 3.8K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 2m 31s | 0 / 0 / 2.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 33s | 0 / 0 / 1.5K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 3m 0s | 0 / 0 / 2.6K |
 | [pi-omnicoder](#pi-omnicoder) | ✅ | 3m 9s | 0 / 0 / 8.6K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 5m 4s | 0 / 0 / 6.5K |
 | [pi-kimi-linear](#pi-kimi-linear) | ✅ | 5m 40s | 0 / 0 / 6.4K |
 | [claude-qwen35-122b](#claude-qwen35-122b) | ✅ | 6m 26s | 0 / 0 / 0 |
 
@@ -17452,6 +18568,7 @@
 |-------|---------|----------|--------|
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 13s | 0 / 0 / 707 |
 | [pi-qwen36-35b-heretic-no-thinking](#pi-qwen36-35b-heretic-no-thinking) | ✅ | 14s | 0 / 0 / 658 |
+| [pi-qwen36-35b-mtp-coding-0_9](#pi-qwen36-35b-mtp-coding-0_9) | ✅ | 15s | 0 / 0 / 934 |
 | [pi-qwen36-35b-mtp-no-thinking](#pi-qwen36-35b-mtp-no-thinking) | ✅ | 15s | 0 / 0 / 867 |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 990 |
 | [pi-qwen36-35b-a3b-coding](#pi-qwen36-35b-a3b-coding) | ✅ | 16s | 0 / 0 / 912 |
@@ -17479,6 +18596,8 @@
 | [pi-qwen35-122b-q4-coding](#pi-qwen35-122b-q4-coding) | ✅ | 56s | 0 / 0 / 1.1K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 58s | 0 / 0 / 925 |
 | [pi-qwen3-coder-next](#pi-qwen3-coder-next) | ✅ | 1m 11s | 0 / 0 / 1.0K |
+| [pi-ds4-flash](#pi-ds4-flash) | ✅ | 1m 19s | 0 / 0 / 1.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 1m 24s | 0 / 0 / 1.3K |
 | [pi-qwen35-9b:coding](#pi-qwen35-9b:coding) | ✅ | 1m 46s | 0 / 0 / 1.2K |
 | [pi-qwen35-27b-coding](#pi-qwen35-27b-coding) | ✅ | 2m 11s | 0 / 0 / 1.3K |
 
@@ -17498,6 +18617,7 @@
 | [pi-qwen36-35b-mtp-coding](#pi-qwen36-35b-mtp-coding) | ❌ | 5m 59s | 0 / 0 / 230 |
 | [pi-gemma-4-26b](#pi-gemma-4-26b) | ✅ | 6m 22s | 0 / 0 / 17.8K |
 | [pi-qwen36-35b-a3b-q4-no-thinking](#pi-qwen36-35b-a3b-q4-no-thinking) | ✅ | 6m 48s | 0 / 0 / 23.3K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 7m 12s | 0 / 0 / 8.5K |
 | [pi-qwen35-122b-q4-q8kv-coding](#pi-qwen35-122b-q4-q8kv-coding) | ✅ | 8m 13s | 0 / 0 / 13.5K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 8m 16s | 0 / 0 / 27.2K |
 | [pi-qwen36-35b-a3b-q4-q8kv-no-thinking](#pi-qwen36-35b-a3b-q4-q8kv-no-thinking) | ✅ | 9m 9s | 0 / 0 / 27.2K |
@@ -17540,6 +18660,7 @@
 | [pi-qwen35-122b-heretic-coding](#pi-qwen35-122b-heretic-coding) | ❌ | 10m 11s | 0 / 0 / 16.6K |
 | [pi-qwen35-35b-a3b-coding](#pi-qwen35-35b-a3b-coding) | ✅ | 10m 17s | 0 / 0 / 34.7K |
 | [pi-qwen36-35b-a3b-no-thinking](#pi-qwen36-35b-a3b-no-thinking) | ✅ | 11m 26s | 0 / 0 / 37.4K |
+| [pi-deepseek-chat](#pi-deepseek-chat) | ✅ | 11m 58s | 0 / 0 / 13.7K |
 | [pi-qwen35-122b-coding](#pi-qwen35-122b-coding) | ✅ | 12m 1s | 0 / 0 / 14.1K |
 | [pi-qwen36-27b-q4-no-thinking](#pi-qwen36-27b-q4-no-thinking) | ✅ | 12m 40s | 0 / 0 / 17.9K |
 | [pi-qwen35-397b:coding-nospec](#pi-qwen35-397b:coding-nospec) | ✅ | 12m 49s | 0 / 0 / 13.3K |

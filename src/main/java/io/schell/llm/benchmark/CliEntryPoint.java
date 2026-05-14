@@ -5,6 +5,7 @@ import io.schell.llm.benchmark.config.Config;
 import io.schell.llm.benchmark.config.ConfigLoader;
 import io.schell.llm.benchmark.docker.DockerClient;
 import io.schell.llm.benchmark.exercise.ExerciseResult;
+import io.schell.llm.benchmark.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,7 @@ public class CliEntryPoint {
         String language = "java";
         String exercise = null;
         String agent = "reference";
+        boolean verbose = false;
 
         try {
             for (int i = 0; i < args.length; i++) {
@@ -78,6 +80,8 @@ public class CliEntryPoint {
                     exercise = args[++i];
                 } else if (args[i].equals("--agent") && i + 1 < args.length) {
                     agent = args[++i];
+                } else if (args[i].equals("--verbose")) {
+                    verbose = true;
                 }
             }
         } catch (Exception e) {
@@ -86,7 +90,7 @@ public class CliEntryPoint {
             System.exit(1);
         }
 
-        return new CliArgs(configFile, webMode, webPort, model, resultsDir, language, exercise, agent);
+        return new CliArgs(configFile, webMode, webPort, model, resultsDir, language, exercise, agent, verbose);
     }
 
     /**
@@ -104,11 +108,11 @@ public class CliEntryPoint {
             Config config = ConfigLoader.load(configPath);
 
             // Apply command-line overrides
-            if (cliArgs.model() != null) {
+            if (StringUtil.isNonEmpty(cliArgs.model())) {
                 config.setModel(cliArgs.model());
                 logger.info("Overriding model from config with: {}", cliArgs.model());
             }
-            if (cliArgs.resultsDir() != null) {
+            if (StringUtil.isNonEmpty(cliArgs.resultsDir())) {
                 config.getOutput().setResultsDir(cliArgs.resultsDir());
                 logger.info("Overriding results_dir from config with: {}", cliArgs.resultsDir());
             }
@@ -141,11 +145,11 @@ public class CliEntryPoint {
             Config config = ConfigLoader.load(configPath);
 
             // Apply command-line overrides
-            if (cliArgs.model() != null) {
+            if (StringUtil.isNonEmpty(cliArgs.model())) {
                 config.setModel(cliArgs.model());
                 logger.info("Overriding model from config with: {}", cliArgs.model());
             }
-            if (cliArgs.resultsDir() != null) {
+            if (StringUtil.isNonEmpty(cliArgs.resultsDir())) {
                 config.getOutput().setResultsDir(cliArgs.resultsDir());
                 logger.info("Overriding results_dir from config with: {}", cliArgs.resultsDir());
             }
@@ -165,6 +169,10 @@ public class CliEntryPoint {
                 System.err.println(e.getMessage());
                 System.exit(1);
                 return; // Never reached
+            }
+
+            if (cliArgs.verbose()) {
+                agent.setVerbose(true);
             }
 
             if (cliArgs.exercise() != null) {
@@ -208,18 +216,10 @@ public class CliEntryPoint {
         System.out.println("Duration: " + result.getDuration());
         if (!result.isSuccess()) {
             System.out.println("\nOutput:");
-            printOutput(result.getOutput(), "  ");
-        }
-    }
-
-    /**
-     * Print output with indentation.
-     */
-    private static void printOutput(String output, String indent) {
-        if (output != null && !output.isEmpty()) {
-            String[] lines = output.split("\n");
-            for (String line : lines) {
-                System.out.println(indent + line);
+            if (result.getOutput() != null && !result.getOutput().isEmpty()) {
+                for (String line : result.getOutput().split("\n")) {
+                    System.out.println("  " + line);
+                }
             }
         }
     }
@@ -239,5 +239,6 @@ public class CliEntryPoint {
         System.out.println("  --language <lang>     Language (default: java)");
         System.out.println("  --exercise <name>     Exercise name (run single exercise)");
         System.out.println("  --agent <name>        Agent name: reference, claude, pi (default: reference)");
+        System.out.println("  --verbose             Show live token output on the console");
     }
 }

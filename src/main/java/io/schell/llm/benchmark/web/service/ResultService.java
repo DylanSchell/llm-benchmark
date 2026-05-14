@@ -331,20 +331,20 @@ public class ResultService {
                 String jsonlTraceFilename = "trace_" + langExercisePart.replace(".json", ".jsonl");
                 Path jsonlTracePath = resultFile.getParent().resolve(jsonlTraceFilename);
                 boolean jsonlExists = Files.exists(jsonlTracePath);
-                logger.info("Trace fallback: checking {} -> exists={}", jsonlTracePath, jsonlExists);
+                logger.trace("Trace fallback: checking {} -> exists={}", jsonlTracePath, jsonlExists);
                 if (jsonlExists) {
                     cached.tracePath = jsonlTracePath.toString();
                     cached.hasTraceFile = true;
-                    logger.info("Found JSONL trace: {}", cached.tracePath);
+                    logger.debug("Found JSONL trace: {}", cached.tracePath);
                 } else {
                     String htmlTraceFilename = "trace_" + langExercisePart.replace(".json", ".html");
                     Path htmlTracePath = resultFile.getParent().resolve(htmlTraceFilename);
                     boolean htmlExists = Files.exists(htmlTracePath);
-                    logger.info("Trace fallback: checking {} -> exists={}", htmlTracePath, htmlExists);
+                    logger.trace("Trace fallback: checking {} -> exists={}", htmlTracePath, htmlExists);
                     if (htmlExists) {
                         cached.tracePath = htmlTracePath.toString();
                         cached.hasTraceFile = true;
-                        logger.info("Found HTML trace: {}", cached.tracePath);
+                        logger.debug("Found HTML trace: {}", cached.tracePath);
                     }
                 }
             }

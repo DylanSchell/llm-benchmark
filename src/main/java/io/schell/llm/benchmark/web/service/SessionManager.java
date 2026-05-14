@@ -37,9 +37,13 @@ public class SessionManager {
     }
 
     public BenchmarkSession createSession(String agentName, String[] languages, String model, String exerciseName) {
+        return createSession(agentName, languages, model, exerciseName, false);
+    }
+
+    public BenchmarkSession createSession(String agentName, String[] languages, String model, String exerciseName, boolean retry) {
         String sessionId = UUID.randomUUID().toString();
         long timeoutMs = config.getDocker().getTimeout() * 1000L;
-        BenchmarkSession session = new BenchmarkSession(sessionId, agentName, languages, model, exerciseName, timeoutMs);
+        BenchmarkSession session = new BenchmarkSession(sessionId, agentName, languages, model, exerciseName, retry, timeoutMs);
         sessions.put(sessionId, session);
 
         logger.info("Created benchmark session: {} for {}/{} (model: {})", 

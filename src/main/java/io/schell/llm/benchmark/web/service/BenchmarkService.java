@@ -65,7 +65,15 @@ public class BenchmarkService {
      */
     public List<BenchmarkQueueItem> scheduleBatch(String agentName, String[] languages,
                                                    String model, String exercise) {
-        return queueProcessor.scheduleBatch(agentName, languages, model, exercise);
+        return queueProcessor.scheduleBatch(agentName, languages, model, exercise, false);
+    }
+
+    /**
+     * Schedule a batch of benchmark runs with optional retry mode.
+     */
+    public List<BenchmarkQueueItem> scheduleBatch(String agentName, String[] languages,
+                                                   String model, String exercise, boolean retry) {
+        return queueProcessor.scheduleBatch(agentName, languages, model, exercise, retry);
     }
 
     /**

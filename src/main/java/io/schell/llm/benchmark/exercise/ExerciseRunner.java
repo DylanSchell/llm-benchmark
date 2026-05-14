@@ -6,6 +6,7 @@ import io.schell.llm.benchmark.config.Config;
 import io.schell.llm.benchmark.docker.DockerClient;
 import io.schell.llm.benchmark.exception.ExerciseNotFoundException;
 import io.schell.llm.benchmark.util.ParallelExecutor;
+import io.schell.llm.benchmark.util.StringUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,9 +42,7 @@ public class ExerciseRunner {
         this.dockerClient = dockerClient;
         this.benchmarkPath = config.getBenchmarkPath();
         this.benchmarkRunner = benchmarkRunner;
-        this.runAgentName = null;
-        this.runModel = null;
-        this.runLanguages = new String[]{};
+
     }
 
     /**
@@ -51,8 +50,7 @@ public class ExerciseRunner {
      */
     public void setRunParams(String agentName, String model, String[] languages) {
         this.runAgentName = agentName;
-        // Treat empty strings as null for proper directory naming
-        this.runModel = (model != null && !model.isEmpty()) ? model : null;
+        this.runModel = StringUtil.toNonNull(model);
         this.runLanguages = languages != null ? languages : new String[]{};
         // Update Docker environment with the selected model
         if (this.runModel != null) {
@@ -134,10 +132,7 @@ public class ExerciseRunner {
         for (Exercise exercise : exercises) {
             logger.info("=============================================================================");
             logger.info("Running {} exercise {} ({}/{})", language, exercise.getName(), ++counter, total);
-            // Skip if result already exists
-            if (benchmarkRunner.resultFileSuccess(exercise.getName(), agentName, model, language, languages)) {
-                continue;
-            }
+
             // Verify exercise directory
             Path exerciseHostDir = findExerciseHostDir(language, exercise.getName());
             if (exerciseHostDir == null || !Files.exists(exerciseHostDir)) {

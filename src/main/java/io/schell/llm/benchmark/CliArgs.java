@@ -12,6 +12,7 @@ public record CliArgs(
     String resultsDir,
     String language,
     String exercise,
-    String agent
+    String agent,
+    boolean verbose
 ) {
 }

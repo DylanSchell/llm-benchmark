@@ -43,15 +43,6 @@ public class ResultController {
     }
 
     /**
-     * API endpoint to get recent results (returns JSON).
-     */
-    @GetMapping("/api/recent-results")
-    @ResponseBody
-    public List<Map<String, Object>> getRecentResults() {
-        return resultService.listResults(null, null, null, null, false);
-    }
-
-    /**
      * Recent results fragment for dashboard (returns HTML table rows).
      */
     @GetMapping("/recent-results-fragment")
@@ -59,29 +50,6 @@ public class ResultController {
         List<Map<String, Object>> results = resultService.listResults(null, null, null, null, false);
         model.addAttribute("results", results);
         return "fragments/recent-results :: recentResultsRows";
-    }
-
-    /**
-     * Get statistics for dashboard.
-     */
-    @GetMapping("/api/stats")
-    @ResponseBody
-    public Map<String, Object> getStats() {
-        return resultService.getStatistics();
-    }
-
-    /**
-     * API endpoint to get filtered results.
-     */
-    @GetMapping("/api/results")
-    @ResponseBody
-    public List<Map<String, Object>> getResults(
-            @RequestParam(required = false) String language,
-            @RequestParam(required = false) String agent,
-            @RequestParam(required = false) String model,
-            @RequestParam(required = false) String exercise,
-            @RequestParam(required = false, defaultValue = "false") boolean quick) {
-        return resultService.listResults(language, agent, model, exercise, quick);
     }
 
     /**
@@ -96,14 +64,5 @@ public class ResultController {
             @RequestParam(required = false) String exercise,
             @RequestParam(required = false, defaultValue = "false") boolean quick) {
         return resultService.listIndividualResults(language, agent, model, exercise, quick);
-    }
-
-    /**
-     * API endpoint to get models list.
-     */
-    @GetMapping("/api/models")
-    @ResponseBody
-    public List<String> getModels() {
-        return resultService.getModels();
     }
 }

@@ -35,7 +35,7 @@ public class PiAgent extends ReferenceAgent {
 
         try {
             logger.info("Starting exercise with Pi agent: {} at {}", exercise.getName(), startTime);
-            PiMessageProcessor processor = new PiMessageProcessor(getOutputConsumer());
+            PiMessageProcessor processor = new PiMessageProcessor(getOutputConsumer(), isVerbose());
             // Create models.json configuration for pi inside the container
             createModelsJson(tempWorkDir);
             installPiExtensions(tempWorkDir);

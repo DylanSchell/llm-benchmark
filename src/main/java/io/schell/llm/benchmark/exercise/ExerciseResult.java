@@ -168,6 +168,10 @@ public class ExerciseResult {
         }
 
         public ExerciseResult build() {
+            // Default attempts to 1 if not explicitly set
+            if (attempts == 0) {
+                this.attempts = 1;
+            }
             return new ExerciseResult(this);
         }
     }

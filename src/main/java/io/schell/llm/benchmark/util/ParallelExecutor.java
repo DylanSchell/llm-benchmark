@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,7 +24,7 @@ public class ParallelExecutor {
      * @param tasks        List of callable tasks
      * @param parallelism  Number of concurrent threads
      * @param <T>          Result type
-     * @return List of successful results
+     * @return List of successful results (nulls filtered out)
      */
     public static <T> List<T> executeParallel(List<Callable<T>> tasks, int parallelism) {
         if (tasks == null || tasks.isEmpty()) {

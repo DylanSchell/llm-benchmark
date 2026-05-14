@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.time.Duration;
@@ -28,6 +27,7 @@ public class ReferenceAgent {
     private final DockerClient dockerClient;
     private final LanguageHandlerRegistry handlerRegistry;
     private java.util.function.Consumer<String> outputConsumer;
+    private boolean verbose = false;
 
     public ReferenceAgent(DockerClient dockerClient) {
         this.dockerClient = dockerClient;
@@ -44,6 +44,22 @@ public class ReferenceAgent {
      */
     public void setOutputConsumer(java.util.function.Consumer<String> outputConsumer) {
         this.outputConsumer = outputConsumer;
+    }
+
+    /**
+     * Enables verbose mode: outputs live tokens to the console.
+     * Verbosity is disabled by default; use --verbose on the CLI to enable.
+     * The web UI is unaffected — it always receives output via SSE.
+     */
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
+    /**
+     * Returns true if live token output should be shown on the console.
+     */
+    protected boolean isVerbose() {
+        return verbose;
     }
 
     /**
@@ -345,25 +361,12 @@ public class ReferenceAgent {
         handler.copyTests(exercise, sourceDir, destDir);
     }
 
-    /**
-     * Copies the reference implementation files to the temp directory.
-     * Delegates to language-specific handler.
-     */
-    private void copyReferenceImplementation(Exercise exercise, Path tempDir) throws IOException {
-        // Get language handler
-        LanguageHandler handler = handlerRegistry.getHandler(exercise);
-        if (handler == null) {
-            throw new IOException("No handler found for language: " + exercise.getLanguage());
-        }
 
-        handler.copyReference(exercise, tempDir);
-    }
 
     /**
      * Runs tests inside the Docker container.
      */
     private ReferenceResult runTestsInDocker(Exercise exercise, Path hostExerciseDir, Path tempWorkDir, Instant startTime) {
-        // Get language handler
         LanguageHandler handler = handlerRegistry.getHandler(exercise);
 
         // Prepare workspace (npm install, uv venv, etc.).

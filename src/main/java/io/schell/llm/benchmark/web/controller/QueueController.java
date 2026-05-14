@@ -65,15 +65,16 @@ public class QueueController {
             @RequestParam("language") String[] languages,
             @RequestParam(value = "model", required = false) String model,
             @RequestParam(value = "exercise", required = false) String exercise,
-            @RequestParam(value = "mode", defaultValue = "all") String mode) {
+            @RequestParam(value = "mode", defaultValue = "all") String mode,
+            @RequestParam(value = "retry", defaultValue = "false") boolean retry) {
 
         // Translate frontend mode + exercise into the internal representation
         String effectiveExercise = resolveExerciseParam(mode, exercise);
 
-        logger.info("Scheduling batch benchmark: agent={}, model={}, languages={}, mode={}, exercise={}",
-                agent, model, String.join(",", languages), mode, effectiveExercise);
+        logger.info("Scheduling batch benchmark: agent={}, model={}, languages={}, mode={}, exercise={}, retry={}",
+                agent, model, String.join(",", languages), mode, effectiveExercise, retry);
 
-        List<BenchmarkQueueItem> items = benchmarkService.scheduleBatch(agent, languages, model, effectiveExercise);
+        List<BenchmarkQueueItem> items = benchmarkService.scheduleBatch(agent, languages, model, effectiveExercise, retry);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", "scheduled");

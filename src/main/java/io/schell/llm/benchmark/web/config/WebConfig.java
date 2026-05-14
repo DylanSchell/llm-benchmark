@@ -112,7 +112,15 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     /**
-     * ResultService bean - depends on Config.
+     * ResultPersister bean - depends on OutputConfig from Config.
+     */
+    @Bean
+    public io.schell.llm.benchmark.persistence.ResultPersister resultPersister(Config config) {
+        return new io.schell.llm.benchmark.persistence.ResultPersister(config.getOutput());
+    }
+
+    /**
+     * ResultService bean - depends on Config and ResultPersister.
      */
     @Bean
     public io.schell.llm.benchmark.web.service.ResultService resultService(Config config) {

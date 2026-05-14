@@ -8,8 +8,7 @@ import io.schell.llm.benchmark.exercise.ExerciseResult;
 import io.schell.llm.benchmark.exercise.ExerciseRunner;
 import io.schell.llm.benchmark.persistence.ResultPersister;
 import io.schell.llm.benchmark.util.Languages;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.schell.llm.benchmark.util.StringUtil;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -20,14 +19,10 @@ import java.util.List;
  * Provides convenient methods for running exercises.
  */
 public class BenchmarkRunner {
-    private static final Logger logger = LoggerFactory.getLogger(BenchmarkRunner.class);
-
     private final Config config;
     private final DockerClient dockerClient;
     private final ResultPersister resultPersister;
     private ExerciseRunner exerciseRunner;
-
-
 
     public BenchmarkRunner(Path configPath) throws Exception {
         this(ConfigLoader.load(configPath), new DockerClient(ConfigLoader.load(configPath).getDocker()));
@@ -120,9 +115,7 @@ public class BenchmarkRunner {
      * @return Result of the exercise execution
      */
     public ExerciseResult runReferenceExercise(ReferenceAgent agent, String language, String exerciseName, String model, String[] languages) {
-        // Treat empty strings as null for proper directory naming
-        String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
-        getExerciseRunner().setRunParams(agent.getName(), effectiveModel, languages);
+        getExerciseRunner().setRunParams(agent.getName(), StringUtil.toNonNull(model), languages);
         return getExerciseRunner().runReferenceExercise(agent, model, language, exerciseName);
     }
 
@@ -133,7 +126,6 @@ public class BenchmarkRunner {
      * @return List of results for all exercises
      */
     public List<ExerciseResult> runAllReferenceExercises(ReferenceAgent agent, String languages, String agentName) {
-
         return runAllReferenceExercises(agent, languages, agentName, config.getModel(), null);
     }
 
@@ -152,10 +144,7 @@ public class BenchmarkRunner {
         for (String language : split) {
             String trimmedLanguage = language.trim().toLowerCase();
             if (Languages.isSupported(trimmedLanguage)) {
-                // Set run parameters for result directory computation
-                // Treat empty strings as null for proper directory naming
-                String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
-                getExerciseRunner().setRunParams(agentName, effectiveModel, languagesArray);
+                getExerciseRunner().setRunParams(agentName, StringUtil.toNonNull(model), languagesArray);
                 List<ExerciseResult> languageResults = getExerciseRunner().runAllReferenceExercises(agent, model, language.trim(), agentName, languagesArray);
                 result.addAll(languageResults);
             }
@@ -230,6 +219,22 @@ public class BenchmarkRunner {
     }
 
     /**
+     * Saves a single exercise result with model information and retry flag.
+     * Delegates to ResultPersister.
+     *
+     * @param result    Exercise result to save
+     * @param agentName Name of the agent used
+     * @param model     Model name (for subdirectory naming)
+     * @param language  Programming language
+     * @param languages Array of languages (for subdirectory naming)
+     * @param retry     If true and overwriting a successful result, preserve attempts count.
+     * @return Path to the saved result file, or null if save failed
+     */
+    public Path saveResult(ExerciseResult result, String agentName, String model, String language, String[] languages, boolean retry) {
+        return resultPersister.saveResult(result, agentName, model, language, languages, retry);
+    }
+
+    /**
      * Checks if a result file already exists for the given exercise.
      * Delegates to ResultPersister.
      *
@@ -264,10 +269,9 @@ public class BenchmarkRunner {
         }
     }
 
-    private static void printOutput(String output, String indent) {
+    private void printOutput(String output, String indent) {
         if (output != null && !output.isEmpty()) {
-            String[] lines = output.split("\n");
-            for (String line : lines) {
+            for (String line : output.split("\n")) {
                 System.out.println(indent + line);
             }
         }

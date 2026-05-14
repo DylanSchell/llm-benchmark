@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -52,22 +49,10 @@ public class OutputConfig {
      * @return The full path to the results directory
      */
     public String getResultsDir(String agentName, String model, String[] languages) {
-        // Build languages string - sort alphabetically
-        List<String> sortedLangs = new ArrayList<>();
-        if (languages != null) {
-            sortedLangs.addAll(Arrays.asList(languages));
-        }
-        sortedLangs.sort(String.CASE_INSENSITIVE_ORDER);
-        String languagesPart = String.join("-", sortedLangs);
-
-        // Build agent string - handle null
         String agentPart = agentName != null ? agentName : "unknown";
-
-        // Build model string - handle null
         String modelPart = model != null ? model : "default";
 
         // Construct the subdirectory name
-        // for now exclude the languages part, don't think we need it any more
         String subdir = String.format("%s-%s", agentPart, modelPart);
 
         // Check existing subdirectories to find the next run number

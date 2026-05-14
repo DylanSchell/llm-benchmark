@@ -181,11 +181,7 @@ public class DockerClient {
         // Always clean up the container, regardless of timeout or normal exit
         cleanupContainer(containerName);
 
-        int exitCode = -1;
-        if (completed) {
-            // if we cancelled, the process might not have exited
-            exitCode = process.exitValue();
-        }
+        int exitCode = completed ? process.exitValue() : -1;
         ProcessResult result = new ProcessResult(exitCode, sb.toString(), completed, containerName);
         
         // Log errors but don't throw here - let caller decide how to handle

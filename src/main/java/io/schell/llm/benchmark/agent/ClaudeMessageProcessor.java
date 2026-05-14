@@ -9,9 +9,15 @@ import java.util.function.Consumer;
 public class ClaudeMessageProcessor implements Consumer<String> {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Consumer<String> outputConsumer;
+    private final boolean verbose;
 
     public ClaudeMessageProcessor(Consumer<String> outputConsumer) {
+        this(outputConsumer, false);
+    }
+
+    public ClaudeMessageProcessor(Consumer<String> outputConsumer, boolean verbose) {
         this.outputConsumer = outputConsumer;
+        this.verbose = verbose;
     }
 
     @Override
@@ -328,14 +334,18 @@ public class ClaudeMessageProcessor implements Consumer<String> {
     }
 
     private void print(String s) {
-        System.out.print(s);
+        if (verbose) {
+            System.out.print(s);
+        }
         if (outputConsumer != null) {
             outputConsumer.accept(s);
         }
     }
 
     private void println(String s) {
-        System.out.println(s);
+        if (verbose) {
+            System.out.println(s);
+        }
         if (outputConsumer != null) {
             outputConsumer.accept(s + "\n");
         }

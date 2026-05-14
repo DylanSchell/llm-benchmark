@@ -28,6 +28,7 @@ public class BenchmarkSession {
     private final String model;
     private final String exerciseName; // null for "all exercises" runs
     private final Instant startTime;
+    private final boolean retry; // if true, re-run even previously-successful exercises
     private RunStatus status;
     private final SseEmitter sseEmitter;
     private final List<String> accumulatedOutput;
@@ -37,11 +38,16 @@ public class BenchmarkSession {
     private String errorMessage;
 
     public BenchmarkSession(String id, String agentName, String[] languages, String model, String exerciseName, long timeoutMs) {
+        this(id, agentName, languages, model, exerciseName, false, timeoutMs);
+    }
+
+    public BenchmarkSession(String id, String agentName, String[] languages, String model, String exerciseName, boolean retry, long timeoutMs) {
         this.id = id;
         this.agentName = agentName;
         this.languages = languages;
         this.model = model;
         this.exerciseName = exerciseName;
+        this.retry = retry;
         this.startTime = Instant.now();
         this.status = RunStatus.PENDING;
         this.sseEmitter = new SseEmitter(timeoutMs);
@@ -72,6 +78,10 @@ public class BenchmarkSession {
 
     public String getModel() {
         return model;
+    }
+
+    public boolean isRetry() {
+        return retry;
     }
 
     public Instant getStartTime() {

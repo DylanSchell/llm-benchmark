@@ -122,6 +122,14 @@
                         <small style="color: #666;">Select exercises to run for each language</small>
                     </div>
 
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="retry" name="retry">
+                            <span style="margin-left: 0.5rem;">Retry — re-run even previously successful exercises</span>
+                        </label>
+                        <small style="color: #666;">When checked, all selected exercises will be re-executed regardless of prior success. Previously successful results preserve their attempt count but update timing.</small>
+                    </div>
+
                     <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
                         <button type="submit" class="btn btn-primary">Start Benchmark</button>
                     </div>
@@ -265,6 +273,7 @@
                     const agent = document.getElementById('agent').value;
                     const model = document.getElementById('model').value || null;
                     const mode = document.querySelector('input[name="mode"]:checked').value;
+                    const retry = document.getElementById('retry').checked;
                     const languages = Array.from(document.querySelectorAll('input[name="language"]:checked'))
                         .map(cb => cb.value);
 
@@ -280,6 +289,7 @@
                         if (model) formData.append('model', model);
                         languages.forEach(lang => formData.append('language', lang));
                         formData.append('mode', 'quick');
+                        formData.append('retry', retry);
 
                         await fetch('/api/benchmark/queue/schedule', {
                             method: 'POST',
@@ -320,6 +330,7 @@
                             if (item.model) formData.append('model', item.model);
                             formData.append('language', item.language);
                             formData.append('exercise', item.exercise);
+                            formData.append('retry', retry);
 
                             await fetch('/api/benchmark/queue/schedule', {
                                 method: 'POST',
@@ -339,6 +350,7 @@
                     languages.forEach(lang => formData.append('language', lang));
                     // exercise is null for "all exercises" — scheduleBatch expands to individual items
                     formData.append('mode', 'all');
+                    formData.append('retry', retry);
 
                     const response = await fetch('/api/benchmark/queue/schedule', {
                         method: 'POST',

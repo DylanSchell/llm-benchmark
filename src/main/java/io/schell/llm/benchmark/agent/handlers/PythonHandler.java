@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 /**
@@ -24,24 +22,12 @@ public class PythonHandler implements LanguageHandler {
 
     @Override
     public void copyReference(Exercise exercise, Path tempDir) throws IOException {
-        for (Path refPath : exercise.getReferencePath()) {
-            if (refPath == null || !Files.exists(refPath)) continue;
-
-            String fileName = refPath.getFileName().toString();
-            Path destFile = tempDir.resolve(fileName);
-            Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-            logger.info("Copied Python reference file: {}", fileName);
-        }
+        copyReferenceFiles(exercise.getReferencePath(), tempDir);
     }
 
     @Override
     public void copyTests(Exercise exercise, Path sourceDir, Path destDir) throws IOException {
-        for (Path testPath : exercise.getTestPath()) {
-            String fileName = testPath.getFileName().toString();
-            Path destFile = destDir.resolve(fileName);
-            Files.copy(testPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-            logger.info("Copied Python test file: {}", fileName);
-        }
+        copyTestFiles(exercise.getTestPath(), destDir);
     }
 
     @Override

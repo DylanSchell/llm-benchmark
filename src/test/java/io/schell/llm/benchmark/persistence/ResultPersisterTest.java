@@ -1,5 +1,8 @@
 package io.schell.llm.benchmark.persistence;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.schell.llm.benchmark.config.OutputConfig;
 import io.schell.llm.benchmark.exercise.ExerciseResult;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +24,7 @@ class ResultPersisterTest {
 
     private ResultPersister resultPersister;
     private OutputConfig outputConfig;
+    private ObjectMapper objectMapper;
 
     @TempDir
     Path tempDir;
@@ -30,6 +34,7 @@ class ResultPersisterTest {
         outputConfig = new OutputConfig();
         outputConfig.setResultsDir(tempDir.toString());
         resultPersister = new ResultPersister(outputConfig);
+        objectMapper = createObjectMapper();
     }
 
     @Test
@@ -152,6 +157,82 @@ class ResultPersisterTest {
 
         // Then
         assertTrue(Files.exists(aggregatedPath));
+    }
+
+    @Test
+    void testSaveResultAutoIncrementsAttemptsOnFirstSave() throws Exception {
+        // Given - builder does not explicitly set attempts
+        ExerciseResult result = createMockExerciseResult("two-fer", "java", true);
+
+        // When
+        Path savedPath = resultPersister.saveResult(result, "reference", "java");
+
+        // Then - should default to 1
+        JsonNode node = objectMapper.readTree(savedPath.toFile());
+        assertEquals(1, node.get("attempts").asInt());
+    }
+
+    @Test
+    void testSaveResultAutoIncrementsAttemptsOnReSave() throws Exception {
+        // Given - first save with attempts=1
+        ExerciseResult result = createMockExerciseResult("two-fer", "java", true);
+        Path savedPath = resultPersister.saveResult(result, "reference", "java");
+
+        // When - save again (simulating a retry)
+        resultPersister.saveResult(result, "reference", "java");
+
+        // Then - attempts should be incremented to 2
+        JsonNode node = objectMapper.readTree(savedPath.toFile());
+        assertEquals(2, node.get("attempts").asInt());
+    }
+
+    @Test
+    void testSaveResultIncrementsFromExistingAttempts() throws Exception {
+        // Given - manually write a file with attempts=3
+        Path resultFile = tempDir.resolve("result_reference_java_test.json");
+        String existingContent = "{\"exerciseName\":\"test\",\"language\":\"java\",\"success\":true,\"exitCode\":0,\"attempts\":3}";
+        Files.writeString(resultFile, existingContent);
+
+        // When - save a new result with the same filename
+        ExerciseResult result = createMockExerciseResult("test", "java", true);
+        resultPersister.saveResult(result, "reference", "java");
+
+        // Then - attempts should be 4 (3 + 1)
+        JsonNode node = objectMapper.readTree(resultFile.toFile());
+        assertEquals(4, node.get("attempts").asInt());
+    }
+
+    @Test
+    void testPersistedResultDeserializesAttemptsCorrectly() throws Exception {
+        // Given - save a result with explicit attempts=5
+        ExerciseResult result = ExerciseResult.builder()
+            .exerciseName("deser-test")
+            .language("python")
+            .success(true)
+            .exitCode(0)
+            .output("ok")
+            .duration(Duration.ofSeconds(5))
+            .startTime(Instant.now())
+            .endTime(Instant.now().plusSeconds(5))
+            .attempts(5)
+            .build();
+
+        // When - save and re-read the result file
+        Path savedPath = resultPersister.saveResult(result, "reference", "python");
+        JsonNode node = objectMapper.readTree(savedPath.toFile());
+
+        // Then - all fields including attempts should deserialize correctly
+        assertEquals(5, node.get("attempts").asInt());
+        assertEquals("deser-test", node.get("exerciseName").asText());
+        assertEquals("python", node.get("language").asText());
+        assertTrue(node.get("success").asBoolean());
+        assertEquals(0, node.get("exitCode").asInt());
+    }
+
+    private ObjectMapper createObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
     }
 
     // Helper method to create mock ExerciseResult

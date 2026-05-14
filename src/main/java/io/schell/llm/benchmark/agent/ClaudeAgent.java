@@ -27,7 +27,7 @@ public class ClaudeAgent extends ReferenceAgent {
 
         try {
             logger.info("Starting exercise: {} at {}", exercise.getName(), startTime);
-            ClaudeMessageProcessor processor = new ClaudeMessageProcessor(getOutputConsumer());
+            ClaudeMessageProcessor processor = new ClaudeMessageProcessor(getOutputConsumer(), isVerbose());
             // Create exercise prompt for Claude Code
             String prompt = createExercisePrompt(exercise, tempWorkDir);
             patchTests(exercise, tempWorkDir);

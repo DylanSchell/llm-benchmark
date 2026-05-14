@@ -288,6 +288,16 @@
     </footer>
 
     <script>
+        // Toast notification
+        function showToast(message, duration = 3000) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = 'position:fixed;top:20px;right:20px;background:#2c3e50;color:white;padding:12px 24px;border-radius:6px;z-index:9999;font-size:0.875rem;box-shadow:0 4px 12px rgba(0,0,0,0.3);transition:opacity 0.3s;';
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; }, duration);
+            setTimeout(() => { toast.remove(); }, duration + 300);
+        }
+
         // Quick bench toggle - reloads page with ?quick=true/false
         function toggleQuickBench() {
             const checked = document.getElementById('quick-bench-toggle').checked;
@@ -340,8 +350,6 @@
 
         // Cancel queue item
         async function cancelQueueItem(itemId) {
-            if (!confirm('Cancel this queued item?')) return;
-
             try {
                 const response = await fetch(`/api/benchmark/queue/cancel/${itemId}`, {
                     method: 'POST'
@@ -357,25 +365,21 @@
 
         // Clear completed and cancelled queue items
         async function clearCompletedQueue() {
-            if (!confirm('Clear all completed and cancelled items from the queue?')) return;
-
             try {
                 const response = await fetch('/api/benchmark/queue/clear-terminal', {
                     method: 'POST'
                 });
                 const data = await response.json();
-                alert(data.message);
+                showToast(data.message || 'Cleared completed items');
                 window.location.reload();
             } catch (e) {
                 console.error('Error clearing completed items:', e);
-                alert('Failed to clear completed items');
+                showToast('Failed to clear completed items');
             }
         }
 
         // Retry a failed queue item
         async function retryQueueItem(itemId) {
-            if (!confirm('Retry this failed item?')) return;
-
             try {
                 const response = await fetch(`/api/benchmark/queue/retry/${itemId}`, {
                     method: 'POST'

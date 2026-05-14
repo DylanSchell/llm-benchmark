@@ -130,11 +130,6 @@ public interface LanguageHandler {
     /**
      * Copies files from a collection of source paths to a destination directory.
      * Optionally filters by file extension.
-     *
-     * @param sourcePaths Collection of source file paths
-     * @param destDir     Destination directory
-     * @param fileFilter  File extension filter (e.g., ".java"), or null for no filter
-     * @throws IOException if file operations fail
      */
     default void copyFilesFromPaths(Iterable<Path> sourcePaths, Path destDir, String fileFilter) throws IOException {
         FileUtils.copyFilesFromPaths(sourcePaths, destDir, fileFilter);
@@ -143,11 +138,6 @@ public interface LanguageHandler {
     /**
      * Copies all files from a source directory to a destination directory,
      * excluding paths that contain the given exclusion pattern.
-     *
-     * @param sourceDir      Source directory
-     * @param destDir        Destination directory
-     * @param exclusionPattern Pattern to exclude (e.g., ".meta/")
-     * @throws IOException if file operations fail
      */
     default void copyDirectoryExcluding(Path sourceDir, Path destDir, String exclusionPattern) throws IOException {
         FileUtils.copyDirectoryExcluding(sourceDir, destDir, exclusionPattern);
@@ -155,17 +145,36 @@ public interface LanguageHandler {
 
     /**
      * Recursively replaces text patterns in files with the given extension.
-     * Used for removing test annotations like @Disabled or #[ignore].
-     *
-     * @param directory       Directory to search
-     * @param fileExtension   File extension to match (e.g., ".java")
-     * @param pattern         Regex pattern to replace
-     * @param replacement     Replacement string
-     * @return Number of files that failed to process
-     * @throws IOException if directory traversal fails
      */
-    default int replaceInFilesRecursive(Path directory, String fileExtension, 
+    default int replaceInFilesRecursive(Path directory, String fileExtension,
                                          String pattern, String replacement) throws IOException {
         return FileUtils.replaceInFilesRecursive(directory, fileExtension, pattern, replacement);
+    }
+
+    /**
+     * Copies reference implementation files from exercise paths to the temp directory.
+     * Each file is placed at the root of destDir with its original filename.
+     */
+    default void copyReferenceFiles(Iterable<Path> sourcePaths, Path tempDir) throws IOException {
+        for (Path refPath : sourcePaths) {
+            if (refPath == null || !Files.exists(refPath)) continue;
+            String fileName = refPath.getFileName().toString();
+            Path destFile = tempDir.resolve(fileName);
+            Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
+            logger.info("Copied {} reference file: {}", getLanguage(), fileName);
+        }
+    }
+
+    /**
+     * Copies test files from exercise paths to the destination directory.
+     * Each file is placed at the root of destDir with its original filename.
+     */
+    default void copyTestFiles(Iterable<Path> sourcePaths, Path destDir) throws IOException {
+        for (Path testPath : sourcePaths) {
+            String fileName = testPath.getFileName().toString();
+            Path destFile = destDir.resolve(fileName);
+            Files.copy(testPath, destFile, StandardCopyOption.REPLACE_EXISTING);
+            logger.info("Copied {} test file: {}", getLanguage(), fileName);
+        }
     }
 }

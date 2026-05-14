@@ -4,6 +4,7 @@ import io.schell.llm.benchmark.BenchmarkRunner;
 import io.schell.llm.benchmark.config.Config;
 import io.schell.llm.benchmark.config.QuickBenchConfig;
 import io.schell.llm.benchmark.exercise.ExerciseRunner;
+import io.schell.llm.benchmark.util.StringUtil;
 import io.schell.llm.benchmark.web.domain.BenchmarkQueue;
 import io.schell.llm.benchmark.web.domain.BenchmarkQueueItem;
 import io.schell.llm.benchmark.web.domain.BenchmarkSession;
@@ -158,7 +159,8 @@ public class QueueProcessor {
                     item.getAgentName(),
                     new String[]{item.getLanguage()},
                     item.getModel(),
-                    item.getExercise()
+                    item.getExercise(),
+                    item.isRetry()
             );
             sessionId = session.getId();
             item.setSessionId(sessionId);
@@ -206,7 +208,7 @@ public class QueueProcessor {
      * Schedule a batch of benchmark runs.
      * Creates individual queue items for each language/exercise combination.
      * Never uses "all" exercises - always expands to individual exercise items.
-     * Skips exercises that have already been completed successfully.
+     * Skips exercises that have already been completed successfully (unless retry mode).
      *
      * @param agentName   The agent to use
      * @param model       The model to use (can be null)
@@ -217,8 +219,23 @@ public class QueueProcessor {
      */
     public List<BenchmarkQueueItem> scheduleBatch(String agentName, String[] languages,
                                                    String model, String exercise) {
-        // Compute target directory once for the entire batch
-        String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
+        return scheduleBatch(agentName, languages, model, exercise, false);
+    }
+
+    /**
+     * Schedule a batch of benchmark runs with optional retry mode.
+     *
+     * @param agentName   The agent to use
+     * @param model       The model to use (can be null)
+     * @param languages   Array of languages
+     * @param exercise    Exercise name, or null for all exercises per language,
+     *                    or "__quick__" for quick bench mode
+     * @param retry       If true, do not skip already-successful exercises
+     * @return List of queue items created
+     */
+    public List<BenchmarkQueueItem> scheduleBatch(String agentName, String[] languages,
+                                                   String model, String exercise, boolean retry) {
+        String effectiveModel = StringUtil.toNonNull(model);
 
         List<BenchmarkQueueItem> items = new java.util.ArrayList<>();
         int skippedCount = 0;
@@ -232,7 +249,7 @@ public class QueueProcessor {
                     continue;
                 }
                 for (String exerciseName : quickExercises) {
-                    if (benchmarkRunner.resultFileSuccess(exerciseName, agentName, effectiveModel, language, languages)) {
+                    if (!retry && benchmarkRunner.resultFileSuccess(exerciseName, agentName, effectiveModel, language, languages)) {
                         logger.debug("Skipping quick-bench exercise: {} for language: {} (already completed successfully)", 
                                 exerciseName, language);
                         skippedCount++;
@@ -242,15 +259,14 @@ public class QueueProcessor {
                     String targetDir = config.getOutput().getResultsDir(agentName, effectiveModel,
                             new String[]{language});
                     BenchmarkQueueItem item = new BenchmarkQueueItem(targetDir, agentName,
-                            model, language, exerciseName);
+                            model, language, exerciseName, retry);
                     items.add(item);
                 }
             }
         } else if (exercise != null && !exercise.isEmpty()) {
             // Single exercise specified - create one item per language for that exercise
             for (String language : languages) {
-                // Check if this exercise has already been completed successfully using the same logic as BenchmarkRunner
-                if (benchmarkRunner.resultFileSuccess(exercise, agentName, effectiveModel, language, languages)) {
+                if (!retry && benchmarkRunner.resultFileSuccess(exercise, agentName, effectiveModel, language, languages)) {
                     logger.info("Skipping exercise: {} for language: {} (already completed successfully)", 
                             exercise, language);
                     skippedCount++;
@@ -260,7 +276,7 @@ public class QueueProcessor {
                 String targetDir = config.getOutput().getResultsDir(agentName, effectiveModel, 
                         new String[]{language});
                 BenchmarkQueueItem item = new BenchmarkQueueItem(targetDir, agentName, 
-                        model, language, exercise);
+                        model, language, exercise, retry);
                 items.add(item);
             }
         } else {
@@ -269,8 +285,7 @@ public class QueueProcessor {
                 try {
                     List<String> exercises = exerciseRunner.getExercisesForLanguage(language);
                     for (String exerciseName : exercises) {
-                        // Check if this exercise has already been completed successfully using the same logic as BenchmarkRunner
-                        if (benchmarkRunner.resultFileSuccess(exerciseName, agentName, effectiveModel, language, languages)) {
+                        if (!retry && benchmarkRunner.resultFileSuccess(exerciseName, agentName, effectiveModel, language, languages)) {
                             logger.debug("Skipping exercise: {} for language: {} (already completed successfully)", 
                                     exerciseName, language);
                             skippedCount++;
@@ -280,12 +295,9 @@ public class QueueProcessor {
                         String targetDir = config.getOutput().getResultsDir(agentName, effectiveModel, 
                                 new String[]{language});
                         BenchmarkQueueItem item = new BenchmarkQueueItem(targetDir, agentName, 
-                                model, language, exerciseName);
+                                model, language, exerciseName, retry);
                         items.add(item);
                     }
-                    logger.info("Scheduled {} individual items for language: {} (skipped {} already successful)", 
-                            exercises.size() - countSkippedForLanguage(exercises, agentName, effectiveModel, language),
-                            exercises.size(), skippedCount);
                 } catch (Exception e) {
                     logger.error("Failed to get exercises for language {}: {}", language, e.getMessage());
                 }

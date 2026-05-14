@@ -7,6 +7,7 @@ import io.schell.llm.benchmark.config.Config;
 import io.schell.llm.benchmark.docker.DockerClient;
 import io.schell.llm.benchmark.exercise.ExerciseResult;
 import io.schell.llm.benchmark.exception.BenchmarkExecutionException;
+import io.schell.llm.benchmark.util.StringUtil;
 import io.schell.llm.benchmark.web.domain.BenchmarkSession;
 import io.schell.llm.benchmark.web.domain.RunStatus;
 import org.slf4j.Logger;
@@ -47,9 +48,7 @@ public class BenchmarkExecutor {
             String model = session.getModel();
             String exerciseName = session.getExerciseName();
 
-            // Set run parameters for result directory computation
-            String effectiveModel = (model != null && !model.isEmpty()) ? model : null;
-            benchmarkRunner.getExerciseRunner().setRunParams(agentName, effectiveModel, languages);
+            benchmarkRunner.getExerciseRunner().setRunParams(agentName, StringUtil.toNonNull(model), languages);
 
             ReferenceAgent agent = createAgent(agentName);
 
@@ -57,9 +56,9 @@ public class BenchmarkExecutor {
             agent.setOutputConsumer(session::emitOutput);
 
             if (exerciseName != null && !exerciseName.isEmpty()) {
-                executeSingleExercise(session, agent, languages, effectiveModel);
+                executeSingleExercise(session, agent, languages, StringUtil.toNonNull(model));
             } else {
-                executeAllExercises(session, agent, languages, effectiveModel);
+                executeAllExercises(session, agent, languages, StringUtil.toNonNull(model));
             }
 
             session.completeOutput();
@@ -94,9 +93,9 @@ public class BenchmarkExecutor {
                         exerciseName, effectiveModel, languages);
                 session.emitOutput(result.getOutput());
 
-                // Save result to file
+                // Save result to file (pass retry flag for attempts/timing behavior)
                 benchmarkRunner.saveResult(result, session.getAgentName(), effectiveModel, 
-                        language, languages);
+                        language, languages, session.isRetry());
 
                 session.incrementCompletedExercises();
 
