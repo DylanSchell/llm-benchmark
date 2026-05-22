@@ -1,0 +1,108 @@
+{% extends "layout.tera" %}
+
+{% block content %}
+<h2 style="margin-bottom: 0.5rem;">Benchmark Session</h2>
+
+<div class="card">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+        <div><strong>Session ID:</strong><div>{{ session_id }}</div></div>
+        <div><strong>Agent:</strong><div>{{ agent }}</div></div>
+        <div><strong>Language:</strong><div>{{ language }}</div></div>
+        <div><strong>Exercise:</strong><div>{{ exercise }}</div></div>
+        <div><strong>Status:</strong><div><span class="status-badge status-{{ status | lower }}" id="status-badge">{{ status }}</span></div></div>
+        <div><strong>Started:</strong><div>{{ started_at | default(value="N/A") }}</div></div>
+    </div>
+
+    {% if error_message != '' %}
+    <div style="color: #e74c3c; margin-bottom: 1rem;"><strong>Error:</strong> <span id="error-message">{{ error_message }}</span></div>
+    {% endif %}
+
+    <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Output</h3>
+    <div class="output-console" id="output-console">
+        {%- if output -%}
+        <pre id="output-pre" style="margin: 0; padding: 0; white-space: pre-wrap; word-break: break-word;">{{ output | join }}</pre>
+        {%- else -%}
+        <div id="output-placeholder" style="color: #888;">Waiting for output...</div>
+        {%- endif -%}
+    </div>
+</div>
+
+<script>
+    const sessionId = "{{ session_id }}";
+    const outputConsole = document.getElementById('output-console');
+    let outputPre = document.getElementById('output-pre');
+    let placeholder = document.getElementById('output-placeholder');
+
+    // Auto-scroll helper
+    function scrollToBottom() {
+        if (outputConsole) outputConsole.scrollTop = outputConsole.scrollHeight;
+    }
+
+    // Connect to SSE stream for live output
+    function connectSSE() {
+        const source = new EventSource(`/api/benchmark/${sessionId}/stream`);
+        
+        source.addEventListener('message', (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'output') {
+                    // Remove placeholder if present
+                    if (placeholder) {
+                        placeholder.remove();
+                        placeholder = null;
+                        // Create the pre element if it doesn't exist
+                        if (!outputPre) {
+                            outputPre = document.createElement('pre');
+                            outputPre.id = 'output-pre';
+                            outputPre.style.margin = '0';
+                            outputPre.style.padding = '0';
+                            outputPre.style.whiteSpace = 'pre-wrap';
+                            outputPre.style.wordBreak = 'break-word';
+                            outputConsole.appendChild(outputPre);
+                        }
+                    }
+                    // Append token to the same pre element (like Java does)
+                    outputPre.textContent += data.data;
+                    scrollToBottom();
+                }
+            } catch (e) {
+                console.error('Failed to parse SSE message:', e);
+            }
+        });
+
+        source.addEventListener('session', (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                const badge = document.getElementById('status-badge');
+                if (badge) {
+                    badge.className = 'status-badge status-' + data.status.toLowerCase();
+                    badge.textContent = data.status;
+                }
+            } catch (e) {
+                console.error('Failed to parse session event:', e);
+            }
+        });
+
+        source.addEventListener('complete', (event) => {
+            source.close();
+            // Reload page to show final state
+            setTimeout(() => window.location.reload(), 1000);
+        });
+
+        source.addEventListener('error', (event) => {
+            console.error('SSE connection error:', event);
+            // Reconnect after a delay
+            setTimeout(() => {
+                if (source.readyState === EventSource.CLOSED) {
+                    connectSSE();
+                }
+            }, 3000);
+        });
+    }
+
+    // Start SSE connection if session is running
+    {% if status == "RUNNING" %}
+    connectSSE();
+    {% endif %}
+</script>
+{% endblock %}

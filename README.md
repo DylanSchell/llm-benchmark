@@ -1,6 +1,6 @@
 # Claude Benchmark Runner
 
-A framework for benchmarking autonomous coding agents against the polyglot exercise suite.
+A Rust framework for benchmarking autonomous coding agents against the [polyglot exercise suite](https://github.com/Aider-AI/polyglot-benchmark). Agents run exercises inside isolated Docker containers and produce structured results with JSONL trace files.
 
 ---
 
@@ -8,150 +8,30 @@ A framework for benchmarking autonomous coding agents against the polyglot exerc
 
 ### Prerequisites
 
-- Java 21+
-- Maven 3.8+
-- Docker
-
-### Build
+- **Rust 1.75+** (with `cargo`)
+- **Docker** (running)
+- **polyglot-benchmark repo** — clone it alongside this project:
 
 ```bash
-mvn package -q
+git clone https://github.com/Aider-AI/polyglot-benchmark
+cd polyglot-benchmark && git checkout main && cd ..
 ```
 
-### Run (CLI Mode)
+### 1. Build the Docker Image
+
+The runner container needs Java, Maven, Gradle, Node.js, Go, Rust, and Claude Code CLI pre-installed:
 
 ```bash
-java -jar target/claude-benchmark-1.0-SNAPSHOT.jar \
-  --agent=reference \
-  --languages=java
+docker build -f docker/Dockerfile.runner -t claude-benchmark/runner:latest .
 ```
 
-### Run (Web Mode)
+### 2. Configure
 
-```bash
-java -jar target/claude-benchmark-1.0-SNAPSHOT.jar --web
-# Access dashboard at http://localhost:8080
-```
-
----
-
-## Documentation
-
-| Document | Description |
-|----------|-------------|
-| [Architecture](docs/ARCHITECTURE.md) | System architecture and design patterns |
-| [API Reference](docs/API.md) | REST API endpoints and usage |
-| [Configuration](docs/CONFIGURATION.md) | Configuration options and examples |
-| [Developer Guide](docs/DEVELOPER.md) | Contributing, building, testing |
-| [Result Format](docs/RESULT_FORMAT.md) | Result file formats and structure |
-
----
-
-## Features
-
-- **Multi-Language Support**: Java, Python, JavaScript, Go, Rust, C++, and more
-- **Multiple Agents**: Reference agent (baseline), Claude Code CLI agent
-- **Web Dashboard**: Real-time progress tracking and result visualization
-- **Docker Isolation**: Exercises run in isolated containers
-- **Parallel Execution**: Configurable concurrent exercise runs
-- **Comprehensive Results**: JSON results, JSONL traces, markdown reports
-
----
-
-## Architecture Overview
-
-```
-┌─────────────────────────────────────────────┐
-│              Presentation Layer             │
-│  CLI │ Web Controllers │ REST API           │
-└────────────────┬────────────────────────────┘
-                 ▼
-┌─────────────────────────────────────────────┐
-│               Service Layer                 │
-│  BenchmarkService (Facade)                  │
-│  ├─ SessionManager                          │
-│  ├─ BenchmarkExecutor                       │
-│  └─ QueueProcessor                          │
-└────────────────┬────────────────────────────┘
-                 ▼
-┌─────────────────────────────────────────────┐
-│               Domain Layer                  │
-│  BenchmarkRunner │ ExerciseRunner           │
-│  ReferenceAgent │ ClaudeAgent               │
-│  LanguageHandlers (Strategy Pattern)        │
-└────────────────┬────────────────────────────┘
-                 ▼
-┌─────────────────────────────────────────────┐
-│            Infrastructure Layer             │
-│  DockerClient │ ResultPersister │ Config    │
-└─────────────────────────────────────────────┘
-```
-
----
-
-## Project Structure
-
-```
-src/main/java/com/benchmark/
-├── BenchmarkRunner.java          # Main orchestration
-├── agent/                        # Agent implementations
-│   ├── LanguageHandler.java      # Strategy interface
-│   ├── ReferenceAgent.java       # Reference implementation
-│   ├── ClaudeAgent.java          # Claude Code CLI agent
-│   └── handlers/                 # Language-specific handlers
-├── config/                       # Configuration management
-├── docker/                       # Docker integration
-├── exception/                    # Exception hierarchy
-├── exercise/                     # Exercise handling
-├── model/                        # Domain models
-├── persistence/                  # Persistence layer
-└── web/                          # Web layer
-    ├── controller/               # REST controllers
-    ├── service/                  # Service layer
-    └── domain/                   # Web-specific models
-```
-
----
-
-## Refactoring Progress
-
-This project is undergoing a multi-phase refactoring to improve code quality and maintainability.
-
-### Phase 1: ✅ COMPLETE
-- ResultPersister extraction
-- Inner classes converted to records
-- Configuration validation
-- AgentFactory interface
-
-### Phase 2: ✅ COMPLETE  
-- Java 21 upgrade
-- Build warnings fixed
-- BenchmarkController split (4 focused controllers)
-- CLI entry point extracted
-- Error handling improved (exception hierarchy)
-- BenchmarkService split (SessionManager, BenchmarkExecutor, QueueProcessor)
-- ReferenceAgent refactored with Strategy Pattern (LanguageHandler interface + 6 handlers)
-
-### Phase 3: 🚧 IN PROGRESS
-- [x] Documentation added (ARCHITECTURE.md, API.md, CONFIGURATION.md, DEVELOPER.md, RESULT_FORMAT.md)
-- [ ] BenchmarkResultAnalyzer refactoring
-- [ ] Model class consolidation
-- [ ] Comprehensive testing
-
-**Overall Progress:** 11/15 items complete (73%)
-
-See [REFACTORING_PLAN.md](REFACTORING_PLAN.md) for details.
-
----
-
-## Configuration
-
-Create a `config.yaml` file:
+Create a `config.yaml` in the project root (copy from `config.yaml.example` if available):
 
 ```yaml
-benchmark:
-  path: ../polyglot-benchmark
-  parallelism: 4
+benchmark_path: ../polyglot-benchmark
+parallelism: 4
 
 docker:
   image: claude-benchmark/runner:latest
@@ -159,36 +39,160 @@ docker:
   timeout: 300
 
 output:
-  results_dir: ./results
+  results_dir: ./benchmark-results
   log_level: INFO
-
-agents:
-  reference:
-    enabled: true
-  
-  claude:
-    enabled: true
-    cli_path: /usr/local/bin/claude
-    model: sonnet
 ```
 
-See [Configuration Reference](docs/CONFIGURATION.md) for all options.
+### 3. Build the Applications
+
+```bash
+cargo build --release --workspace
+```
+
+This builds all four crates in the workspace:
+
+| Crate | Binary | Purpose |
+|-------|--------|---------|
+| `benchmark-cli` | `benchmark-cli` | CLI benchmark runner |
+| `benchmark-web` | `benchmark-web` | Web dashboard server |
+| `benchmark-report` | `benchmark-report` | Token statistics report |
+| `benchmark-reporter` | `benchmark-reporter` | Full markdown report generator |
+
+### 4. Run the Web Application
+
+```bash
+cargo run --release --package benchmark-web
+# or directly:
+./target/release/benchmark-web config.yaml
+```
+
+Access the dashboard at **http://localhost:8081**.
+
+Override the port via environment variable or CLI:
+
+```bash
+SERVER_PORT=9090 ./target/release/benchmark-web config.yaml
+```
+
+### 5. Run the CLI Benchmark Runner
+
+The CLI runner executes exercises against a chosen agent (reference, claude, or pi):
+
+```bash
+# Run all Java exercises with the reference agent
+cargo run --release --package benchmark-cli -- --language java
+
+# Run a single exercise
+cargo run --release --package benchmark-cli -- --language rust --exercise two-fer
+
+# Run Python exercises with Claude Code
+cargo run --release --package benchmark-cli -- --agent claude --model sonnet --language python
+
+# Run multiple languages
+cargo run --release --package benchmark-cli -- --language java,python,rust
+
+# Verbose mode (shows live output from the agent)
+cargo run --release --package benchmark-cli -- --language java --verbose
+
+# Retry — re-run exercises even if results already exist
+cargo run --release --package benchmark-cli -- --language java --retry
+
+# Override model and results directory
+cargo run --release --package benchmark-cli -- \
+  --model haiku \
+  --results-dir ./my-results \
+  --language javascript
+```
+
+**CLI Options:**
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--config` | `config.yaml` | Path to config file |
+| `--model` | from config | Model name override |
+| `--results-dir` | from config | Results directory override |
+| `--language` | `java` | Comma-separated languages |
+| `--exercise` | *(none)* | Run a single exercise by name |
+| `--agent` | `reference` | Agent: `reference`, `claude`, or `pi` |
+| `--verbose` | off | Show live token stream output |
+| `--retry` | off | Re-run exercises even if results exist (increments attempts) |
+
+### 6. Run the Reporting Applications
+
+Two separate report tools are available:
+
+**Token Statistics Report** (`benchmark-report`):
+
+```bash
+cargo run --release --package benchmark-report -- \
+  --results-dir ./benchmark-results
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--results-dir, -r` | `../benchmark-results` | Results directory to analyze |
+| `--agent, -a` | *(all)* | Filter by agent name |
+
+**Full Markdown Report** (`benchmark-reporter`):
+
+```bash
+cargo run --release --package benchmark-reporter
+# or directly:
+./target/release/benchmark-reporter
+```
+
+Reads from `../benchmark-results` by default and generates a `results.md` file with summary tables, per-exercise success rates, and per-model breakdowns.
+
+---
+
+## Project Structure
+
+```
+crates/
+  benchmark-types/          # Shared types: Config, ExerciseResult, Agent traits
+  benchmark-core/           # Core logic: DockerClient, ExerciseRunner, Agents
+benchmark-cli/              # CLI benchmark runner
+benchmark-web/              # Axum web server with REST API + SSE streaming
+benchmark-report/           # Token statistics report tool
+benchmark-reporter/         # Full markdown report generator
+docker/
+  Dockerfile.runner         # Container image with build tools
+config.yaml                 # Configuration file
+```
+
+---
+
+## Architecture
+
+```
+config.yaml → Config → ExerciseRunner → Agent → DockerClient (runs container)
+    → Executes tests (mvn/go/npm test/cargo test/...)
+    → Returns AgentResult
+    → Saved to results_dir/{agent}-{model}/result_{lang}_{exercise}.json
+    → Report tools parse results and generate summaries
+```
+
+**Agents:**
+
+- **ReferenceAgent** — Copies the reference implementation, runs tests. Validates that exercises are well-formed.
+- **ClaudeAgent** — Invokes Claude Code CLI inside the Docker container to solve exercises.
+- **PiAgent** — Invokes the Pi coding agent inside the Docker container.
 
 ---
 
 ## Results
 
-Results are stored in `results/{model}-{sequence}/` directories:
+Results are stored in `{results_dir}/{agent}-{model}/` directories:
 
 ```
-results/sonnet-1/
-├── trace_java_two-fer.jsonl      # Agent interaction trace
-├── result_java_two-fer.json      # Exercise result
-├── trace_python_hello-world.jsonl
-└── result_python_hello-world.json
+benchmark-results/sonnet-1/
+├── result_claude_java_two-fer.json      # Exercise result
+├── trace_java_two-fer.jsonl             # Agent interaction trace (JSONL)
+├── result_reference_python_hello-world.json
+└── trace_python_hello-world.jsonl
 ```
 
-See [Result Format](docs/RESULT_FORMAT.md) for details.
+Individual result files contain: exercise name, language, success status, exit code, output, duration, timestamps, and error messages. Trace files are JSONL with structured agent events (messages, usage, etc.).
 
 ---
 
@@ -196,14 +200,30 @@ See [Result Format](docs/RESULT_FORMAT.md) for details.
 
 ```bash
 # Run all tests
-mvn test
+cargo test --workspace
 
-# Run specific test
-mvn test -Dtest=ResultPersisterTest
+# Run a specific crate's tests
+cargo test --package benchmark-core
 
-# Generate coverage report
-mvn clean test jacoco:report
+# Run a single test
+cargo test --package benchmark-core -- exercise_runner::tests::test_find_exercise
 ```
+
+---
+
+## Configuration Reference
+
+All configuration lives in `config.yaml`:
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `benchmark_path` | string | `../polyglot-benchmark` | Path to the polyglot exercise repo |
+| `parallelism` | int | 1 | Number of concurrent exercises |
+| `docker.image` | string | `claude-benchmark/runner:latest` | Docker image for exercise containers |
+| `docker.memory` | string | `2g` | Container memory limit |
+| `docker.timeout` | int | 300 | Container execution timeout (seconds) |
+| `output.results_dir` | string | `./benchmark-results` | Directory for result files |
+| `output.log_level` | string | `INFO` | Logging level |
 
 ---
 
@@ -212,11 +232,8 @@ mvn clean test jacoco:report
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Write/update tests
-5. Ensure all tests pass
-6. Submit a pull request
-
-See [Developer Guide](docs/DEVELOPER.md) for details.
+4. Run tests: `cargo test --workspace`
+5. Submit a pull request
 
 ---
 
@@ -226,12 +243,5 @@ MIT License - See LICENSE file for details
 
 ---
 
-## Related Projects
-
-- [polyglot-benchmark](https://github.com/Aider-AI/polyglot-benchmark) - Exercise suite
-- [Claude Code CLI](https://docs.anthropic.com/claude-code/) - Claude automation framework
-
----
-
-**Version:** 1.0-SNAPSHOT  
-**Last Updated:** 2026-02-28
+**Version:** 0.1.0  
+**Last Updated:** 2026-05-22

@@ -1,0 +1,586 @@
+{% extends "layout.tera" %}
+
+{% block title %}Dashboard - Claude Benchmark{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 style="margin-bottom: 1.5rem;">Dashboard</h2>
+
+    <!-- Quick Bench Toggle -->
+    <div class="card" style="margin-bottom: 1rem;">
+        <label style="display: flex; align-items: center; cursor: pointer; font-size: 1.1rem; font-weight: 600;">
+            <input type="checkbox" id="quick-bench-toggle"
+                   {% if quick_bench %}checked{% endif %}
+                   onchange="toggleQuickBench()"
+                   style="margin-right: 0.75rem; width: auto; height: 1.2rem;">
+            <span>Quick bench only</span>
+        </label>
+        <small style="color: #666; display: block; margin-top: 0.25rem;">Show only the curated set of fast exercises (&lt; 60s each)</small>
+    </div>
+
+    <!-- Statistics Grid -->
+    <div class="stats-grid" style="margin-bottom: 2rem;">
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.total_runs | default(value=0) }}</div>
+            <div class="stat-label">Total Runs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.total_exercises | default(value=0) }}</div>
+            <div class="stat-label">Exercises Run</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.successful_exercises | default(value=0) }}</div>
+            <div class="stat-label">Successful</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">
+                {% set sr = stats.success_rate | default(value=0) %}
+                {{ sr | round }}%
+            </div>
+            <div class="stat-label">Success Rate</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card" style="margin-bottom: 1rem;">
+        <h3 style="margin-bottom: 1rem;">Quick Actions</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="/run" class="btn btn-primary">New Benchmark Run</a>
+            <a href="/results" class="btn btn-primary">View Results</a>
+            <button onclick="refreshResults()" class="btn btn-primary">Reload Results</button>
+            <button onclick="clearCompletedQueue()" class="btn btn-secondary">Clear Completed/Cancelled</button>
+        </div>
+    </div>
+
+    <!-- Active Runs -->
+    <div class="card" style="margin-bottom: 1rem;">
+        <h3 style="margin-bottom: 1rem;">Active Runs</h3>
+        <table id="active-runs-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr id="active-runs-header" style="background: #f5f5f5; border-bottom: 2px solid #ddd; display:{% if active_runs == 0 %}none{% else %}table-row{% endif %};">
+                    <th style="padding: 0.5rem; text-align: left;">Agent</th>
+                    <th style="padding: 0.5rem; text-align: left;">Language</th>
+                    <th style="padding: 0.5rem; text-align: left;">Exercise</th>
+                    <th style="padding: 0.5rem; text-align: left;">Status</th>
+                    <th style="padding: 0.5rem; text-align: left;">Elapsed</th>
+                    <th style="padding: 0.5rem; text-align: left;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="active-runs-body">
+            {% for run in active_sessions %}
+                <tr class="active-run-row" style="border-bottom: 1px solid #eee;" data-session-id="{{ run.session_id }}">
+                    <td style="padding: 0.5rem;">{{ run.agent_name }}</td>
+                    <td style="padding: 0.5rem;">{{ run.language }}</td>
+                    <td style="padding: 0.5rem;">{{ run.exercise_name | default(value="All") }}</td>
+                    <td style="padding: 0.5rem;">
+                        <span class="status-badge status-{{ run.status | lower }}">{{ run.status }}</span>
+                    </td>
+                    <td style="padding: 0.5rem;" class="elapsed-time" data-started="{{ run.started_at | default(value='') }}">-</td>
+                    <td style="padding: 0.5rem;">
+                        <a href="/benchmark/{{ run.session_id }}" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">View</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div id="no-active-runs" style="color: #7f8c8d;{% if active_runs > 0 %} display:none;{% endif %}">No active benchmark runs</div>
+    </div>
+
+    <!-- Benchmark Queue (COLLAPSIBLE) -->
+    <div class="card" style="margin-bottom: 1rem;">
+        <h3 style="margin-bottom: 0.75rem; cursor: pointer; user-select: none;" onclick="toggleQueue()">
+            <span id="queue-chevron" class="chevron collapsed" style="display:inline-block; font-size:1.25rem; line-height:1; color:#7f8c8d; margin-right:6px;">▸</span>
+            Benchmark Queue
+            {% if queue_items | length > 0 %}
+            <span style="font-size: 0.875rem; color: #7f8c8d; font-weight: normal;">
+                ({{ queue_items | length }} items)
+            </span>
+            {% endif %}
+        </h3>
+
+        <!-- Progress Bar -->
+        <div id="queue-progress"
+             style="display:flex; height:28px; border-radius:6px; overflow:hidden; background:#ecf0f1; margin-bottom:0.75rem; box-shadow:inset 0 1px 3px rgba(0,0,0,0.1);">
+            <div id="seg-running"
+                 style="width:{{ running_width }}%; background:#3498db; height:100%; display:{% if running_count == 0 %}none{% else %}block{% endif %}; border-radius:6px 0 0 6px;"
+                 title="Running ({{ running_count }})"></div>
+            <div id="seg-pending"
+                 style="width:{{ pending_width }}%; background:#f39c12; height:100%; display:{% if pending_count == 0 %}none{% else %}block{% endif %};"
+                 title="Pending ({{ pending_count }})"></div>
+            <div id="seg-completed"
+                 style="width:{{ completed_width }}%; background:#27ae60; height:100%; display:{% if completed_count == 0 %}none{% else %}block{% endif %};"
+                 title="Completed ({{ completed_count }})"></div>
+            <div id="seg-failed"
+                 style="width:{{ failed_width }}%; background:#e74c3c; height:100%; display:{% if failed_count == 0 %}none{% else %}block{% endif %};"
+                 title="Failed ({{ failed_count }})"></div>
+            <div id="seg-cancelled"
+                 style="width:{{ cancelled_width }}%; background:#95a5a6; height:100%; display:{% if cancelled_count == 0 %}none{% else %}block{% endif %}; border-radius:0 6px 6px 0;"
+                 title="Cancelled ({{ cancelled_count }})"></div>
+        </div>
+
+        <!-- Collapsible Table Body -->
+        <div id="queue-table-body" style="display:none;">
+            {% if queue_items | length == 0 %}
+            <div style="color: #7f8c8d; padding: 1rem 0;">
+                No items in queue
+            </div>
+            {% else %}
+            <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
+                    <th style="padding: 0.5rem; text-align: left;">Status</th>
+                    <th style="padding: 0.5rem; text-align: left;">Agent</th>
+                    <th style="padding: 0.5rem; text-align: left;">Language</th>
+                    <th style="padding: 0.5rem; text-align: left;">Exercise</th>
+                    <th style="padding: 0.5rem; text-align: left;">Model</th>
+                    <th style="padding: 0.5rem; text-align: left;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in queue_items %}
+                <tr data-item-id="{{ item.id }}" style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 0.5rem;">
+                        <span class="status-badge"
+                              {% if item.status == "RUNNING" %}class="status-running"{% elif item.status == "COMPLETED" %}class="status-completed"{% elif item.status == "FAILED" %}class="status-failed"{% elif item.status == "CANCELLED" %}class="status-cancelled"{% else %}class="status-pending"{% endif %}
+                              >{{ item.status }}</span>
+                    </td>
+                    <td style="padding: 0.5rem;">{{ item.agent_name }}</td>
+                    <td style="padding: 0.5rem;">{{ item.language }}</td>
+                    <td style="padding: 0.5rem;">{{ item.exercise | default(value="All") }}</td>
+                    <td style="padding: 0.5rem;">{{ item.model | default(value="default") }}</td>
+                    <td style="padding: 0.5rem;">
+                        {% if item.status == "PENDING" %}
+                        <button class="btn btn-secondary"
+                                style="font-size: 0.75rem; padding: 0.25rem 0.5rem;"
+                                onclick="cancelQueueItem('{{ item.id }}')">
+                            Cancel
+                        </button>
+                        {% elif item.status == "FAILED" %}
+                        <button class="btn btn-primary"
+                                style="font-size: 0.75rem; padding: 0.25rem 0.5rem;"
+                                onclick="retryQueueItem('{{ item.id }}')">
+                            Retry
+                        </button>
+                        {% else %}
+                        <span style="color: #7f8c8d; font-size: 0.75rem;">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- By Language (NOT collapsible) -->
+    <div class="card" style="margin-top: 1rem;" id="by-language-table">
+        <h3 style="margin-bottom: 1rem;">By Language</h3>
+        <table class="sortable-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('by-language-table', 0)" style="cursor: pointer;">Language &#x2195;</th>
+                    <th onclick="sortTable('by-language-table', 1)" style="cursor: pointer;">Total &#x2195;</th>
+                    <th onclick="sortTable('by-language-table', 2)" style="cursor: pointer;">Successful &#x2195;</th>
+                    <th onclick="sortTable('by-language-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
+                    <th onclick="sortTable('by-language-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in stats.language_stats %}
+                {% set success = item.success | default(value=0) %}
+                {% if item.total > 0 %}
+                <tr>
+                    <td><a href="/results?language={{ item.name }}" style="color: #3498db; text-decoration: none;">{{ item.name }}</a></td>
+                    <td>{{ item.total }}</td>
+                    <td>{{ success }}</td>
+                    <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
+                    <td>{{ item.success_rate_formatted }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- By Agent (NOT collapsible) -->
+    <div class="card" style="margin-top: 1rem;" id="by-agent-table">
+        <h3 style="margin-bottom: 1rem;">By Agent</h3>
+        <table class="sortable-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('by-agent-table', 0)" style="cursor: pointer;">Agent &#x2195;</th>
+                    <th onclick="sortTable('by-agent-table', 1)" style="cursor: pointer;">Total &#x2195;</th>
+                    <th onclick="sortTable('by-agent-table', 2)" style="cursor: pointer;">Successful &#x2195;</th>
+                    <th onclick="sortTable('by-agent-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
+                    <th onclick="sortTable('by-agent-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in stats.agent_stats %}
+                {% set success = item.success | default(value=0) %}
+                {% if item.total > 0 %}
+                <tr>
+                    <td><a href="/results?agent={{ item.name }}" style="color: #3498db; text-decoration: none;">{{ item.name }}</a></td>
+                    <td>{{ item.total }}</td>
+                    <td>{{ success }}</td>
+                    <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
+                    <td>{{ item.success_rate_formatted }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- By Model (NOT collapsible) -->
+    <div class="card" style="margin-top: 1rem;" id="by-model-table">
+        <h3 style="margin-bottom: 1rem;">By Model</h3>
+        <table class="sortable-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('by-model-table', 0)" style="cursor: pointer;">Model &#x2195;</th>
+                    <th onclick="sortTable('by-model-table', 1)" style="cursor: pointer;">Total &#x2195;</th>
+                    <th onclick="sortTable('by-model-table', 2)" style="cursor: pointer;">Successful &#x2195;</th>
+                    <th onclick="sortTable('by-model-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
+                    <th onclick="sortTable('by-model-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in stats.model_stats %}
+                {% set success = item.success | default(value=0) %}
+                {% if item.total > 0 %}
+                <tr>
+                    <td><a href="/results?model={{ item.name }}" style="color: #3498db; text-decoration: none;">{{ item.name }}</a></td>
+                    <td>{{ item.total }}</td>
+                    <td>{{ success }}</td>
+                    <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
+                    <td>{{ item.success_rate_formatted }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // ---- Elapsed time updater (runs every second) ----
+    function updateElapsedTimes() {
+        document.querySelectorAll('.elapsed-time').forEach(td => {
+            const startedAttr = td.getAttribute('data-started');
+            if (!startedAttr || startedAttr === '') { td.textContent = '-'; return; }
+            try {
+                const started = new Date(startedAttr);
+                if (isNaN(started.getTime())) { td.textContent = '-'; return; }
+                const diff = Math.floor((Date.now() - started.getTime()) / 1000);
+                td.textContent = formatDuration(diff);
+            } catch { td.textContent = '-'; }
+        });
+    }
+
+    function formatDuration(seconds) {
+        if (seconds < 60) return seconds + 's';
+        if (seconds < 3600) return Math.floor(seconds / 60) + 'm ' + (seconds % 60) + 's';
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        return h + 'h ' + m + 'm';
+    }
+
+    // ---- Active runs polling (every 5 s) ----
+    let lastActiveRunHash = '';
+
+    async function pollActiveRuns() {
+        try {
+            const res = await fetch('/api/active-sessions');
+            if (!res.ok) { console.warn('pollActiveRuns: HTTP', res.status); return; }
+            const data = await res.json();
+            const sessions = data.sessions || [];
+
+            // Hash includes status so badge color changes are detected,
+            // and started_at so a new session appearing is detected.
+            const hash = JSON.stringify(sessions.map(s => s.id + '|' + (s.status||'') + '|' + (s.started_at||'')));
+            if (hash === lastActiveRunHash) {
+                console.log('[dashboard] active runs: SKIP (no change), last=', lastActiveRunHash);
+                return;
+            }
+            lastActiveRunHash = hash;
+            console.log('[dashboard] active runs UPDATE:', sessions.length, 'sessions', JSON.stringify(sessions.map(s => s.id.substring(0,8)+' '+s.status)));
+            console.log('[dashboard] active runs full:', JSON.stringify(sessions));
+
+            const tbody = document.getElementById('active-runs-body');
+            const header = document.getElementById('active-runs-header');
+            const noActive = document.getElementById('no-active-runs');
+
+            if (!tbody) return;
+
+            if (sessions.length === 0) {
+                if (header) header.style.display = 'none';
+                if (noActive) noActive.style.display = 'block';
+                tbody.innerHTML = '';
+                console.log('[dashboard] active runs: cleared tbody (no sessions)');
+                return;
+            }
+
+            if (header) header.style.display = 'table-row';
+            if (noActive) noActive.style.display = 'none';
+
+            // Always rebuild from scratch to avoid stale DOM state
+            const currentIds = new Set(tbody.querySelectorAll('tr.active-run-row').forEach(r => {}));
+            tbody.innerHTML = '';
+
+            sessions.forEach(s => {
+                const row = document.createElement('tr');
+                row.className = 'active-run-row';
+                row.dataset.sessionId = s.id;
+                row.innerHTML =
+                    '<td style="padding:0.5rem">' + (s.agent || '') + '</td>' +
+                    '<td style="padding:0.5rem">' + (s.language || '') + '</td>' +
+                    '<td style="padding:0.5rem">' + (s.exercise || 'All') + '</td>' +
+                    '<td style="padding:0.5rem"><span class="status-badge status-' + (s.status||'').toLowerCase() + '">' + (s.status || '') + '</span></td>' +
+                    '<td style="padding:0.5rem" class="elapsed-time" data-started="' + (s.started_at || '') + '">-</td>' +
+                    '<td style="padding:0.5rem"><a href="/benchmark/' + s.id + '" class="btn btn-primary" style="font-size:0.75rem;padding:0.25rem 0.5rem;">View</a></td>';
+                tbody.appendChild(row);
+            });
+
+            console.log('[dashboard] active runs: rebuilt', sessions.length, 'rows');
+        } catch (e) { console.warn('pollActiveRuns failed:', e); }
+    }
+
+    // ---- Queue polling (every 5 s) ----
+    let lastQueueHash = '';
+
+    async function pollQueue() {
+        try {
+            const res = await fetch('/api/benchmark/queue');
+            if (!res.ok) { console.warn('pollQueue: HTTP', res.status); return; }
+            const data = await res.json();
+            const items = data.items || [];
+
+            // Hash includes id, status, exercise, and language so we detect
+            // when the running item actually changes (new session linked, etc.)
+            const hash = JSON.stringify(items.map(i => i.id + '|' + i.status + '|' + (i.exercise||'') + '|' + (i.language||'')));
+            if (hash === lastQueueHash) return;
+            lastQueueHash = hash;
+            console.log('[dashboard] queue:', items.length, 'items,', data.running, 'running', JSON.stringify(items.map(i => i.id.substring(0,8)+' '+i.status)));
+
+            // Update progress bar segments
+            updateProgressBar(data);
+
+            // Find the actual <tbody> inside the queue table
+            const tbodyEl = document.getElementById('queue-table-body');
+            if (!tbodyEl) return;
+            const tbody = tbodyEl.querySelector('tbody') || tbodyEl;
+
+            // Always rebuild from scratch to avoid stale DOM state
+            tbody.innerHTML = '';
+
+            items.forEach(item => {
+                const row = document.createElement('tr');
+                row.dataset.itemId = item.id;
+                row.innerHTML = buildQueueRowHTML(item);
+                tbody.appendChild(row);
+            });
+
+            console.log('[dashboard] queue: rebuilt', items.length, 'rows');
+        } catch (e) { console.warn('pollQueue failed:', e); }
+    }
+
+    function buildQueueRowHTML(item) {
+        let badgeClass = 'status-pending';
+        if (item.status === 'RUNNING') badgeClass = 'status-running';
+        else if (item.status === 'COMPLETED') badgeClass = 'status-completed';
+        else if (item.status === 'FAILED') badgeClass = 'status-failed';
+        else if (item.status === 'CANCELLED') badgeClass = 'status-cancelled';
+
+        let actions = '<span style="color:#7f8c8d;font-size:0.75rem;">-</span>';
+        if (item.status === 'PENDING') {
+            actions = '<button class="btn btn-secondary" style="font-size:0.75rem;padding:0.25rem 0.5rem;" onclick="cancelQueueItem(\'' + item.id + '\')">Cancel</button>';
+        } else if (item.status === 'FAILED') {
+            actions = '<button class="btn btn-primary" style="font-size:0.75rem;padding:0.25rem 0.5rem;" onclick="retryQueueItem(\'' + item.id + '\')">Retry</button>';
+        }
+
+        return '<tr style="border-bottom:1px solid #eee;">' +
+            '<td style="padding:0.5rem"><span class="status-badge ' + badgeClass + '">' + item.status + '</span></td>' +
+            '<td style="padding:0.5rem">' + (item.agent_name || '') + '</td>' +
+            '<td style="padding:0.5rem">' + (item.language || '') + '</td>' +
+            '<td style="padding:0.5rem">' + (item.exercise || 'All') + '</td>' +
+            '<td style="padding:0.5rem">' + (item.model || 'default') + '</td>' +
+            '<td style="padding:0.5rem">' + actions + '</td>' +
+            '</tr>';
+    }
+
+    function updateProgressBar(data) {
+        const total = (data.pending || 0) + (data.running || 0) + (data.completed || 0) + (data.failed || 0) + (data.cancelled || 0);
+        if (total === 0) return;
+
+        const segs = {
+            'seg-running':    { count: data.running || 0,    color: '#3498db' },
+            'seg-pending':    { count: data.pending || 0,    color: '#f39c12' },
+            'seg-completed':  { count: data.completed || 0,  color: '#27ae60' },
+            'seg-failed':     { count: data.failed || 0,     color: '#e74c3c' },
+            'seg-cancelled':  { count: data.cancelled || 0,  color: '#95a5a6' },
+        };
+
+        console.log('[dashboard] progress bar update:', JSON.stringify({pending:data.pending, running:data.running, completed:data.completed, failed:data.failed, cancelled:data.cancelled, total}));
+
+        Object.entries(segs).forEach(([id, cfg]) => {
+            const el = document.getElementById(id);
+            if (!el) { console.warn('[dashboard] progress bar: element not found:', id); return; }
+            if (cfg.count > 0) {
+                const newWidth = (cfg.count / total * 100).toFixed(1) + '%';
+                const oldWidth = el.style.width;
+                el.style.display = 'block';
+                el.style.width = newWidth;
+                el.title = id.replace('seg-','').charAt(0).toUpperCase() + id.replace('seg-','').slice(1) + ' (' + cfg.count + ')';
+                if (oldWidth !== newWidth) {
+                    console.log('[dashboard] progress bar:', id, oldWidth, '→', newWidth);
+                }
+            } else {
+                el.style.display = 'none';
+            }
+        });
+    }
+
+    // Start polling intervals
+    setInterval(updateElapsedTimes, 1000);
+    updateElapsedTimes();  // initial call
+    setInterval(pollActiveRuns, 5000);
+    pollActiveRuns();      // initial call
+    setInterval(pollQueue, 5000);
+    pollQueue();           // initial call
+
+    // Toast notification
+    function showToast(message, duration = 3000) {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = 'position:fixed;top:20px;right:20px;background:#2c3e50;color:white;padding:12px 24px;border-radius:6px;z-index:9999;font-size:0.875rem;box-shadow:0 4px 12px rgba(0,0,0,0.3);transition:opacity 0.3s;';
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; }, duration);
+        setTimeout(() => { toast.remove(); }, duration + 300);
+    }
+
+    // Quick bench toggle - reloads page with ?quick=true/false
+    function toggleQuickBench() {
+        const checked = document.getElementById('quick-bench-toggle').checked;
+        const url = new URL(window.location.href);
+        if (checked) {
+            url.searchParams.set('quick', 'true');
+        } else {
+            url.searchParams.delete('quick');
+        }
+        window.location.href = url.toString();
+    }
+
+    // Queue collapsible toggle
+    let queueCollapsed = true;
+
+    function toggleQueue() {
+        const body = document.getElementById('queue-table-body');
+        const chevron = document.getElementById('queue-chevron');
+        queueCollapsed = !queueCollapsed;
+
+        if (queueCollapsed) {
+            body.style.display = 'none';
+            chevron.textContent = '▸';
+        } else {
+            body.style.display = 'block';
+            chevron.textContent = '▾';
+        }
+    }
+
+    // Refresh results from disk
+    async function refreshResults() {
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = 'Loading...';
+        btn.disabled = true;
+
+        try {
+            await fetch('/api/results/refresh', {
+                method: 'POST'
+            });
+            window.location.reload();
+        } catch (e) {
+            console.error('Error reloading results:', e);
+        } finally {
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    // Cancel queue item
+    async function cancelQueueItem(itemId) {
+        try {
+            const response = await fetch(`/api/benchmark/queue/cancel/${itemId}`, {
+                method: 'POST'
+            });
+            window.location.reload();
+        } catch (e) {
+            window.location.reload();
+        }
+    }
+
+    // Clear completed and cancelled queue items
+    async function clearCompletedQueue() {
+        try {
+            const response = await fetch('/api/benchmark/queue/clear-terminal', {
+                method: 'POST'
+            });
+            const data = await response.json();
+            showToast(data.message || 'Cleared completed items');
+            window.location.reload();
+        } catch (e) {
+            console.error('Error clearing completed items:', e);
+            showToast('Failed to clear completed items');
+        }
+    }
+
+    // Retry a failed queue item
+    async function retryQueueItem(itemId) {
+        try {
+            const response = await fetch(`/api/benchmark/queue/retry/${itemId}`, {
+                method: 'POST'
+            });
+            window.location.reload();
+        } catch (e) {
+            window.location.reload();
+        }
+    }
+
+    // Table sorting function
+    let sortDirections = {};
+
+    function sortTable(tableId, columnIdx) {
+        const table = document.getElementById(tableId).querySelector('table');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const isNumeric = columnIdx !== 0;
+
+        if (!sortDirections[tableId]) {
+            sortDirections[tableId] = [];
+        }
+        sortDirections[tableId][columnIdx] = !sortDirections[tableId][columnIdx];
+        const ascending = sortDirections[tableId][columnIdx];
+
+        rows.sort((a, b) => {
+            let aVal = a.children[columnIdx].textContent.trim();
+            let bVal = b.children[columnIdx].textContent.trim();
+
+            if (isNumeric) {
+                aVal = parseFloat(aVal.replace(/[^0-9.]/g, '')) || 0;
+                bVal = parseFloat(bVal.replace(/[^0-9.]/g, '')) || 0;
+            } else {
+                aVal = aVal.toLowerCase();
+                bVal = bVal.toLowerCase();
+            }
+
+            if (aVal < bVal) return ascending ? -1 : 1;
+            if (aVal > bVal) return ascending ? 1 : -1;
+            return 0;
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+    }
+</script>
+{% endblock %}

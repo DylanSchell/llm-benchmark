@@ -1,8 +1,0 @@
-- web application does not shut down cleanly ( threadpools / executors? )
-- selecting exercises is ugly, I think names are word wrapped?
-- There is a select all, but no deselect all for exercises
-- all exercises for a language is treated differently for some reason, why is this not the same as select all?
-- replace ExerciseResult with a record class?
-- copyReferenceImplementation should use languagehandlers?
-- retried exercise should "unload" previous results from cache
-- retried exercise should increment attempts in result file

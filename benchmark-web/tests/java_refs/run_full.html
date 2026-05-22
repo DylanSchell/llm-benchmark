@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Run Benchmark - Claude Benchmark</title>
+    <style>
+        .exercise-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .exercise-item {
+            display: flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+        }
+        .exercise-item:hover {
+            background-color: #f5f5f5;
+        }
+        .exercise-item label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            flex: 1;
+        }
+        .exercise-item input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+        .select-all-row {
+            padding: 0.25rem 0.5rem;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run Benchmark - Claude Benchmark</title>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- HTMX SSE extension -->
+    <script src="https://unpkg.com/htmx.org@1.9.10/dist/ext/sse.js"></script>
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        /* Inline critical CSS for faster loading */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { background: #2c3e50; color: white; padding: 1rem 0; margin-bottom: 2rem; }
+        header h1 { margin: 0; }
+        nav a { color: white; text-decoration: none; margin-right: 1rem; }
+        nav a:hover { text-decoration: underline; }
+        .card { background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn { display: inline-block; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 1rem; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn:hover { opacity: 0.9; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        .form-group select, .form-group input { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; }
+        .status-badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem; font-weight: bold; }
+        .status-pending { background: #f39c12; color: white; }
+        .status-running { background: #3498db; color: white; }
+        .status-completed { background: #27ae60; color: white; }
+        .status-failed { background: #e74c3c; color: white; }
+        .status-cancelled { background: #95a5a6; color: white; }
+        .output-console { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 4px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.875rem; max-height: 400px; overflow-y: auto; white-space: pre-wrap; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .stat-card { text-align: center; padding: 1.5rem; background: #ecf0f1; border-radius: 8px; }
+        .stat-value { font-size: 2rem; font-weight: bold; color: #2c3e50; }
+        .stat-label { color: #7f8c8d; font-size: 0.875rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #ecf0f1; font-weight: bold; }
+        tr:hover { background: #f5f5f5; }
+        .progress-bar { height: 8px; background: #ecf0f1; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #27ae60; transition: width 0.3s ease; }
+        .language-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 0.5rem; }
+        .language-checkbox { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.8rem; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; transition: all 0.2s ease; background: #fafafa; }
+        .language-checkbox:hover { background: #f0f0f0; border-color: #bbb; }
+        .language-checkbox input[type="checkbox"] { flex-shrink: 0; width: 18px; height: 18px; cursor: pointer; accent-color: #3498db; }
+        .language-checkbox span { white-space: nowrap; font-size: 0.95rem; color: #333; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Claude Benchmark Runner</h1>
+            <nav style="margin-top: 0.5rem;">
+                <a href="/">Dashboard</a>
+                <a href="/run">Run Benchmark</a>
+                <a href="/results">Results</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <main>
+            <h2 style="margin-bottom: 1.5rem;">Start New Benchmark</h2>
+
+            <div class="card">
+                <form id="benchmark-form" style="max-width: 600px;">
+                    <div class="form-group">
+                        <label for="agent">Agent</label>
+                        <select id="agent" name="agent" required>
+                            <option value="reference">Reference Agent</option>
+                            <option value="claude">Claude Agent</option>
+                            <option value="pi" selected>Pi Agent</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Language</label>
+                        <div class="language-grid">
+                            <label class="language-checkbox">
+                                <input type="checkbox" name="language" value="java" checked>
+                                <span>Java</span>
+                            </label>
+                            <label class="language-checkbox">
+                                <input type="checkbox" name="language" value="go" checked>
+                                <span>Go</span>
+                            </label>
+                            <label class="language-checkbox">
+                                <input type="checkbox" name="language" value="javascript" checked>
+                                <span>JavaScript</span>
+                            </label>
+                            <label class="language-checkbox">
+                                <input type="checkbox" name="language" value="python" checked>
+                                <span>Python</span>
+                            </label>
+                            <label class="language-checkbox">
+                                <input type="checkbox" name="language" value="rust" checked>
+                                <span>Rust</span>
+                            </label>
+                            <label class="language-checkbox">
+                                <input type="checkbox" name="language" value="cpp" checked>
+                                <span>C++</span>
+                            </label>
+                        </div>
+                        <small style="color: #666;">Select one or more languages</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="model">Model (optional, uses default from config)</label>
+                        <select id="model" name="model">
+                            <option value="">Use default from config</option>
+                            
+                                <option value="cydonia-24b">cydonia-24b</option>
+                            
+                                <option value="deepseek-chat">deepseek-chat</option>
+                            
+                                <option value="deepseek-reasoner">deepseek-reasoner</option>
+                            
+                                <option value="deepseek-v4-flash">deepseek-v4-flash</option>
+                            
+                                <option value="ds4-flash">ds4-flash</option>
+                            
+                                <option value="mimo-25">mimo-25</option>
+                            
+                                <option value="mistral-3.5">mistral-3.5</option>
+                            
+                                <option value="qwen35-122b">qwen35-122b</option>
+                            
+                                <option value="qwen35-122b-coding">qwen35-122b-coding</option>
+                            
+                                <option value="qwen35-122b-heretic">qwen35-122b-heretic</option>
+                            
+                                <option value="qwen35-122b-heretic-coding">qwen35-122b-heretic-coding</option>
+                            
+                                <option value="qwen35-122b-heretic-no-thinking">qwen35-122b-heretic-no-thinking</option>
+                            
+                                <option value="qwen35-122b-heretic-thinking">qwen35-122b-heretic-thinking</option>
+                            
+                                <option value="qwen35-122b-no-thinking">qwen35-122b-no-thinking</option>
+                            
+                                <option value="qwen35-122b-thinking">qwen35-122b-thinking</option>
+                            
+                                <option value="qwen35-397b">qwen35-397b</option>
+                            
+                                <option value="qwen35-397b-coding">qwen35-397b-coding</option>
+                            
+                                <option value="qwen35-397b-no-thinking">qwen35-397b-no-thinking</option>
+                            
+                                <option value="qwen35-397b-thinking">qwen35-397b-thinking</option>
+                            
+                                <option value="qwen35-9b">qwen35-9b</option>
+                            
+                                <option value="qwen35-9b-coding">qwen35-9b-coding</option>
+                            
+                                <option value="qwen35-9b-no-thinking">qwen35-9b-no-thinking</option>
+                            
+                                <option value="qwen35-9b-thinking">qwen35-9b-thinking</option>
+                            
+                                <option value="qwen36-27b">qwen36-27b</option>
+                            
+                                <option value="qwen36-27b-coding">qwen36-27b-coding</option>
+                            
+                                <option value="qwen36-27b-mtp">qwen36-27b-mtp</option>
+                            
+                                <option value="qwen36-27b-mtp-coding">qwen36-27b-mtp-coding</option>
+                            
+                                <option value="qwen36-27b-mtp-no-thinking">qwen36-27b-mtp-no-thinking</option>
+                            
+                                <option value="qwen36-27b-mtp-thinking">qwen36-27b-mtp-thinking</option>
+                            
+                                <option value="qwen36-27b-no-thinking">qwen36-27b-no-thinking</option>
+                            
+                                <option value="qwen36-27b-thinking">qwen36-27b-thinking</option>
+                            
+                                <option value="qwen36-35b">qwen36-35b</option>
+                            
+                                <option value="qwen36-35b-coding">qwen36-35b-coding</option>
+                            
+                                <option value="qwen36-35b-heretic">qwen36-35b-heretic</option>
+                            
+                                <option value="qwen36-35b-heretic-coding">qwen36-35b-heretic-coding</option>
+                            
+                                <option value="qwen36-35b-heretic-no-thinking">qwen36-35b-heretic-no-thinking</option>
+                            
+                                <option value="qwen36-35b-heretic-thinking">qwen36-35b-heretic-thinking</option>
+                            
+                                <option value="qwen36-35b-no-thinking">qwen36-35b-no-thinking</option>
+                            
+                                <option value="qwen36-35b-thinking">qwen36-35b-thinking</option>
+                            
+                                <option value="z-image-turbo">z-image-turbo</option>
+                            
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Execution Mode</label>
+                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="mode" value="quick" onchange="toggleExerciseMode()">
+                                <span style="margin-left: 0.25rem;">Quick bench</span>
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="mode" value="single" onchange="toggleExerciseMode()">
+                                <span style="margin-left: 0.25rem;">Single exercise per language</span>
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="mode" value="all" checked onchange="toggleExerciseMode()">
+                                <span style="margin-left: 0.25rem;">All exercises per language</span>
+                            </label>
+                        </div>
+                        <small style="color: #666; display: block; margin-top: 0.25rem;" id="mode-hint">
+                            Select one or more languages to run all their exercises
+                        </small>
+                    </div>
+
+                    <div class="form-group" id="single-exercise-group">
+                        <label for="exercise-select">Select Exercises</label>
+                        <div id="language-exercises" style="display: block;">
+                            <!-- Exercise lists will be populated here -->
+                        </div>
+                        <small style="color: #666;">Select exercises to run for each language</small>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="retry" name="retry">
+                            <span style="margin-left: 0.5rem;">Retry — re-run even previously successful exercises</span>
+                        </label>
+                        <small style="color: #666;">When checked, all selected exercises will be re-executed regardless of prior success. Previously successful results preserve their attempt count but update timing.</small>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-primary">Start Benchmark</button>
+                    </div>
+                </form>
+            </div>
+
+            <script>
+                let availableExercises = {};
+                let selectedExercises = {};
+
+                // Load available exercises on page load
+                document.addEventListener('DOMContentLoaded', async function() {
+                    try {
+                        const response = await fetch('/api/exercises');
+                        availableExercises = await response.json();
+                        console.log('Loaded exercises:', availableExercises);
+                    } catch (e) {
+                        console.error('Failed to load exercises:', e);
+                    }
+
+                    // Add listeners to language checkboxes
+                    document.querySelectorAll('input[name="language"]').forEach(cb => {
+                        cb.addEventListener('change', updateExerciseList);
+                    });
+
+                    // Update exercise list initially
+                    updateExerciseList();
+                });
+
+                const modeHints = {
+                    quick: "Runs a curated set of fast exercises (< 60s each) across selected languages",
+                    single: "Select specific exercises to run for each language",
+                    all: "Select one or more languages to run all their exercises"
+                };
+
+                function toggleExerciseMode() {
+                    const mode = document.querySelector('input[name="mode"]:checked').value;
+                    const singleGroup = document.getElementById('single-exercise-group');
+                    const modeHint = document.getElementById('mode-hint');
+                    if (modeHint) modeHint.textContent = modeHints[mode] || '';
+
+                    if (mode === 'single') {
+                        singleGroup.style.display = 'block';
+                        // Pre-select all exercises for each selected language
+                        const selectedLanguages = Array.from(document.querySelectorAll('input[name="language"]:checked'))
+                            .map(cb => cb.value);
+                        selectedLanguages.forEach(lang => {
+                            const exercises = availableExercises[lang] || [];
+                            selectedExercises[lang] = new Set(exercises);
+                        });
+                        updateExerciseList();
+                    } else {
+                        singleGroup.style.display = 'none';
+                    }
+                }
+
+                function updateExerciseList() {
+                    const mode = document.querySelector('input[name="mode"]:checked').value;
+                    if (mode !== 'single') return;
+
+                    const container = document.getElementById('language-exercises');
+                    container.innerHTML = '';
+
+                    const selectedLanguages = Array.from(document.querySelectorAll('input[name="language"]:checked'))
+                        .map(cb => cb.value);
+
+                    if (selectedLanguages.length === 0) {
+                        container.style.display = 'none';
+                        return;
+                    }
+
+                    container.style.display = 'block';
+
+                    selectedLanguages.forEach(lang => {
+                        const exercises = availableExercises[lang] || [];
+                        if (!selectedExercises[lang]) {
+                            selectedExercises[lang] = new Set();
+                        }
+
+                        const langDiv = document.createElement('div');
+                        langDiv.style.marginBottom = '1rem';
+                        langDiv.innerHTML = `<strong style="text-transform: capitalize;">${lang}:</strong>`;
+
+                        const exerciseList = document.createElement('div');
+                        exerciseList.className = 'exercise-list';
+
+                        // Select all row
+                        const selectAllRow = document.createElement('div');
+                        selectAllRow.className = 'select-all-row';
+                        selectAllRow.innerHTML = `
+                            <label style="font-weight: 500;">
+                                <input type="checkbox" onchange="toggleSelectAll('${lang}', this.checked)">
+                                Select all (${exercises.length})
+                            </label>
+                        `;
+                        exerciseList.appendChild(selectAllRow);
+
+                        exercises.forEach(ex => {
+                            const item = document.createElement('div');
+                            item.className = 'exercise-item';
+                            const isChecked = selectedExercises[lang].has(ex) ? 'checked' : '';
+                            item.innerHTML = `
+                                <label>
+                                    <input type="checkbox" value="${ex}" ${isChecked}
+                                           onchange="toggleExercise('${lang}', '${ex}', this.checked)">
+                                    ${ex}
+                                </label>
+                            `;
+                            exerciseList.appendChild(item);
+                        });
+
+                        langDiv.appendChild(exerciseList);
+                        container.appendChild(langDiv);
+                    });
+                }
+
+                function toggleSelectAll(language, checked) {
+                    const exercises = availableExercises[language] || [];
+                    if (checked) {
+                        selectedExercises[language] = new Set(exercises);
+                    } else {
+                        selectedExercises[language] = new Set();
+                    }
+                    updateExerciseList();
+                }
+
+                function toggleExercise(language, exercise, checked) {
+                    if (!selectedExercises[language]) {
+                        selectedExercises[language] = new Set();
+                    }
+                    if (checked) {
+                        selectedExercises[language].add(exercise);
+                    } else {
+                        selectedExercises[language].delete(exercise);
+                    }
+                }
+
+                document.getElementById('benchmark-form').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    const agent = document.getElementById('agent').value;
+                    const model = document.getElementById('model').value || null;
+                    const mode = document.querySelector('input[name="mode"]:checked').value;
+                    const retry = document.getElementById('retry').checked;
+                    const languages = Array.from(document.querySelectorAll('input[name="language"]:checked'))
+                        .map(cb => cb.value);
+
+                    if (languages.length === 0) {
+                        alert('Please select at least one language');
+                        return;
+                    }
+
+                    // Quick bench mode: no exercise selection needed, just languages
+                    if (mode === 'quick') {
+                        const formData = new FormData();
+                        formData.append('agent', agent);
+                        if (model) formData.append('model', model);
+                        languages.forEach(lang => formData.append('language', lang));
+                        formData.append('mode', 'quick');
+                        formData.append('retry', retry);
+
+                        await fetch('/api/benchmark/queue/schedule', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        window.location.href = '/';
+                        return;
+                    }
+
+                    if (mode === 'single') {
+                        // Build queue items from selected exercises
+                        const items = [];
+                        languages.forEach(lang => {
+                            const exercises = selectedExercises[lang] ? Array.from(selectedExercises[lang]) : [];
+                            if (exercises.length === 0) {
+                                alert('Please select at least one exercise');
+                                return;
+                            }
+                            exercises.forEach(ex => {
+                                items.push({
+                                    agentName: agent,
+                                    model: model,
+                                    language: lang,
+                                    exercise: ex
+                                });
+                            });
+                        });
+
+                        if (items.length === 0) {
+                            return;
+                        }
+
+                        // Schedule each item individually
+                        for (const item of items) {
+                            const formData = new FormData();
+                            formData.append('agent', item.agentName);
+                            if (item.model) formData.append('model', item.model);
+                            formData.append('language', item.language);
+                            formData.append('exercise', item.exercise);
+                            formData.append('retry', retry);
+
+                            await fetch('/api/benchmark/queue/schedule', {
+                                method: 'POST',
+                                body: formData
+                            });
+                        }
+
+                        window.location.href = '/';
+                        return;
+                    }
+
+                    // For "all exercises" mode - schedule as individual queue items
+                    // so each exercise runs sequentially and the response returns immediately.
+                    const formData = new FormData();
+                    formData.append('agent', agent);
+                    if (model) formData.append('model', model);
+                    languages.forEach(lang => formData.append('language', lang));
+                    // exercise is null for "all exercises" — scheduleBatch expands to individual items
+                    formData.append('mode', 'all');
+                    formData.append('retry', retry);
+
+                    const response = await fetch('/api/benchmark/queue/schedule', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    if (data.items) {
+                        window.location.href = '/';
+                    }
+                });
+            </script>
+        </main>
+    </main>
+
+    <footer style="text-align: center; padding: 2rem; color: #7f8c8d; font-size: 0.875rem;">
+        <p>Claude Benchmark Runner - Web Interface</p>
+    </footer>
+
+    <script>
+        // Helper function to format timestamps
+        function formatTimestamp(isoString) {
+            if (!isoString) return 'N/A';
+            return new Date(isoString).toLocaleString();
+        }
+
+        // Auto-scroll console to bottom
+        function autoScrollConsole(element) {
+            if (element) {
+                element.scrollTop = element.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
+</body>
+</html>
