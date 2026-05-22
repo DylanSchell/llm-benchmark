@@ -1,0 +1,41 @@
+{% extends "layout.tera" %}
+
+{% block content %}
+<h2 style="margin-bottom: 1.5rem;">Exercise Detail</h2>
+
+<div class="card">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+        <div><strong>Exercise:</strong><div>{{ exercise_name | default(value='') }}</div></div>
+        <div><strong>Language:</strong><div>{{ language | default(value='') }}</div></div>
+        <div><strong>Agent:</strong><div>{{ agent | default(value='') }}</div></div>
+        <div><strong>Model:</strong><div>{{ model | default(value='') }}</div></div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_exercises | default(value=0) }}</div>
+            <div class="stat-label">Total Exercises</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ successful | default(value=0) }}</div>
+            <div class="stat-label">Successful</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ failed | default(value=0) }}</div>
+            <div class="stat-label">Failed</div>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 1rem;">
+        <strong>Success Rate:</strong>
+        <div class="status-badge {% if success_rate is defined and success_rate|replace(from='%', to='')|int > 99 %}status-completed{% else %}status-failed{% endif %}">
+            {{ success_rate | default(value='0.0%') }}
+        </div>
+    </div>
+
+    {% if output is defined and output != '' %}
+    <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Output</h3>
+    <div class="output-console">{{ output }}</div>
+    {% endif %}
+</div>
+{% endblock %}

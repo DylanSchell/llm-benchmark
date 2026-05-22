@@ -1,0 +1,256 @@
+{% extends "layout.tera" %}
+
+{% block content %}
+<h2 style="margin-bottom: 1.5rem;">Start New Benchmark</h2>
+
+<div class="card">
+    <form id="benchmark-form" style="max-width: 600px;">
+        <div class="form-group">
+            <label for="agent">Agent</label>
+            <select id="agent" name="agent" required>
+                <option value="reference">Reference Agent</option>
+                <option value="claude">Claude Agent</option>
+                <option value="pi" selected>Pi Agent</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Language</label>
+            <div class="language-grid">
+                <label class="language-checkbox">
+                    <input type="checkbox" name="languages" value="java" checked>
+                    <span>Java</span>
+                </label>
+                <label class="language-checkbox">
+                    <input type="checkbox" name="languages" value="go" checked>
+                    <span>Go</span>
+                </label>
+                <label class="language-checkbox">
+                    <input type="checkbox" name="languages" value="javascript" checked>
+                    <span>JavaScript</span>
+                </label>
+                <label class="language-checkbox">
+                    <input type="checkbox" name="languages" value="python" checked>
+                    <span>Python</span>
+                </label>
+                <label class="language-checkbox">
+                    <input type="checkbox" name="languages" value="rust" checked>
+                    <span>Rust</span>
+                </label>
+                <label class="language-checkbox">
+                    <input type="checkbox" name="languages" value="cpp" checked>
+                    <span>C++</span>
+                </label>
+            </div>
+            <small style="color: #666;">Select one or more languages</small>
+        </div>
+
+        <div class="form-group">
+            <label for="model">Model *</label>
+            <select id="model" name="model" required>
+                <option value="">Select a model</option>
+                {% for model in models %}
+                <option value="{{ model }}">{{ model }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Execution Mode</label>
+            <div style="margin-top: 0.5rem; display: block;">
+                <div style="display: flex; align-items: baseline; line-height: 1.4; white-space: nowrap; margin-bottom: 0.25rem;">
+                    <span style="width: 1.5rem; text-align: center; flex-shrink: 0;"><input type="radio" name="mode" value="quick" onchange="toggleExerciseMode()"></span>
+                    Quick bench
+                </div>
+                <div style="display: flex; align-items: baseline; line-height: 1.4; white-space: nowrap; margin-bottom: 0.25rem;">
+                    <span style="width: 1.5rem; text-align: center; flex-shrink: 0;"><input type="radio" name="mode" value="single" onchange="toggleExerciseMode()"></span>
+                    Single exercise per language
+                </div>
+                <div style="display: flex; align-items: baseline; line-height: 1.4; white-space: nowrap;">
+                    <span style="width: 1.5rem; text-align: center; flex-shrink: 0;"><input type="radio" name="mode" value="all" checked onchange="toggleExerciseMode()"></span>
+                    All exercises per language
+                </div>
+            </div>
+            <small style="color: #666; display: block; margin-top: 0.25rem;" id="mode-hint">
+                Select one or more languages to run all their exercises
+            </small>
+        </div>
+
+        <div class="form-group" id="single-exercise-group">
+            <label for="exercise-select">Select Exercises</label>
+            <div id="language-exercises" style="display: block;">
+                <!-- Exercise lists will be populated here -->
+            </div>
+            <small style="color: #666;">Select exercises to run for each language</small>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+            <div style="display: flex; align-items: baseline; line-height: 1.4; white-space: nowrap;">
+                <span style="width: 1.5rem; text-align: center; flex-shrink: 0;"><input type="checkbox" id="retry" name="retry"></span>
+                Retry — re-run even previously successful exercises
+            </div>
+            <small style="color: #666;">When checked, all selected exercises will be re-executed regardless of prior success. Previously successful results preserve their attempt count but update timing.</small>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-primary">Start Benchmark</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let availableExercises = {};
+    let selectedExercises = {};
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            const response = await fetch('/api/exercises');
+            availableExercises = await response.json();
+            console.log('Loaded exercises:', availableExercises);
+        } catch (e) {
+            console.error('Failed to load exercises:', e);
+        }
+        document.querySelectorAll('input[name="languages"]').forEach(cb => {
+            cb.addEventListener('change', updateExerciseList);
+        });
+        updateExerciseList();
+    });
+
+    const modeHints = {
+        quick: "Runs a curated set of fast exercises (< 60s each) across selected languages",
+        single: "Select specific exercises to run for each language",
+        all: "Select one or more languages to run all their exercises"
+    };
+
+    function toggleExerciseMode() {
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+        const singleGroup = document.getElementById('single-exercise-group');
+        const modeHint = document.getElementById('mode-hint');
+        if (modeHint) modeHint.textContent = modeHints[mode] || '';
+        if (mode === 'single') {
+            singleGroup.style.display = 'block';
+            const selectedLanguages = Array.from(document.querySelectorAll('input[name="languages"]:checked'))
+                .map(cb => cb.value);
+            selectedLanguages.forEach(lang => {
+                const exercises = availableExercises[lang] || [];
+                selectedExercises[lang] = new Set(exercises);
+            });
+            updateExerciseList();
+        } else {
+            singleGroup.style.display = 'none';
+        }
+    }
+
+    function updateExerciseList() {
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+        if (mode !== 'single') return;
+        const container = document.getElementById('language-exercises');
+        container.innerHTML = '';
+        const selectedLanguages = Array.from(document.querySelectorAll('input[name="languages"]:checked'))
+            .map(cb => cb.value);
+        if (selectedLanguages.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        container.style.display = 'block';
+        selectedLanguages.forEach(lang => {
+            const exercises = availableExercises[lang] || [];
+            if (!selectedExercises[lang]) selectedExercises[lang] = new Set();
+            const langDiv = document.createElement('div');
+            langDiv.style.marginBottom = '1rem';
+            langDiv.innerHTML = `<strong style="text-transform: capitalize;">${lang}:</strong>`;
+            const exerciseList = document.createElement('div');
+            exerciseList.className = 'exercise-list';
+            const selectAllRow = document.createElement('div');
+            selectAllRow.className = 'select-all-row';
+            selectAllRow.innerHTML = `<label style="font-weight: 500;"><input type="checkbox" onchange="toggleSelectAll('${lang}', this.checked)"> Select all (${exercises.length})</label>`;
+            exerciseList.appendChild(selectAllRow);
+            exercises.forEach(ex => {
+                const item = document.createElement('div');
+                item.className = 'exercise-item';
+                const isChecked = selectedExercises[lang].has(ex) ? 'checked' : '';
+                item.innerHTML = `<label><input type="checkbox" value="${ex}" ${isChecked} onchange="toggleExercise('${lang}', '${ex}', this.checked)"> ${ex}</label>`;
+                exerciseList.appendChild(item);
+            });
+            langDiv.appendChild(exerciseList);
+            container.appendChild(langDiv);
+        });
+    }
+
+    function toggleSelectAll(language, checked) {
+        const exercises = availableExercises[language] || [];
+        selectedExercises[language] = checked ? new Set(exercises) : new Set();
+        updateExerciseList();
+    }
+
+    function toggleExercise(language, exercise, checked) {
+        if (!selectedExercises[language]) selectedExercises[language] = new Set();
+        if (checked) selectedExercises[language].add(exercise);
+        else selectedExercises[language].delete(exercise);
+    }
+
+    document.getElementById('benchmark-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const agent = document.getElementById('agent').value;
+        const model = document.getElementById('model').value;
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+        const retry = document.getElementById('retry').checked;
+        const languages = Array.from(document.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value);
+        if (!model) { alert('Please select a model'); return; }
+        if (languages.length === 0) { alert('Please select at least one language'); return; }
+
+        if (mode === 'quick') {
+            const params = new URLSearchParams();
+            params.append('agent', agent);
+            params.append('model', model);
+            languages.forEach(lang => params.append('languages', lang));
+            params.append('mode', 'quick');
+            params.append('retry', retry.toString());
+            await fetch('/api/benchmark/queue/schedule', { method: 'POST', body: params });
+            window.location.href = '/';
+            return;
+        }
+
+        if (mode === 'single') {
+            // Single exercise mode: submit one request per (language, exercise) pair
+            const exercisesByLanguage = {};
+            languages.forEach(lang => {
+                const exercises = selectedExercises[lang] ? Array.from(selectedExercises[lang]) : [];
+                if (exercises.length > 0) {
+                    exercisesByLanguage[lang] = exercises;
+                }
+            });
+
+            // For each language with selected exercises, submit one request per exercise
+            for (const lang of languages) {
+                const exercises = exercisesByLanguage[lang];
+                if (!exercises || exercises.length === 0) continue;
+                
+                // Submit one request per exercise for this language (form data)
+                for (const ex of exercises) {
+                    const params = new URLSearchParams();
+                    params.append('agent', agent);
+                    params.append('model', model);
+                    params.append('languages', lang);  // Single language
+                    params.append('exercise', ex);
+                    params.append('mode', 'single');
+                    params.append('retry', retry.toString());
+                    await fetch('/api/benchmark/queue/schedule', { method: 'POST', body: params });
+                }
+            }
+            window.location.href = '/';
+            return;
+        }
+
+        const params = new URLSearchParams();
+        params.append('agent', agent);
+        params.append('model', model);
+        languages.forEach(lang => params.append('languages', lang));
+        params.append('mode', 'all');
+        params.append('retry', retry.toString());
+        const response = await fetch('/api/benchmark/queue/schedule', { method: 'POST', body: params });
+        const data = await response.json();
+        if (data.items) window.location.href = '/';
+    });
+</script>
+{% endblock %}

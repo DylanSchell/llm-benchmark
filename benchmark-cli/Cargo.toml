@@ -1,0 +1,15 @@
+[package]
+name = "benchmark-cli"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+benchmark-types = { path = "../crates/benchmark-types" }
+benchmark-core = { path = "../crates/benchmark-core" }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["env-filter"] }
+anyhow = { workspace = true }
+chrono = { workspace = true }
+clap = { workspace = true }

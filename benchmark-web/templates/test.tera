@@ -1,0 +1,11 @@
+{% extends "layout.tera" %}
+
+{% block content %}
+<h2 style="margin-bottom: 1.5rem;">Test Page</h2>
+
+<div class="card">
+    <p>This is a test page to verify template rendering is working correctly.</p>
+    <p>Current time: {{ now | default(value='N/A') }}</p>
+    <p>Title: {{ title | default(value='Test') }}</p>
+</div>
+{% endblock %}

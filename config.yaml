@@ -2,7 +2,7 @@
 # Runner for the Aider polyglot benchmark suite using Claude Code
 
 # Path to the polyglot-benchmark repository
-benchmark_path: "../polyglot-benchmark"
+benchmark_path: "/Users/dylan/Developer/polyglot-benchmark"
 parallelism: 1
 model: "reference"
 
@@ -61,6 +61,10 @@ claude:
 # Output configuration
 output:
   # Directory for exercise outputs
-  results_dir: "../benchmark-results"
+  results_dir: "/Users/dylan/Developer/benchmark-results"
   # Log level (DEBUG, INFO, WARN, ERROR)
   log_level: "INFO"
+
+server:
+  # Port for the local server to listen on
+  port: 8081  
