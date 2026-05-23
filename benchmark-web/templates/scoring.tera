@@ -13,12 +13,12 @@
             Results are scored using a weighted composite metric that balances three dimensions:
         </p>
         <ul style="margin-left: 1.5rem; color: #555;">
-            <li><strong>Correctness (50%)</strong> - Percentage of exercises completed successfully</li>
-            <li><strong>Speed (30%)</strong> - How fast the agent completes exercises (faster = better)</li>
-            <li><strong>Token Efficiency (20%)</strong> - How efficiently tokens are used (fewer = better)</li>
+            <li><strong>Correctness (30%)</strong> - Percentage of exercises completed successfully</li>
+            <li><strong>Speed (20%)</strong> - How fast the agent completes exercises (faster = better)</li>
+            <li><strong>Token Efficiency (50%)</strong> - How efficiently tokens are used (fewer = better, power-law scaling)</li>
         </ul>
         <p style="margin-top: 0.75rem; font-size: 0.875rem; color: #7f8c8d;">
-            <em>Note: Only successful runs contribute to speed and token scores. If success rate is 0%, the composite score is also 0%.</em>
+            <em>Note: Only successful runs contribute to speed and token scores. If success rate is 0%, the composite score is also 0%. Missing exercises are counted as failures in the correctness score.</em>
         </p>
     </div>
 

@@ -1405,6 +1405,7 @@ impl ResultService {
                 language: r.language,
                 exercise: r.exercise,
                 success: r.success,
+                successful: r.successful,
                 success_rate: 0.0,
                 speed_score: 0.0,
                 token_score: 0.0,
@@ -1481,6 +1482,7 @@ impl ResultService {
                 language: r.language,
                 exercise: r.exercise,
                 success: r.success,
+                successful: r.successful,
                 success_rate,
                 speed_score,
                 token_score,
@@ -1503,32 +1505,45 @@ impl ResultService {
     ) -> Vec<ModelScore> {
         let scored_results = self.calculate_scores(language, agent, None, None, quick_only);
         
-        // Aggregate by model
-        let mut model_map: std::collections::HashMap<String, (f64, f64, f64, f64, f64, u32)> = 
+        // Aggregate by model: (total_composite_score, sum_of_success_rates, total_runs, total_speed, total_token, total_tokens)
+        let mut model_map: std::collections::HashMap<String, (f64, f64, u32, f64, f64, f64)> = 
             std::collections::HashMap::new();
         
-        for result in scored_results {
+        for result in &scored_results {
             let key = format!("{} - {}", result.agent, result.model);
-            let entry = model_map.entry(key).or_insert((0.0, 0.0, 0.0, 0.0, 0.0, 0));
+            let entry = model_map.entry(key).or_insert((0.0, 0.0, 0, 0.0, 0.0, 0.0));
             
             entry.0 += result.composite_score;
-            entry.1 += result.success_rate;
-            entry.2 += result.speed_score;
-            entry.3 += result.token_score;
-            entry.4 += result.output_tokens as f64;
-            entry.5 += 1;
+            entry.1 += result.success_rate;  // Sum success rates
+            entry.2 += 1;  // Count this run
+            entry.3 += result.speed_score;
+            entry.4 += result.token_score;
+            entry.5 += result.output_tokens as f64;
         }
         
+        // Debug: print first model's aggregation
+        if let Some((name, (total_score, sum_sr, total_runs, _, _, _))) = model_map.iter().next() {
+            tracing::debug!("Aggregation debug: name={}, sum_success_rates={}, total_runs={}, avg={}", 
+                name, sum_sr, total_runs, if *total_runs > 0 { sum_sr / *total_runs as f64 } else { 0.0 });
+        }
+        
+        // Calculate averages for all models
         model_map.into_iter()
-            .map(|(name, (total_score, total_success, total_speed, total_token, total_tokens, count))| {
+            .map(|(name, (total_score, sum_success_rates, total_runs, total_speed, total_token, total_tokens))| {
+                let avg_success_rate = if total_runs > 0 {
+                    sum_success_rates / total_runs as f64
+                } else {
+                    0.0
+                };
+                
                 ModelScore {
                     name,
-                    avg_composite_score: total_score / count as f64,
-                    avg_success_rate: total_success / count as f64,
-                    avg_speed_score: total_speed / count as f64,
-                    avg_token_score: total_token / count as f64,
-                    avg_tokens: (total_tokens / count as f64) as u64,
-                    total_runs: count,
+                    avg_composite_score: total_score / total_runs as f64,
+                    avg_success_rate,
+                    avg_speed_score: total_speed / total_runs as f64,
+                    avg_token_score: total_token / total_runs as f64,
+                    avg_tokens: (total_tokens / total_runs as f64) as u64,
+                    total_runs,
                 }
             })
             .collect()
@@ -1543,6 +1558,7 @@ pub struct ScoredResult {
     pub language: String,
     pub exercise: String,
     pub success: bool,
+    pub successful: i32,
     pub success_rate: f64,
     pub speed_score: f64,
     pub token_score: f64,
