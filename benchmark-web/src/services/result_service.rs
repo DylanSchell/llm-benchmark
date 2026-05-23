@@ -1505,33 +1505,36 @@ impl ResultService {
     ) -> Vec<ModelScore> {
         let scored_results = self.calculate_scores(language, agent, None, None, quick_only);
         
-        // Aggregate by model: (total_composite_score, sum_of_success_rates, total_runs, total_speed, total_token, total_tokens)
-        let mut model_map: std::collections::HashMap<String, (f64, f64, u32, f64, f64, f64)> = 
+        // Aggregate by model: (total_composite_score, total_successful_runs, total_runs, total_speed, total_token, total_tokens)
+        let mut model_map: std::collections::HashMap<String, (f64, i32, u32, f64, f64, f64)> = 
             std::collections::HashMap::new();
         
         for result in &scored_results {
             let key = format!("{} - {}", result.agent, result.model);
-            let entry = model_map.entry(key).or_insert((0.0, 0.0, 0, 0.0, 0.0, 0.0));
+            let entry = model_map.entry(key).or_insert((0.0, 0, 0, 0.0, 0.0, 0.0));
             
             entry.0 += result.composite_score;
-            entry.1 += result.success_rate;  // Sum success rates
-            entry.2 += 1;  // Count this run
+            // Count this as a successful exercise if the run succeeded
+            if result.success {
+                entry.1 += 1;  // One successful exercise
+            }
+            entry.2 += 1;  // Count this run (total exercises attempted)
             entry.3 += result.speed_score;
             entry.4 += result.token_score;
             entry.5 += result.output_tokens as f64;
         }
         
-        // Debug: print first model's aggregation
-        if let Some((name, (total_score, sum_sr, total_runs, _, _, _))) = model_map.iter().next() {
-            tracing::debug!("Aggregation debug: name={}, sum_success_rates={}, total_runs={}, avg={}", 
-                name, sum_sr, total_runs, if *total_runs > 0 { sum_sr / *total_runs as f64 } else { 0.0 });
-        }
-        
         // Calculate averages for all models
+        // Success rate = successful_exercises / total_possible_exercises
+        // Missing exercises are treated as failures to penalize incomplete coverage
+        
         model_map.into_iter()
-            .map(|(name, (total_score, sum_success_rates, total_runs, total_speed, total_token, total_tokens))| {
-                let avg_success_rate = if total_runs > 0 {
-                    sum_success_rates / total_runs as f64
+            .map(|(name, (total_score, total_successful, total_runs, total_speed, total_token, total_tokens))| {
+                // Success rate = successful_exercises / benchmark_size
+                // Missing exercises are treated as failures
+                const BENCHMARK_SIZE: u32 = 225;
+                let avg_success_rate = if BENCHMARK_SIZE > 0 {
+                    total_successful as f64 / BENCHMARK_SIZE as f64
                 } else {
                     0.0
                 };
