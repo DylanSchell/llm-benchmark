@@ -48,13 +48,45 @@ impl TemplateEngine {
                 }
             })
             .unwrap_or_else(|_| "templates".to_string());
-        let tera = match Tera::new(&format!("{}/**/*.tera", templates_path)) {
+        let mut tera = match Tera::new(&format!("{}/**/*.tera", templates_path)) {
             Ok(t) => t,
             Err(e) => {
                 eprintln!("Parsing error(s): {e}");
                 std::process::exit(1);
             }
         };
+        
+        // Add custom filter for formatting large numbers with K/M/G suffixes
+        tera.register_filter("format_number", |value: &tera::Value, _args: &std::collections::HashMap<String, tera::Value>| -> tera::Result<tera::Value> {
+            use serde_json::Number;
+            let num = match value {
+                tera::Value::Number(n) => {
+                    if let Some(i) = n.as_i64() {
+                        i
+                    } else if let Some(f) = n.as_f64() {
+                        f as i64
+                    } else {
+                        return Ok(tera::Value::String("0".to_string()));
+                    }
+                }
+                tera::Value::String(s) => s.parse::<i64>().unwrap_or(0),
+                _ => 0,
+            };
+            
+            let abs = num.unsigned_abs();
+            let formatted = if abs >= 1_000_000_000 {
+                format!("{:.1}G", num as f64 / 1_000_000_000.0)
+            } else if abs >= 1_000_000 {
+                format!("{:.1}M", num as f64 / 1_000_000.0)
+            } else if abs >= 1_000 {
+                format!("{:.1}K", num as f64 / 1_000.0)
+            } else {
+                num.to_string()
+            };
+            
+            Ok(tera::Value::String(formatted))
+        });
+        
         Self { tera: Arc::new(tera) }
     }
 

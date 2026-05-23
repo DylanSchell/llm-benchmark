@@ -180,6 +180,7 @@
                     <th onclick="sortTable('by-language-table', 2)" style="cursor: pointer;">Successful &#x2195;</th>
                     <th onclick="sortTable('by-language-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
                     <th onclick="sortTable('by-language-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
+                    <th onclick="sortTable('by-language-table', 5)" style="cursor: pointer;">Tokens &#x2195;</th>
                 </tr>
             </thead>
             <tbody>
@@ -192,6 +193,11 @@
                     <td>{{ success }}</td>
                     <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
                     <td>{{ item.success_rate_formatted }}</td>
+                    <td title="Uncached / Cached / Output">
+                        {{ item.uncached_tokens | default(value=0) | format_number }} /
+                        {{ item.cached_tokens | default(value=0) | format_number }} /
+                        {{ item.output_tokens | default(value=0) | format_number }}
+                    </td>
                 </tr>
                 {% endif %}
             {% endfor %}
@@ -210,6 +216,7 @@
                     <th onclick="sortTable('by-agent-table', 2)" style="cursor: pointer;">Successful &#x2195;</th>
                     <th onclick="sortTable('by-agent-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
                     <th onclick="sortTable('by-agent-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
+                    <th onclick="sortTable('by-agent-table', 5)" style="cursor: pointer;">Tokens &#x2195;</th>
                 </tr>
             </thead>
             <tbody>
@@ -222,6 +229,11 @@
                     <td>{{ success }}</td>
                     <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
                     <td>{{ item.success_rate_formatted }}</td>
+                    <td title="Uncached / Cached / Output">
+                        {{ item.uncached_tokens | default(value=0) | format_number }} /
+                        {{ item.cached_tokens | default(value=0) | format_number }} /
+                        {{ item.output_tokens | default(value=0) | format_number }}
+                    </td>
                 </tr>
                 {% endif %}
             {% endfor %}
@@ -240,6 +252,7 @@
                     <th onclick="sortTable('by-model-table', 2)" style="cursor: pointer;">Successful &#x2195;</th>
                     <th onclick="sortTable('by-model-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
                     <th onclick="sortTable('by-model-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
+                    <th onclick="sortTable('by-model-table', 5)" style="cursor: pointer;">Tokens &#x2195;</th>
                 </tr>
             </thead>
             <tbody>
@@ -262,6 +275,11 @@
                     <td>{{ success }}</td>
                     <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
                     <td>{{ item.success_rate_formatted }}</td>
+                    <td title="Uncached / Cached / Output">
+                        {{ item.uncached_tokens | default(value=0) | format_number }} /
+                        {{ item.cached_tokens | default(value=0) | format_number }} /
+                        {{ item.output_tokens | default(value=0) | format_number }}
+                    </td>
                 </tr>
                 {% endif %}
             {% endfor %}

@@ -162,6 +162,7 @@
                     {% endif %}
                     <th onclick="sortTable(this, true)" style="cursor: pointer;">Duration &#x2195;</th>
                     <th onclick="sortTable(this, false)" style="cursor: pointer;">Success &#x2195;</th>
+                    <th onclick="sortTable(this, false)" style="cursor: pointer;">Tokens &#x2195;</th>
                     <th onclick="sortTable(this, false)" style="cursor: pointer;">Actions</th>
                 </tr>
             </thead>
@@ -188,6 +189,11 @@
                         {% else %}
                             &#x2717;
                         {% endif %}
+                    </td>
+                    <td title="Uncached / Cached / Output">
+                        {{ indResult.uncached_input_tokens | default(value=0) | format_number }} /
+                        {{ indResult.cached_input_tokens | default(value=0) | format_number }} /
+                        {{ indResult.output_tokens | default(value=0) | format_number }}
                     </td>
                     <td>
                         {% if indResult.has_trace_file %}
