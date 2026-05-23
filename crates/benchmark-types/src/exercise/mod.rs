@@ -6,7 +6,6 @@ fn deserialize_duration_ms<'de, D>(deserializer: D) -> Result<u64, D::Error>
 where
     D: Deserializer<'de>,
 {
-    use serde::de::Error;
     let value = serde_json::Value::deserialize(deserializer)?;
     match value {
         serde_json::Value::Number(n) => {
@@ -31,7 +30,6 @@ fn deserialize_timestamp<'de, D>(deserializer: D) -> Result<String, D::Error>
 where
     D: Deserializer<'de>,
 {
-    use serde::de::Error;
     let value = serde_json::Value::deserialize(deserializer)?;
     match value {
         serde_json::Value::Number(n) => {
