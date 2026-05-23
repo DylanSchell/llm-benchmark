@@ -162,7 +162,7 @@
                     {% endif %}
                     <th onclick="sortTable(this, true)" style="cursor: pointer;">Duration &#x2195;</th>
                     <th onclick="sortTable(this, false)" style="cursor: pointer;">Success &#x2195;</th>
-                    <th onclick="sortTable(this, false)" style="cursor: pointer;">Tokens &#x2195;</th>
+                    <th onclick="sortTable(this, true)" style="cursor: pointer;">Tokens &#x2195;</th>
                     <th onclick="sortTable(this, false)" style="cursor: pointer;">Actions</th>
                 </tr>
             </thead>
