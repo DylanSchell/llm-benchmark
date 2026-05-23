@@ -233,6 +233,11 @@ pub struct StatItem {
     pub cached_tokens: u64,
     #[serde(default)]
     pub uncached_tokens: u64,
+    // For model_stats: separate agent and model for URL construction
+    #[serde(default)]
+    pub agent: Option<String>,
+    #[serde(default)]
+    pub model: Option<String>,
 }
 
 /// Aggregate statistics.
@@ -981,6 +986,8 @@ impl ResultService {
                     output_tokens: *output_tokens,
                     cached_tokens: *cached_tokens,
                     uncached_tokens: *uncached_tokens,
+                    agent: None,
+                    model: None,
                 }
             })
             .collect();
@@ -1001,6 +1008,8 @@ impl ResultService {
                     output_tokens: *output_tokens,
                     cached_tokens: *cached_tokens,
                     uncached_tokens: *uncached_tokens,
+                    agent: None,
+                    model: None,
                 }
             })
             .collect();
@@ -1010,6 +1019,11 @@ impl ResultService {
             .iter()
             .map(|(name, (total, success, duration, input_tokens, output_tokens, cached_tokens, uncached_tokens))| {
                 let rate = if *total > 0 { (*success as f64 / *total as f64) * 100.0 } else { 0.0 };
+                // Parse "agent - model" into separate fields for URL construction
+                let (agent, model) = name.split_once(" - ")
+                    .map(|(a, m)| (Some(a.to_string()), Some(m.to_string())))
+                    .unwrap_or((None, None));
+                
                 StatItem {
                     name: name.clone(),
                     total: *total,
@@ -1021,6 +1035,8 @@ impl ResultService {
                     output_tokens: *output_tokens,
                     cached_tokens: *cached_tokens,
                     uncached_tokens: *uncached_tokens,
+                    agent,
+                    model,
                 }
             })
             .collect();

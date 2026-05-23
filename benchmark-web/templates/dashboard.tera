@@ -247,7 +247,17 @@
                 {% set success = item.success | default(value=0) %}
                 {% if item.total > 0 %}
                 <tr>
-                    <td><a href="/results?agent={{ item.name | split(pat=' - ') | first }}&model={{ item.name | split(pat=' - ') | last }}" style="color: #3498db; text-decoration: none;">{{ item.name }}</a></td>
+                    <td>
+                        {% set href = "/results" %}
+                        {% if item.agent and item.model %}
+                            {% set href = href ~ "?agent=" ~ item.agent ~ "&model=" ~ item.model %}
+                        {% elif item.model %}
+                            {% set href = href ~ "?model=" ~ item.model %}
+                        {% elif item.agent %}
+                            {% set href = href ~ "?agent=" ~ item.agent %}
+                        {% endif %}
+                        <a href="{{ href }}" style="color: #3498db; text-decoration: none;">{{ item.name }}</a>
+                    </td>
                     <td>{{ item.total }}</td>
                     <td>{{ success }}</td>
                     <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
