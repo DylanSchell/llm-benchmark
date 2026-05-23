@@ -1503,6 +1503,27 @@ impl ResultService {
         agent: Option<&str>,
         quick_only: bool,
     ) -> Vec<ModelScore> {
+        // Dynamically calculate benchmark sizes from available exercises
+        let cached = self.cached_results.read().unwrap();
+        let mut all_exercises: std::collections::HashSet<String> = std::collections::HashSet::new();
+        let mut quick_exercises: std::collections::HashSet<String> = std::collections::HashSet::new();
+        
+        for cached_result in cached.values() {
+            let key = format!("{}:{}", cached_result.language, cached_result.exercise);
+            all_exercises.insert(key.clone());
+            if Self::is_quick_bench_exercise(&cached_result.language, &cached_result.exercise) {
+                quick_exercises.insert(key);
+            }
+        }
+        
+        let full_benchmark_size = all_exercises.len() as u32;
+        let quick_benchmark_size = quick_exercises.len() as u32;
+        let benchmark_size = if quick_only { quick_benchmark_size } else { full_benchmark_size };
+        
+        tracing::info!("Calculated benchmark sizes: full={}, quick={}", full_benchmark_size, quick_benchmark_size);
+        
+        drop(cached); // Release the lock before calling calculate_scores
+        
         let scored_results = self.calculate_scores(language, agent, None, None, quick_only);
         
         // Aggregate by model: (total_composite_score, total_successful_runs, total_runs, total_speed, total_token, total_tokens)
@@ -1532,9 +1553,10 @@ impl ResultService {
             .map(|(name, (total_score, total_successful, total_runs, total_speed, total_token, total_tokens))| {
                 // Success rate = successful_exercises / benchmark_size
                 // Missing exercises are treated as failures
-                const BENCHMARK_SIZE: u32 = 225;
-                let avg_success_rate = if BENCHMARK_SIZE > 0 {
-                    total_successful as f64 / BENCHMARK_SIZE as f64
+                let avg_success_rate = if benchmark_size > 0 {
+                    // Cap at 100% in case we have more successful runs than expected exercises
+                    let rate = total_successful as f64 / benchmark_size as f64;
+                    rate.min(1.0)
                 } else {
                     0.0
                 };

@@ -24,7 +24,7 @@
 
     <!-- Filters -->
     <div class="card" style="margin-bottom: 1.5rem;">
-        <form method="get" action="/scoring" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+        <form id="scoring-filter-form" method="get" action="/scoring" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
             <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
                 <label for="filter-language">Language</label>
                 <select id="filter-language" name="language">
@@ -60,6 +60,21 @@
             <button type="submit" class="btn btn-primary">Filter</button>
             <a href="/scoring" class="btn">Clear</a>
         </form>
+        <script>
+            document.getElementById('scoring-filter-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                var params = new URLSearchParams();
+                var language = this.querySelector('[name="language"]').value;
+                var agent = this.querySelector('[name="agent"]').value;
+                var quick = this.querySelector('[name="quick"]').checked;
+                
+                if (language) params.set('language', language);
+                if (agent) params.set('agent', agent);
+                if (quick) params.set('quick', 'true');
+                
+                window.location.search = params.toString();
+            });
+        </script>
     </div>
 
     <!-- Model Rankings -->
