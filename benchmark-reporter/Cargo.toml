@@ -15,6 +15,7 @@ required-features = ["bin"]
 
 [dependencies]
 anyhow = "1"
+benchmark-types = { path = "../crates/benchmark-types" }
 clap = { version = "4", features = ["derive"] }
 regex = "1"
 serde = { version = "1", features = ["derive"] }

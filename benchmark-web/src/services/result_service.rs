@@ -3,13 +3,157 @@
 //! Caches all results in memory on startup for fast access.
 
 use anyhow::Result;
+use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::fs;
+use std::fs::{self, File};
+use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use tracing::{info, warn};
 
+// =============================================================================
+// Token parsing models (mirrors benchmark-reporter)
+// =============================================================================
+
+#[derive(Debug, Deserialize)]
+#[serde(tag = "type")]
+enum PiLogEntry {
+    #[serde(rename = "message")]
+    Message(PiMessage),
+    #[serde(other)]
+    Other,
+}
+
+#[derive(Debug, Deserialize)]
+struct PiMessage {
+    message: Option<PiMessageData>,
+}
+
+#[derive(Debug, Deserialize)]
+struct PiMessageData {
+    usage: Option<PiUsage>,
+}
+
+#[derive(Debug, Deserialize)]
+struct PiUsage {
+    input: Option<i64>,
+    output: Option<i64>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(tag = "type")]
+enum LogEntry {
+    #[serde(rename = "assistant")]
+    Assistant(AssistantEntry),
+    #[serde(rename = "user")]
+    User(UserEntry),
+    #[serde(other)]
+    Other,
+}
+
+#[derive(Debug, Deserialize)]
+struct AssistantEntry {
+    message: Option<Message>,
+}
+
+#[derive(Debug, Deserialize)]
+struct UserEntry {
+    message: Option<Message>,
+}
+
+#[derive(Debug, Deserialize)]
+struct Message {
+    usage: Option<Usage>,
+}
+
+#[derive(Debug, Deserialize)]
+struct Usage {
+    input_tokens: u64,
+    output_tokens: u64,
+}
+
+/// Calculate tokens from a Pi agent trace file.
+/// Returns (input, output, cached, uncached)
+fn calculate_pi_tokens(trace_path: &Path) -> (u64, u64, u64, u64) {
+    let mut input = 0u64;
+    let mut output = 0u64;
+    
+    if let Ok(file) = File::open(trace_path) {
+        for line in BufReader::new(file).lines().flatten() {
+            if let Ok(PiLogEntry::Message(msg)) = serde_json::from_str::<PiLogEntry>(line.trim()) {
+                if let Some(ref data) = msg.message {
+                    if let Some(ref usage) = data.usage {
+                        input += usage.input.unwrap_or(0) as u64;
+                        output += usage.output.unwrap_or(0) as u64;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Pi doesn't track cached/uncached separately
+    (input, output, 0, 0)
+}
+
+/// Calculate tokens from a Claude agent trace file.
+/// Returns (input, output, cached, uncached)
+fn calculate_claude_tokens(trace_path: &Path) -> (u64, u64, u64, u64) {
+    let mut input = 0u64;
+    let mut output = 0u64;
+    let mut cached = 0u64;
+    let mut uncached = 0u64;
+    let mut prev_input: u64 = 0;
+    
+    if let Ok(file) = File::open(trace_path) {
+        for line in BufReader::new(file).lines().flatten() {
+            if let Ok(entry) = serde_json::from_str::<LogEntry>(line.trim()) {
+                let msg = match &entry {
+                    LogEntry::Assistant(a) => a.message.as_ref(),
+                    LogEntry::User(u) => u.message.as_ref(),
+                    _ => continue,
+                };
+                
+                if let Some(m) = msg {
+                    if let Some(ref usage) = m.usage {
+                        input += usage.input_tokens;
+                        output += usage.output_tokens;
+                        
+                        // Calculate cached vs uncached based on delta from previous input
+                        let new = usage.input_tokens.saturating_sub(prev_input);
+                        if new > 0 {
+                            uncached += new;
+                            cached += usage.input_tokens - new;
+                        } else {
+                            uncached += usage.input_tokens;
+                        }
+                        prev_input = usage.input_tokens;
+                    }
+                }
+            }
+        }
+    }
+    
+    (input, output, cached, uncached)
+}
+
+/// Parse tokens from a trace file based on agent type.
+fn parse_tokens_from_trace(trace_path: &Path, agent: &str) -> (u64, u64, u64, u64) {
+    if !trace_path.exists() {
+        return (0, 0, 0, 0);
+    }
+    
+    if agent.starts_with("pi") {
+        calculate_pi_tokens(trace_path)
+    } else {
+        // Default to Claude format for claude, reference, etc.
+        calculate_claude_tokens(trace_path)
+    }
+}
+
+// =============================================================================
+// Cached result data for fast in-memory access.
 /// Cached result data for fast in-memory access.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CachedResult {
@@ -28,6 +172,15 @@ pub struct CachedResult {
     pub results: Vec<HashMap<String, String>>,
     pub trace_path: Option<String>,
     pub has_trace_file: bool,
+    // Token tracking fields
+    #[serde(default)]
+    pub input_tokens: u64,
+    #[serde(default)]
+    pub output_tokens: u64,
+    #[serde(default)]
+    pub cached_input_tokens: u64,
+    #[serde(default)]
+    pub uncached_input_tokens: u64,
 }
 
 /// Result of listing individual results.
@@ -50,6 +203,16 @@ pub struct IndividualResult {
     pub has_trace_file: bool,
     pub duration: Option<String>,
     pub sort_duration: Option<f64>,
+    // Token tracking fields
+    #[serde(default)]
+    pub input_tokens: u64,
+    #[serde(default)]
+    pub output_tokens: u64,
+    #[serde(default)]
+    pub cached_input_tokens: u64,
+    #[serde(default)]
+    pub uncached_input_tokens: u64,
+    pub total_tokens: u64,
 }
 
 /// Statistics item for template rendering.
@@ -61,6 +224,15 @@ pub struct StatItem {
     pub success_rate_formatted: String,
     pub total_duration: f64,
     pub total_duration_formatted: String,
+    // Token statistics
+    #[serde(default)]
+    pub input_tokens: u64,
+    #[serde(default)]
+    pub output_tokens: u64,
+    #[serde(default)]
+    pub cached_tokens: u64,
+    #[serde(default)]
+    pub uncached_tokens: u64,
 }
 
 /// Aggregate statistics.
@@ -79,6 +251,16 @@ pub struct Statistics {
     pub language_stats: Vec<StatItem>,
     pub agent_stats: Vec<StatItem>,
     pub model_stats: Vec<StatItem>,
+    // Token statistics
+    #[serde(default)]
+    pub total_input_tokens: u64,
+    #[serde(default)]
+    pub total_output_tokens: u64,
+    #[serde(default)]
+    pub total_cached_tokens: u64,
+    #[serde(default)]
+    pub total_uncached_tokens: u64,
+    pub token_display: String,
 }
 
 /// Service for reading and managing benchmark results.
@@ -101,25 +283,18 @@ impl ResultService {
         service
     }
 
-    /// Load all result files into the in-memory cache.
+    /// Load all result files into the in-memory cache using parallel processing.
     pub fn load_all_results(&self) {
         info!("Loading all results into cache from: {}", self.results_dir.display());
-
-        let mut cached = self.cached_results.write().unwrap();
-        let mut models = self.cached_models.write().unwrap();
-
-        cached.clear();
-        models.clear();
 
         if !self.results_dir.exists() {
             warn!("Results directory does not exist: {}", self.results_dir.display());
             return;
         }
 
-        let mut count = 0;
-        let mut error_count = 0;
+        // Collect all result file paths first (this is fast, just directory traversal)
+        let mut result_paths: Vec<PathBuf> = Vec::new();
 
-        // Walk the results directory for result_*.json files
         if let Ok(entries) = fs::read_dir(&self.results_dir) {
             for entry in entries.flatten() {
                 let path = entry.path();
@@ -140,48 +315,158 @@ impl ResultService {
                             .to_string_lossy()
                             .to_string();
 
-                        if !filename.starts_with("result_") || !filename.ends_with(".json") {
-                            continue;
-                        }
-
-                        match Self::load_cached_result(&file_path) {
-                            Ok(Some(cached_result)) => {
-                                let cache_key = format!(
-                                    "{}/{}/{}",
-                                    cached_result.directory, cached_result.language, cached_result.exercise
-                                );
-                                cached.insert(cache_key.clone(), cached_result.clone());
-                                models.push(cached_result.model.clone());
-                                count += 1;
-                            }
-                            Ok(None) => {}
-                            Err(e) => {
-                                warn!("Failed to load result file {}: {}", file_path.display(), e);
-                                error_count += 1;
-                            }
+                        if filename.starts_with("result_") && filename.ends_with(".json") {
+                            result_paths.push(file_path);
                         }
                     }
                 }
             }
         }
 
+        let total_files = result_paths.len();
+        info!("Found {} result files to process", total_files);
+
+        // Shared collections for errors and skipped files
+        let error_count = AtomicUsize::new(0);
+        let error_messages: Arc<RwLock<Vec<String>>> = Arc::new(RwLock::new(Vec::new()));
+        let skipped_count = AtomicUsize::new(0);
+        let skipped_files: Arc<RwLock<Vec<String>>> = Arc::new(RwLock::new(Vec::new()));
+
+        // Process files in parallel using rayon
+        let results: Vec<(String, CachedResult)> = result_paths
+            .par_iter()
+            .filter_map(|file_path| {
+                match Self::load_cached_result(file_path) {
+                    Ok(Some(cached_result)) => {
+                        let cache_key = format!(
+                            "{}/{}/{}",
+                            cached_result.directory, cached_result.language, cached_result.exercise
+                        );
+                        Some((cache_key, cached_result))
+                    }
+                    Ok(None) => {
+                        // Not a valid exercise result - log why it was skipped
+                        skipped_count.fetch_add(1, Ordering::SeqCst);
+                        let file_name = file_path.file_name()
+                            .map(|n| n.to_string_lossy().to_string())
+                            .unwrap_or_else(|| "unknown".to_string());
+                        let parent = file_path.parent()
+                            .map(|p| p.to_string_lossy().to_string())
+                            .unwrap_or_else(|| "unknown".to_string());
+                        
+                        if let Ok(mut skipped) = skipped_files.write() {
+                            skipped.push(format!("{}/{}", parent, file_name));
+                        }
+                        None
+                    }
+                    Err(e) => {
+                        // Increment error counter and store message
+                        error_count.fetch_add(1, Ordering::SeqCst);
+                        let error_msg = format!("Failed to load {}: {}", file_path.display(), e);
+                        if let Ok(mut errors) = error_messages.write() {
+                            errors.push(error_msg);
+                        }
+                        None
+                    }
+                }
+            })
+            .collect();
+
+        let count = results.len();
+        let actual_error_count = error_count.load(Ordering::SeqCst);
+        let actual_skipped_count = skipped_count.load(Ordering::SeqCst);
+
+        // Summary of what happened
+        info!(
+            "Parallel load complete: {} files processed, {} loaded successfully, {} skipped (invalid format), {} errors",
+            total_files, count, actual_skipped_count, actual_error_count
+        );
+
+        // Log skipped files (not valid exercise results)
+        if actual_skipped_count > 0 {
+            info!("Skipped {} files that are not valid exercise results:", actual_skipped_count);
+            if let Ok(skipped) = skipped_files.read() {
+                for file_path in skipped.iter().take(10) {
+                    // Extract just the relative path from results dir for readability
+                    let relative = file_path.strip_prefix(self.results_dir.to_string_lossy().as_ref())
+                        .unwrap_or(file_path);
+                    info!("  - {}", relative);
+                }
+                if skipped.len() > 10 {
+                    info!("  ... and {} more files", skipped.len() - 10);
+                }
+            }
+        }
+
+        // Log actual errors if any occurred
+        if actual_error_count > 0 {
+            info!("Encountered {} actual errors while loading result files:", actual_error_count);
+            if let Ok(errors) = error_messages.read() {
+                for error_msg in errors.iter().take(10) {
+                    info!("  - {}", error_msg);
+                }
+                if errors.len() > 10 {
+                    info!("  ... and {} more errors", errors.len() - 10);
+                }
+            }
+        }
+
+        // Now merge results into the shared cache (single-threaded, fast write)
+        let mut cached = self.cached_results.write().unwrap();
+        let mut models: Vec<String> = Vec::new();
+
+        for (cache_key, cached_result) in results {
+            cached.insert(cache_key, cached_result.clone());
+            models.push(cached_result.model);
+        }
+
         models.sort();
         models.dedup();
 
+        drop(cached);
+
+        // Update models cache
+        let mut models_cache = self.cached_models.write().unwrap();
+        *models_cache = models;
+
         info!(
             "Loaded {} cached result files into cache ({} errors)",
-            count, error_count
+            count, actual_error_count
         );
-        info!("Cached models: {:?}", models);
+        info!("Cached models: {:?}", models_cache);
     }
 
     /// Load a single result file into a CachedResult.
     fn load_cached_result(file_path: &Path) -> Result<Option<CachedResult>> {
         let content = fs::read_to_string(file_path)?;
-        let value: serde_json::Value = serde_json::from_str(&content)?;
-
-        // Validate this is an individual exercise result
-        if value.get("exerciseName").is_none() || value.get("language").is_none() {
+        
+        // Try to deserialize as ExerciseResult first (handles both camelCase and snake_case via serde aliases)
+        let exercise_result: benchmark_types::exercise::ExerciseResult = match serde_json::from_str(&content) {
+            Ok(r) => r,
+            Err(e) => {
+                // Log first few deserialization errors for debugging
+                static ERROR_COUNT: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+                let count = ERROR_COUNT.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                if count < 3 {
+                    warn!("Failed to deserialize {}: {}\nContent preview: {}",
+                        file_path.display(),
+                        e,
+                        content.chars().take(200).collect::<String>());
+                }
+                return Ok(None);
+            }
+        };
+        
+        // Skip if it doesn't have the required fields (empty exercise name means it's not a real result)
+        if exercise_result.exercise_name.is_empty() || exercise_result.language.is_empty() {
+            static SKIP_COUNT: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+            let count = SKIP_COUNT.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+            if count < 3 {
+                info!("Skipped {} - empty exercise_name='{}' or language='{}'",
+                    file_path.display(),
+                    exercise_result.exercise_name,
+                    exercise_result.language);
+            }
             return Ok(None);
         }
 
@@ -197,85 +482,59 @@ impl ResultService {
             .to_string_lossy()
             .to_string();
 
-        // Extract fields
-        let model = value
-            .get("model")
-            .and_then(|v| v.as_str())
-            .unwrap_or(&directory)
-            .to_string();
+        // Use fields from the deserialized ExerciseResult
+        let exercise = exercise_result.exercise_name.clone();
+        let language = exercise_result.language.clone();
+        let success = exercise_result.success;
+        
+        // Model: use from result if present, otherwise derive from directory
+        let model = if !exercise_result.model.is_empty() {
+            exercise_result.model.clone()
+        } else {
+            directory.clone()
+        };
 
-        let timestamp = value
-            .get("endTime")
-            .or_else(|| value.get("timestamp"))
-            .and_then(|v| {
-                // Try string first (RFC3339), then number (Unix epoch)
-                // Store as raw UTC ISO 8601 — timezone conversion is done client-side
-                if let Some(s) = v.as_str() {
-                    Some(s.to_string())
-                } else if let Some(n) = v.as_f64() {
-                    // Convert Unix epoch to UTC ISO 8601
-                    let secs = n as i64;
-                    let nanos = ((n - secs as f64) * 1_000_000_000.0) as u32;
-                    chrono::DateTime::<chrono::Utc>::from_timestamp(secs, nanos)
-                        .map(|dt| dt.to_rfc3339())
-                } else {
-                    None
-                }
-            });
+        // Timestamp: format end_time as RFC3339
+        let timestamp = if !exercise_result.end_time.is_empty() {
+            Some(exercise_result.end_time.clone())
+        } else {
+            None
+        };
 
-        let agent = value
-            .get("agent")
-            .and_then(|v| v.as_str())
-            .map(|s| s.to_string())
-            .unwrap_or_else(|| {
-                // Derive from filename: result_<agent>_<lang>_<exercise>.json
-                if filename.starts_with("result_") {
-                    let without_prefix = &filename[7..];
-                    without_prefix
-                        .split('_')
-                        .next()
-                        .unwrap_or("unknown")
-                        .to_string()
-                } else {
-                    "unknown".to_string()
-                }
-            });
+        // Agent: try to get from result, otherwise derive from filename
+        let agent = if !exercise_result.model.is_empty() && exercise_result.exercise_name.starts_with("result_") {
+            // Try to extract agent from model field if it contains agent info
+            exercise_result.model.clone()
+        } else {
+            // Derive from filename: result_<agent>_<lang>_<exercise>.json
+            if filename.starts_with("result_") {
+                let without_prefix = &filename[7..];
+                without_prefix
+                    .split('_')
+                    .next()
+                    .unwrap_or("unknown")
+                    .to_string()
+            } else {
+                "unknown".to_string()
+            }
+        };
 
-        let language = value
-            .get("language")
-            .and_then(|v| v.as_str())
-            .unwrap_or("unknown")
-            .to_string();
+        // Duration: convert ms to seconds string for display
+        let duration = if exercise_result.duration_ms > 0 {
+            format!("{}s", exercise_result.duration_ms as f64 / 1000.0)
+        } else {
+            "0s".to_string()
+        };
 
-        let exercise = value
-            .get("exerciseName")
-            .and_then(|v| v.as_str())
-            .unwrap_or("unknown")
-            .to_string();
+        let output = exercise_result.output.clone();
 
-        let success = value
-            .get("success")
-            .and_then(|v| v.as_bool())
-            .unwrap_or(false);
-
-        let duration = value
-            .get("duration")
-            .map(|v| v.to_string())
-            .unwrap_or_else(|| "0".to_string());
-
-        let output = value
-            .get("output")
-            .and_then(|v| v.as_str())
-            .unwrap_or("")
-            .to_string();
-
-        // Build results list
+        // Build results list for backward compatibility
         let mut single_result = HashMap::new();
         single_result.insert("language".to_string(), language.clone());
         single_result.insert("exercise".to_string(), exercise.clone());
         single_result.insert("success".to_string(), success.to_string());
         single_result.insert("duration".to_string(), duration.clone());
-        single_result.insert("output".to_string(), output);
+        single_result.insert("output".to_string(), output.clone());
 
         let total_exercises = 1;
         let successful = if success { 1 } else { 0 };
@@ -304,6 +563,28 @@ impl ResultService {
             None
         };
 
+        // Use tokens from deserialized result if present, otherwise parse from trace file
+        let (input_tokens, output_tokens, cached_input_tokens, uncached_input_tokens) =
+            if exercise_result.input_tokens > 0 || exercise_result.output_tokens > 0 {
+                // Tokens already in the result file
+                (
+                    exercise_result.input_tokens,
+                    exercise_result.output_tokens,
+                    exercise_result.cached_input_tokens,
+                    exercise_result.uncached_input_tokens,
+                )
+            } else if let Some(ref trace_path_str) = trace_path {
+                if trace_path_str.ends_with(".jsonl") {
+                    // Parse tokens from trace file
+                    let trace_path_buf = PathBuf::from(trace_path_str);
+                    parse_tokens_from_trace(&trace_path_buf, &agent)
+                } else {
+                    (0, 0, 0, 0)
+                }
+            } else {
+                (0, 0, 0, 0)
+            };
+
         Ok(Some(CachedResult {
             filename,
             directory,
@@ -320,6 +601,10 @@ impl ResultService {
             results: vec![single_result],
             trace_path: trace_path.clone(),
             has_trace_file: trace_path.is_some(),
+            input_tokens,
+            output_tokens,
+            cached_input_tokens,
+            uncached_input_tokens,
         }))
     }
 
@@ -502,6 +787,11 @@ impl ResultService {
                     has_trace_file: cached_result.has_trace_file,
                     duration: None,
                     sort_duration: None,
+                    input_tokens: cached_result.input_tokens,
+                    output_tokens: cached_result.output_tokens,
+                    cached_input_tokens: cached_result.cached_input_tokens,
+                    uncached_input_tokens: cached_result.uncached_input_tokens,
+                    total_tokens: cached_result.input_tokens + cached_result.output_tokens,
                 });
             }
         }
@@ -561,9 +851,13 @@ impl ResultService {
         let mut total_exercises: i32 = 0;
         let mut successful_exercises: i32 = 0;
         let mut total_duration: f64 = 0.0;
-        let mut by_language: HashMap<String, (i32, i32, f64)> = HashMap::new();
-        let mut by_agent: HashMap<String, (i32, i32, f64)> = HashMap::new();
-        let mut by_model: HashMap<String, (i32, i32, f64)> = HashMap::new();
+        let mut total_input_tokens: u64 = 0;
+        let mut total_output_tokens: u64 = 0;
+        let mut total_cached_tokens: u64 = 0;
+        let mut total_uncached_tokens: u64 = 0;
+        let mut by_language: HashMap<String, (i32, i32, f64, u64, u64, u64, u64)> = HashMap::new();
+        let mut by_agent: HashMap<String, (i32, i32, f64, u64, u64, u64, u64)> = HashMap::new();
+        let mut by_model: HashMap<String, (i32, i32, f64, u64, u64, u64, u64)> = HashMap::new();
 
         for cached_result in cached.values() {
             if !Self::matches_filter(
@@ -599,29 +893,68 @@ impl ResultService {
                 }
             }
 
-            // By language - track (total, success, duration)
+            // Accumulate tokens
+            total_input_tokens += cached_result.input_tokens;
+            total_output_tokens += cached_result.output_tokens;
+            total_cached_tokens += cached_result.cached_input_tokens;
+            total_uncached_tokens += cached_result.uncached_input_tokens;
+
+            // By language - track (total, success, duration, input_tokens, output_tokens, cached_tokens, uncached_tokens)
             *by_language
                 .entry(cached_result.language.clone())
-                .or_insert((0, 0, 0.0)) = {
-                let (t, s, d) = by_language.get(&cached_result.language).copied().unwrap_or((0, 0, 0.0));
-                (t + cached_result.total_exercises, s + cached_result.successful, d + entry_duration)
+                .or_insert((0, 0, 0.0, 0, 0, 0, 0)) = {
+                let (t, s, d, ti, to, tc, tu) = by_language
+                    .get(&cached_result.language)
+                    .copied()
+                    .unwrap_or((0, 0, 0.0, 0, 0, 0, 0));
+                (
+                    t + cached_result.total_exercises,
+                    s + cached_result.successful,
+                    d + entry_duration,
+                    ti + cached_result.input_tokens,
+                    to + cached_result.output_tokens,
+                    tc + cached_result.cached_input_tokens,
+                    tu + cached_result.uncached_input_tokens,
+                )
             };
 
-            // By agent - track (total, success, duration)
+            // By agent - track (total, success, duration, tokens)
             *by_agent
                 .entry(cached_result.agent.clone())
-                .or_insert((0, 0, 0.0)) = {
-                let (t, s, d) = by_agent.get(&cached_result.agent).copied().unwrap_or((0, 0, 0.0));
-                (t + cached_result.total_exercises, s + cached_result.successful, d + entry_duration)
+                .or_insert((0, 0, 0.0, 0, 0, 0, 0)) = {
+                let (t, s, d, ti, to, tc, tu) = by_agent
+                    .get(&cached_result.agent)
+                    .copied()
+                    .unwrap_or((0, 0, 0.0, 0, 0, 0, 0));
+                (
+                    t + cached_result.total_exercises,
+                    s + cached_result.successful,
+                    d + entry_duration,
+                    ti + cached_result.input_tokens,
+                    to + cached_result.output_tokens,
+                    tc + cached_result.cached_input_tokens,
+                    tu + cached_result.uncached_input_tokens,
+                )
             };
 
-            // By model - track (total, success, duration) using agent + model combination
+            // By model - track (total, success, duration, tokens)
             let model_key = format!("{} - {}", cached_result.agent, cached_result.model);
             *by_model
-                .entry(model_key)
-                .or_insert((0, 0, 0.0)) = {
-                let (t, s, d) = by_model.get(&model_key).copied().unwrap_or((0, 0, 0.0));
-                (t + cached_result.total_exercises, s + cached_result.successful, d + entry_duration)
+                .entry(model_key.clone())
+                .or_insert((0, 0, 0.0, 0, 0, 0, 0)) = {
+                let (t, s, d, ti, to, tc, tu) = by_model
+                    .get(&model_key)
+                    .copied()
+                    .unwrap_or((0, 0, 0.0, 0, 0, 0, 0));
+                (
+                    t + cached_result.total_exercises,
+                    s + cached_result.successful,
+                    d + entry_duration,
+                    ti + cached_result.input_tokens,
+                    to + cached_result.output_tokens,
+                    tc + cached_result.cached_input_tokens,
+                    tu + cached_result.uncached_input_tokens,
+                )
             };
         }
 
@@ -632,10 +965,10 @@ impl ResultService {
         };
         let success_rate_formatted = format!("{:.1}", success_rate);
 
-        // Convert HashMaps to sorted Vec<StatItem> with duration
+        // Convert HashMaps to sorted Vec<StatItem> with duration and tokens
         let mut language_stats: Vec<StatItem> = by_language
             .iter()
-            .map(|(name, (total, success, duration))| {
+            .map(|(name, (total, success, duration, input_tokens, output_tokens, cached_tokens, uncached_tokens))| {
                 let rate = if *total > 0 { (*success as f64 / *total as f64) * 100.0 } else { 0.0 };
                 StatItem {
                     name: name.clone(),
@@ -644,6 +977,10 @@ impl ResultService {
                     success_rate_formatted: format!("{:.1}", rate),
                     total_duration: *duration,
                     total_duration_formatted: Self::format_duration(*duration),
+                    input_tokens: *input_tokens,
+                    output_tokens: *output_tokens,
+                    cached_tokens: *cached_tokens,
+                    uncached_tokens: *uncached_tokens,
                 }
             })
             .collect();
@@ -651,7 +988,7 @@ impl ResultService {
 
         let mut agent_stats: Vec<StatItem> = by_agent
             .iter()
-            .map(|(name, (total, success, duration))| {
+            .map(|(name, (total, success, duration, input_tokens, output_tokens, cached_tokens, uncached_tokens))| {
                 let rate = if *total > 0 { (*success as f64 / *total as f64) * 100.0 } else { 0.0 };
                 StatItem {
                     name: name.clone(),
@@ -660,6 +997,10 @@ impl ResultService {
                     success_rate_formatted: format!("{:.1}", rate),
                     total_duration: *duration,
                     total_duration_formatted: Self::format_duration(*duration),
+                    input_tokens: *input_tokens,
+                    output_tokens: *output_tokens,
+                    cached_tokens: *cached_tokens,
+                    uncached_tokens: *uncached_tokens,
                 }
             })
             .collect();
@@ -667,7 +1008,7 @@ impl ResultService {
 
         let mut model_stats: Vec<StatItem> = by_model
             .iter()
-            .map(|(name, (total, success, duration))| {
+            .map(|(name, (total, success, duration, input_tokens, output_tokens, cached_tokens, uncached_tokens))| {
                 let rate = if *total > 0 { (*success as f64 / *total as f64) * 100.0 } else { 0.0 };
                 StatItem {
                     name: name.clone(),
@@ -676,6 +1017,10 @@ impl ResultService {
                     success_rate_formatted: format!("{:.1}", rate),
                     total_duration: *duration,
                     total_duration_formatted: Self::format_duration(*duration),
+                    input_tokens: *input_tokens,
+                    output_tokens: *output_tokens,
+                    cached_tokens: *cached_tokens,
+                    uncached_tokens: *uncached_tokens,
                 }
             })
             .collect();
@@ -683,6 +1028,8 @@ impl ResultService {
             // Sort by total descending, then by name ascending for consistency
             b.total.cmp(&a.total).then_with(|| a.name.cmp(&b.name))
         });
+
+        let token_display = Self::format_tokens(total_uncached_tokens, total_cached_tokens, total_output_tokens);
 
         Statistics {
             total_runs,
@@ -697,6 +1044,11 @@ impl ResultService {
             language_stats,
             agent_stats,
             model_stats,
+            total_input_tokens,
+            total_output_tokens,
+            total_cached_tokens,
+            total_uncached_tokens,
+            token_display,
         }
     }
 
@@ -739,6 +1091,30 @@ impl ResultService {
         parts.push(format!("{}s", seconds));
 
         parts.join(" ")
+    }
+
+    /// Format tokens for display: "uncached / cached / output"
+    fn format_tokens(uncached: u64, cached: u64, output: u64) -> String {
+        format!(
+            "{} / {} / {}",
+            Self::format_number(uncached as i64),
+            Self::format_number(cached as i64),
+            Self::format_number(output as i64)
+        )
+    }
+
+    /// Format large numbers with K/M/G suffixes.
+    fn format_number(num: i64) -> String {
+        let abs = num.unsigned_abs();
+        if abs >= 1_000_000_000 {
+            format!("{:.1}G", num as f64 / 1_000_000_000.0)
+        } else if abs >= 1_000_000 {
+            format!("{:.1}M", num as f64 / 1_000_000.0)
+        } else if abs >= 1_000 {
+            format!("{:.1}K", num as f64 / 1_000.0)
+        } else {
+            num.to_string()
+        }
     }
 
     /// Refresh the result cache.

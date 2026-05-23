@@ -1,5 +1,6 @@
 //! Internal report generation implementation.
 
+use benchmark_types::exercise::ExerciseResult;
 use serde::Deserialize;
 use std::collections::{HashMap, BTreeSet};
 use std::fs::{self, File};
@@ -7,34 +8,6 @@ use std::io::BufRead;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
-
-#[derive(Debug, Deserialize, Clone)]
-struct SimpleResult {
-    #[serde(alias = "exerciseName", alias = "exercise_name")]
-    exercise_name: String,
-    language: String,
-    success: bool,
-    #[serde(alias = "exitCode", alias = "exit_code", default)]
-    exit_code: i64,
-    #[serde(alias = "duration_ms", default)]
-    duration: f64,
-    #[serde(default)]
-    model: String,
-    #[serde(default)]
-    input_tokens: i64,
-    #[serde(default)]
-    output_tokens: i64,
-    #[serde(default)]
-    cached_input_tokens: i64,
-    #[serde(default)]
-    uncached_input_tokens: i64,
-}
-
-impl Default for SimpleResult {
-    fn default() -> Self {
-        SimpleResult { exercise_name: String::new(), language: String::new(), success: false, exit_code: 0, duration: 0.0, model: String::new(), input_tokens: 0, output_tokens: 0, cached_input_tokens: 0, uncached_input_tokens: 0 }
-    }
-}
 
 #[derive(Debug)]
 struct BenchmarkStats {
@@ -45,15 +18,26 @@ struct BenchmarkStats {
     total_duration: f64,
     #[allow(dead_code)]
     exit_code: i32,
-    input_tokens: i64,
-    output_tokens: i64,
-    cached_input_tokens: i64,
-    uncached_input_tokens: i64,
+    input_tokens: u64,
+    output_tokens: u64,
+    cached_input_tokens: u64,
+    uncached_input_tokens: u64,
 }
 
 impl BenchmarkStats {
     fn new(name: &str) -> Self {
-        BenchmarkStats { benchmark_name: name.to_string(), total_results: 0, success_results: 0, failed_results: 0, total_duration: 0.0, exit_code: 0, input_tokens: 0, output_tokens: 0, cached_input_tokens: 0, uncached_input_tokens: 0 }
+        BenchmarkStats {
+            benchmark_name: name.to_string(),
+            total_results: 0,
+            success_results: 0,
+            failed_results: 0,
+            total_duration: 0.0,
+            exit_code: 0,
+            input_tokens: 0,
+            output_tokens: 0,
+            cached_input_tokens: 0,
+            uncached_input_tokens: 0,
+        }
     }
 }
 
@@ -159,8 +143,13 @@ fn format_duration(total_seconds: f64) -> String {
     parts.join(" ")
 }
 
-fn format_tokens(uncached: i64, cached: i64, output: i64) -> String {
-    format!("{} / {} / {}", format_number(uncached), format_number(cached), format_number(output))
+fn format_tokens(uncached: u64, cached: u64, output: u64) -> String {
+    format!(
+        "{} / {} / {}",
+        format_number(uncached as i64),
+        format_number(cached as i64),
+        format_number(output as i64)
+    )
 }
 
 fn sort_by_count_and_percentage(a: &BenchmarkStats, b: &BenchmarkStats) -> std::cmp::Ordering {
@@ -193,7 +182,14 @@ fn dump_sorted_stats(sorted_stats: &[BenchmarkStats], markdown: &mut String) {
     }
 }
 
-fn process_results_directory(dir: &Path, all_results: &mut Vec<SimpleResult>, all_exercises: &mut BTreeSet<String>, stats_by_benchmark: &mut HashMap<String, BenchmarkStats>, results_by_benchmark: &mut HashMap<String, Vec<SimpleResult>>, results_by_exercise: &mut HashMap<String, Vec<SimpleResult>>) {
+fn process_results_directory(
+    dir: &Path,
+    all_results: &mut Vec<ExerciseResult>,
+    all_exercises: &mut BTreeSet<String>,
+    stats_by_benchmark: &mut HashMap<String, BenchmarkStats>,
+    results_by_benchmark: &mut HashMap<String, Vec<ExerciseResult>>,
+    results_by_exercise: &mut HashMap<String, Vec<ExerciseResult>>,
+) {
     let mut result_files: Vec<PathTime> = match fs::read_dir(dir) {
         Ok(entries) => entries.filter_map(|e| e.ok()).filter(|e| is_result_file(&e.file_name().to_string_lossy())).filter_map(|e| { let path = e.path(); let file_time = fs::metadata(&path).ok()?.modified().ok()?; Some(PathTime { path, file_time }) }).collect(),
         Err(_) => return,
@@ -212,40 +208,72 @@ fn process_results_directory(dir: &Path, all_results: &mut Vec<SimpleResult>, al
     for pt in &result_files {
         let result_file = &pt.path;
         let content = match fs::read_to_string(result_file) { Ok(c) => c, Err(_) => continue };
-        let mut simple: SimpleResult = match serde_json::from_str(&content) { Ok(s) => s, Err(_) => continue };
-        simple.model = benchmark_name.clone();
-        let exercise_key = format!("{}_{}", simple.exercise_name, simple.language);
+        let mut result: ExerciseResult = match serde_json::from_str(&content) {
+            Ok(r) => r,
+            Err(_) => continue,
+        };
+        result.model = benchmark_name.clone();
+        let exercise_key = format!("{}_{}", result.exercise_name, result.language);
         all_exercises.insert(exercise_key.clone());
-        all_results.push(simple.clone());
+        all_results.push(result.clone());
 
         stats.total_results += 1;
-        if simple.success { stats.success_results += 1; } else { stats.failed_results += 1; }
-        stats.total_duration += simple.duration;
-        stats.exit_code = simple.exit_code as i32;
-        if simple.exit_code != 0 && simple.success { stats.success_results -= 1; stats.failed_results += 1; }
-
-        let result_time = match fs::metadata(result_file).and_then(|m| m.modified()) { Ok(t) => t, Err(_) => continue };
-        let mut simple_with_tokens = simple.clone();
-
-        while !trace_files.is_empty() && result_time.cmp(&trace_files[0].file_time) == std::cmp::Ordering::Greater {
-            let trace_path = trace_files.remove(0).path;
-            let usage = if simple_with_tokens.model.starts_with("pi") { calculate_pi_tokens(&trace_path) } else { calculate_claude_tokens(&trace_path) };
-            stats.input_tokens += usage.0; stats.output_tokens += usage.1; stats.cached_input_tokens += usage.2; stats.uncached_input_tokens += usage.3;
-            simple_with_tokens.input_tokens += usage.0; simple_with_tokens.output_tokens += usage.1; simple_with_tokens.cached_input_tokens += usage.2; simple_with_tokens.uncached_input_tokens += usage.3;
+        if result.success {
+            stats.success_results += 1;
+        } else {
+            stats.failed_results += 1;
+        }
+        // Convert duration from seconds (f64) to ms (u64) for display
+        let duration_secs = result.duration_ms as f64 / 1000.0;
+        stats.total_duration += duration_secs;
+        stats.exit_code = result.exit_code.unwrap_or(0);
+        if stats.exit_code != 0 && result.success {
+            stats.success_results -= 1;
+            stats.failed_results += 1;
         }
 
-        results_by_benchmark.entry(benchmark_name.clone()).or_default().push(simple_with_tokens.clone());
-        results_by_exercise.entry(exercise_key).or_default().push(simple_with_tokens);
+        let result_time = match fs::metadata(result_file).and_then(|m| m.modified()) {
+            Ok(t) => t,
+            Err(_) => continue,
+        };
+        let mut result_with_tokens = result.clone();
+
+        while !trace_files.is_empty()
+            && result_time.cmp(&trace_files[0].file_time) == std::cmp::Ordering::Greater
+        {
+            let trace_path = trace_files.remove(0).path;
+            let usage = if result_with_tokens.model.starts_with("pi") {
+                calculate_pi_tokens(&trace_path)
+            } else {
+                calculate_claude_tokens(&trace_path)
+            };
+            stats.input_tokens += usage.0 as u64;
+            stats.output_tokens += usage.1 as u64;
+            stats.cached_input_tokens += usage.2 as u64;
+            stats.uncached_input_tokens += usage.3 as u64;
+            result_with_tokens.input_tokens += usage.0 as u64;
+            result_with_tokens.output_tokens += usage.1 as u64;
+            result_with_tokens.cached_input_tokens += usage.2 as u64;
+            result_with_tokens.uncached_input_tokens += usage.3 as u64;
+        }
+
+        results_by_benchmark
+            .entry(benchmark_name.clone())
+            .or_default()
+            .push(result_with_tokens.clone());
+        results_by_exercise.entry(exercise_key).or_default().push(result_with_tokens);
     }
-    if stats.total_results > 0 { stats_by_benchmark.insert(benchmark_name, stats); }
+    if stats.total_results > 0 {
+        stats_by_benchmark.insert(benchmark_name, stats);
+    }
 }
 
 pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
-    let mut all_results: Vec<SimpleResult> = Vec::new();
+    let mut all_results: Vec<ExerciseResult> = Vec::new();
     let mut all_exercises: BTreeSet<String> = BTreeSet::new();
     let mut stats_by_benchmark: HashMap<String, BenchmarkStats> = HashMap::new();
-    let mut results_by_exercise: HashMap<String, Vec<SimpleResult>> = HashMap::new();
-    let mut results_by_benchmark: HashMap<String, Vec<SimpleResult>> = HashMap::new();
+    let mut results_by_exercise: HashMap<String, Vec<ExerciseResult>> = HashMap::new();
+    let mut results_by_benchmark: HashMap<String, Vec<ExerciseResult>> = HashMap::new();
 
     for entry in walkdir::WalkDir::new(base_dir) {
         let entry = match entry { Ok(e) => e, Err(_) => continue };
@@ -270,16 +298,20 @@ pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
     let mut exercise_stats: Vec<BenchmarkStats> = Vec::new();
     for exercise_name in &all_exercises {
         let mut stats = BenchmarkStats::new(exercise_name);
-        for simple_result in &all_results {
-            let key = format!("{}_{}", simple_result.exercise_name, simple_result.language);
+        for result in &all_results {
+            let key = format!("{}_{}", result.exercise_name, result.language);
             if key == *exercise_name {
                 stats.total_results += 1;
-                if simple_result.success { stats.success_results += 1; } else { stats.failed_results += 1; }
-                stats.total_duration += simple_result.duration;
-                stats.input_tokens += simple_result.input_tokens;
-                stats.output_tokens += simple_result.output_tokens;
-                stats.cached_input_tokens += simple_result.cached_input_tokens;
-                stats.uncached_input_tokens += simple_result.uncached_input_tokens;
+                if result.success {
+                    stats.success_results += 1;
+                } else {
+                    stats.failed_results += 1;
+                }
+                stats.total_duration += result.duration_ms as f64 / 1000.0;
+                stats.input_tokens += result.input_tokens;
+                stats.output_tokens += result.output_tokens;
+                stats.cached_input_tokens += result.cached_input_tokens;
+                stats.uncached_input_tokens += result.uncached_input_tokens;
             }
         }
         exercise_stats.push(stats);
@@ -292,10 +324,29 @@ pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
         let display_name = benchmark_name.replace('.', "_").replace(':', "-");
         markdown.push_str(&format!("# {}\n\n", display_name));
         markdown.push_str("| Exercise | Success | Duration | Tokens |\n|----------|---------|----------|--------|\n");
-        for simple_result in results {
-            let exercise_display = simple_result.exercise_name.replace('.', "_") + "_" + &simple_result.language;
-            let success_indicator = if simple_result.success { "✅" } else if simple_result.duration >= 7199.0 { "⏰" } else { "❌" };
-            markdown.push_str(&format!("| [{}](#{}) | {} | {} | {} |\n", exercise_display, exercise_display, success_indicator, format_duration(simple_result.duration), format_tokens(simple_result.uncached_input_tokens, simple_result.cached_input_tokens, simple_result.output_tokens)));
+        for result in results {
+            let exercise_display = result.exercise_name.replace('.', "_") + "_" + &result.language;
+            // Convert ms to seconds for timeout check
+            let duration_secs = result.duration_ms as f64 / 1000.0;
+            let success_indicator = if result.success {
+                "✅"
+            } else if duration_secs >= 7199.0 {
+                "⏰"
+            } else {
+                "❌"
+            };
+            markdown.push_str(&format!(
+                "| [{}](#{}) | {} | {} | {} |\n",
+                exercise_display,
+                exercise_display,
+                success_indicator,
+                format_duration(duration_secs),
+                format_tokens(
+                    result.uncached_input_tokens,
+                    result.cached_input_tokens,
+                    result.output_tokens
+                )
+            ));
         }
     }
 
@@ -305,11 +356,24 @@ pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
         markdown.push_str(&format!("# {}\n\n", display_name));
         markdown.push_str("| Model | Success | Duration | Tokens |\n|-------|---------|----------|--------|\n");
         let mut sorted_results = results.clone();
-        sorted_results.sort_by(|a, b| a.duration.partial_cmp(&b.duration).unwrap_or(std::cmp::Ordering::Equal));
-        for simple_result in sorted_results {
-            let model_display = simple_result.model.replace('.', "_");
-            let success_indicator = if simple_result.success { "✅" } else { "❌" };
-            markdown.push_str(&format!("| [{}](#{}) | {} | {} | {} |\n", model_display, model_display, success_indicator, format_duration(simple_result.duration), format_tokens(simple_result.uncached_input_tokens, simple_result.cached_input_tokens, simple_result.output_tokens)));
+        // Sort by duration_ms (already in ms)
+        sorted_results.sort_by(|a, b| a.duration_ms.cmp(&b.duration_ms));
+        for result in sorted_results {
+            let model_display = result.model.replace('.', "_");
+            let success_indicator = if result.success { "✅" } else { "❌" };
+            let duration_secs = result.duration_ms as f64 / 1000.0;
+            markdown.push_str(&format!(
+                "| [{}](#{}) | {} | {} | {} |\n",
+                model_display,
+                model_display,
+                success_indicator,
+                format_duration(duration_secs),
+                format_tokens(
+                    result.uncached_input_tokens,
+                    result.cached_input_tokens,
+                    result.output_tokens
+                )
+            ));
         }
     }
 
