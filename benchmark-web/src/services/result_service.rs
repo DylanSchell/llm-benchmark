@@ -1439,7 +1439,7 @@ impl ResultService {
                 0.0
             };
 
-            // Speed score: normalized (0-1), faster = higher
+            // Speed score: linear normalization (0-1), faster = higher
             let speed_score = if r.success && r.sort_duration.unwrap_or(0.0) > 0.0 {
                 if max_duration == min_duration {
                     1.0
@@ -1450,21 +1450,27 @@ impl ResultService {
                 0.0
             };
 
-            // Token score: normalized (0-1), fewer tokens = higher
+            // Token score: power-law normalization with exponent 0.3
+            // Stronger compression to penalize token bloat more aggressively
             let token_score = if r.success && r.output_tokens > 0 {
-                if max_tokens == min_tokens {
+                let actual_tokens = r.output_tokens as f64;
+                if max_tokens == min_tokens || (max_tokens as f64) <= 0.0 {
                     1.0
                 } else {
-                    (max_tokens as f64 - r.output_tokens as f64) / (max_tokens as f64 - min_tokens as f64)
+                    // Power-law scaling with exponent 0.3 for stronger differentiation
+                    let normalized = (actual_tokens - min_tokens as f64) / (max_tokens as f64 - min_tokens as f64);
+                    let power_normalized = normalized.powf(0.3);
+                    1.0 - power_normalized
                 }
             } else {
                 0.0
             };
 
             // Composite score: weighted sum
-            // 50% correctness, 30% speed, 20% token efficiency
+            // 30% correctness, 20% speed, 50% token efficiency
+            // Heavily weight tokens to create strong differentiation among high-performers
             let composite_score = if success_rate > 0.0 {
-                0.5 * success_rate + 0.3 * speed_score + 0.2 * token_score
+                0.3 * success_rate + 0.2 * speed_score + 0.5 * token_score
             } else {
                 0.0
             };
