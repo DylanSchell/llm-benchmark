@@ -16,7 +16,7 @@ pub struct ReportArgs {
     pub output: String,
 }
 
-/// Generate a markdown report from benchmark results.
+/// Generate a Markdown report from benchmark results.
 pub fn generate_report(args: &ReportArgs) -> anyhow::Result<()> {
     internal::run_report(&args.results_dir, &args.output)
 }

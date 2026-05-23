@@ -201,7 +201,6 @@ dependencies = [
  "anyhow",
  "benchmark-core",
  "benchmark-types",
- "chrono",
  "clap",
  "tokio",
  "tracing",
@@ -253,7 +252,6 @@ dependencies = [
  "anyhow",
  "benchmark-types",
  "clap",
- "serde",
  "serde_json",
 ]
 

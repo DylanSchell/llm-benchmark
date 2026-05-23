@@ -120,7 +120,7 @@ pub async fn results_page(
     axum::response::Html(templates.render("results.tera", &ctx))
 }
 
-/// API endpoint for results list.
+/// API endpoint for the results list.
 pub async fn get_results_api(
     Extension(state): Extension<AppState>,
     Query(params): Query<StatsQuery>,

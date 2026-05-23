@@ -11,7 +11,7 @@ use axum::http::StatusCode;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use crate::models::queue_item::BenchmarkQueueItem;
+use crate::models::queue_item::{BenchmarkQueueItem, QueueItemStatus};
 
 // =============================================================================
 // Request/Response types
@@ -166,11 +166,11 @@ pub async fn get_queue(
     Query(params): Query<QueryParam>,
 ) -> Json<QueueResponse> {
     let items = state.service.get_queue_items();
-    let pending = items.iter().filter(|i| i.status.to_string() == "PENDING").count();
-    let running = items.iter().filter(|i| i.status.to_string() == "RUNNING").count();
-    let completed = items.iter().filter(|i| i.status.to_string() == "COMPLETED").count();
-    let failed = items.iter().filter(|i| i.status.to_string() == "FAILED").count();
-    let cancelled = items.iter().filter(|i| i.status.to_string() == "CANCELLED").count();
+    let pending = items.iter().filter(|i| i.status == QueueItemStatus::PENDING).count();
+    let running = items.iter().filter(|i| i.status == QueueItemStatus::RUNNING).count();
+    let completed = items.iter().filter(|i| i.status == QueueItemStatus::COMPLETED).count();
+    let failed = items.iter().filter(|i| i.status == QueueItemStatus::FAILED).count();
+    let cancelled = items.iter().filter(|i| i.status == QueueItemStatus::CANCELLED).count();
 
     let filtered_items: Vec<HashMap<String, String>> = if let Some(ref status) = params.status {
         items.iter().filter(|i| i.status.to_string() == *status).map(|i| item_to_map(i)).collect()
@@ -190,7 +190,7 @@ pub async fn get_queue(
 /// Execution modes:
 /// - "single": exercise param specifies which exercise to run per language
 /// - "all": no exercise param — all exercises for selected languages
-/// - "quick": special marker — runs curated list of fast exercises (< 60s each)
+/// - "quick": special marker — runs a curated list of fast exercises (< 60s each)
 pub async fn schedule_batch(
     Extension(state): Extension<AppState>,
     FlexibleForm(request): FlexibleForm<ScheduleRequest>,

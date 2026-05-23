@@ -125,7 +125,7 @@ impl SessionManager {
             .collect()
     }
 
-    /// Force complete all active sessions (for shutdown).
+    /// Force to complete all active sessions (for shutdown).
     pub fn shutdown(&self) {
         let mut sessions = self.sessions.write().unwrap();
         info!(

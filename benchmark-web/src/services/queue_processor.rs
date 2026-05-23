@@ -80,7 +80,7 @@ impl QueueProcessor {
     /// Schedule a batch of benchmark runs.
     /// Never uses "all" exercises - always expands to individual exercise items.
     /// Skips exercises that have already been completed successfully (unless retry mode).
-    /// Also skips exercises that are already pending/running in the queue (unless retry mode).
+    /// Also, skip exercises that are already pending/running in the queue (unless retry mode).
     pub fn schedule_batch(
         &self,
         agent_name: String,

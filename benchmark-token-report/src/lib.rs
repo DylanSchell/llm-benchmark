@@ -3,7 +3,7 @@
 use clap::Parser;
 use std::path::PathBuf;
 
-/// Arguments for token statistics report.
+/// Arguments for a token statistics report.
 #[derive(Parser, Debug, Clone)]
 #[command(name = "token-report")]
 pub struct TokenReportArgs {
@@ -31,12 +31,12 @@ pub struct TokenReportArgs {
     #[arg(short, long)]
     pub details: bool,
 
-    /// Output as JSON instead of human-readable table
+    /// Output as JSON instead of a human-readable table
     #[arg(short, long)]
     pub json: bool,
 }
 
-/// Generate token statistics report.
+/// Generate a token statistics report.
 pub fn generate_token_report(args: &TokenReportArgs) -> anyhow::Result<()> {
     internal::run_token_report(args)
 }
