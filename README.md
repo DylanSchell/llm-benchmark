@@ -1,4 +1,4 @@
-# Claude Benchmark Runner
+# LLM Benchmark Runner
 
 A Rust framework for benchmarking autonomous coding agents against the [polyglot exercise suite](https://github.com/Aider-AI/polyglot-benchmark). Agents run exercises inside isolated Docker containers and produce structured results with JSONL trace files.
 
@@ -43,105 +43,78 @@ output:
   log_level: INFO
 ```
 
-### 3. Build the Applications
+### 3. Build the Application
 
 ```bash
-cargo build --release --workspace
+cargo build --release
 ```
 
-This builds all four crates in the workspace:
+This builds the unified launcher binary:
 
-| Crate | Binary | Purpose |
-|-------|--------|---------|
-| `benchmark-cli` | `benchmark-cli` | CLI benchmark runner |
-| `benchmark-web` | `benchmark-web` | Web dashboard server |
-| `benchmark-report` | `benchmark-report` | Token statistics report |
-| `benchmark-reporter` | `benchmark-reporter` | Full markdown report generator |
+| Binary | Purpose |
+|--------|---------|
+| `llm-benchmark` | Unified launcher for all commands |
 
-### 4. Run the Web Application
+To build individual components separately:
 
 ```bash
-cargo run --release --package benchmark-web
-# or directly:
-./target/release/benchmark-web config.yaml
+cargo build --release --package benchmark-web       # Web dashboard
+cargo build --release --package benchmark-cli       # CLI runner (standalone)
+cargo build --release --package benchmark-reporter  # Report generator (standalone)
+cargo build --release --package benchmark-token-report  # Token stats (standalone)
+```
+
+### 4. Using the Launcher
+
+The `llm-benchmark` launcher provides all commands in a single binary:
+
+```bash
+./target/release/llm-benchmark --help
+```
+
+**Run Benchmarks:**
+
+```bash
+# Run all Java exercises with the reference agent
+./target/release/llm-benchmark run --language java
+
+# Run Python exercises with Claude Code
+./target/release/llm-benchmark run --agent claude --model sonnet --language python
+
+# Run multiple languages
+./target/release/llm-benchmark run --language java,python,rust
+
+# Verbose mode (shows live output from the agent)
+./target/release/llm-benchmark run --language java --verbose
+
+# Retry — re-run exercises even if results already exist
+./target/release/llm-benchmark run --language java --retry
+```
+
+**Generate Reports:**
+
+```bash
+# Full markdown report
+./target/release/llm-benchmark report
+
+# Token statistics report
+./target/release/llm-benchmark token-report
+
+# Token stats with filters
+./target/release/llm-benchmark token-report --agent claude --language java --details
+```
+
+**Web Dashboard:**
+
+The web server is fully integrated into the launcher with all templates and static files embedded in the binary:
+
+```bash
+./target/release/llm-benchmark web --port 8081
 ```
 
 Access the dashboard at **http://localhost:8081**.
 
-Override the port via environment variable or CLI:
-
-```bash
-SERVER_PORT=9090 ./target/release/benchmark-web config.yaml
-```
-
-### 5. Run the CLI Benchmark Runner
-
-The CLI runner executes exercises against a chosen agent (reference, claude, or pi):
-
-```bash
-# Run all Java exercises with the reference agent
-cargo run --release --package benchmark-cli -- --language java
-
-# Run a single exercise
-cargo run --release --package benchmark-cli -- --language rust --exercise two-fer
-
-# Run Python exercises with Claude Code
-cargo run --release --package benchmark-cli -- --agent claude --model sonnet --language python
-
-# Run multiple languages
-cargo run --release --package benchmark-cli -- --language java,python,rust
-
-# Verbose mode (shows live output from the agent)
-cargo run --release --package benchmark-cli -- --language java --verbose
-
-# Retry — re-run exercises even if results already exist
-cargo run --release --package benchmark-cli -- --language java --retry
-
-# Override model and results directory
-cargo run --release --package benchmark-cli -- \
-  --model haiku \
-  --results-dir ./my-results \
-  --language javascript
-```
-
-**CLI Options:**
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--config` | `config.yaml` | Path to config file |
-| `--model` | from config | Model name override |
-| `--results-dir` | from config | Results directory override |
-| `--language` | `java` | Comma-separated languages |
-| `--exercise` | *(none)* | Run a single exercise by name |
-| `--agent` | `reference` | Agent: `reference`, `claude`, or `pi` |
-| `--verbose` | off | Show live token stream output |
-| `--retry` | off | Re-run exercises even if results exist (increments attempts) |
-
-### 6. Run the Reporting Applications
-
-Two separate report tools are available:
-
-**Token Statistics Report** (`benchmark-report`):
-
-```bash
-cargo run --release --package benchmark-report -- \
-  --results-dir ./benchmark-results
-```
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--results-dir, -r` | `../benchmark-results` | Results directory to analyze |
-| `--agent, -a` | *(all)* | Filter by agent name |
-
-**Full Markdown Report** (`benchmark-reporter`):
-
-```bash
-cargo run --release --package benchmark-reporter
-# or directly:
-./target/release/benchmark-reporter
-```
-
-Reads from `../benchmark-results` by default and generates a `results.md` file with summary tables, per-exercise success rates, and per-model breakdowns.
+All Tera templates and CSS are compiled into the binary, so there's no filesystem dependency for resources.
 
 ---
 
@@ -153,7 +126,7 @@ crates/
   benchmark-core/           # Core logic: DockerClient, ExerciseRunner, Agents
 benchmark-cli/              # CLI benchmark runner
 benchmark-web/              # Axum web server with REST API + SSE streaming
-benchmark-report/           # Token statistics report tool
+benchmark-token-report/     # Token statistics report tool
 benchmark-reporter/         # Full markdown report generator
 docker/
   Dockerfile.runner         # Container image with build tools

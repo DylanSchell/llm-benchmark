@@ -4,9 +4,58 @@ members = [
     "crates/benchmark-types",
     "crates/benchmark-core",
     "benchmark-web",
-    "benchmark-report",
-    "benchmark-reporter", "benchmark-cli",
+    "benchmark-token-report",
+    "benchmark-reporter",
+    "benchmark-cli",
 ]
+default-members = ["."]
+
+[package]
+name = "llm-benchmark"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+# Workspace crates
+benchmark-types = { path = "crates/benchmark-types" }
+benchmark-core = { path = "crates/benchmark-core" }
+benchmark-cli = { path = "benchmark-cli" }
+benchmark-web = { path = "benchmark-web" }
+benchmark-reporter = { path = "benchmark-reporter" }
+benchmark-token-report = { path = "benchmark-token-report" }
+
+# Common dependencies
+tokio = { workspace = true, features = ["full"] }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["env-filter"] }
+anyhow = { workspace = true }
+clap = { workspace = true, features = ["derive"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+
+# Web dependencies (for benchmark-web integration)
+axum = { version = "0.8", features = ["macros", "form", "query", "json", "ws"] }
+tower = { version = "0.5", features = ["full"] }
+tower-http = { version = "0.6", features = ["fs", "trace", "cors"] }
+tera = "1"
+uuid = { version = "1.10", features = ["v4", "serde"] }
+chrono = { workspace = true }
+futures = { workspace = true }
+async-trait = { workspace = true }
+async-stream = "0.3"
+reqwest = { version = "0.12", features = ["json"] }
+urlencoding = "2.1"
+serde_urlencoded = "0.7"
+
+# Reporter dependencies
+regex = "1"
+walkdir = { workspace = true }
+
+[[bin]]
+name = "llm-benchmark"
+path = "src/main.rs"
 
 [workspace.package]
 version = "0.1.0"

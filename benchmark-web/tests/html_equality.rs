@@ -418,47 +418,33 @@ async fn test_dashboard_has_success_rate_stat() {
 }
 
 #[tokio::test]
-async fn test_dashboard_has_quick_actions() {
+async fn test_dashboard_no_redundant_buttons() {
     let html = fetch_page("/").await.expect("Dashboard should return 200");
+    // These buttons were removed as they are redundant with top navigation
     assert!(
-        html.contains("Quick Actions"),
-        "Dashboard should have 'Quick Actions' heading"
+        !html.contains("Quick Actions"),
+        "Dashboard should NOT have 'Quick Actions' heading (removed)"
+    );
+    assert!(
+        !html.contains("New Benchmark Run"),
+        "Dashboard should NOT have 'New Benchmark Run' button (redundant with nav)"
+    );
+    assert!(
+        !html.contains("View Results"),
+        "Dashboard should NOT have 'View Results' button (redundant with nav)"
+    );
+    assert!(
+        !html.contains("Reload Results"),
+        "Dashboard should NOT have 'Reload Results' button (no longer needed)"
     );
 }
 
 #[tokio::test]
-async fn test_dashboard_has_new_benchmark_button() {
-    let html = fetch_page("/").await.expect("Dashboard should return 200");
-    assert!(
-        html.contains("New Benchmark Run"),
-        "Dashboard should have 'New Benchmark Run' button"
-    );
-}
-
-#[tokio::test]
-async fn test_dashboard_has_view_results_button() {
-    let html = fetch_page("/").await.expect("Dashboard should return 200");
-    assert!(
-        html.contains("View Results"),
-        "Dashboard should have 'View Results' button"
-    );
-}
-
-#[tokio::test]
-async fn test_dashboard_has_reload_results_button() {
-    let html = fetch_page("/").await.expect("Dashboard should return 200");
-    assert!(
-        html.contains("Reload Results"),
-        "Dashboard should have 'Reload Results' button"
-    );
-}
-
-#[tokio::test]
-async fn test_dashboard_has_clear_completed_button() {
+async fn test_dashboard_has_clear_completed_in_queue() {
     let html = fetch_page("/").await.expect("Dashboard should return 200");
     assert!(
         html.contains("Clear Completed/Cancelled"),
-        "Dashboard should have 'Clear Completed/Cancelled' button"
+        "Dashboard should have 'Clear Completed/Cancelled' button in queue card"
     );
 }
 

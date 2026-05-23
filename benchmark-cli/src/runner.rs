@@ -12,11 +12,11 @@ use benchmark_core::docker::DockerClient;
 use benchmark_core::exercise_runner::ExerciseRunner;
 use benchmark_core::persistence::ResultPersister;
 
-use super::Cli;
+use crate::RunArgs;
 
 /// Run the full benchmark workflow.
 pub async fn run(
-    cli: &Cli,
+    cli: &RunArgs,
     config: &Config,
     model: &str,
     retry: bool,

@@ -3,7 +3,6 @@
 
 use super::{AppState, TemplateEngine};
 use axum::extract::{Path, Query};
-use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::Router;
 use axum::Json;
@@ -136,40 +135,9 @@ pub async fn get_results_api(
     Json(ResultsTable { results: result_maps, total: results.len() })
 }
 
-/// Get a specific result by path: /results/{agent}/{dir}/{lang}/{ex}
-pub async fn get_result_by_path(
-    Extension(state): Extension<AppState>,
-    Path((_agent, dir, lang, ex)): Path<(String, String, String, String)>,
-) -> impl axum::response::IntoResponse {
-    let key = format!("{}/{}/{}", dir, lang, ex);
-    match state.service.get_result_by_key(&key) {
-        Some(result) => {
-            (axum::http::StatusCode::OK, serde_json::to_string(&result).unwrap())
-        }
-        None => (axum::http::StatusCode::NOT_FOUND, "Result not found".to_string()),
-    }
-}
 
-/// Get trace for a result: /results/{agent}/{dir}/{lang}/{ex}/trace
-pub async fn get_result_trace(
-    Extension(state): Extension<AppState>,
-    Path((_agent, dir, lang, ex)): Path<(String, String, String, String)>,
-) -> impl IntoResponse {
-    let key = format!("{}/{}/{}", dir, lang, ex);
-    match state.service.get_trace_content(&key) {
-        Ok(Some(content)) => {
-            (axum::http::StatusCode::OK,
-             [(axum::http::header::CONTENT_TYPE, "text/html; charset=utf-8")],
-             content)
-        }
-        _ => {
-            let body = "<html><body><h1>Trace not found</h1><p>No trace file available for this result.</p></body></html>";
-            (axum::http::StatusCode::NOT_FOUND,
-             [(axum::http::header::CONTENT_TYPE, "text/html; charset=utf-8")],
-             body.to_string())
-        }
-    }
-}
+
+
 
 /// Get results by language/exercise: /results/{lang}/{ex}
 pub async fn get_results_by_lang_ex(
@@ -246,8 +214,9 @@ pub async fn table_fragment(
 pub fn register(app: Router<()>) -> Router<()> {
     app.route("/results", get(results_page))
         .route("/results/api/results", get(get_results_api))
-        .route("/results/{agent}/{dir}/{lang}/{ex}", get(get_result_by_path))
-        .route("/results/{agent}/{dir}/{lang}/{ex}/trace", get(get_result_trace))
+        // More specific routes must come before parameterized ones
+        .route("/results/{agent}/{dir}/{lang}/{ex}/trace", get(super::result::result_detail_trace))
+        .route("/results/{agent}/{dir}/{lang}/{ex}", get(super::result::result_detail_page))
         .route("/results/{lang}/{ex}", get(get_results_by_lang_ex))
         .route("/results/api/{agent}/{lang}/{ex}", get(get_results_api_agent_lang_ex))
         .route("/results/api/stats", get(get_stats))

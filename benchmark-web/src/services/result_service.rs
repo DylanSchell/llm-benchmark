@@ -615,11 +615,12 @@ impl ResultService {
                 (t + cached_result.total_exercises, s + cached_result.successful, d + entry_duration)
             };
 
-            // By model - track (total, success, duration)
+            // By model - track (total, success, duration) using agent + model combination
+            let model_key = format!("{} - {}", cached_result.agent, cached_result.model);
             *by_model
-                .entry(cached_result.model.clone())
+                .entry(model_key)
                 .or_insert((0, 0, 0.0)) = {
-                let (t, s, d) = by_model.get(&cached_result.model).copied().unwrap_or((0, 0, 0.0));
+                let (t, s, d) = by_model.get(&model_key).copied().unwrap_or((0, 0, 0.0));
                 (t + cached_result.total_exercises, s + cached_result.successful, d + entry_duration)
             };
         }
@@ -678,7 +679,10 @@ impl ResultService {
                 }
             })
             .collect();
-        model_stats.sort_by(|a, b| b.total.cmp(&a.total));
+        model_stats.sort_by(|a, b| {
+            // Sort by total descending, then by name ascending for consistency
+            b.total.cmp(&a.total).then_with(|| a.name.cmp(&b.name))
+        });
 
         Statistics {
             total_runs,

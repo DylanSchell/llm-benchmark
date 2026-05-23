@@ -318,16 +318,22 @@ tr:hover {
 
 .chevron {
     display: inline-block;
-    font-size: 0.75rem;
+    font-size: 1.25rem;
+    line-height: 1;
     color: #7f8c8d;
     cursor: pointer;
+    width: 1em;
+    text-align: center;
+    vertical-align: middle;
+    margin-top: -2px;
+    margin-right: 6px;
 }
 
-.chevron::before {
+.chevron.collapsed::after {
     content: '▸';
 }
 
-.chevron.expanded::before {
+.chevron.expanded::after {
     content: '▾';
 }
 

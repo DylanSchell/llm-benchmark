@@ -6,18 +6,6 @@
 <div class="container">
     <h2 style="margin-bottom: 1.5rem;">Dashboard</h2>
 
-    <!-- Quick Bench Toggle -->
-    <div class="card" style="margin-bottom: 1rem;">
-        <label style="display: flex; align-items: center; cursor: pointer; font-size: 1.1rem; font-weight: 600;">
-            <input type="checkbox" id="quick-bench-toggle"
-                   {% if quick_bench %}checked{% endif %}
-                   onchange="toggleQuickBench()"
-                   style="margin-right: 0.75rem; width: auto; height: 1.2rem;">
-            <span>Quick bench only</span>
-        </label>
-        <small style="color: #666; display: block; margin-top: 0.25rem;">Show only the curated set of fast exercises (&lt; 60s each)</small>
-    </div>
-
     <!-- Statistics Grid -->
     <div class="stats-grid" style="margin-bottom: 2rem;">
         <div class="stat-card">
@@ -41,16 +29,7 @@
         </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="card" style="margin-bottom: 1rem;">
-        <h3 style="margin-bottom: 1rem;">Quick Actions</h3>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <a href="/run" class="btn btn-primary">New Benchmark Run</a>
-            <a href="/results" class="btn btn-primary">View Results</a>
-            <button onclick="refreshResults()" class="btn btn-primary">Reload Results</button>
-            <button onclick="clearCompletedQueue()" class="btn btn-secondary">Clear Completed/Cancelled</button>
-        </div>
-    </div>
+
 
     <!-- Active Runs -->
     <div class="card" style="margin-bottom: 1rem;">
@@ -89,7 +68,7 @@
     <!-- Benchmark Queue (COLLAPSIBLE) -->
     <div class="card" style="margin-bottom: 1rem;">
         <h3 style="margin-bottom: 0.75rem; cursor: pointer; user-select: none;" onclick="toggleQueue()">
-            <span id="queue-chevron" class="chevron collapsed" style="display:inline-block; font-size:1.25rem; line-height:1; color:#7f8c8d; margin-right:6px;">▸</span>
+            <span id="queue-chevron" class="chevron collapsed"></span>
             Benchmark Queue
             {% if queue_items | length > 0 %}
             <span style="font-size: 0.875rem; color: #7f8c8d; font-weight: normal;">
@@ -171,6 +150,23 @@
         </table>
             {% endif %}
         </div>
+        
+        <!-- Queue Actions -->
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+            <button onclick="clearCompletedQueue()" class="btn btn-secondary">Clear Completed/Cancelled</button>
+        </div>
+    </div>
+
+    <!-- Quick Bench Toggle -->
+    <div class="card" style="margin-bottom: 1rem;">
+        <label style="display: flex; align-items: center; cursor: pointer; font-size: 1.1rem; font-weight: 600;">
+            <input type="checkbox" id="quick-bench-toggle"
+                   {% if quick_bench %}checked{% endif %}
+                   onchange="toggleQuickBench()"
+                   style="margin-right: 0.75rem; width: auto; height: 1.2rem;">
+            <span>Quick bench only</span>
+        </label>
+        <small style="color: #666; display: block; margin-top: 0.25rem;">Show only the curated set of fast exercises (&lt; 60s each)</small>
     </div>
 
     <!-- By Language (NOT collapsible) -->
@@ -460,7 +456,7 @@
         setTimeout(() => { toast.remove(); }, duration + 300);
     }
 
-    // Quick bench toggle - reloads page with ?quick=true/false
+    // Quick bench toggle - reloads page with ?quick=true/false, preserving scroll position
     function toggleQuickBench() {
         const checked = document.getElementById('quick-bench-toggle').checked;
         const url = new URL(window.location.href);
@@ -469,25 +465,55 @@
         } else {
             url.searchParams.delete('quick');
         }
+        // Save scroll position before reload
+        const scrollY = window.scrollY;
+        sessionStorage.setItem('dashboardScrollPosition', scrollY);
         window.location.href = url.toString();
     }
 
-    // Queue collapsible toggle
-    let queueCollapsed = true;
-
+    // Queue collapsible toggle with localStorage persistence
     function toggleQueue() {
         const body = document.getElementById('queue-table-body');
         const chevron = document.getElementById('queue-chevron');
-        queueCollapsed = !queueCollapsed;
-
-        if (queueCollapsed) {
-            body.style.display = 'none';
-            chevron.textContent = '▸';
-        } else {
+        const isCollapsed = body.style.display === 'none';
+        
+        if (isCollapsed) {
             body.style.display = 'block';
-            chevron.textContent = '▾';
+            chevron.classList.remove('collapsed');
+            chevron.classList.add('expanded');
+            localStorage.setItem('queueCollapsed', 'false');
+        } else {
+            body.style.display = 'none';
+            chevron.classList.remove('expanded');
+            chevron.classList.add('collapsed');
+            localStorage.setItem('queueCollapsed', 'true');
         }
     }
+
+    // Restore queue collapse state and scroll position on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Restore queue collapse state
+        const savedState = localStorage.getItem('queueCollapsed');
+        if (savedState === 'false') {
+            // Expand the queue
+            const body = document.getElementById('queue-table-body');
+            const chevron = document.getElementById('queue-chevron');
+            body.style.display = 'block';
+            chevron.classList.remove('collapsed');
+            chevron.classList.add('expanded');
+        }
+        
+        // Restore scroll position if it was saved
+        const savedScrollY = sessionStorage.getItem('dashboardScrollPosition');
+        if (savedScrollY !== null) {
+            // Use requestAnimationFrame to ensure DOM is fully rendered
+            requestAnimationFrame(() => {
+                window.scrollTo(0, parseInt(savedScrollY, 10));
+                // Clear the saved position after restoring
+                sessionStorage.removeItem('dashboardScrollPosition');
+            });
+        }
+    });
 
     // Refresh results from disk
     async function refreshResults() {

@@ -1,78 +1,87 @@
 {% extends "layout.tera" %}
 
+{% block title %}{{ agent }} - {{ exercise }} - Benchmark Results{% endblock %}
+
 {% block content %}
-<h2 style="margin-bottom: 0.5rem;">Result Detail</h2>
-
-{% if error is defined %}
-<div style="color: #e74c3c; margin-bottom: 1rem;"><p>{{ error }}</p></div>
-{% endif %}
-
-{% if result is defined %}
-<div class="card">
-    <nav style="margin-bottom: 1rem; font-size: 0.875rem; color: #7f8c8d;">
-        <a href="/results">Results</a>
-        {% if result.agent is defined %} &gt; <a href="/results?agent={{ result.agent }}" style="color: #3498db; text-decoration: none;">{{ result.agent }}</a>{% endif %}
-        {% if result.directory is defined %} &gt; <a href="{{ result.detail_url }}" style="color: #3498db; text-decoration: none;">{{ result.directory }}</a>{% endif %}
-        {% if result.language is defined %} &gt; <a href="/results?language={{ result.language }}" style="color: #3498db; text-decoration: none;">{{ result.language }}</a>{% endif %}
-        &gt; <span>{{ result.filename }}</span>
+<div class="container">
+    <nav style="margin-bottom: 1.5rem; font-size: 0.875rem; color: #7f8c8d;">
+        <a href="/results" style="color: #3498db; text-decoration: none;">Results</a>
+        {% if agent %} &gt; <a href="/results?agent={{ agent }}" style="color: #3498db; text-decoration: none;">{{ agent }}</a>{% endif %}
+        {% if model %} &gt; <a href="/results?model={{ model }}" style="color: #3498db; text-decoration: none;">{{ model }}</a>{% endif %}
+        {% if language %} &gt; <a href="/results?language={{ language }}" style="color: #3498db; text-decoration: none;">{{ language }}</a>{% endif %}
+        &gt; <span>{{ exercise }}</span>
     </nav>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-        <div><strong>Timestamp:</strong><div>{{ result.timestamp | default(value='') | replace(from='T', to=' ') }}</div></div>
-        <div><strong>Model:</strong><div>{{ result.model | default(value='') }}</div></div>
-        <div><strong>Agent:</strong><div>{{ result.agent | default(value='') }}</div></div>
-        <div><strong>Language:</strong><div>{{ result.language | default(value='') }}</div></div>
-    </div>
+    <div class="card">
+        <h2 style="margin-bottom: 1rem;">{{ agent }} - {{ exercise }}</h2>
+        
+        <!-- Summary Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <div class="stat-card">
+                <div class="stat-value" style="font-size: 1.5rem;">
+                    {% if success %}✓{% else %}✗{% endif %}
+                </div>
+                <div class="stat-label">Status</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="font-size: 1.5rem;">{{ language }}</div>
+                <div class="stat-label">Language</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="font-size: 1.5rem;">{{ duration | default(value="-") }}</div>
+                <div class="stat-label">Duration</div>
+            </div>
+        </div>
 
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
-        <div class="stat-card">
-            <div class="stat-value">{{ result.total_exercises | default(value=0) }}</div>
-            <div class="stat-label">Total Exercises</div>
+        <!-- Details -->
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 0.75rem;">Details</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tbody>
+                    <tr>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee; width: 200px;"><strong>Agent:</strong></td>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">{{ agent }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;"><strong>Exercise:</strong></td>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">{{ exercise }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;"><strong>Model:</strong></td>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">{{ model }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;"><strong>Language:</strong></td>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">{{ language }}</td>
+                    </tr>
+                    {% if timestamp %}
+                    <tr>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;"><strong>Timestamp:</strong></td>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">{{ timestamp }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if duration %}
+                    <tr>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;"><strong>Duration:</strong></td>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">{{ duration }}</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
         </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ result.successful | default(value=0) }}</div>
-            <div class="stat-label">Successful</div>
+
+        <!-- Trace File -->
+        {% if has_trace %}
+        <div>
+            <h3 style="margin-bottom: 0.75rem;">Trace</h3>
+            <a href="{{ trace_url }}" class="btn btn-primary">View Trace</a>
         </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ result.failed | default(value=0) }}</div>
-            <div class="stat-label">Failed</div>
+        {% endif %}
+
+        <!-- Actions -->
+        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #eee;">
+            <a href="/results" class="btn">Back to Results</a>
         </div>
     </div>
-
-    <div style="margin-bottom: 1rem;">
-        <strong>Success Rate:</strong>
-        <div class="status-badge {% if result.success_rate is defined and result.success_rate|replace(from='%', to='')|int > 99 %}status-completed{% else %}status-failed{% endif %}">
-            {{ result.success_rate | default(value='0.0%') }}
-        </div>
-    </div>
-
-    {% if result.results is defined and result.results | length > 0 %}
-    <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Individual Results</h3>
-    <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-            <tr>
-                <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid #ddd;">Exercise</th>
-                <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid #ddd;">Language</th>
-                <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid #ddd;">Success</th>
-                <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid #ddd;">Duration</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for r in result.results %}
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 0.75rem;">{{ r.exercise | default(value='') }}</td>
-                <td style="padding: 0.75rem;">{{ r.language | default(value='') }}</td>
-                <td style="padding: 0.75rem;">
-                    <span class="status-badge {% if r.success is defined and (r.success == 'true' or r.success == true) %}status-completed{% else %}status-failed{% endif %}">
-                        {% if r.success is defined and (r.success == 'true' or r.success == true) %}PASSED{% else %}FAILED{% endif %}
-                    </span>
-                </td>
-                <td style="padding: 0.75rem;">{{ r.duration | default(value='') }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
 </div>
-{% endif %}
 {% endblock %}

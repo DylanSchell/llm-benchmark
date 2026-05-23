@@ -2,7 +2,7 @@
 //! REST API for results management.
 
 use super::{AppState, TemplateEngine};
-use axum::extract::Query;
+use axum::extract::{Path, Query};
 
 use axum::routing::{get, post};
 use axum::Router;
@@ -121,7 +121,78 @@ pub async fn get_individual_results(
 // Router
 // =============================================================================
 
-/// Exercise detail page.
+/// Result detail page: /results/{agent}/{model}/{lang}/{ex}
+pub async fn result_detail_page(
+    Extension(state): Extension<AppState>,
+    Extension(templates): Extension<TemplateEngine>,
+    Path((agent, model, lang, ex)): Path<(String, String, String, String)>,
+) -> axum::response::Html<String> {
+    // Reconstruct directory name as {agent}-{model} to find the file
+    let dir = format!("{}-{}", agent, model);
+    tracing::info!("RESULT DETAIL: agent={}, model={}, dir={}, lang={}, ex={}", agent, model, dir, lang, ex);
+    
+    // Get the full result details
+    let results = state.service.list_individual_results(
+        Some(&lang),
+        Some(&agent),
+        None,
+        Some(&ex),
+        false,
+    );
+    tracing::info!("Found {} results", results.len());
+    
+    let mut ctx = tera::Context::new();
+    
+    if let Some(r) = results.first() {
+        // Verify the model matches what's in the URL
+        if r.model != model {
+            return axum::response::Html("<h1>Result Not Found</h1><p>The requested result does not exist.</p>".to_string());
+        }
+        
+        ctx.insert("title", &format!("Result: {} - {} - {}", agent, r.model, ex));
+        ctx.insert("agent", &r.agent);
+        ctx.insert("model", &r.model);
+        ctx.insert("directory", &dir);
+        ctx.insert("language", &lang);
+        ctx.insert("exercise", &ex);
+        ctx.insert("success", &r.success);
+        ctx.insert("timestamp", &r.timestamp);
+        ctx.insert("duration", &r.duration);
+        ctx.insert("has_trace", &r.has_trace_file);
+        ctx.insert("trace_url", &r.trace_url);
+    } else {
+        return axum::response::Html("<h1>Result Not Found</h1><p>The requested result does not exist.</p>".to_string());
+    }
+    
+    axum::response::Html(templates.render("result-detail.tera", &ctx))
+}
+
+/// Get trace for a result: /results/{agent}/{model}/{lang}/{ex}/trace
+pub async fn result_detail_trace(
+    Extension(state): Extension<AppState>,
+    Path((agent, model, lang, ex)): Path<(String, String, String, String)>,
+) -> impl IntoResponse {
+    // Reconstruct directory name as {agent}-{model}
+    let dir = format!("{}-{}", agent, model);
+    let key = format!("{}/{}/{}", dir, lang, ex);
+    match state.service.get_trace_content(&key) {
+        Ok(Some(content)) => (
+            axum::http::StatusCode::OK,
+            [(axum::http::header::CONTENT_TYPE, "text/html; charset=utf-8")],
+            content,
+        ),
+        _ => {
+            let body = "<html><body><h1>Trace Not Found</h1><p>No trace file available for this result.</p></body></html>";
+            (
+                axum::http::StatusCode::NOT_FOUND,
+                [(axum::http::header::CONTENT_TYPE, "text/html; charset=utf-8")],
+                body.to_string(),
+            )
+        }
+    }
+}
+
+/// Exercise detail page (legacy).
 pub async fn exercise_detail(
     Extension(state): Extension<AppState>,
     Extension(templates): Extension<TemplateEngine>,

@@ -4,6 +4,15 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 
+[lib]
+name = "benchmark_cli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "benchmark-cli"
+path = "src/main.rs"
+required-features = ["bin"]
+
 [dependencies]
 benchmark-types = { path = "../crates/benchmark-types" }
 benchmark-core = { path = "../crates/benchmark-core" }
@@ -13,3 +22,6 @@ tracing-subscriber = { workspace = true, features = ["env-filter"] }
 anyhow = { workspace = true }
 chrono = { workspace = true }
 clap = { workspace = true }
+
+[features]
+bin = []
