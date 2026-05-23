@@ -216,6 +216,18 @@ pub struct IndividualResult {
     pub total_tokens: u64,
     // Calculated field: tokens per second
     pub tokens_per_sec: Option<f64>,
+    // Exercise count fields (from CachedResult)
+    pub total_exercises: i32,
+    pub successful: i32,
+    // Scoring fields
+    #[serde(default)]
+    pub success_rate: f64,
+    #[serde(default)]
+    pub speed_score: f64,
+    #[serde(default)]
+    pub token_score: f64,
+    #[serde(default)]
+    pub composite_score: f64,
 }
 
 /// Statistics item for template rendering.
@@ -853,6 +865,12 @@ impl ResultService {
                     uncached_input_tokens: cached_result.uncached_input_tokens,
                     total_tokens: cached_result.input_tokens + cached_result.output_tokens,
                     tokens_per_sec: None, // Will be calculated after duration is populated
+                    total_exercises: cached_result.total_exercises,
+                    successful: cached_result.successful,
+                    success_rate: 0.0, // Will be calculated in calculate_scores
+                    speed_score: 0.0,  // Will be calculated in calculate_scores
+                    token_score: 0.0,  // Will be calculated in calculate_scores
+                    composite_score: 0.0, // Will be calculated in calculate_scores
                 });
             }
         }
@@ -1357,4 +1375,188 @@ impl ResultService {
             }
         }
     }
+
+    /// Calculate composite scores for all individual results.
+    /// Returns a vector of scored results sorted by composite score (descending).
+    pub fn calculate_scores(
+        &self,
+        language: Option<&str>,
+        agent: Option<&str>,
+        model: Option<&str>,
+        exercise: Option<&str>,
+        quick_only: bool,
+    ) -> Vec<ScoredResult> {
+        let results = self.list_individual_results(language, agent, model, exercise, quick_only);
+        
+        if results.is_empty() {
+            return vec![];
+        }
+
+        // Calculate normalization bounds from successful runs only
+        let successful: Vec<_> = results.iter()
+            .filter(|r| r.success && r.sort_duration.unwrap_or(0.0) > 0.0)
+            .collect();
+
+        if successful.is_empty() {
+            // No successful runs - all scores are 0
+            return results.into_iter().map(|r| ScoredResult {
+                agent: r.agent,
+                model: r.model,
+                language: r.language,
+                exercise: r.exercise,
+                success: r.success,
+                success_rate: 0.0,
+                speed_score: 0.0,
+                token_score: 0.0,
+                composite_score: 0.0,
+                duration: r.duration,
+                output_tokens: r.output_tokens,
+                tokens_per_sec: r.tokens_per_sec,
+                detail_url: r.detail_url,
+            }).collect();
+        }
+
+        // Find min/max for normalization
+        let max_duration = successful.iter()
+            .filter_map(|r| r.sort_duration)
+            .fold(f64::NEG_INFINITY, f64::max);
+        let min_duration = successful.iter()
+            .filter_map(|r| r.sort_duration)
+            .fold(f64::INFINITY, f64::min);
+
+        let max_tokens = successful.iter()
+            .map(|r| r.output_tokens)
+            .fold(0u64, u64::max);
+        let min_tokens = successful.iter()
+            .map(|r| r.output_tokens)
+            .fold(u64::MAX, u64::min);
+
+        // Calculate scores for all results
+        results.into_iter().map(|r| {
+            let success_rate = if r.total_exercises > 0 {
+                r.successful as f64 / r.total_exercises as f64
+            } else {
+                0.0
+            };
+
+            // Speed score: normalized (0-1), faster = higher
+            let speed_score = if r.success && r.sort_duration.unwrap_or(0.0) > 0.0 {
+                if max_duration == min_duration {
+                    1.0
+                } else {
+                    (max_duration - r.sort_duration.unwrap_or(0.0)) / (max_duration - min_duration)
+                }
+            } else {
+                0.0
+            };
+
+            // Token score: normalized (0-1), fewer tokens = higher
+            let token_score = if r.success && r.output_tokens > 0 {
+                if max_tokens == min_tokens {
+                    1.0
+                } else {
+                    (max_tokens as f64 - r.output_tokens as f64) / (max_tokens as f64 - min_tokens as f64)
+                }
+            } else {
+                0.0
+            };
+
+            // Composite score: weighted sum
+            // 50% correctness, 30% speed, 20% token efficiency
+            let composite_score = if success_rate > 0.0 {
+                0.5 * success_rate + 0.3 * speed_score + 0.2 * token_score
+            } else {
+                0.0
+            };
+
+            ScoredResult {
+                agent: r.agent,
+                model: r.model,
+                language: r.language,
+                exercise: r.exercise,
+                success: r.success,
+                success_rate,
+                speed_score,
+                token_score,
+                composite_score,
+                duration: r.duration,
+                output_tokens: r.output_tokens,
+                tokens_per_sec: r.tokens_per_sec,
+                detail_url: r.detail_url,
+            }
+        })
+        .collect()
+    }
+
+    /// Get aggregated scoring statistics by model.
+    pub fn get_model_scores(
+        &self,
+        language: Option<&str>,
+        agent: Option<&str>,
+        quick_only: bool,
+    ) -> Vec<ModelScore> {
+        let scored_results = self.calculate_scores(language, agent, None, None, quick_only);
+        
+        // Aggregate by model
+        let mut model_map: std::collections::HashMap<String, (f64, f64, f64, f64, f64, u32)> = 
+            std::collections::HashMap::new();
+        
+        for result in scored_results {
+            let key = format!("{} - {}", result.agent, result.model);
+            let entry = model_map.entry(key).or_insert((0.0, 0.0, 0.0, 0.0, 0.0, 0));
+            
+            entry.0 += result.composite_score;
+            entry.1 += result.success_rate;
+            entry.2 += result.speed_score;
+            entry.3 += result.token_score;
+            entry.4 += result.output_tokens as f64;
+            entry.5 += 1;
+        }
+        
+        model_map.into_iter()
+            .map(|(name, (total_score, total_success, total_speed, total_token, total_tokens, count))| {
+                ModelScore {
+                    name,
+                    avg_composite_score: total_score / count as f64,
+                    avg_success_rate: total_success / count as f64,
+                    avg_speed_score: total_speed / count as f64,
+                    avg_token_score: total_token / count as f64,
+                    avg_tokens: (total_tokens / count as f64) as u64,
+                    total_runs: count,
+                }
+            })
+            .collect()
+    }
+}
+
+/// A scored individual result.
+#[derive(Debug, Serialize, Clone)]
+pub struct ScoredResult {
+    pub agent: String,
+    pub model: String,
+    pub language: String,
+    pub exercise: String,
+    pub success: bool,
+    pub success_rate: f64,
+    pub speed_score: f64,
+    pub token_score: f64,
+    pub composite_score: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub duration: Option<String>,
+    pub output_tokens: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tokens_per_sec: Option<f64>,
+    pub detail_url: String,
+}
+
+/// Aggregated model score.
+#[derive(Debug, Serialize, Clone)]
+pub struct ModelScore {
+    pub name: String,
+    pub avg_composite_score: f64,
+    pub avg_success_rate: f64,
+    pub avg_speed_score: f64,
+    pub avg_token_score: f64,
+    pub avg_tokens: u64,
+    pub total_runs: u32,
 }

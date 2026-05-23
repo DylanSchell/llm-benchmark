@@ -198,6 +198,28 @@ impl BenchmarkService {
         self.result_service.get_trace_content(key)
     }
 
+    /// Calculate composite scores for results.
+    pub fn calculate_scores(
+        &self,
+        language: Option<&str>,
+        agent: Option<&str>,
+        model: Option<&str>,
+        exercise: Option<&str>,
+        quick_only: bool,
+    ) -> Vec<crate::services::result_service::ScoredResult> {
+        self.result_service.calculate_scores(language, agent, model, exercise, quick_only)
+    }
+
+    /// Get aggregated model scores.
+    pub fn get_model_scores(
+        &self,
+        language: Option<&str>,
+        agent: Option<&str>,
+        quick_only: bool,
+    ) -> Vec<crate::services::result_service::ModelScore> {
+        self.result_service.get_model_scores(language, agent, quick_only)
+    }
+
     // =============================================================================
     // Model Management
     // =============================================================================

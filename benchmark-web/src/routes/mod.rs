@@ -6,6 +6,7 @@ pub mod exercise;
 pub mod queue;
 pub mod result;
 pub mod results;
+pub mod scoring;
 
 use axum::{Router, Extension};
 use benchmark::register as register_benchmark;
@@ -13,6 +14,7 @@ use exercise::register as register_exercise;
 use queue::register as register_queue;
 use result::register as register_result;
 use results::register as register_results;
+use scoring::register as register_scoring;
 use std::sync::Arc;
 use tera::Tera;
 
@@ -110,6 +112,7 @@ pub fn build_router(state: AppState, templates: TemplateEngine) -> Router<()> {
         .merge(register_queue(Router::new()))
         .merge(register_result(Router::new()))
         .merge(register_results(Router::new()))
+        .merge(register_scoring(Router::new()))
         .layer(Extension(state))
         .layer(Extension(templates))
 }
