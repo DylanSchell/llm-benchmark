@@ -227,6 +227,13 @@ pub async fn result_detail_page(
         ctx.insert("duration", &r.duration);
         ctx.insert("has_trace", &r.has_trace_file);
         ctx.insert("trace_url", &r.trace_url);
+        // Token statistics
+        ctx.insert("input_tokens", &r.input_tokens);
+        ctx.insert("output_tokens", &r.output_tokens);
+        ctx.insert("cached_input_tokens", &r.cached_input_tokens);
+        ctx.insert("uncached_input_tokens", &r.uncached_input_tokens);
+        ctx.insert("total_tokens", &r.total_tokens);
+        ctx.insert("tokens_per_sec", &r.tokens_per_sec);
     } else {
         return axum::response::Html("<h1>Result Not Found</h1><p>The requested result does not exist.</p>".to_string());
     }

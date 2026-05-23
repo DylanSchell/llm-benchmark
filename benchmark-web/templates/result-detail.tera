@@ -31,6 +31,18 @@
                 <div class="stat-value" style="font-size: 1.5rem;">{{ duration | default(value="-") }}</div>
                 <div class="stat-label">Duration</div>
             </div>
+            {% if output_tokens %}
+            <div class="stat-card">
+                <div class="stat-value" style="font-size: 1.5rem;">{{ output_tokens | default(value="0") | format_number }}</div>
+                <div class="stat-label">Output Tokens</div>
+            </div>
+            {% endif %}
+            {% if tokens_per_sec %}
+            <div class="stat-card">
+                <div class="stat-value" style="font-size: 1.5rem;">{{ (tokens_per_sec * 10 | round / 10) }} t/s</div>
+                <div class="stat-label">Token Speed</div>
+            </div>
+            {% endif %}
         </div>
 
         <!-- Details -->
@@ -66,15 +78,44 @@
                         <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">{{ duration }}</td>
                     </tr>
                     {% endif %}
+                    {% if uncached_input_tokens or cached_input_tokens or output_tokens %}
+                    <tr>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;"><strong>Token Usage:</strong></td>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">
+                            {% if uncached_input_tokens %}
+                            Uncached Input: {{ uncached_input_tokens | format_number }}
+                            {% endif %}
+                            {% if cached_input_tokens %}
+                            {% if uncached_input_tokens %} / {% endif %}
+                            Cached Input: {{ cached_input_tokens | format_number }}
+                            {% endif %}
+                            {% if output_tokens %}
+                            {% if uncached_input_tokens or cached_input_tokens %} / {% endif %}
+                            Output: {{ output_tokens | format_number }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% if tokens_per_sec %}
+                    <tr>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;"><strong>Token Speed:</strong></td>
+                        <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">{{ (tokens_per_sec * 10 | round / 10) }} tokens/second</td>
+                    </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
 
         <!-- Trace File -->
         {% if has_trace %}
-        <div>
+        <div style="margin-top: 1.5rem;">
             <h3 style="margin-bottom: 0.75rem;">Trace</h3>
-            <a href="{{ trace_url }}" class="btn btn-primary">View Trace</a>
+            <div style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                <iframe src="{{ trace_url }}" style="width: 100%; height: 600px; border: none;"></iframe>
+            </div>
+            <div style="margin-top: 0.5rem;">
+                <a href="{{ trace_url }}" class="btn btn-secondary" target="_blank">Open Trace in New Tab</a>
+            </div>
         </div>
         {% endif %}
 
