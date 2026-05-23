@@ -10,7 +10,8 @@ use std::fs::{self, File};
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+use std::thread;
 use tracing::{info, warn};
 
 // =============================================================================
@@ -268,23 +269,66 @@ pub struct Statistics {
     pub token_display: String,
 }
 
+/// Loading status information
+#[derive(Debug, Clone, Serialize)]
+pub struct LoadingStatus {
+    pub loaded: bool,
+    pub result_count: usize,
+}
+
 /// Service for reading and managing benchmark results.
 #[derive(Debug, Clone)]
 pub struct ResultService {
     results_dir: PathBuf,
     cached_results: Arc<RwLock<HashMap<String, CachedResult>>>,
     cached_models: Arc<RwLock<Vec<String>>>,
+    /// Flag indicating if initial cache loading is complete
+    loaded: Arc<AtomicBool>,
+    /// Total number of results in cache (for progress reporting)
+    result_count: Arc<AtomicUsize>,
 }
 
 impl ResultService {
-    /// Create a new ResultService.
+    /// Create a new ResultService and start loading results in background.
     pub fn new(results_dir: PathBuf) -> Self {
+        let loaded = Arc::new(AtomicBool::new(false));
+        let result_count = Arc::new(AtomicUsize::new(0));
+        
         let service = Self {
-            results_dir,
+            results_dir: results_dir.clone(),
             cached_results: Arc::new(RwLock::new(HashMap::new())),
             cached_models: Arc::new(RwLock::new(Vec::new())),
+            loaded: loaded.clone(),
+            result_count: result_count.clone(),
         };
-        service.load_all_results();
+
+        // Start background loading task
+        let cached_results = service.cached_results.clone();
+        let cached_models = service.cached_models.clone();
+        let results_dir = service.results_dir.clone();
+        let loaded_flag = loaded.clone();
+        let count_flag = result_count.clone();
+
+        thread::spawn(move || {
+            info!("Starting background loading of benchmark results from: {}", results_dir.display());
+            
+            // Perform the actual loading (reusing existing logic)
+            let temp_service = ResultService {
+                results_dir,
+                cached_results: cached_results.clone(),
+                cached_models: cached_models.clone(),
+                loaded: loaded_flag.clone(),
+                result_count: count_flag.clone(),
+            };
+            
+            temp_service.load_all_results();
+            
+            // Mark loading as complete
+            loaded_flag.store(true, Ordering::SeqCst);
+            info!("Background result loading complete");
+        });
+
+        info!("ResultService initialized - results will be available shortly");
         service
     }
 
@@ -436,6 +480,9 @@ impl ResultService {
         // Update models cache
         let mut models_cache = self.cached_models.write().unwrap();
         *models_cache = models;
+
+        // Update result count
+        self.result_count.store(count, Ordering::SeqCst);
 
         info!(
             "Loaded {} cached result files into cache ({} errors)",
@@ -1181,6 +1228,24 @@ impl ResultService {
             Err(e) => {
                 warn!("Failed to update single result from {}: {}", file_path.display(), e);
             }
+        }
+    }
+
+    /// Check if initial cache loading is complete.
+    pub fn is_loaded(&self) -> bool {
+        self.loaded.load(Ordering::SeqCst)
+    }
+
+    /// Get the number of results currently in cache.
+    pub fn result_count(&self) -> usize {
+        self.result_count.load(Ordering::SeqCst)
+    }
+
+    /// Get loading status information.
+    pub fn get_loading_status(&self) -> LoadingStatus {
+        LoadingStatus {
+            loaded: self.loaded.load(Ordering::SeqCst),
+            result_count: self.result_count.load(Ordering::SeqCst),
         }
     }
 

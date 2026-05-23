@@ -188,6 +188,11 @@ impl BenchmarkService {
         self.result_service.get_statistics(language, agent, model, exercise, quick_only)
     }
 
+    /// Get loading status of the result cache.
+    pub fn get_loading_status(&self) -> crate::services::result_service::LoadingStatus {
+        self.result_service.get_loading_status()
+    }
+
     /// Get trace content for a result.
     pub fn get_trace_content(&self, key: &str) -> anyhow::Result<Option<String>> {
         self.result_service.get_trace_content(key)

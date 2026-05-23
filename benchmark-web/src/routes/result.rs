@@ -37,6 +37,7 @@ use axum::Extension;
 use axum::response::IntoResponse;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use crate::services::result_service::LoadingStatus;
 
 // =============================================================================
 // Request/Response types
@@ -85,11 +86,21 @@ pub async fn refresh(Extension(state): Extension<AppState>) -> Json<RefreshRespo
     Json(RefreshResponse { message: "Result cache refreshed".to_string(), loaded: 0 })
 }
 
+/// Get loading status of the result cache.
+pub async fn get_loading_status(Extension(state): Extension<AppState>) -> Json<LoadingStatus> {
+    Json(state.service.get_loading_status())
+}
+
 /// Get recent results fragment (for HTMX).
 pub async fn recent_results_fragment(
     Extension(state): Extension<AppState>,
     Query(params): Query<QueryParam>,
 ) -> Json<RecentResultsResponse> {
+    // If results are still loading, return empty results
+    if !state.service.get_loading_status().loaded {
+        return Json(RecentResultsResponse { results: vec![] });
+    }
+
     let results = state.service.list_individual_results(
         params.language.as_deref(),
         params.agent.as_deref(),
@@ -118,6 +129,11 @@ pub async fn get_individual_results(
     Extension(state): Extension<AppState>,
     Query(params): Query<FilterQuery>,
 ) -> Json<IndividualResultsResponse> {
+    // If results are still loading, return empty results
+    if !state.service.get_loading_status().loaded {
+        return Json(IndividualResultsResponse { results: vec![], total: 0 });
+    }
+
     let results = state.service.list_individual_results(
         params.language.as_deref(),
         params.agent.as_deref(),
@@ -281,6 +297,7 @@ pub async fn exercise_detail(
 /// Register result routes.
 pub fn register(app: Router<()>) -> Router<()> {
     app.route("/api/results/refresh", post(refresh))
+        .route("/api/results/loading-status", get(get_loading_status))
         .route("/recent-results-fragment", get(recent_results_fragment))
         .route("/api/individual-results", get(get_individual_results))
         .route("/exercise-detail", get(exercise_detail))
