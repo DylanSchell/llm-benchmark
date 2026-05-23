@@ -338,11 +338,14 @@ impl ResultService {
         let skipped_files: Arc<RwLock<Vec<String>>> = Arc::new(RwLock::new(Vec::new()));
 
         // Process files in parallel using rayon
+        // Cache key format: {directory}/{language}/{exercise}
+        // where directory = {agent}-{model} (internal implementation detail)
         let results: Vec<(String, CachedResult)> = result_paths
             .par_iter()
             .filter_map(|file_path| {
                 match Self::load_cached_result(file_path) {
                     Ok(Some(cached_result)) => {
+                        // Internal cache key uses directory name; URLs use separate agent/model
                         let cache_key = format!(
                             "{}/{}/{}",
                             cached_result.directory, cached_result.language, cached_result.exercise
@@ -811,8 +814,8 @@ impl ResultService {
         // Extract duration from cached results
         for result in &mut results {
             // Look up the cached result to get duration
-            // Cache key format: directory/language/exercise
-            // Extract directory from path (e.g., "/path/to/pi-qwen35-122b/result_pi_java_exercise.json" -> "pi-qwen35-122b")
+            // Cache key format: {directory}/{language}/{exercise}
+            // where directory = {agent}-{model} (internal implementation detail, NOT exposed in URLs)
             let directory = std::path::Path::new(&result.path)
                 .parent()
                 .and_then(|p| p.file_name())

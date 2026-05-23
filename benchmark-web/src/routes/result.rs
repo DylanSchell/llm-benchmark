@@ -1,5 +1,31 @@
 //! Result routes - mirrors Java ResultController.java
 //! REST API for results management.
+//!
+//! # URL Design Philosophy
+//!
+//! This module exposes a **clean RESTful API** where `agent` and `model` are separate path segments:
+//!
+//! URL pattern: `/results/{agent}/{model}/{language}/{exercise}`
+//!
+//! Example: `/results/pi/gemma-4-26b/java/custom-set`
+//!
+//! ## Internal vs. External Representation
+//!
+//! - **External (URLs)**: Agent and model are always separate path segments
+//! - **Internal (Filesystem/Cache)**: Results are stored in `{agent}-{model}` directories
+//!
+//! This module is responsible for translating between the two representations:
+//! - URLs receive separate `agent` and `model` parameters
+//! - Internal cache lookups reconstruct the directory name as `{agent}-{model}`
+//! - API responses expose `agent` and `model` as separate fields, never the directory name
+//!
+//! ## Important: Never Expose Internal Structure
+//!
+//! ❌ **Wrong**: `/results/pi/pi-gemma-4-26b/java/custom-set` (exposes internal directory)
+//! ✅ **Correct**: `/results/pi/gemma-4-26b/java/custom-set` (clean RESTful URL)
+//!
+//! The directory naming convention (`{agent}-{model}`) is an **implementation detail** that should
+//! never leak into the public API surface.
 
 use super::{AppState, TemplateEngine};
 use axum::extract::{Path, Query};
@@ -122,14 +148,39 @@ pub async fn get_individual_results(
 // =============================================================================
 
 /// Result detail page: /results/{agent}/{model}/{lang}/{ex}
+///
+/// **URL Design Note:**
+/// The RESTful URL path keeps `agent` and `model` as separate path segments.
+/// This is the public API surface and should never expose the internal directory structure.
+///
+/// **Internal Storage:**
+/// Result files are stored on disk in directories named `{agent}-{model}` (e.g., `pi-gemma-4-26b`).
+/// This directory naming is an implementation detail for organizing result files and caching.
+/// The URL layer must always translate between the clean RESTful path and the internal directory format.
+///
+/// **Why separate?**
+/// - Clean, predictable URLs: `/results/pi/gemma-4-26b/java/custom-set`
+/// - Proper filtering: Agent and model are independent dimensions
+/// - Future-proof: Adding new models doesn't change URL structure
+/// - Cache key compatibility: Internal cache uses `{directory}/{lang}/{exercise}` format
+///
+/// **Never do this:**
+/// ❌ `/results/{agent}/{agent}-{model}/{lang}/{ex}` (exposes internal structure)
+/// ❌ Filter by directory name in API responses (leaks implementation detail)
+///
+/// **Always do this:**
+/// ✅ Keep agent and model separate in URLs
+/// ✅ Reconstruct directory name only when accessing the filesystem/cache internally
+/// ✅ Use `agent` and `model` fields from result objects, not directory parsing
 pub async fn result_detail_page(
     Extension(state): Extension<AppState>,
     Extension(templates): Extension<TemplateEngine>,
     Path((agent, model, lang, ex)): Path<(String, String, String, String)>,
 ) -> axum::response::Html<String> {
-    // Reconstruct directory name as {agent}-{model} to find the file
+    // Internal implementation detail: reconstruct directory name for cache lookup
+    // This is NOT exposed in the URL - the URL keeps agent and model separate
     let dir = format!("{}-{}", agent, model);
-    tracing::info!("RESULT DETAIL: agent={}, model={}, dir={}, lang={}, ex={}", agent, model, dir, lang, ex);
+    tracing::debug!("RESULT DETAIL: agent={}, model={}, internal_dir={}, lang={}, ex={}", agent, model, dir, lang, ex);
     
     // Get the full result details (filter by model to ensure we get the right one)
     let results = state.service.list_individual_results(
@@ -172,7 +223,8 @@ pub async fn result_detail_trace(
     Extension(state): Extension<AppState>,
     Path((agent, model, lang, ex)): Path<(String, String, String, String)>,
 ) -> impl IntoResponse {
-    // Reconstruct directory name as {agent}-{model}
+    // Internal: reconstruct directory name for cache key lookup
+    // URL keeps agent and model separate; directory is an implementation detail
     let dir = format!("{}-{}", agent, model);
     let key = format!("{}/{}/{}", dir, lang, ex);
     match state.service.get_trace_content(&key) {
