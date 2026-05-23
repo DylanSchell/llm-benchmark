@@ -215,7 +215,6 @@ pub struct IndividualResult {
     pub uncached_input_tokens: u64,
     pub total_tokens: u64,
     // Calculated field: tokens per second
-    #[serde(skip)]
     pub tokens_per_sec: Option<f64>,
 }
 
@@ -243,7 +242,6 @@ pub struct StatItem {
     #[serde(default)]
     pub model: Option<String>,
     // Calculated: average tokens per second
-    #[serde(skip)]
     pub avg_tokens_per_sec: Option<f64>,
 }
 
