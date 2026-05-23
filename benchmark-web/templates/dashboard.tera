@@ -181,6 +181,7 @@
                     <th onclick="sortTable('by-language-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
                     <th onclick="sortTable('by-language-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
                     <th onclick="sortTable('by-language-table', 5)" style="cursor: pointer;">Tokens &#x2195;</th>
+                    <th onclick="sortTable('by-language-table', 6)" style="cursor: pointer;">T/s &#x2195;</th>
                 </tr>
             </thead>
             <tbody>
@@ -197,6 +198,14 @@
                         {{ item.uncached_tokens | default(value=0) | format_number }} /
                         {{ item.cached_tokens | default(value=0) | format_number }} /
                         {{ item.output_tokens | default(value=0) | format_number }}
+                    </td>
+                    <td data-tokens="{{ item.avg_tokens_per_sec | default(value=0) }}">
+                        {% if item.avg_tokens_per_sec %}
+                            {% set tps = (item.avg_tokens_per_sec * 10 | round / 10) %}
+                            {{ tps }} t/s
+                        {% else %}
+                            -
+                        {% endif %}
                     </td>
                 </tr>
                 {% endif %}
@@ -217,6 +226,7 @@
                     <th onclick="sortTable('by-agent-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
                     <th onclick="sortTable('by-agent-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
                     <th onclick="sortTable('by-agent-table', 5)" style="cursor: pointer;">Tokens &#x2195;</th>
+                    <th onclick="sortTable('by-agent-table', 6)" style="cursor: pointer;">T/s &#x2195;</th>
                 </tr>
             </thead>
             <tbody>
@@ -233,6 +243,14 @@
                         {{ item.uncached_tokens | default(value=0) | format_number }} /
                         {{ item.cached_tokens | default(value=0) | format_number }} /
                         {{ item.output_tokens | default(value=0) | format_number }}
+                    </td>
+                    <td data-tokens="{{ item.avg_tokens_per_sec | default(value=0) }}">
+                        {% if item.avg_tokens_per_sec %}
+                            {% set tps = (item.avg_tokens_per_sec * 10 | round / 10) %}
+                            {{ tps }} t/s
+                        {% else %}
+                            -
+                        {% endif %}
                     </td>
                 </tr>
                 {% endif %}
@@ -253,6 +271,7 @@
                     <th onclick="sortTable('by-model-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
                     <th onclick="sortTable('by-model-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
                     <th onclick="sortTable('by-model-table', 5)" style="cursor: pointer;">Tokens &#x2195;</th>
+                    <th onclick="sortTable('by-model-table', 6)" style="cursor: pointer;">T/s &#x2195;</th>
                 </tr>
             </thead>
             <tbody>
@@ -279,6 +298,14 @@
                         {{ item.uncached_tokens | default(value=0) | format_number }} /
                         {{ item.cached_tokens | default(value=0) | format_number }} /
                         {{ item.output_tokens | default(value=0) | format_number }}
+                    </td>
+                    <td data-tokens="{{ item.avg_tokens_per_sec | default(value=0) }}">
+                        {% if item.avg_tokens_per_sec %}
+                            {% set tps = (item.avg_tokens_per_sec * 10 | round / 10) %}
+                            {{ tps }} t/s
+                        {% else %}
+                            -
+                        {% endif %}
                     </td>
                 </tr>
                 {% endif %}
@@ -624,6 +651,10 @@
             if (isNumeric) {
                 // For token columns (index 5), use data-tokens attribute for sorting by output tokens
                 if (columnIdx === 5) {
+                    aVal = parseFloat(a.children[columnIdx].getAttribute('data-tokens') || '0');
+                    bVal = parseFloat(b.children[columnIdx].getAttribute('data-tokens') || '0');
+                } else if (columnIdx === 6) {
+                    // For T/s column (index 6), use data-tokens attribute for sorting by tokens per second
                     aVal = parseFloat(a.children[columnIdx].getAttribute('data-tokens') || '0');
                     bVal = parseFloat(b.children[columnIdx].getAttribute('data-tokens') || '0');
                 } else {

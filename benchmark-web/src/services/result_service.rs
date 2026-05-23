@@ -214,6 +214,9 @@ pub struct IndividualResult {
     #[serde(default)]
     pub uncached_input_tokens: u64,
     pub total_tokens: u64,
+    // Calculated field: tokens per second
+    #[serde(skip)]
+    pub tokens_per_sec: Option<f64>,
 }
 
 /// Statistics item for template rendering.
@@ -239,6 +242,9 @@ pub struct StatItem {
     pub agent: Option<String>,
     #[serde(default)]
     pub model: Option<String>,
+    // Calculated: average tokens per second
+    #[serde(skip)]
+    pub avg_tokens_per_sec: Option<f64>,
 }
 
 /// Aggregate statistics.
@@ -848,6 +854,7 @@ impl ResultService {
                     cached_input_tokens: cached_result.cached_input_tokens,
                     uncached_input_tokens: cached_result.uncached_input_tokens,
                     total_tokens: cached_result.input_tokens + cached_result.output_tokens,
+                    tokens_per_sec: None, // Will be calculated after duration is populated
                 });
             }
         }
@@ -859,7 +866,7 @@ impl ResultService {
             epoch_b.partial_cmp(&epoch_a).unwrap_or(std::cmp::Ordering::Equal)
         });
 
-        // Extract duration from cached results
+        // Extract duration from cached results and calculate tokens/sec
         for result in &mut results {
             // Look up the cached result to get duration
             // Cache key format: {directory}/{language}/{exercise}
@@ -876,6 +883,10 @@ impl ResultService {
                         if let Ok(dur) = dur_str.parse::<f64>() {
                             result.duration = Some(Self::format_duration(dur));
                             result.sort_duration = Some(dur);
+                            // Calculate tokens per second
+                            if dur > 0.0 {
+                                result.tokens_per_sec = Some(result.output_tokens as f64 / dur);
+                            }
                         } else {
                             result.duration = Some(dur_str.clone());
                         }
@@ -1026,6 +1037,7 @@ impl ResultService {
             .iter()
             .map(|(name, (total, success, duration, input_tokens, output_tokens, cached_tokens, uncached_tokens))| {
                 let rate = if *total > 0 { (*success as f64 / *total as f64) * 100.0 } else { 0.0 };
+                let avg_tps = if *duration > 0.0 { *output_tokens as f64 / *duration } else { 0.0 };
                 StatItem {
                     name: name.clone(),
                     total: *total,
@@ -1039,6 +1051,7 @@ impl ResultService {
                     uncached_tokens: *uncached_tokens,
                     agent: None,
                     model: None,
+                    avg_tokens_per_sec: if avg_tps > 0.0 { Some(avg_tps) } else { None },
                 }
             })
             .collect();
@@ -1048,6 +1061,7 @@ impl ResultService {
             .iter()
             .map(|(name, (total, success, duration, input_tokens, output_tokens, cached_tokens, uncached_tokens))| {
                 let rate = if *total > 0 { (*success as f64 / *total as f64) * 100.0 } else { 0.0 };
+                let avg_tps = if *duration > 0.0 { *output_tokens as f64 / *duration } else { 0.0 };
                 StatItem {
                     name: name.clone(),
                     total: *total,
@@ -1061,6 +1075,7 @@ impl ResultService {
                     uncached_tokens: *uncached_tokens,
                     agent: None,
                     model: None,
+                    avg_tokens_per_sec: if avg_tps > 0.0 { Some(avg_tps) } else { None },
                 }
             })
             .collect();
@@ -1074,6 +1089,7 @@ impl ResultService {
                 let (agent, model) = name.split_once(" - ")
                     .map(|(a, m)| (Some(a.to_string()), Some(m.to_string())))
                     .unwrap_or((None, None));
+                let avg_tps = if *duration > 0.0 { *output_tokens as f64 / *duration } else { 0.0 };
                 
                 StatItem {
                     name: name.clone(),
@@ -1088,6 +1104,7 @@ impl ResultService {
                     uncached_tokens: *uncached_tokens,
                     agent,
                     model,
+                    avg_tokens_per_sec: if avg_tps > 0.0 { Some(avg_tps) } else { None },
                 }
             })
             .collect();
