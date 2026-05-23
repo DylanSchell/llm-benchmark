@@ -247,7 +247,7 @@
                 {% set success = item.success | default(value=0) %}
                 {% if item.total > 0 %}
                 <tr>
-                    <td><a href="/results?model={{ item.name }}" style="color: #3498db; text-decoration: none;">{{ item.name }}</a></td>
+                    <td><a href="/results?agent={{ item.name | split(pat=' - ') | first }}&model={{ item.name | split(pat=' - ') | last }}" style="color: #3498db; text-decoration: none;">{{ item.name }}</a></td>
                     <td>{{ item.total }}</td>
                     <td>{{ success }}</td>
                     <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
