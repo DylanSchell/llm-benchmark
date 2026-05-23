@@ -775,11 +775,11 @@ impl ResultService {
                     filename: cached_result.filename.clone(),
                     detail_url: format!(
                         "/results/{}/{}/{}/{}",
-                        cached_result.agent, cached_result.directory, cached_result.language, cached_result.exercise
+                        cached_result.agent, cached_result.model, cached_result.language, cached_result.exercise
                     ),
                     trace_url: format!(
                         "/results/{}/{}/{}/{}/trace",
-                        cached_result.agent, cached_result.directory, cached_result.language, cached_result.exercise
+                        cached_result.agent, cached_result.model, cached_result.language, cached_result.exercise
                     ),
                     path: cached_result.path.clone(),
                     agent: cached_result.agent.clone(),
