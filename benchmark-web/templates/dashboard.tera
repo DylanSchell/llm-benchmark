@@ -193,7 +193,7 @@
                     <td>{{ success }}</td>
                     <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
                     <td>{{ item.success_rate_formatted }}</td>
-                    <td title="Uncached / Cached / Output">
+                    <td data-tokens="{{ item.output_tokens | default(value=0) }}" title="Uncached / Cached / Output">
                         {{ item.uncached_tokens | default(value=0) | format_number }} /
                         {{ item.cached_tokens | default(value=0) | format_number }} /
                         {{ item.output_tokens | default(value=0) | format_number }}
@@ -229,7 +229,7 @@
                     <td>{{ success }}</td>
                     <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
                     <td>{{ item.success_rate_formatted }}</td>
-                    <td title="Uncached / Cached / Output">
+                    <td data-tokens="{{ item.output_tokens | default(value=0) }}" title="Uncached / Cached / Output">
                         {{ item.uncached_tokens | default(value=0) | format_number }} /
                         {{ item.cached_tokens | default(value=0) | format_number }} /
                         {{ item.output_tokens | default(value=0) | format_number }}
@@ -275,7 +275,7 @@
                     <td>{{ success }}</td>
                     <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
                     <td>{{ item.success_rate_formatted }}</td>
-                    <td title="Uncached / Cached / Output">
+                    <td data-tokens="{{ item.output_tokens | default(value=0) }}" title="Uncached / Cached / Output">
                         {{ item.uncached_tokens | default(value=0) | format_number }} /
                         {{ item.cached_tokens | default(value=0) | format_number }} /
                         {{ item.output_tokens | default(value=0) | format_number }}
@@ -622,8 +622,14 @@
             let bVal = b.children[columnIdx].textContent.trim();
 
             if (isNumeric) {
-                aVal = parseFloat(aVal.replace(/[^0-9.]/g, '')) || 0;
-                bVal = parseFloat(bVal.replace(/[^0-9.]/g, '')) || 0;
+                // For token columns (index 5), use data-tokens attribute for sorting by output tokens
+                if (columnIdx === 5) {
+                    aVal = parseFloat(a.children[columnIdx].getAttribute('data-tokens') || '0');
+                    bVal = parseFloat(b.children[columnIdx].getAttribute('data-tokens') || '0');
+                } else {
+                    aVal = parseFloat(aVal.replace(/[^0-9.]/g, '')) || 0;
+                    bVal = parseFloat(bVal.replace(/[^0-9.]/g, '')) || 0;
+                }
             } else {
                 aVal = aVal.toLowerCase();
                 bVal = bVal.toLowerCase();

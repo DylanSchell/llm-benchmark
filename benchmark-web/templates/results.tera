@@ -190,7 +190,7 @@
                             &#x2717;
                         {% endif %}
                     </td>
-                    <td title="Uncached / Cached / Output">
+                    <td data-sort="{{ indResult.output_tokens | default(value=0) }}" title="Uncached / Cached / Output">
                         {{ indResult.uncached_input_tokens | default(value=0) | format_number }} /
                         {{ indResult.cached_input_tokens | default(value=0) | format_number }} /
                         {{ indResult.output_tokens | default(value=0) | format_number }}
