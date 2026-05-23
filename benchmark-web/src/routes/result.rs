@@ -131,11 +131,11 @@ pub async fn result_detail_page(
     let dir = format!("{}-{}", agent, model);
     tracing::info!("RESULT DETAIL: agent={}, model={}, dir={}, lang={}, ex={}", agent, model, dir, lang, ex);
     
-    // Get the full result details
+    // Get the full result details (filter by model to ensure we get the right one)
     let results = state.service.list_individual_results(
         Some(&lang),
         Some(&agent),
-        None,
+        Some(&model),
         Some(&ex),
         false,
     );
