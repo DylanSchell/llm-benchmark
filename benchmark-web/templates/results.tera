@@ -180,13 +180,25 @@
                     <td>{{ indResult.agent }}</td>
                     {% endif %}
                     {% if filter_model == "" %}
-                    <td>{{ indResult.model }}</td>
+                    <td>
+                        {% set href = "/results?model=" ~ indResult.model %}
+                        {% if filter_agent != "" %}{% set href = href ~ "&agent=" ~ filter_agent %}{% endif %}
+                        {% if filter_language != "" %}{% set href = href ~ "&language=" ~ filter_language %}{% endif %}
+                        {% if filter_exercise != "" %}{% set href = href ~ "&exercise=" ~ filter_exercise %}{% endif %}
+                        <a href="{{ href }}" style="color: #3498db; text-decoration: underline;">{{ indResult.model }}</a>
+                    </td>
                     {% endif %}
                     {% if filter_language == "" %}
                     <td>{{ indResult.language }}</td>
                     {% endif %}
                     {% if filter_exercise == "" %}
-                    <td><a href="{{ indResult.detail_url }}" style="text-decoration: underline; color: #3498db;">{{ indResult.exercise }}</a></td>
+                    <td>
+                        {% set href = "/results?exercise=" ~ indResult.exercise %}
+                        {% if filter_agent != "" %}{% set href = href ~ "&agent=" ~ filter_agent %}{% endif %}
+                        {% if filter_language != "" %}{% set href = href ~ "&language=" ~ filter_language %}{% endif %}
+                        {% if filter_model != "" %}{% set href = href ~ "&model=" ~ filter_model %}{% endif %}
+                        <a href="{{ href }}" style="color: #3498db; text-decoration: underline;">{{ indResult.exercise }}</a>
+                    </td>
                     {% endif %}
                     <td data-sort="{{ indResult.sort_duration | default(value=0) }}">{{ indResult.duration | default(value="-") }}</td>
                     <td>
@@ -202,8 +214,9 @@
                         {{ indResult.output_tokens | default(value=0) | format_number }}
                     </td>
                     <td>
+                        <a href="{{ indResult.detail_url }}" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.2rem 0.5rem; white-space: nowrap;">Details</a>
                         {% if indResult.has_trace_file %}
-                        <a href="{{ indResult.trace_url }}" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.2rem 0.5rem; white-space: nowrap;">View Trace</a>
+                        <a href="{{ indResult.trace_url }}" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.2rem 0.5rem; white-space: nowrap; margin-left: 0.5rem;">View Trace</a>
                         {% endif %}
                     </td>
                 </tr>
