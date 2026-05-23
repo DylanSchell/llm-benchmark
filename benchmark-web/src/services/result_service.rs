@@ -1468,10 +1468,10 @@ impl ResultService {
             };
 
             // Composite score: weighted sum
-            // 30% correctness, 20% speed, 50% token efficiency
-            // Heavily weight tokens to create strong differentiation among high-performers
+            // 60% correctness, 20% speed, 20% token efficiency
+            // Correctness is paramount - incomplete or incorrect results should not rank high
             let composite_score = if success_rate > 0.0 {
-                0.3 * success_rate + 0.2 * speed_score + 0.5 * token_score
+                0.6 * success_rate + 0.2 * speed_score + 0.2 * token_score
             } else {
                 0.0
             };
@@ -1539,12 +1539,22 @@ impl ResultService {
                     0.0
                 };
                 
+                // Calculate composite score at MODEL level using model-level success rate
+                // This ensures incomplete coverage is properly penalized
+                let avg_speed = total_speed / total_runs as f64;
+                let avg_token = total_token / total_runs as f64;
+                let avg_composite_score = if avg_success_rate > 0.0 {
+                    0.6 * avg_success_rate + 0.2 * avg_speed + 0.2 * avg_token
+                } else {
+                    0.0
+                };
+                
                 ModelScore {
                     name,
-                    avg_composite_score: total_score / total_runs as f64,
+                    avg_composite_score,
                     avg_success_rate,
-                    avg_speed_score: total_speed / total_runs as f64,
-                    avg_token_score: total_token / total_runs as f64,
+                    avg_speed_score: avg_speed,
+                    avg_token_score: avg_token,
                     avg_tokens: (total_tokens / total_runs as f64) as u64,
                     total_runs,
                 }
