@@ -574,21 +574,22 @@ impl ResultService {
             }
         };
 
-        // Duration: convert ms to seconds string for display
-        let duration = if exercise_result.duration_ms > 0 {
-            format!("{}s", exercise_result.duration_ms as f64 / 1000.0)
+        // Duration: convert ms to seconds for storage (will be formatted later)
+        let duration_seconds = if exercise_result.duration_ms > 0 {
+            exercise_result.duration_ms as f64 / 1000.0
         } else {
-            "0s".to_string()
+            0.0
         };
 
         let output = exercise_result.output.clone();
 
         // Build results list for backward compatibility
+        // Store duration as numeric value for proper sorting, format later for display
         let mut single_result = HashMap::new();
         single_result.insert("language".to_string(), language.clone());
         single_result.insert("exercise".to_string(), exercise.clone());
         single_result.insert("success".to_string(), success.to_string());
-        single_result.insert("duration".to_string(), duration.clone());
+        single_result.insert("duration".to_string(), duration_seconds.to_string());
         single_result.insert("output".to_string(), output.clone());
 
         let total_exercises = 1;
