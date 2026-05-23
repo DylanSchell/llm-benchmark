@@ -115,7 +115,13 @@
                 {% set lang_total = item.total %}
                 {% set lang_success = item.success %}
                 <tr>
-                    <td><a href="/results?language={{ item.name }}" style="color: #3498db; text-decoration: none;">{{ item.name }}</a></td>
+                    <td>
+                        {% set href = "/results?language=" ~ item.name %}
+                        {% if filter_agent != "" %}{% set href = href ~ "&agent=" ~ filter_agent %}{% endif %}
+                        {% if filter_model != "" %}{% set href = href ~ "&model=" ~ filter_model %}{% endif %}
+                        {% if filter_exercise != "" %}{% set href = href ~ "&exercise=" ~ filter_exercise %}{% endif %}
+                        <a href="{{ href }}" style="color: #3498db; text-decoration: none;">{{ item.name }}</a>
+                    </td>
                     <td>{{ lang_total }}</td>
                     <td>{{ lang_success }}</td>
                     <td>{{ item.success_rate_formatted }}%</td>
