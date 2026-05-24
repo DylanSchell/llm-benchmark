@@ -9,13 +9,13 @@ This document describes all configuration options for the Claude Benchmark Runne
 The configuration is loaded from `config.yaml` in the project root directory:
 
 ```
-/Users/dylan/Developer/claude-benchmark/config.yaml
+/Users/dylan/Developer/llm-benchmark/config.yaml
 ```
 
 You can specify a custom config file location using the CLI:
 
 ```bash
-java -jar claude-benchmark.jar --config=/path/to/custom-config.yaml
+./target/release/llm-benchmark --config=/path/to/custom-config.yaml run --language java
 ```
 
 ---
@@ -38,7 +38,7 @@ benchmark:
 # Docker container settings
 docker:
   # Docker image for running exercises
-  image: claude-benchmark/runner:latest
+  image: llm-benchmark/runner:latest
   
   # Container memory limit (e.g., "2g", "512m")
   memory: 2g
@@ -97,12 +97,12 @@ benchmark:
 
 ### Docker Settings
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `docker.image` | string | `claude-benchmark/runner:latest` | Docker image for execution containers |
-| `docker.memory` | string | `2g` | Container memory limit |
-| `docker.timeout` | int | `300` | Execution timeout in seconds |
-| `docker.environment` | string[] | `[]` | Additional environment variables |
+| Property | Type | Default                       | Description |
+|----------|------|-------------------------------|-------------|
+| `docker.image` | string | `llm-benchmark/runner:latest` | Docker image for execution containers |
+| `docker.memory` | string | `2g`                          | Container memory limit |
+| `docker.timeout` | int | `300`                         | Execution timeout in seconds |
+| `docker.environment` | string[] | `[]`                          | Additional environment variables |
 
 **Memory Limits:**
 - `512m` - 512 MB (lightweight exercises)
@@ -118,7 +118,7 @@ benchmark:
 **Example:**
 ```yaml
 docker:
-  image: claude-benchmark/runner:v1.2.0
+  image: llm-benchmark/runner:v1.2.0
   memory: 4g
   timeout: 600
   environment:
@@ -283,7 +283,7 @@ benchmark:
   path: ../polyglot-benchmark
 
 docker:
-  image: claude-benchmark/runner:latest
+  image: llm-benchmark/runner:latest
 
 output:
   results_dir: ./results
@@ -297,7 +297,7 @@ benchmark:
   parallelism: 8
 
 docker:
-  image: claude-benchmark/runner:v1.2.0
+  image: llm-benchmark/runner:v1.2.0
   memory: 4g
   timeout: 600
   environment:
@@ -329,7 +329,7 @@ benchmark:
   parallelism: 2
 
 docker:
-  image: claude-benchmark/runner:latest
+  image: llm-benchmark/runner:latest
   memory: 2g
   timeout: 300
 
@@ -397,9 +397,7 @@ Format: `SECTION_PROPERTY` (uppercase, underscore-separated)
 CLI arguments take precedence over config file:
 
 ```bash
-java -jar claude-benchmark.jar \
-  --benchmark.path=/custom/path \
-  --docker.timeout=600
+./target/release/llm-benchmark run --language java --verbose
 ```
 
 ---

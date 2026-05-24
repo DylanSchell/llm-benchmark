@@ -21,16 +21,15 @@ This guide provides everything you need to contribute to the Claude Benchmark Ru
 
 ### Prerequisites
 
-- **Java 21** or later
-- **Maven 3.8+**
+- **Rust 1.75+** (with `cargo`)
 - **Docker** (for running exercises)
 - **Git**
 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-org/claude-benchmark.git
-cd claude-benchmark
+git clone https://github.com/your-org/llm-benchmark.git
+cd llm-benchmark
 ```
 
 ### Clone Polyglot Benchmark
@@ -54,7 +53,7 @@ benchmark:
   path: ../polyglot-benchmark
 
 docker:
-  image: claude-benchmark/runner:latest
+  image: llm-benchmark/runner:latest
   memory: 2g
 
 output:
@@ -65,7 +64,7 @@ output:
 
 ```bash
 cd docker
-docker build -t claude-benchmark/runner:latest -f Dockerfile.runner .
+docker build -t llm-benchmark/runner:latest -f Dockerfile.runner .
 cd ..
 ```
 
@@ -76,28 +75,15 @@ cd ..
 ### Quick Build
 
 ```bash
-mvn package -q
+cargo build --release
 ```
 
-This creates `target/claude-benchmark-1.0-SNAPSHOT.jar`
-
-### Build with Tests
-
-```bash
-mvn clean package
-```
-
-### Build Without Tests (for development)
-
-```bash
-mvn package -DskipTests -q
-```
+This creates the `llm-benchmark` launcher binary.
 
 ### Build Docker Image
 
 ```bash
-mvn package -q
-docker build -t claude-benchmark/runner:latest -f docker/Dockerfile.runner .
+docker build -t llm-benchmark/runner:latest -f docker/Dockerfile.runner .
 ```
 
 ---
@@ -108,30 +94,19 @@ docker build -t claude-benchmark/runner:latest -f docker/Dockerfile.runner .
 
 ```bash
 # Run reference agent for Java exercises
-java -jar target/claude-benchmark-1.0-SNAPSHOT.jar \
-  --agent=reference \
-  --languages=java
+./target/release/llm-benchmark run --language java
 
 # Run Claude agent for specific exercise
-java -jar target/claude-benchmark-1.0-SNAPSHOT.jar \
-  --agent=claude \
-  --languages=python \
-  --exercise=two-fer
+./target/release/llm-benchmark run --agent claude --model sonnet --language python --exercise two-fer
 ```
 
 ### Web Mode
 
 ```bash
 # Start web server
-java -jar target/claude-benchmark-1.0-SNAPSHOT.jar --web
+./target/release/llm-benchmark web --port 8080
 
 # Access dashboard at http://localhost:8080
-```
-
-### Development Mode (with Spring Boot)
-
-```bash
-mvn spring-boot:run
 ```
 
 ---
@@ -141,26 +116,19 @@ mvn spring-boot:run
 ### Run All Tests
 
 ```bash
-mvn test
+cargo test --workspace
 ```
 
-### Run Specific Test Class
+### Run Specific Crate Tests
 
 ```bash
-mvn test -Dtest=ResultPersisterTest
+cargo test --package benchmark-core
 ```
 
-### Run Tests with Coverage
+### Run Single Test
 
 ```bash
-mvn clean test jacoco:report
-# Report at target/site/jacoco/index.html
-```
-
-### Integration Tests
-
-```bash
-mvn verify -Dit.test=DockerIntegrationTest
+cargo test --package benchmark-core exercise_runner::tests::test_find_exercise
 ```
 
 ---
@@ -235,20 +203,35 @@ public class RubyHandler implements LanguageHandler {
 
 ### Step 2: Register Handler
 
-Update `LanguageHandlerRegistry.java`:
+Update `LanguageHandlerRegistry` in `benchmark-core`:
 
-```java
-public LanguageHandlerRegistry() {
-    // Register all built-in handlers
-    register(new JavaHandler());
-    register(new GoHandler());
-    register(new JavaScriptHandler());
-    register(new PythonHandler());
-    register(new RustHandler());
-    register(new CppHandler());
-    register(new RubyHandler());  // Add new handler
+```rust
+// In benchmark-core/src/handlers/registry.rs
+pub struct LanguageHandlerRegistry {
+    handlers: HashMap<String, Box<dyn LanguageHandler>>,
+}
+
+impl LanguageHandlerRegistry {
+    pub fn new() -> Self {
+        let mut registry = Self { handlers: HashMap::new() };
+        
+        // Register all built-in handlers
+        registry.register(Box::new(JavaHandler));
+        registry.register(Box::new(GoHandler));
+        registry.register(Box::new(JavaScriptHandler));
+        registry.register(Box::new(PythonHandler));
+        registry.register(Box::new(RustHandler));
+        registry.register(Box::new(CppHandler));
+        registry.register(Box::new(RubyHandler));  // Add new handler
+        
+        info!("Registered {} language handlers", registry.handlers.len());
+        registry
+    }
     
-    logger.info("Registered {} language handlers", handlers.size());
+    pub fn register(&mut self, handler: Box<dyn LanguageHandler>) {
+        let language = handler.get_language().to_string();
+        self.handlers.insert(language, handler);
+    }
 }
 ```
 
@@ -264,44 +247,48 @@ RUN apt-get update && apt-get install -y ruby-full bundler && rm -rf /var/lib/ap
 Rebuild the Docker image:
 
 ```bash
-docker build -t claude-benchmark/runner:latest -f docker/Dockerfile.runner .
+docker build -t llm-benchmark/runner:latest -f docker/Dockerfile.runner .
 ```
 
 ### Step 4: Test Your Handler
 
 ```bash
-mvn test -Dtest=RubyHandlerTest
+cargo test --package benchmark-core ruby_handler
 ```
 
 ---
 
 ## Adding New Agents
 
-Agents implement the `Agent` interface and are created via `AgentFactory`.
+Agents implement the `Agent` trait and are created via a factory function.
 
 ### Step 1: Create Agent Implementation
 
-```java
-package io.schell.llm.benchmark.agent;
+```rust
+// In benchmark-core/src/agents/gemini_agent.rs
+use crate::agents::Agent;
+use crate::config::Config;
+use crate::exercise::Exercise;
+use crate::result::AgentResult;
+use tracing::info;
 
-import io.schell.llm.benchmark.config.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+pub struct GeminiAgent {
+    config: Config,
+    model: String,
+}
 
-public class GeminiAgent implements Agent {
-    private static final Logger logger = LoggerFactory.getLogger(GeminiAgent.class);
-    
-    private final Config config;
-    private final String model;
-
-    public GeminiAgent(Config config, String model) {
-        this.config = config;
-        this.model = model;
+impl GeminiAgent {
+    pub fn new(config: &Config, model: &str) -> Self {
+        Self {
+            config: config.clone(),
+            model: model.to_string(),
+        }
     }
+}
 
-    @Override
-    public AgentResult run(Exercise exercise, Path exerciseDir, Path resultDir) {
-        logger.info("Running Gemini agent for {} in {}", exercise.getName(), exercise.getLanguage());
+impl Agent for GeminiAgent {
+    fn run(&self, exercise: &Exercise, exercise_dir: &Path, result_dir: &Path) -> Result<AgentResult> {
+        info!("Running Gemini agent for {} in {}", exercise.name, exercise.language);
         
         // Implement agent logic here
         // 1. Prepare prompt with exercise description
@@ -309,73 +296,61 @@ public class GeminiAgent implements Agent {
         // 3. Write solution to exercise directory
         // 4. Return result
         
-        return AgentResult.builder()
-            .exerciseName(exercise.getName())
-            .success(true)
-            .build();
+        Ok(AgentResult {
+            exercise_name: exercise.name.clone(),
+            success: true,
+            // ... other fields
+        })
     }
 
-    @Override
-    public String getAgentType() {
-        return "gemini";
-    }
-}
-```
-
-### Step 2: Create Agent Factory
-
-```java
-package io.schell.llm.benchmark.agent;
-
-import io.schell.llm.benchmark.config.Config;
-import org.springframework.stereotype.Component;
-
-@Component
-public class GeminiAgentFactory implements AgentFactory {
-    
-    @Override
-    public Agent createAgent(Config config) {
-        return new GeminiAgent(config, "gemini-pro");
-    }
-
-    @Override
-    public String getAgentType() {
-        return "gemini";
+    fn agent_type(&self) -> &str {
+        "gemini"
     }
 }
 ```
 
-### Step 3: Register Factory
+### Step 2: Register Agent
 
-The factory is automatically discovered via Spring's component scanning. Ensure it's in a package scanned by Spring.
+Add the agent to the factory function in `benchmark-core/src/agents/mod.rs`:
+
+```rust
+pub fn create_agent(agent_type: &str, config: &Config) -> Result<Box<dyn Agent>> {
+    match agent_type {
+        "reference" => Ok(Box::new(ReferenceAgent::new(config))),
+        "claude" => Ok(Box::new(ClaudeAgent::new(config))),
+        "gemini" => Ok(Box::new(GeminiAgent::new(config, "gemini-pro"))),  // Add new agent
+        _ => Err(BenchmarkError::UnknownAgent(agent_type.to_string())),
+    }
+}
+```
 
 ---
 
 ## Code Style
 
-### Java Code Style
+### Rust Code Style
 
-We follow the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) with minor modifications:
+We follow the [Rust Style Guide](https://doc.rust-lang.org/style-guide/) with minor modifications:
 
 - **Indentation:** 4 spaces (no tabs)
 - **Line length:** 120 characters
-- **Braces:** K&R style for classes/methods, Allman for control structures
-- **Imports:** Grouped as `java.*`, `javax.*`, third-party, then project packages
+- **Braces:** Rust standard (same as K&R)
+- **Imports:** Grouped by crate, then alphabetically within groups
 
 ### Formatting
 
-Use Maven's formatter plugin:
+Use `rustfmt`:
 
 ```bash
-mvn formatter:format
+cargo fmt --all
 ```
 
 ### Linting
 
-Run checkstyle before committing:
+Run `clippy` before committing:
 
 ```bash
-mvn checkstyle:check
+cargo clippy --all-targets -- -D warnings
 ```
 
 ### Naming Conventions
@@ -429,19 +404,16 @@ chore: Update dependencies
 ## Project Structure
 
 ```
-src/
-├── main/java/com/benchmark/
-│   ├── BenchmarkRunner.java          # Main orchestration
-│   ├── agent/                        # Agent implementations
-│   ├── config/                       # Configuration
-│   ├── docker/                       # Docker integration
-│   ├── exception/                    # Custom exceptions
-│   ├── exercise/                     # Exercise handling
-│   ├── model/                        # Domain models
-│   ├── persistence/                  # Persistence layer
-│   └── web/                          # Web layer
-├── test/java/com/benchmark/          # Test classes
-└── resources/                        # Config files, templates
+crates/
+  benchmark-types/          # Shared types: Config, ExerciseResult, Agent traits
+  benchmark-core/           # Core logic: DockerClient, ExerciseRunner, Agents
+benchmark-cli/              # CLI benchmark runner
+benchmark-web/              # Axum web server with REST API + SSE streaming
+benchmark-token-report/     # Token statistics report tool
+benchmark-reporter/         # Full markdown report generator
+docker/
+  Dockerfile.runner         # Container image with build tools
+config.yaml                 # Configuration file
 ```
 
 ---
@@ -460,7 +432,7 @@ output:
 Or via CLI:
 
 ```bash
-java -jar target/*.jar --log-level=DEBUG
+./target/release/llm-benchmark run --language java --verbose
 ```
 
 ### Debug Docker Containers
@@ -475,16 +447,13 @@ pb.redirectErrorStream(true);
 
 ### IDE Setup
 
-**IntelliJ IDEA:**
-1. Import as Maven project
-2. Enable annotation processing
-3. Set Java 21 SDK
-4. Configure code style (File → Settings → Editor → Code Style → Java → Set from → Predefined Style → Google)
-
 **VS Code:**
-1. Install Extension Pack for Java
+1. Install rust-analyzer extension
 2. Open workspace folder
-3. Select JDK 21
+3. Configure Cargo.toml if needed
+
+**IntelliJ IDEA:**
+1. Open as Rust project (with IntelliJ Rust plugin) or use VS Code
 
 ---
 
@@ -546,14 +515,11 @@ newgrp docker
 
 ### Out of Memory
 
-**Symptom:** `java.lang.OutOfMemoryError`
+**Symptom:** Memory issues with Docker containers
 
 **Solution:**
 ```bash
-# Increase JVM heap for the benchmark runner
-java -Xmx4g -jar target/*.jar
-
-# Increase Docker container memory
+# Rust binaries manage memory automatically, adjust Docker container memory
 docker:
   memory: 4g
 ```

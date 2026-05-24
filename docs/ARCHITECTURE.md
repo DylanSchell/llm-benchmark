@@ -84,72 +84,49 @@ This document describes the architecture of the Claude Benchmark Runner, a frame
 
 ---
 
-## Package Structure
+## Package Structure (Rust)
 
 ```
-src/main/java/com/benchmark/
-├── BenchmarkRunner.java          # Main orchestration class
-├── CliEntryPoint.java            # CLI entry point
-├── CliArgs.java                  # CLI arguments record
+crates/
+├── benchmark-types/              # Shared types and traits
+│   ├── lib.rs
+│   ├── config.rs                 # Config, DockerConfig, OutputConfig
+│   ├── exercise.rs               # Exercise domain model
+│   ├── result.rs                 # ExerciseResult, AgentResult
+│   └── agent.rs                  # Agent trait
 │
-├── agent/                        # Agent implementations
-│   ├── LanguageHandler.java      # Strategy interface
-│   ├── LanguageHandlerRegistry.java
-│   ├── ReferenceAgent.java       # Reference implementation agent
-│   ├── ClaudeAgent.java          # Claude Code CLI agent
-│   └── handlers/                 # Language-specific handlers
-│       ├── JavaHandler.java
-│       ├── GoHandler.java
-│       ├── JavaScriptHandler.java
-│       ├── PythonHandler.java
-│       ├── RustHandler.java
-│       └── CppHandler.java
+├── benchmark-core/               # Core business logic
+│   ├── lib.rs
+│   ├── docker_client.rs          # Docker container management
+│   ├── exercise_runner.rs        # Single exercise execution
+│   ├── benchmark_runner.rs       # Core orchestration
+│   ├── handlers/                 # Language-specific handlers
+│   │   ├── mod.rs
+│   │   ├── registry.rs           # LanguageHandlerRegistry
+│   │   ├── language_handler.rs   # Trait interface
+│   │   ├── java_handler.rs
+│   │   ├── go_handler.rs
+│   │   ├── javascript_handler.rs
+│   │   ├── python_handler.rs
+│   │   ├── rust_handler.rs
+│   │   └── cpp_handler.rs
+│   └── agents/                   # Agent implementations
+│       ├── mod.rs
+│       ├── reference_agent.rs
+│       └── claude_agent.rs
 │
-├── config/                       # Configuration management
-│   ├── Config.java               # Main configuration class
-│   ├── ConfigLoader.java         # YAML loader
-│   ├── DockerConfig.java         # Docker settings
-│   └── OutputConfig.java         # Output settings
+benchmark-cli/                    # CLI binary
+│   └── src/main.rs               # CLI entry point (clap)
 │
-├── docker/                       # Docker integration
-│   └── DockerClient.java         # Container management
+benchmark-web/                    # Web server
+│   └── src/
+│       ├── main.rs               # Axum server entry point
+│       ├── routes.rs             # REST API handlers
+│       ├── sse.rs                # Server-sent events
+│       └── templates/            # Tera templates (embedded)
 │
-├── exception/                    # Exception hierarchy
-│   ├── BenchmarkException.java
-│   ├── BenchmarkExecutionException.java
-│   ├── ExerciseNotFoundException.java
-│   └── DockerExecutionException.java
-│
-├── exercise/                     # Exercise handling
-│   ├── Exercise.java             # Exercise domain model
-│   ├── ExerciseRunner.java       # Single exercise execution
-│   └── LanguageExercise.java     # Language-specific exercise
-│
-├── model/                        # Domain models
-│   ├── ExerciseResult.java       # Execution result
-│   ├── BenchmarkSession.java     # Web session state
-│   └── ...                       # Other models
-│
-├── persistence/                  # Persistence layer
-│   └── ResultPersister.java      # File-based storage
-│
-└── web/                          # Web layer
-    ├── config/                   # Spring configuration
-    │   └── WebConfig.java
-    ├── controller/               # REST controllers
-    │   ├── BenchmarkController.java
-    │   ├── ResultController.java
-    │   ├── ExerciseController.java
-    │   └── QueueController.java
-    ├── domain/                   # Web-specific models
-    │   ├── BenchmarkSession.java
-    │   └── BenchmarkQueueItem.java
-    └── service/                  # Service layer
-        ├── BenchmarkService.java
-        ├── SessionManager.java
-        ├── BenchmarkExecutor.java
-        ├── QueueProcessor.java
-        └── ResultService.java
+benchmark-reporter/               # Report generator
+└── benchmark-token-report/       # Token statistics tool
 ```
 
 ---
@@ -245,80 +222,90 @@ Selected Handler (e.g., JavaHandler)
 
 ### 1. Strategy Pattern - Language Handlers
 
-**Purpose:** Encapsulate language-specific operations behind a common interface.
+**Purpose:** Encapsulate language-specific operations behind a common trait.
 
-```java
-public interface LanguageHandler {
-    void copyReference(Exercise exercise, Path tempDir) throws IOException;
-    void copyTests(Exercise exercise, Path sourceDir, Path destDir) throws IOException;
-    List<String> getTestCommand(Exercise exercise);
-    void patchTests(Path tempWorkDir) throws IOException;
+```rust
+// In benchmark-core/src/handlers/language_handler.rs
+pub trait LanguageHandler: Send + Sync {
+    fn get_language(&self) -> &str;
+    fn copy_reference(&self, exercise: &Exercise, temp_dir: &Path) -> Result<()>;
+    fn copy_tests(&self, exercise: &Exercise, source_dir: &Path, dest_dir: &Path) -> Result<()>;
+    fn get_test_command(&self, exercise: &Exercise) -> Vec<String>;
+    fn patch_tests(&self, temp_work_dir: &Path) -> Result<()>;
 }
 ```
 
 **Benefits:**
 - Easy to add new language support
 - Each handler knows only about its language
-- No if/else chains in ReferenceAgent
+- Dynamic dispatch via trait objects
 
 ### 2. Factory Pattern - Agent Creation
 
-**Purpose:** Create agents without exposing instantiation logic.
+**Purpose:** Create agents via trait objects and configuration.
 
-```java
-public interface AgentFactory {
-    Agent createAgent(String agentType, Config config);
+```rust
+// Agents are created via a simple factory function
+pub fn create_agent(agent_type: &str, config: &Config) -> Result<Box<dyn Agent>> {
+    match agent_type {
+        "reference" => Ok(Box::new(ReferenceAgent::new(config))),
+        "claude" => Ok(Box::new(ClaudeAgent::new(config))),
+        _ => Err(BenchmarkError::UnknownAgent(agent_type.to_string())),
+    }
 }
-
-// Implementations:
-ReferenceAgentFactory, ClaudeAgentFactory
 ```
 
 **Benefits:**
-- Type-safe agent creation
+- Simple agent creation
 - Easy to add new agent types
-- Testable (can mock factories)
+- Testable with trait mocks
 
-### 3. Facade Pattern - BenchmarkService
+### 3. Facade Pattern - Benchmark Runner
 
 **Purpose:** Provide simplified interface to complex subsystem.
 
-```java
-@Service
-public class BenchmarkService {
-    private final SessionManager sessionManager;
-    private final BenchmarkExecutor benchmarkExecutor;
-    private final QueueProcessor queueProcessor;
-    
-    // Simple facade methods delegate to specialized services
+```rust
+// In benchmark-core/src/benchmark_runner.rs
+pub struct BenchmarkRunner {
+    config: Config,
+    docker_client: DockerClient,
+    registry: LanguageHandlerRegistry,
+}
+
+impl BenchmarkRunner {
+    pub fn run_benchmark(&self, languages: &[String], agent: Box<dyn Agent>) -> Result<()> {
+        // High-level orchestration
+    }
 }
 ```
 
 **Benefits:**
 - Clean separation of concerns
 - Easier to understand API
-- Services can evolve independently
+- Components can evolve independently
 
 ### 4. Command Pattern - Exercise Execution
 
-**Purpose:** Encapsulate execution as commands with rollback support.
+**Purpose:** Encapsulate execution with proper lifecycle management.
 
-```java
-// Exercise execution is encapsulated with:
-// - Pre-execution setup (copy files, prepare environment)
-// - Execution (run agent, run tests)
-// - Post-execution (cleanup, persist results)
+```rust
+// Exercise execution flow:
+// 1. prepare() - Copy files, create temp directory
+// 2. execute() - Run agent, capture output
+// 3. cleanup() - Remove temp files
+// All wrapped in Result for error handling
 ```
 
 ### 5. Observer Pattern - Progress Tracking
 
 **Purpose:** Stream progress updates to multiple subscribers.
 
-```java
-// OutputConsumer allows streaming output to:
-// - Console (CLI mode)
-// - SSE stream (web UI)
-// - Log file
+```rust
+// In benchmark-web/src/sse.rs
+// Uses Axum's SSE (Server-Sent Events) for real-time updates:
+// - CLI mode: Direct stdout streaming
+// - Web UI: SSE stream with progress events
+// - Logging: Structured JSON logs
 ```
 
 ---
@@ -334,7 +321,7 @@ benchmark:
   parallelism: 4                  # Concurrent executions
 
 docker:
-  image: claude-benchmark/runner:latest
+  image: llm-benchmark/runner:latest
   memory: 2g                      # Container memory limit
   timeout: 300                    # Execution timeout (seconds)
 
@@ -402,8 +389,8 @@ BenchmarkException (base)
 ### Standalone Mode (CLI)
 ```
 ┌─────────────────────┐
-│   Java Application  │
-│   └── BenchmarkRunner.main()
+│   Rust Binary       │
+│   └── llm-benchmark │
 └─────────────────────┘
          │
     ┌────┴────┐
@@ -416,11 +403,11 @@ BenchmarkException (base)
 ### Web Mode
 ```
 ┌─────────────────────────────┐
-│   Spring Boot Application   │
+│   Axum Web Server           │
 │  ┌───────────────────────┐  │
-│  │    Embedded Tomcat    │  │
+│  │    Tokio Runtime      │  │
 │  │  ┌─────────────────┐  │  │
-│  │  │ REST Controllers│  │  │
+│  │  │ REST Handlers   │  │  │
 │  │  └─────────────────┘  │  │
 │  └───────────────────────┘  │
 └─────────────────────────────┘
