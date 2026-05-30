@@ -1,5 +1,109 @@
+use chrono::DateTime;
 use serde::{Deserialize, Serialize, Serializer};
 use std::path::Path;
+
+/// Represents a time interval [start, end) in milliseconds.
+#[derive(Debug, Clone, Copy)]
+pub struct TimeInterval {
+    pub start: u64,
+    pub end: u64,
+}
+
+impl TimeInterval {
+    pub fn duration(&self) -> u64 {
+        self.end.saturating_sub(self.start)
+    }
+}
+
+/// Merges overlapping/adjacent intervals and returns total wall-clock duration.
+///
+/// Example: [0,100], [50,150], [200,300] → merged [0,150]+[200,300] = 200ms
+/// This is the correct way to sum execution times when tasks run in parallel.
+pub fn merge_intervals_and_total_duration(intervals: &[TimeInterval]) -> u64 {
+    if intervals.is_empty() {
+        return 0;
+    }
+
+    let mut sorted = intervals.to_vec();
+    sorted.sort_by_key(|i| i.start);
+
+    let mut total_duration: u64 = 0;
+    let mut current_start = sorted[0].start;
+    let mut current_end = sorted[0].end;
+
+    for interval in &sorted[1..] {
+        if interval.start <= current_end {
+            // Overlapping or adjacent — extend
+            current_end = current_end.max(interval.end);
+        } else {
+            // Disjoint — close current, start new
+            total_duration += current_end.saturating_sub(current_start);
+            current_start = interval.start;
+            current_end = interval.end;
+        }
+    }
+
+    total_duration += current_end.saturating_sub(current_start);
+    total_duration
+}
+
+/// Parses an RFC3339 timestamp to Unix epoch milliseconds.
+pub fn parse_rfc3339_ms(ts: &str) -> Option<u64> {
+    DateTime::parse_from_rfc3339(ts)
+        .ok()
+        .map(|dt| dt.timestamp_millis() as u64)
+}
+
+/// Computes wall-clock statistics for a set of results by merging overlapping intervals.
+pub fn compute_wall_clock_stats(results: &[AgentResult]) -> WallClockStats {
+    if results.is_empty() {
+        return WallClockStats::default();
+    }
+
+    let intervals: Vec<TimeInterval> = results
+        .iter()
+        .filter_map(|r| {
+            let start_ms = parse_rfc3339_ms(&r.start_time);
+            let end_ms = parse_rfc3339_ms(&r.end_time);
+            match (start_ms, end_ms) {
+                (Some(start), Some(end)) if end >= start => Some(TimeInterval { start, end }),
+                _ => None,
+            }
+        })
+        .collect();
+
+    let total_duration = merge_intervals_and_total_duration(&intervals);
+
+    let wall_start = intervals.iter().map(|i| i.start).min().unwrap_or(0);
+    let wall_end = intervals.iter().map(|i| i.end).max().unwrap_or(0);
+    let wall_clock_span = wall_end.saturating_sub(wall_start);
+
+    let sum_individual: u64 = intervals.iter().map(|i| i.duration()).sum();
+
+    WallClockStats {
+        wall_clock_span,
+        total_duration,
+        sum_individual_durations: sum_individual,
+        parallelism_gain: if wall_clock_span > 0 {
+            (1.0 - (total_duration as f64 / wall_clock_span as f64)).max(0.0)
+        } else {
+            0.0
+        },
+    }
+}
+
+/// Statistics about wall-clock execution time vs individual durations.
+#[derive(Debug, Clone, Default)]
+pub struct WallClockStats {
+    /// Earliest start to latest end across all results.
+    pub wall_clock_span: u64,
+    /// Sum of merged (non-overlapping) intervals — true work time.
+    pub total_duration: u64,
+    /// Sum of all individual durations (overcounts when parallel).
+    pub sum_individual_durations: u64,
+    /// Fraction of time saved by parallelism (0.0 = no overlap, ~1.0 = fully parallel).
+    pub parallelism_gain: f64,
+}
 
 fn serialize_duration_seconds<S>(duration_ms: &u64, serializer: S) -> Result<S::Ok, S::Error>
 where
@@ -42,6 +146,18 @@ pub struct AgentResult {
     pub error_message: Option<String>,
     #[serde(rename = "containerId")]
     pub container_id: String,
+}
+
+impl AgentResult {
+    /// Parses start_time to Unix epoch milliseconds.
+    pub fn start_ms(&self) -> Option<u64> {
+        parse_rfc3339_ms(&self.start_time)
+    }
+
+    /// Parses end_time to Unix epoch milliseconds.
+    pub fn end_ms(&self) -> Option<u64> {
+        parse_rfc3339_ms(&self.end_time)
+    }
 }
 
 impl AgentResult {

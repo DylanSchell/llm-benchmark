@@ -3,6 +3,7 @@
 //! Caches all results in memory on startup for fast access.
 
 use anyhow::Result;
+use benchmark_types::agent::{merge_intervals_and_total_duration, parse_rfc3339_ms, TimeInterval};
 use benchmark_types::config::QuickBenchConfig;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -183,6 +184,11 @@ pub struct CachedResult {
     pub cached_input_tokens: u64,
     #[serde(default)]
     pub uncached_input_tokens: u64,
+    // Timestamps for wall-clock computation
+    #[serde(default)]
+    pub start_time: String,
+    #[serde(default)]
+    pub end_time: String,
 }
 
 /// Result of listing individual results.
@@ -240,6 +246,11 @@ pub struct StatItem {
     pub success_rate_formatted: String,
     pub total_duration: f64,
     pub total_duration_formatted: String,
+    // Wall-clock stats
+    #[serde(default)]
+    pub wall_clock_duration: f64,
+    #[serde(default)]
+    pub wall_clock_duration_formatted: String,
     // Token statistics
     #[serde(default)]
     pub input_tokens: u64,
@@ -268,6 +279,9 @@ pub struct Statistics {
     pub success_rate_formatted: String,
     pub total_duration: f64,
     pub total_duration_formatted: String,
+    // Wall-clock stats (merged overlapping intervals)
+    pub wall_clock_duration: f64,
+    pub wall_clock_duration_formatted: String,
     // For results page compatibility
     pub total_results: i32,
     pub successful_results: i32,
@@ -573,6 +587,9 @@ impl ResultService {
             None
         };
 
+        let start_time = exercise_result.start_time.clone();
+        let end_time = exercise_result.end_time.clone();
+
         // Agent: try to get from result, otherwise derive from filename
         let agent = if !exercise_result.model.is_empty() && exercise_result.exercise_name.starts_with("result_") {
             // Try to extract agent from model field if it contains agent info
@@ -678,6 +695,8 @@ impl ResultService {
             output_tokens,
             cached_input_tokens,
             uncached_input_tokens,
+            start_time,
+            end_time,
         }))
     }
 
@@ -942,6 +961,10 @@ impl ResultService {
         let mut by_language: HashMap<String, (i32, i32, f64, u64, u64, u64, u64)> = HashMap::new();
         let mut by_agent: HashMap<String, (i32, i32, f64, u64, u64, u64, u64)> = HashMap::new();
         let mut by_model: HashMap<String, (i32, i32, f64, u64, u64, u64, u64)> = HashMap::new();
+        // Wall-clock intervals per group
+        let mut wall_by_language: HashMap<String, Vec<TimeInterval>> = HashMap::new();
+        let mut wall_by_agent: HashMap<String, Vec<TimeInterval>> = HashMap::new();
+        let mut wall_by_model: HashMap<String, Vec<TimeInterval>> = HashMap::new();
 
         for cached_result in cached.values() {
             if !Self::matches_filter(
@@ -984,6 +1007,10 @@ impl ResultService {
             total_uncached_tokens += cached_result.uncached_input_tokens;
 
             // By language - track (total, success, duration, input_tokens, output_tokens, cached_tokens, uncached_tokens)
+            let lang_intervals = wall_by_language.entry(cached_result.language.clone()).or_insert_with(Vec::new);
+            if let (Some(s), Some(e)) = (parse_rfc3339_ms(&cached_result.start_time), parse_rfc3339_ms(&cached_result.end_time)) {
+                if e >= s { lang_intervals.push(TimeInterval { start: s, end: e }); }
+            }
             *by_language
                 .entry(cached_result.language.clone())
                 .or_insert((0, 0, 0.0, 0, 0, 0, 0)) = {
@@ -1003,6 +1030,10 @@ impl ResultService {
             };
 
             // By agent - track (total, success, duration, tokens)
+            let agent_intervals = wall_by_agent.entry(cached_result.agent.clone()).or_insert_with(Vec::new);
+            if let (Some(s), Some(e)) = (parse_rfc3339_ms(&cached_result.start_time), parse_rfc3339_ms(&cached_result.end_time)) {
+                if e >= s { agent_intervals.push(TimeInterval { start: s, end: e }); }
+            }
             *by_agent
                 .entry(cached_result.agent.clone())
                 .or_insert((0, 0, 0.0, 0, 0, 0, 0)) = {
@@ -1023,6 +1054,10 @@ impl ResultService {
 
             // By model - track (total, success, duration, tokens)
             let model_key = format!("{} - {}", cached_result.agent, cached_result.model);
+            let model_intervals = wall_by_model.entry(model_key.clone()).or_insert_with(Vec::new);
+            if let (Some(s), Some(e)) = (parse_rfc3339_ms(&cached_result.start_time), parse_rfc3339_ms(&cached_result.end_time)) {
+                if e >= s { model_intervals.push(TimeInterval { start: s, end: e }); }
+            }
             *by_model
                 .entry(model_key.clone())
                 .or_insert((0, 0, 0.0, 0, 0, 0, 0)) = {
@@ -1049,12 +1084,37 @@ impl ResultService {
         };
         let success_rate_formatted = format!("{:.1}", success_rate);
 
+        // Compute wall-clock duration by merging overlapping intervals from start_time/end_time
+        let intervals: Vec<TimeInterval> = cached.values()
+            .filter(|cr| {
+                // Apply same filters
+                Self::matches_filter(
+                    &cr.language, language,
+                    &cr.agent, agent,
+                    &cr.model, model,
+                    &cr.exercise, exercise,
+                ) && (!quick_only || Self::is_quick_bench_exercise(&cr.language, &cr.exercise))
+            })
+            .filter_map(|cr| {
+                let start_ms = parse_rfc3339_ms(&cr.start_time);
+                let end_ms = parse_rfc3339_ms(&cr.end_time);
+                match (start_ms, end_ms) {
+                    (Some(start), Some(end)) if end >= start => Some(TimeInterval { start, end }),
+                    _ => None,
+                }
+            })
+            .collect();
+        let wall_clock_ms = merge_intervals_and_total_duration(&intervals);
+        let wall_clock_seconds = wall_clock_ms as f64 / 1000.0;
+
         // Convert HashMaps to sorted Vec<StatItem> with duration and tokens
         let mut language_stats: Vec<StatItem> = by_language
             .iter()
             .map(|(name, (total, success, duration, input_tokens, output_tokens, cached_tokens, uncached_tokens))| {
                 let rate = if *total > 0 { (*success as f64 / *total as f64) * 100.0 } else { 0.0 };
                 let avg_tps = if *duration > 0.0 { *output_tokens as f64 / *duration } else { 0.0 };
+                let wall_intervals = wall_by_language.get(name).map(|v| v.as_slice()).unwrap_or(&[]);
+                let wall_secs = merge_intervals_and_total_duration(wall_intervals) as f64 / 1000.0;
                 StatItem {
                     name: name.clone(),
                     total: *total,
@@ -1062,6 +1122,8 @@ impl ResultService {
                     success_rate_formatted: format!("{:.1}", rate),
                     total_duration: *duration,
                     total_duration_formatted: Self::format_duration(*duration),
+                    wall_clock_duration: wall_secs,
+                    wall_clock_duration_formatted: Self::format_duration(wall_secs),
                     input_tokens: *input_tokens,
                     output_tokens: *output_tokens,
                     cached_tokens: *cached_tokens,
@@ -1079,6 +1141,8 @@ impl ResultService {
             .map(|(name, (total, success, duration, input_tokens, output_tokens, cached_tokens, uncached_tokens))| {
                 let rate = if *total > 0 { (*success as f64 / *total as f64) * 100.0 } else { 0.0 };
                 let avg_tps = if *duration > 0.0 { *output_tokens as f64 / *duration } else { 0.0 };
+                let wall_intervals = wall_by_agent.get(name).map(|v| v.as_slice()).unwrap_or(&[]);
+                let wall_secs = merge_intervals_and_total_duration(wall_intervals) as f64 / 1000.0;
                 StatItem {
                     name: name.clone(),
                     total: *total,
@@ -1086,6 +1150,8 @@ impl ResultService {
                     success_rate_formatted: format!("{:.1}", rate),
                     total_duration: *duration,
                     total_duration_formatted: Self::format_duration(*duration),
+                    wall_clock_duration: wall_secs,
+                    wall_clock_duration_formatted: Self::format_duration(wall_secs),
                     input_tokens: *input_tokens,
                     output_tokens: *output_tokens,
                     cached_tokens: *cached_tokens,
@@ -1107,6 +1173,8 @@ impl ResultService {
                     .map(|(a, m)| (Some(a.to_string()), Some(m.to_string())))
                     .unwrap_or((None, None));
                 let avg_tps = if *duration > 0.0 { *output_tokens as f64 / *duration } else { 0.0 };
+                let wall_intervals = wall_by_model.get(name).map(|v| v.as_slice()).unwrap_or(&[]);
+                let wall_secs = merge_intervals_and_total_duration(wall_intervals) as f64 / 1000.0;
                 
                 StatItem {
                     name: name.clone(),
@@ -1115,6 +1183,8 @@ impl ResultService {
                     success_rate_formatted: format!("{:.1}", rate),
                     total_duration: *duration,
                     total_duration_formatted: Self::format_duration(*duration),
+                    wall_clock_duration: wall_secs,
+                    wall_clock_duration_formatted: Self::format_duration(wall_secs),
                     input_tokens: *input_tokens,
                     output_tokens: *output_tokens,
                     cached_tokens: *cached_tokens,
@@ -1140,6 +1210,8 @@ impl ResultService {
             success_rate_formatted,
             total_duration,
             total_duration_formatted: Self::format_duration(total_duration),
+            wall_clock_duration: wall_clock_seconds,
+            wall_clock_duration_formatted: Self::format_duration(wall_clock_seconds),
             total_results: total_runs,
             successful_results: successful_exercises,
             language_stats,

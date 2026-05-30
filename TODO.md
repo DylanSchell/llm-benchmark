@@ -4,4 +4,7 @@
   - Added `ReasoningConfig` module that maps pi thinking levels → backend-specific params
   - ReasoningMechanism auto-detected by model name (AnthropicThinking, OpenAIReasoningEffort, NativeReasoning, Custom)
   - models.json now includes reasoning config so pi knows how to translate thinking levels
-- [ ] how to deal with timekeeping when performing parallel execution
+- [x] how to deal with timekeeping when performing parallel execution
+  - Added `TimeInterval` + `merge_intervals_and_total_duration()` — merges overlapping intervals for correct wall-clock computation
+  - Results page now shows **Execution Time** (sum of individual durations) and **Wall-Clock Time** (merged, no double-counting)
+  - Per-group stats (language/agent/model) also show both times

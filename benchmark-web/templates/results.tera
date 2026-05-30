@@ -27,8 +27,12 @@
                 <div class="stat-label">Success Rate</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">{{ stats.total_duration_formatted }}</div>
-                <div class="stat-label">Total Time</div>
+                <div class="stat-value" title="Sum of individual exercise durations (overcounts when parallel)">{{ stats.total_duration_formatted }}</div>
+                <div class="stat-label">Execution Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" title="Wall-clock time: merged overlapping intervals, no double-counting">{{ stats.wall_clock_duration_formatted }}</div>
+                <div class="stat-label">Wall-Clock Time</div>
             </div>
         </div>
     </div>
@@ -108,6 +112,8 @@
                     <th>Total Exercises</th>
                     <th>Successful</th>
                     <th>Success Rate</th>
+                    <th>Execution Time</th>
+                    <th>Wall-Clock Time</th>
                 </tr>
             </thead>
             <tbody>
@@ -125,11 +131,13 @@
                     <td>{{ lang_total }}</td>
                     <td>{{ lang_success }}</td>
                     <td>{{ item.success_rate_formatted }}%</td>
+                    <td title="Sum of individual durations">{{ item.total_duration_formatted }}</td>
+                    <td title="Merged overlapping intervals">{{ item.wall_clock_duration_formatted }}</td>
                 </tr>
             {% endfor %}
             {% if stats.language_stats | length == 0 %}
                 <tr>
-                    <td colspan="4" style="text-align: center; color: #7f8c8d;">No language statistics available</td>
+                    <td colspan="6" style="text-align: center; color: #7f8c8d;">No language statistics available</td>
                 </tr>
             {% endif %}
             </tbody>
