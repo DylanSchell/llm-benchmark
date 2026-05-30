@@ -8,8 +8,43 @@
 //!
 //! This module provides a unified abstraction: a pi-level `ThinkingLevel` that gets
 //! translated into backend-specific configuration via a `ReasoningConfig`.
+//!
+//! # Registration API
+//!
+//! Use `ReasoningRegistry::register()` to add model-specific reasoning configs at
+//! startup. Lookups support exact model IDs and glob patterns (e.g., `qwen3-*`).
+//! More specific patterns take priority over broader ones.
+//!
+//! ```ignore
+//! // Register a config for a specific model
+//! ReasoningRegistry::register(
+//!     "deepseek-r1-distill-llama-70b",
+//!     ReasoningConfig {
+//!         mechanism: ReasoningMechanism::NativeReasoning,
+//!         level_mapping: None,
+//!     },
+//! );
+//!
+//! // Register a config for a family of models via glob pattern
+//! ReasoningRegistry::register(
+//!     "qwen3-*",
+//!     ReasoningConfig {
+//!         mechanism: ReasoningMechanism::AnthropicThinking,
+//!         level_mapping: Some(ThinkingLevelMapping {
+//!             off: Some("off".to_string()),
+//!             minimal: None,
+//!             low: Some("low".to_string()),
+//!             medium: Some("medium".to_string()),
+//!             high: Some("high".to_string()),
+//!             xhigh: Some("xhigh".to_string()),
+//!         }),
+//!     },
+//! );
+//! ```
 
 use serde::{Deserialize, Serialize};
+use std::sync::Mutex;
+use once_cell::sync::Lazy;
 
 /// Unified thinking level from the benchmark UI.
 /// These are pi-native levels that get translated to backend-specific parameters.
@@ -344,5 +379,237 @@ mod tests {
         assert_eq!(result.len(), 2);
         assert_eq!(result[0].0, "temperature");
         assert_eq!(result[1].0, "thinking_level");
+    }
+}
+
+// =============================================================================
+// Reasoning Registry — per-model overrides
+// =============================================================================
+
+/// A single registry entry: a model pattern and its reasoning config.
+pub struct RegisteredEntry {
+    /// The model pattern (exact ID or glob like `qwen3-*`).
+    pub pattern: String,
+    /// The reasoning config to apply.
+    pub config: ReasoningConfig,
+}
+
+/// Global registry of per-model reasoning configurations.
+///
+/// Lookups are resolved by finding the most specific matching pattern:
+/// 1. Exact match (e.g., `"deepseek-r1"`) takes priority
+/// 2. Glob patterns (e.g., `"qwen3-*"`) match via simple wildcard
+/// 3. If no pattern matches, falls through to `ReasoningMechanism::detect(model)`
+///
+/// This is initialized with built-in defaults but can be extended at runtime.
+pub struct ReasoningRegistry {
+    entries: Mutex<Vec<RegisteredEntry>>,
+}
+
+impl ReasoningRegistry {
+    /// Register a reasoning config for a specific model ID or glob pattern.
+    ///
+    /// Patterns are matched in registration order. More specific patterns
+    /// (exact matches) automatically take priority over broader ones during lookup.
+    ///
+    /// # Glob syntax
+    /// - `*` matches any sequence of characters (including empty)
+    /// - Example: `"qwen3-*"` matches `"qwen3-235b-a22b"`, `"qwen3-30b-a3b"`, etc.
+    pub fn register(pattern: &str, config: ReasoningConfig) {
+        let mut entries = REASONING_REGISTRY.entries.lock().unwrap();
+        // Insert at the front so most-recent registrations take priority
+        // (exact matches will still sort above globs during lookup)
+        entries.insert(0, RegisteredEntry {
+            pattern: pattern.to_string(),
+            config,
+        });
+    }
+
+    /// Look up the reasoning config for a model.
+    ///
+    /// Returns `Some(config)` if an exact or glob pattern match is found,
+    /// otherwise returns `None` (caller should fall back to
+    /// `ReasoningConfig::default_for_mechanism(&ReasoningMechanism::detect(model))`).
+    pub fn lookup(model: &str) -> Option<ReasoningConfig> {
+        let entries = REASONING_REGISTRY.entries.lock().unwrap();
+        let lower = model.to_lowercase();
+
+        // First pass: exact match (highest priority)
+        for entry in entries.iter() {
+            if entry.pattern == model || entry.pattern.to_lowercase() == lower {
+                return Some(entry.config.clone());
+            }
+        }
+
+        // Second pass: glob patterns — prefer more specific matches
+        // (longer pattern = more specific)
+        let mut best_match: Option<(&RegisteredEntry, usize)> = None;
+        for entry in entries.iter() {
+            if entry.pattern.contains('*') && Self::pattern_matches(&entry.pattern, &lower) {
+                let specificity = entry.pattern.len();
+                match &best_match {
+                    Some((_, best_spec)) if specificity > *best_spec => {
+                        best_match = Some((entry, specificity));
+                    }
+                    None => {
+                        best_match = Some((entry, specificity));
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        best_match.map(|(entry, _)| entry.config.clone())
+    }
+
+    /// Check if a model name matches a glob pattern.
+    /// Supports `*` as a wildcard for any character sequence.
+    fn pattern_matches(pattern: &str, model: &str) -> bool {
+        let parts: Vec<&str> = pattern.split('*').collect();
+        if parts.len() == 1 {
+            // No wildcard — exact match (already handled above)
+            return pattern.to_lowercase() == model.to_lowercase();
+        }
+
+        let mut pos = 0;
+        for (i, part) in parts.iter().enumerate() {
+            if part.is_empty() {
+                continue;
+            }
+            if i == 0 {
+                // Prefix match
+                if !model[pos..].starts_with(*part) {
+                    return false;
+                }
+                pos += part.len();
+            } else if i == parts.len() - 1 {
+                // Suffix match
+                if !model.ends_with(*part) {
+                    return false;
+                }
+                break;
+            } else {
+                // Middle segment — find anywhere after current position
+                match model[pos..].find(*part) {
+                    Some(idx) => pos += idx + part.len(),
+                    None => return false,
+                }
+            }
+        }
+        true
+    }
+
+    /// Get the reasoning config for a model, falling back to mechanism detection.
+    ///
+    /// This is the main entry point used by PiAgent:
+    /// 1. Check registry for exact/glob match
+    /// 2. Fall back to `ReasoningMechanism::detect(model)`
+    pub fn get_for_model(model: &str) -> ReasoningConfig {
+        if let Some(config) = Self::lookup(model) {
+            return config;
+        }
+        let mechanism = ReasoningMechanism::detect(model);
+        ReasoningConfig::default_for_mechanism(&mechanism)
+    }
+
+    /// Register built-in defaults. Call this once at application startup.
+    pub fn register_defaults() {
+        // Anthropic models — native thinking, no translation needed
+        Self::register(
+            "claude-*",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::AnthropicThinking,
+                level_mapping: None,
+            },
+        );
+        Self::register("claude", ReasoningConfig {
+            mechanism: ReasoningMechanism::AnthropicThinking,
+            level_mapping: None,
+        });
+        Self::register("sonnet", ReasoningConfig {
+            mechanism: ReasoningMechanism::AnthropicThinking,
+            level_mapping: None,
+        });
+        Self::register("opus", ReasoningConfig {
+            mechanism: ReasoningMechanism::AnthropicThinking,
+            level_mapping: None,
+        });
+        Self::register("haiku", ReasoningConfig {
+            mechanism: ReasoningMechanism::AnthropicThinking,
+            level_mapping: None,
+        });
+
+        // OpenAI o-series — reasoning_effort mapping
+        Self::register("o3-*", ReasoningConfig {
+            mechanism: ReasoningMechanism::OpenAIReasoningEffort,
+            level_mapping: Some(ThinkingLevelMapping {
+                off: Some("disabled".to_string()),
+                minimal: Some("low".to_string()),
+                low: Some("low".to_string()),
+                medium: Some("medium".to_string()),
+                high: Some("high".to_string()),
+                xhigh: Some("high".to_string()),
+            }),
+        });
+        Self::register("o1-*", ReasoningConfig {
+            mechanism: ReasoningMechanism::OpenAIReasoningEffort,
+            level_mapping: Some(ThinkingLevelMapping {
+                off: Some("disabled".to_string()),
+                minimal: Some("low".to_string()),
+                low: Some("low".to_string()),
+                medium: Some("medium".to_string()),
+                high: Some("high".to_string()),
+                xhigh: Some("high".to_string()),
+            }),
+        });
+    }
+}
+
+static REASONING_REGISTRY: Lazy<ReasoningRegistry> = Lazy::new(|| ReasoningRegistry {
+    entries: Mutex::new(Vec::new()),
+});
+
+#[cfg(test)]
+mod registry_tests {
+    use super::*;
+
+    #[test]
+    fn test_exact_match_priority() {
+        // Register a broad pattern then a specific override
+        ReasoningRegistry::register("qwen-*", ReasoningConfig {
+            mechanism: ReasoningMechanism::Custom { kwargs: vec![] },
+            level_mapping: None,
+        });
+        ReasoningRegistry::register("qwen3-235b-a22b", ReasoningConfig {
+            mechanism: ReasoningMechanism::AnthropicThinking,
+            level_mapping: None,
+        });
+
+        let specific = ReasoningRegistry::lookup("qwen3-235b-a22b").unwrap();
+        assert!(matches!(specific.mechanism, ReasoningMechanism::AnthropicThinking));
+    }
+
+    #[test]
+    fn test_glob_pattern_match() {
+        ReasoningRegistry::register("llama-*", ReasoningConfig {
+            mechanism: ReasoningMechanism::Custom { kwargs: vec![("temperature".to_string(), "0.7".to_string())] },
+            level_mapping: None,
+        });
+
+        let config = ReasoningRegistry::lookup("llama-3.1-70b").unwrap();
+        assert!(matches!(config.mechanism, ReasoningMechanism::Custom { .. }));
+    }
+
+    #[test]
+    fn test_no_match_returns_none() {
+        let result = ReasoningRegistry::lookup("unknown-model-xyz");
+        assert!(result.is_none());
+    }
+
+    #[test]
+    fn test_get_for_model_fallback() {
+        // No registrations — should fall back to detect
+        let config = ReasoningRegistry::get_for_model("o3-mini");
+        assert!(matches!(config.mechanism, ReasoningMechanism::OpenAIReasoningEffort));
     }
 }

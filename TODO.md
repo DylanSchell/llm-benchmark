@@ -1,3 +1,7 @@
-- scoring page shows average tokens in table, this makes no sense, it should be total tokens
-- how to we enable configurable reasoning levels in pi for differet models
-- how to deal with timekeeping when performing parallel execution
+- [x] scoring page shows average tokens in table, this makes no sense, it should be total tokens
+- [x] how to we enable configurable reasoning levels in pi for differet models
+  - Added `thinking_level` field to run form UI (dropdown: off/minimal/low/medium/high/xhigh)
+  - Added `ReasoningConfig` module that maps pi thinking levels → backend-specific params
+  - ReasoningMechanism auto-detected by model name (AnthropicThinking, OpenAIReasoningEffort, NativeReasoning, Custom)
+  - models.json now includes reasoning config so pi knows how to translate thinking levels
+- [ ] how to deal with timekeeping when performing parallel execution

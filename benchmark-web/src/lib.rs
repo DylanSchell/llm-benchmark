@@ -30,6 +30,9 @@ pub async fn run_web_server() -> anyhow::Result<()> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
+    // Initialize reasoning registry with built-in defaults
+    benchmark_types::reasoning::ReasoningRegistry::register_defaults();
+
     // =============================================================================
     // Configuration
     // =============================================================================

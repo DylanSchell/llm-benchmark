@@ -62,11 +62,10 @@ impl PiAgent {
                     .unwrap_or("placeholder-key")
             });
 
-        // Build reasoning configuration: map pi thinking levels to backend-specific params
+        // Build reasoning configuration: check registry first, fall back to mechanism detection
         let reasoning_config = if let Some(level_str) = thinking_level {
             if let Some(_pi_level) = benchmark_types::reasoning::ThinkingLevel::from_str(level_str) {
-                let mechanism = benchmark_types::reasoning::ReasoningMechanism::detect(model);
-                let config = benchmark_types::reasoning::ReasoningConfig::default_for_mechanism(&mechanism);
+                let config = benchmark_types::reasoning::ReasoningRegistry::get_for_model(model);
                 Some(config)
             } else {
                 None
