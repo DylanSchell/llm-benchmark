@@ -74,6 +74,7 @@ pub async fn run(
                 &cli.language,
                 exercise_name,
                 model,
+                None,
                 &results_dir,
             )
             .await
@@ -120,6 +121,7 @@ pub async fn run(
                     language,
                     &cli.agent,
                     model.to_string(),
+                    None,
                     results_dir.clone(),
                     retry,
                 )

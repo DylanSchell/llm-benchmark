@@ -93,11 +93,12 @@ impl BenchmarkExecutor {
         let languages = session.languages.clone();
         let agent_name = session.agent_name.clone();
         let model = session.model.clone(); // Required, never None
+        let thinking_level = session.thinking_level.clone();
         let exercise_name = session.exercise_name.clone();
 
         info!(
-            "Starting benchmark execution: agent={}, languages={:?}, model={:?}, exercise={:?}",
-            agent_name, languages, model, exercise_name
+            "Starting benchmark execution: agent={}, languages={:?}, model={:?}, thinking_level={:?}, exercise={:?}",
+            agent_name, languages, model, thinking_level, exercise_name
         );
 
         // Note: Docker model environment variables are already set from config on startup.
@@ -132,9 +133,9 @@ impl BenchmarkExecutor {
 
         let model_str = &model;
         if let Some(ref _exercise) = exercise_name {
-            self.execute_single_exercise(session, agent, &languages, model_str, &agent_name).await?;
+            self.execute_single_exercise(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name).await?;
         } else {
-            self.execute_all_exercises(session, agent, &languages, model_str, &agent_name).await?;
+            self.execute_all_exercises(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name).await?;
         }
 
         session.emit_output("Benchmark execution completed");
@@ -155,6 +156,7 @@ impl BenchmarkExecutor {
         agent: Arc<dyn Agent + Send + Sync>,
         languages: &[String],
         model: &str,
+        thinking_level: Option<&str>,
         agent_name: &str,
     ) -> Result<()> {
         let exercise_name = session.exercise_name.clone().unwrap_or_else(|| "unknown".to_string());
@@ -171,7 +173,7 @@ impl BenchmarkExecutor {
                 exercise_name, language
             ));
 
-            match self.run_single_exercise(&agent, language, &exercise_name, model, agent_name).await {
+            match self.run_single_exercise(&agent, language, &exercise_name, model, thinking_level, agent_name).await {
                 Ok(result) => {
                     session.emit_output(&result.output);
 
@@ -219,6 +221,7 @@ impl BenchmarkExecutor {
         agent: Arc<dyn Agent + Send + Sync>,
         languages: &[String],
         model: &str,
+        thinking_level: Option<&str>,
         agent_name: &str,
     ) -> Result<()> {
         let mut total_exercises: i32 = 0;
@@ -238,7 +241,7 @@ impl BenchmarkExecutor {
 
             let results_dir = self.results_dir();
             let results = self.exercise_runner
-                .run_all_exercises(Arc::clone(&agent), language, agent_name, model.to_string(), results_dir, false)
+                .run_all_exercises(Arc::clone(&agent), language, agent_name, model.to_string(), thinking_level.map(|s| s.to_string()), results_dir, false)
                 .await;
 
             total_exercises += results.len() as i32;
@@ -284,11 +287,12 @@ impl BenchmarkExecutor {
         language: &str,
         exercise_name: &str,
         model: &str,
+        thinking_level: Option<&str>,
         _agent_name: &str,
     ) -> Result<AgentResult> {
         let results_dir = self.results_dir();
         self.exercise_runner
-            .run_exercise(Arc::clone(agent), language, exercise_name, model, &results_dir)
+            .run_exercise(Arc::clone(agent), language, exercise_name, model, thinking_level.map(|s| s.to_string()), &results_dir)
             .await
             .map_err(|e| anyhow::anyhow!("Exercise failed: {}", e))
     }

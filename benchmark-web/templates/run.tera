@@ -56,6 +56,20 @@
         </div>
 
         <div class="form-group">
+            <label for="thinking_level">Thinking Level (Pi reasoning)</label>
+            <select id="thinking_level" name="thinking_level">
+                <option value="">Default (model/agent default)</option>
+                <option value="off">Off — no reasoning</option>
+                <option value="minimal">Minimal — light reasoning</option>
+                <option value="low">Low — brief reasoning</option>
+                <option value="medium" selected>Medium — balanced reasoning</option>
+                <option value="high">High — deep reasoning</option>
+                <option value="xhigh">Maximum — thorough reasoning (slowest)</option>
+            </select>
+            <small style="color: #666; display: block; margin-top: 0.25rem;">Controls how much the model thinks before responding. Higher levels use more tokens but produce better results for complex tasks. Only applies to Pi agent and models that support it.</small>
+        </div>
+
+        <div class="form-group">
             <label for="mode">Execution Mode</label>
             <select id="mode" name="mode" onchange="toggleExerciseMode()" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">
                 <option value="all">All exercises</option>
@@ -186,6 +200,7 @@
         e.preventDefault();
         const agent = document.getElementById('agent').value;
         const model = document.getElementById('model').value;
+        const thinkingLevel = document.getElementById('thinking_level').value;
         const mode = document.getElementById('mode').value;
         const retry = document.getElementById('retry').checked;
         const languages = Array.from(document.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value);
@@ -196,6 +211,7 @@
             const params = new URLSearchParams();
             params.append('agent', agent);
             params.append('model', model);
+            if (thinkingLevel) params.append('thinking_level', thinkingLevel);
             languages.forEach(lang => params.append('languages', lang));
             params.append('mode', 'quick');
             params.append('retry', retry.toString());
@@ -208,6 +224,7 @@
             const params = new URLSearchParams();
             params.append('agent', agent);
             params.append('model', model);
+            if (thinkingLevel) params.append('thinking_level', thinkingLevel);
             languages.forEach(lang => params.append('languages', lang));
             params.append('mode', 'slow');
             params.append('retry', retry.toString());
@@ -236,6 +253,7 @@
                     const params = new URLSearchParams();
                     params.append('agent', agent);
                     params.append('model', model);
+                    if (thinkingLevel) params.append('thinking_level', thinkingLevel);
                     params.append('languages', lang);  // Single language
                     params.append('exercise', ex);
                     params.append('mode', 'single');
@@ -250,6 +268,7 @@
         const params = new URLSearchParams();
         params.append('agent', agent);
         params.append('model', model);
+        if (thinkingLevel) params.append('thinking_level', thinkingLevel);
         languages.forEach(lang => params.append('languages', lang));
         params.append('mode', 'all');
         params.append('retry', retry.toString());

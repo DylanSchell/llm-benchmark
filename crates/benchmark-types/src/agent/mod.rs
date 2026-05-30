@@ -15,6 +15,7 @@ pub trait Agent: Send + Sync {
         exercise: &crate::exercise::Exercise,
         host_exercise_dir: &Path,
         model: &str,
+        thinking_level: Option<&str>,
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>>;
 

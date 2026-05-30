@@ -84,10 +84,11 @@ impl BenchmarkService {
         agent_name: String,
         languages: Vec<String>,
         model: String,  // Required - no default model
+        thinking_level: Option<String>,
         exercise: Option<String>,
         retry: bool,
     ) -> Vec<BenchmarkQueueItem> {
-        self.queue_processor.schedule_batch(agent_name, languages, model, exercise, retry)
+        self.queue_processor.schedule_batch(agent_name, languages, model, thinking_level, exercise, retry)
     }
 
     /// Cancel a queue item.

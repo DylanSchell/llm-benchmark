@@ -31,7 +31,13 @@ impl PiAgent {
 
     /// Creates a models.json configuration file for pi inside the working directory.
     /// Uses the model parameter instead of Docker config env vars (matches Java behavior).
-    fn create_models_json(&self, temp_work_dir: &Path, model: &str) -> std::io::Result<()> {
+    /// Includes thinking_level for reasoning control when specified.
+    fn create_models_json(
+        &self,
+        temp_work_dir: &Path,
+        model: &str,
+        thinking_level: Option<&str>,
+    ) -> std::io::Result<()> {
         let pi_agent_dir = temp_work_dir.join(".pi").join("agent");
         fs::create_dir_all(&pi_agent_dir)?;
 
@@ -54,16 +60,27 @@ impl PiAgent {
                     .unwrap_or("placeholder-key")
             });
 
+        // Build thinking level configuration if specified
+        let thinking_config = if let Some(level) = thinking_level {
+            format!(
+                "      \"thinkingLevel\": \"{}\",\n",
+                self.escape_json(level)
+            )
+        } else {
+            String::new()
+        };
+
         let models_json = format!(
-            "{{\n  \"providers\": {{\n    \"openai\": {{\n      \"baseUrl\": \"{}\",\n      \"apiKey\": \"{}\",\n      \"api\": \"openai-completions\",\n      \"models\": [\n        {{ \"id\": \"{}\" }}\n      ]\n    }}\n  }}\n}}",
+            "{{\n  \"providers\": {{\n    \"openai\": {{\n      \"baseUrl\": \"{}\",\n      \"apiKey\": \"{}\",\n      \"api\": \"openai-completions\",\n      \"models\": [\n        {{ \"id\": \"{}\",\n{}       }}\n      ]\n    }}\n  }}\n}}",
             self.escape_json(base_url),
             self.escape_json(api_key),
-            self.escape_json(model)
+            self.escape_json(model),
+            thinking_config
         );
 
         let models_file = pi_agent_dir.join("models.json");
         fs::write(&models_file, &models_json)?;
-        debug!("Created models.json at: {:?} with OpenAI provider", models_file);
+        debug!("Created models.json at: {:?} with OpenAI provider (thinking_level={:?})", models_file, thinking_level);
         Ok(())
     }
 
@@ -283,7 +300,8 @@ impl PiAgent {
     }
 
     /// Builds the command line arguments for invoking pi.
-    fn build_pi_command(&self, prompt: &str, model: &str) -> Vec<String> {
+    /// Includes --thinking flag when thinking_level is specified.
+    fn build_pi_command(&self, prompt: &str, model: &str, thinking_level: Option<&str>) -> Vec<String> {
         let mut command = vec![
             "pi".to_string(),
             "--mode".to_string(),
@@ -295,6 +313,13 @@ impl PiAgent {
             "--model".to_string(),
             model.to_string(),
         ];
+
+        // Add thinking level if specified
+        if let Some(level) = thinking_level {
+            command.push("--thinking".to_string());
+            command.push(level.to_string());
+        }
+
         command.push(prompt.to_string());
         command
     }
@@ -307,6 +332,7 @@ impl Agent for PiAgent {
         exercise: &Exercise,
         host_exercise_dir: &Path,
         model: &str,
+        thinking_level: Option<&str>,
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
         let start_time = Instant::now();
@@ -389,11 +415,11 @@ impl Agent for PiAgent {
         // Use model from run_exercise parameter (matches Java behavior)
         let model = model.to_string();
 
-        // Create models.json with the correct model from queue
-        self.create_models_json(&temp_work_dir, &model)?;
+        // Create models.json with the correct model and thinking level from queue
+        self.create_models_json(&temp_work_dir, &model, thinking_level)?;
 
         // Build and run pi command
-        let command = self.build_pi_command(&prompt, &model);
+        let command = self.build_pi_command(&prompt, &model, thinking_level);
         let command_refs: Vec<&str> = command.iter().map(|s| s.as_str()).collect();
 
         // Log environment and configuration for debugging

@@ -54,6 +54,8 @@ pub struct BenchmarkQueueItem {
     pub id: String,
     pub agent_name: String,
     pub model: String,  // Required - no default model
+    /// Pi thinking level: off, minimal, low, medium, high, xhigh (optional)
+    pub thinking_level: Option<String>,
     pub language: String,
     pub exercise: String,
     pub retry: bool,
@@ -69,6 +71,7 @@ impl BenchmarkQueueItem {
     pub fn new(
         agent_name: String,
         model: String,  // Required - no default model
+        thinking_level: Option<String>,
         language: String,
         exercise: String,
         retry: bool,
@@ -77,6 +80,7 @@ impl BenchmarkQueueItem {
             id: Uuid::new_v4().to_string(),
             agent_name,
             model,
+            thinking_level,
             language,
             exercise,
             retry,

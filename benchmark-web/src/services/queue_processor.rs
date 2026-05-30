@@ -86,6 +86,7 @@ impl QueueProcessor {
         agent_name: String,
         languages: Vec<String>,
         model: String,  // Required - no default model
+        thinking_level: Option<String>,
         exercise: Option<String>,
         retry: bool,
     ) -> Vec<BenchmarkQueueItem> {
@@ -134,6 +135,7 @@ impl QueueProcessor {
                         let item = BenchmarkQueueItem::new(
                             agent_name.clone(),
                             model.clone(),
+                            thinking_level.clone(),
                             language.clone(),
                             exercise_name.clone(),
                             retry,
@@ -173,6 +175,7 @@ impl QueueProcessor {
                         let item = BenchmarkQueueItem::new(
                             agent_name.clone(),
                             model.clone(),
+                            thinking_level.clone(),
                             language.clone(),
                             exercise_name.clone(),
                             retry,
@@ -210,6 +213,7 @@ impl QueueProcessor {
                     let item = BenchmarkQueueItem::new(
                         agent_name.clone(),
                         model.clone(),
+                        thinking_level.clone(),
                         language.clone(),
                         exercise_name.to_string(),
                         retry,
@@ -233,6 +237,7 @@ impl QueueProcessor {
                         let item = BenchmarkQueueItem::new(
                             agent_name.clone(),
                             model.clone(),
+                            thinking_level.clone(),
                             language.clone(),
                             exercise_name,
                             retry,
@@ -394,6 +399,7 @@ impl QueueProcessor {
             item.agent_name.clone(),
             vec![item.language.clone()],
             item.model.clone(),
+            item.thinking_level.clone(),
             Some(item.exercise.clone()),
             item.retry,
             3600_000, // 1 hour timeout

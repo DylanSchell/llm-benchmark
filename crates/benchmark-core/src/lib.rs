@@ -50,7 +50,7 @@ pub async fn run_benchmark(
         } else {
             Arc::new(ClaudeAgent::new(docker_client.clone()))
         };
-        match exercise_runner.run_exercise(agent, language, exercise, model, &output.results_dir).await {
+        match exercise_runner.run_exercise(agent, language, exercise, model, None, &output.results_dir).await {
             Ok(r) => vec![r],
             Err(e) => return Err(anyhow::anyhow!("Exercise failed: {}", e)),
         }
@@ -58,12 +58,12 @@ pub async fn run_benchmark(
         if agent_name == "reference" {
             let reference_agent = ReferenceAgent::new(docker_client.clone());
             exercise_runner
-                .run_all_exercises(Arc::new(reference_agent), language, agent_name, model.to_string(), output.results_dir.clone(), false)
+                .run_all_exercises(Arc::new(reference_agent), language, agent_name, model.to_string(), None, output.results_dir.clone(), false)
                 .await
         } else {
             let claude_agent = ClaudeAgent::new(docker_client.clone());
             exercise_runner
-                .run_all_exercises(Arc::new(claude_agent), language, agent_name, model.to_string(), output.results_dir.clone(), false)
+                .run_all_exercises(Arc::new(claude_agent), language, agent_name, model.to_string(), None, output.results_dir.clone(), false)
                 .await
         }
     };

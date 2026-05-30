@@ -79,6 +79,9 @@ pub struct ScheduleRequest {
     #[serde(deserialize_with = "deserialize_vec_string")]
     pub languages: Vec<String>,
     pub model: String,
+    /// Pi thinking level: off, minimal, low, medium, high, xhigh
+    #[serde(default)]
+    pub thinking_level: Option<String>,
     pub exercise: Option<String>,
     #[serde(default = "default_mode")]
     pub mode: String,
@@ -201,7 +204,7 @@ pub async fn schedule_batch(
 
     let items = state.service.schedule_batch_with_retry(
         request.agent.clone(), request.languages.clone(),
-        request.model.clone(), exercise, request.retry,
+        request.model.clone(), request.thinking_level.clone(), exercise, request.retry,
     );
 
     let items_map: Vec<HashMap<String, String>> = items.iter().map(|i| item_to_map(i)).collect();
@@ -287,6 +290,9 @@ fn item_to_map(item: &BenchmarkQueueItem) -> HashMap<String, String> {
     map.insert("id".to_string(), item.id.clone());
     map.insert("agent_name".to_string(), item.agent_name.clone());
     map.insert("model".to_string(), item.model.clone());
+    if let Some(ref tl) = item.thinking_level {
+        map.insert("thinking_level".to_string(), tl.clone());
+    }
     map.insert("language".to_string(), item.language.clone());
     map.insert("exercise".to_string(), item.exercise.clone());
     map.insert("status".to_string(), item.status.to_string());

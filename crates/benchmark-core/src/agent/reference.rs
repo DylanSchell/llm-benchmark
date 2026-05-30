@@ -688,6 +688,7 @@ impl Agent for ReferenceAgent {
         exercise: &Exercise,
         host_exercise_dir: &Path,
         _model: &str,
+        _thinking_level: Option<&str>,
         _results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
         let start_time = Instant::now();

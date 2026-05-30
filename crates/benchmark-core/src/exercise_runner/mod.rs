@@ -191,6 +191,7 @@ impl ExerciseRunner {
         language: &str,
         exercise_name: &str,
         model: &str,
+        thinking_level: Option<String>,
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
         info!(
@@ -225,7 +226,7 @@ impl ExerciseRunner {
             }
         };
 
-        agent.run_exercise(&exercise, &exercise_host_dir, model, results_dir).await
+        agent.run_exercise(&exercise, &exercise_host_dir, model, thinking_level.as_deref(), results_dir).await
     }
 
     /// Run all exercises for a given language using the specified agent with parallelism.
@@ -238,6 +239,7 @@ impl ExerciseRunner {
         language: &str,
         agent_name: &str,
         model: String,
+        thinking_level: Option<String>,
         results_dir: PathBuf,
         retry: bool,
     ) -> Vec<AgentResult> {
@@ -283,6 +285,7 @@ impl ExerciseRunner {
                 let language = language.to_string();
                 let agent_name = agent_name_string.clone();
                 let model = model.clone();
+                let thinking_level = thinking_level.clone();
                 let results_dir = results_dir.clone();
 
                 tokio::spawn(async move {
@@ -292,7 +295,7 @@ impl ExerciseRunner {
                     );
 
                     let result = agent
-                        .run_exercise(&exercise, &exercise_host_dir, &model, &results_dir)
+                        .run_exercise(&exercise, &exercise_host_dir, &model, thinking_level.as_deref(), &results_dir)
                         .await;
 
                     match result {
