@@ -7,7 +7,7 @@ use benchmark_types::agent::{Agent, AgentResult};
 use benchmark_types::exercise::Exercise;
 use walkdir::WalkDir;
 use crate::docker::DockerClient;
-use crate::agent::ClaudeMessageProcessor;
+use crate::agent::{reference::ReferenceAgent, ClaudeMessageProcessor};
 
 /// Claude agent that invokes Claude Code CLI to solve exercises.
 pub struct ClaudeAgent {
@@ -269,16 +269,16 @@ impl ClaudeAgent {
         let output = result.output.clone();
         let exit_code = result.exit_code;
         let container_id = result.container_id;
-        let success = completed && exit_code == 0;
+        let claude_success = completed && exit_code == 0;
 
-        if !success {
+        if !claude_success {
             error!(
-                "Exercise failed: {}. Exit code: {}, Output: {}",
+                "Claude agent exercise FAILED: {}. Exit code: {}, Output: {}",
                 exercise.name, exit_code, output
             );
         } else {
             info!(
-                "Exercise completed successfully: {}. Duration: {}ms",
+                "Claude agent completed: {}. Duration: {}ms",
                 exercise.name, duration_ms
             );
         }
@@ -286,24 +286,42 @@ impl ClaudeAgent {
         // Collect trace files
         let _trace = Self::collect_claude_trace(temp_work_dir)?;
 
+        // Run tests in Docker to verify the agent's solution.
+        // This mirrors the Java flow where runReferenceSolution() calls
+        // runTestsInDocker() after runAgent().
+        let test_agent = ReferenceAgent::new(self.docker_client.clone());
+        let test_result = test_agent.run_tests_in_docker(exercise, &temp_work_dir).await;
+
+        // The overall success is determined by whether tests pass.
+        let test_ok = match &test_result {
+            Ok(t) => t.success,
+            Err(_) => false,
+        };
+        let success = claude_success && test_ok;
+
+        let error_message = if !success {
+            if !claude_success {
+                Some(format!("Claude agent failed with exit code: {}", exit_code))
+            } else {
+                test_result.as_ref().ok().and_then(|t| t.error_message.clone())
+            }
+        } else {
+            None
+        };
+
         let output_clone = output.clone();
 
         Ok(AgentResult::builder()
             .exercise_name(exercise.name.clone())
             .language(exercise.language.clone())
             .success(success)
-            .exit_code(exit_code)
+            .exit_code(test_result.as_ref().map(|t| t.exit_code).unwrap_or(exit_code))
             .output(output)
             .duration_ms(duration_ms)
             .start_time(start_dt.to_rfc3339())
             .end_time(end_dt.to_rfc3339())
-            .error_message(if success {
-                None
-            } else {
-                Some(output_clone)
-            })
-
-            .container_id(container_id)
+            .error_message(error_message)
+            .container_id(test_result.as_ref().map(|t| t.container_id.clone()).unwrap_or(container_id))
             .build())
     }
 }

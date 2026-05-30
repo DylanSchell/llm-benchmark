@@ -7,7 +7,7 @@ use benchmark_types::agent::{Agent, AgentResult};
 use benchmark_types::exercise::Exercise;
 use walkdir::WalkDir;
 use crate::docker::DockerClient;
-use crate::agent::PiMessageProcessor;
+use crate::agent::{reference::ReferenceAgent, PiMessageProcessor};
 
 /// Pi agent that uses the pi coding agent to solve exercises.
 /// Extends ReferenceAgent behavior with Pi-specific setup.
@@ -74,15 +74,36 @@ impl PiAgent {
             None
         };
 
-        // Build the model object with reasoning config if applicable
+        // Build the model object — pi expects thinkingFormat and thinkingLevelMap
+        // at the model level, not a nested reasoning object.
         let mut model_obj = format!("{{ \"id\": \"{}\"", self.escape_json(model));
 
         if let Some(ref rc) = reasoning_config {
-            // Serialize the reasoning config as additional model properties
-            let json_str = serde_json::to_string(rc).unwrap_or_default();
-            if !json_str.is_empty() && json_str != "{}" {
-                model_obj.push_str(",\n        \"reasoning\": ");
-                model_obj.push_str(&json_str);
+            if let Some(ref tf) = rc.thinking_format {
+                model_obj.push_str(&format!(",\n        \"thinkingFormat\": \"{}\"", tf));
+            }
+            if let Some(ref tlm) = rc.thinking_level_map {
+                let entries: &[(&str, Option<&serde_json::Value>)] = &[
+                    ("off", tlm.off.as_ref()),
+                    ("minimal", tlm.minimal.as_ref()),
+                    ("low", tlm.low.as_ref()),
+                    ("medium", tlm.medium.as_ref()),
+                    ("high", tlm.high.as_ref()),
+                    ("xhigh", tlm.xhigh.as_ref()),
+                ];
+                let parts: Vec<String> = entries
+                    .iter()
+                    .filter_map(|(k, v)| {
+                        v.as_ref().map(|val| {
+                            format!("        \"{}\": {}", k, serde_json::to_string(val).unwrap_or_default())
+                        })
+                    })
+                    .collect();
+                if !parts.is_empty() {
+                    model_obj.push_str(",\n        \"thinkingLevelMap\": {\n");
+                    model_obj.push_str(&parts.join(",\n"));
+                    model_obj.push_str("\n      }");
+                }
             }
         }
         model_obj.push('}');
@@ -479,11 +500,11 @@ impl Agent for PiAgent {
             )
             .await?;
 
-        let end_dt = chrono::Utc::now();
+                let end_dt = chrono::Utc::now();
         let duration_ms = start_time.elapsed().as_millis() as u64;
-        let success = result.completed && result.exit_code == 0;
+        let pi_success = result.completed && result.exit_code == 0;
 
-        if !success {
+        if !pi_success {
             let output_preview = if result.output.len() > 1000 {
                 format!("{}...[truncated]", &result.output[..1000])
             } else {
@@ -504,7 +525,7 @@ impl Agent for PiAgent {
             );
         } else {
             info!(
-                "Exercise completed successfully: {}. Duration: {}ms",
+                "Pi agent completed: {}. Duration: {}ms",
                 exercise.name, duration_ms
             );
         }
@@ -516,28 +537,46 @@ impl Agent for PiAgent {
             .await
             .unwrap_or_default();
 
+        // Run tests in Docker to verify the agent's solution.
+        // This mirrors the Java flow where runReferenceSolution() calls
+        // runTestsInDocker() after runAgent(). Without this, a pi that
+        // crashes or can't connect still exits 0 and is incorrectly
+        // marked as success.
+        let test_agent = ReferenceAgent::new(self.docker_client.clone());
+        let test_result = test_agent.run_tests_in_docker(exercise, &temp_work_dir).await;
+
         // Cleanup
         let _ = fs::remove_dir_all(&temp_work_dir);
+
+        // The overall success is determined by whether tests pass.
+        // If pi failed, we still report test failure (pi didn't produce a solution).
+        let test_ok = match &test_result {
+            Ok(t) => t.success,
+            Err(_) => false,
+        };
+        let success = pi_success && test_ok;
+
+        let error_message = if !success {
+            if !pi_success {
+                Some(format!("Pi agent failed with exit code: {}", result.exit_code))
+            } else {
+                test_result.as_ref().ok().and_then(|t| t.error_message.clone())
+            }
+        } else {
+            None
+        };
 
         Ok(AgentResult::builder()
             .exercise_name(exercise.name.clone())
             .language(exercise.language.clone())
             .success(success)
-            .exit_code(result.exit_code)
+            .exit_code(test_result.as_ref().map(|t| t.exit_code).unwrap_or(result.exit_code))
             .output(String::new()) // Don't store raw output - trace is saved separately
             .duration_ms(duration_ms)
             .start_time(start_dt.to_rfc3339())
             .end_time(end_dt.to_rfc3339())
-            .error_message(if !success {
-                Some(format!(
-                    "Exit code: {}",
-                    result.exit_code
-                ))
-            } else {
-                None
-            })
-
-            .container_id(result.container_id)
+            .error_message(error_message)
+            .container_id(test_result.as_ref().map(|t| t.container_id.clone()).unwrap_or(result.container_id))
             .build())
     }
 

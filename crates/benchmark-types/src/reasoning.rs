@@ -115,6 +115,20 @@ pub enum ThinkingFormat {
     QwenChatTemplate,
 }
 
+impl std::fmt::Display for ThinkingFormat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Openai => write!(f, "openai"),
+            Self::Openrouter => write!(f, "openrouter"),
+            Self::Deepseek => write!(f, "deepseek"),
+            Self::Together => write!(f, "together"),
+            Self::Zai => write!(f, "zai"),
+            Self::Qwen => write!(f, "qwen"),
+            Self::QwenChatTemplate => write!(f, "qwen-chat-template"),
+        }
+    }
+}
+
 impl Default for ThinkingFormat {
     fn default() -> Self {
         Self::Openai

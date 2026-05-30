@@ -519,17 +519,32 @@ impl ReferenceAgent {
     }
 
     /// Runs tests inside a Docker container.
-    async fn run_tests_in_docker(
+    pub async fn run_tests_in_docker(
         &self,
         exercise: &Exercise,
         temp_work_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
         let start_time = Instant::now();
-        let command = Self::get_test_command(exercise, temp_work_dir);
+
+        // For C++, files are in a subdirectory named after the exercise
+        let exercise_dir = if exercise.language == "cpp" {
+            temp_work_dir.join(&exercise.name)
+        } else {
+            temp_work_dir.to_path_buf()
+        };
+
+        let command = Self::get_test_command(exercise, &exercise_dir);
+
+        // Container work dir: C++ uses subdirectory, others use /workspace
+        let container_work_dir = if exercise.language == "cpp" {
+            format!("/workspace/{}", exercise.name)
+        } else {
+            "/workspace".to_string()
+        };
 
         info!(
-            "Running tests in Docker container at /workspace (mounted from: {:?})",
-            temp_work_dir
+            "Running tests in Docker container at {} (mounted from: {:?})",
+            container_work_dir, temp_work_dir
         );
         debug!("Command: {}", command.join(" "));
 
@@ -537,7 +552,7 @@ impl ReferenceAgent {
             .docker_client
             .run_command_with_limits_and_volume(
                 None,
-                Some("/workspace"),
+                Some(&container_work_dir),
                 &command,
                 None,
                 None,
