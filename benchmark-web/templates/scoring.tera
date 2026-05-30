@@ -102,7 +102,7 @@
                     <th style="width: 120px;">Success Rate</th>
                     <th style="width: 120px;">Speed Score</th>
                     <th style="width: 120px;">Token Score</th>
-                    <th style="width: 120px;">Avg Tokens</th>
+                    <th style="width: 120px;">Total Tokens</th>
                     <th style="width: 80px;">Runs</th>
                 </tr>
             </thead>
@@ -137,7 +137,7 @@
                             <div class="score-fill tokens" style="width: {{ (model.avg_token_score * 100) | default(value=0) }}%;"></div>
                         </div>
                     </td>
-                    <td style="text-align: right;">{{ model.avg_tokens | format_number }}</td>
+                    <td style="text-align: right;">{{ model.total_tokens | format_number }}</td>
                     <td style="text-align: center; color: #7f8c8d;">{{ model.total_runs }}</td>
                 </tr>
             {% endfor %}

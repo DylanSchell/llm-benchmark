@@ -55,7 +55,7 @@ pub struct ModelScoreView {
     pub avg_success_rate: f64,
     pub avg_speed_score: f64,
     pub avg_token_score: f64,
-    pub avg_tokens: u64,
+    pub total_tokens: u64,
     pub total_runs: u32,
 }
 
@@ -184,7 +184,7 @@ pub async fn get_model_scores(
             avg_success_rate: s.avg_success_rate,
             avg_speed_score: s.avg_speed_score,
             avg_token_score: s.avg_token_score,
-            avg_tokens: s.avg_tokens,
+            total_tokens: s.total_tokens,
             total_runs: s.total_runs,
         }).collect(),
         filters: ScoreFilters {

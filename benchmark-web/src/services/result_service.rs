@@ -1551,7 +1551,7 @@ impl ResultService {
         // Missing exercises are treated as failures to penalize incomplete coverage
         
         model_map.into_iter()
-            .map(|(name, (total_score, total_successful, total_runs, total_speed, total_token, total_tokens))| {
+            .map(|(name, (_total_score, total_successful, total_runs, total_speed, total_token, total_tokens))| {
                 // Success rate = successful_exercises / benchmark_size
                 // Missing exercises are treated as failures
                 let avg_success_rate = if benchmark_size > 0 {
@@ -1578,7 +1578,7 @@ impl ResultService {
                     avg_success_rate,
                     avg_speed_score: avg_speed,
                     avg_token_score: avg_token,
-                    avg_tokens: (total_tokens / total_runs as f64) as u64,
+                    total_tokens: total_tokens as u64,
                     total_runs,
                 }
             })
@@ -1699,6 +1699,6 @@ pub struct ModelScore {
     pub avg_success_rate: f64,
     pub avg_speed_score: f64,
     pub avg_token_score: f64,
-    pub avg_tokens: u64,
+    pub total_tokens: u64,
     pub total_runs: u32,
 }
