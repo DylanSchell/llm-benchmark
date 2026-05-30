@@ -31,7 +31,9 @@ impl PiAgent {
 
     /// Creates a models.json configuration file for pi inside the working directory.
     /// Uses the model parameter instead of Docker config env vars (matches Java behavior).
-    /// Includes thinking_level for reasoning control when specified.
+    /// Creates a models.json configuration file for pi inside the working directory.
+    /// Uses the model parameter instead of Docker config env vars (matches Java behavior).
+    /// Includes reasoning configuration that maps pi thinking levels to backend-specific parameters.
     fn create_models_json(
         &self,
         temp_work_dir: &Path,
@@ -60,27 +62,44 @@ impl PiAgent {
                     .unwrap_or("placeholder-key")
             });
 
-        // Build thinking level configuration if specified
-        let thinking_config = if let Some(level) = thinking_level {
-            format!(
-                "      \"thinkingLevel\": \"{}\",\n",
-                self.escape_json(level)
-            )
+        // Build reasoning configuration: map pi thinking levels to backend-specific params
+        let reasoning_config = if let Some(level_str) = thinking_level {
+            if let Some(_pi_level) = benchmark_types::reasoning::ThinkingLevel::from_str(level_str) {
+                let mechanism = benchmark_types::reasoning::ReasoningMechanism::detect(model);
+                let config = benchmark_types::reasoning::ReasoningConfig::default_for_mechanism(&mechanism);
+                Some(config)
+            } else {
+                None
+            }
         } else {
-            String::new()
+            None
         };
 
+        // Build the model object with reasoning config if applicable
+        let mut model_obj = format!("{{ \"id\": \"{}\"", self.escape_json(model));
+
+        if let Some(ref rc) = reasoning_config {
+            // Serialize the reasoning config as additional model properties
+            let json_str = serde_json::to_string(rc).unwrap_or_default();
+            if !json_str.is_empty() && json_str != "{}" {
+                model_obj.push_str(",\n        \"reasoning\": ");
+                model_obj.push_str(&json_str);
+            }
+        }
+        model_obj.push('}');
+
         let models_json = format!(
-            "{{\n  \"providers\": {{\n    \"openai\": {{\n      \"baseUrl\": \"{}\",\n      \"apiKey\": \"{}\",\n      \"api\": \"openai-completions\",\n      \"models\": [\n        {{ \"id\": \"{}\",\n{}       }}\n      ]\n    }}\n  }}\n}}",
+            "{{\n  \"providers\": {{\n    \"openai\": {{\n      \"baseUrl\": \"{}\",\n      \"apiKey\": \"{}\",\n      \"api\": \"openai-completions\",\n      \"models\": [\n        {}\n      ]\n    }}\n  }}\n}}",
             self.escape_json(base_url),
             self.escape_json(api_key),
-            self.escape_json(model),
-            thinking_config
+            model_obj
         );
 
         let models_file = pi_agent_dir.join("models.json");
         fs::write(&models_file, &models_json)?;
-        debug!("Created models.json at: {:?} with OpenAI provider (thinking_level={:?})", models_file, thinking_level);
+        debug!("Created models.json at: {:?} with OpenAI provider (model={}, thinking_level={:?}, mechanism={:?})",
+            models_file, model, thinking_level,
+            reasoning_config.as_ref().map(|rc| &rc.mechanism));
         Ok(())
     }
 
