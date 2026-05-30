@@ -553,6 +553,12 @@ impl ReasoningRegistry {
         ReasoningConfig::default_for_mechanism(&mechanism)
     }
 
+    /// Clear all registered entries. Useful for testing.
+    #[cfg(test)]
+    pub fn clear() {
+        REASONING_REGISTRY.entries.lock().unwrap().clear();
+    }
+
     /// Register built-in defaults. Call this once at application startup.
     pub fn register_defaults() {
         // Anthropic models — native thinking, no extra config needed
@@ -605,6 +611,21 @@ impl ReasoningRegistry {
                 medium: Some(serde_json::json!("medium")),
                 high: Some(serde_json::json!("high")),
                 xhigh: Some(serde_json::json!("high")),
+            }),
+            compat: None,
+        });
+
+        // Qwen3 — enable_thinking kwarg (thinkingFormat=qwen)
+        Self::register("qwen3-*", ReasoningConfig {
+            mechanism: ReasoningMechanism::Custom,
+            thinking_format: Some(ThinkingFormat::Qwen),
+            thinking_level_map: Some(ThinkingLevelMap {
+                off:     Some(serde_json::json!(false)),
+                minimal: Some(serde_json::json!(true)),
+                low:     Some(serde_json::json!(true)),
+                medium:  Some(serde_json::json!(true)),
+                high:    Some(serde_json::json!(true)),
+                xhigh:   Some(serde_json::json!(true)),
             }),
             compat: None,
         });
@@ -663,5 +684,17 @@ mod registry_tests {
         // No registrations — should fall back to detect
         let config = ReasoningRegistry::get_for_model("o3-mini");
         assert!(matches!(config.mechanism, ReasoningMechanism::OpenAIReasoningEffort));
+    }
+
+    #[test]
+    fn test_qwen3_builtin_registration() {
+        // Reset registry to avoid pollution from other tests
+        ReasoningRegistry::clear();
+        ReasoningRegistry::register_defaults();
+        let config = ReasoningRegistry::get_for_model("qwen3-235b-a22b");
+        assert_eq!(config.thinking_format, Some(ThinkingFormat::Qwen));
+        let map = config.thinking_level_map.as_ref().expect("qwen3 should have level map");
+        assert_eq!(map.off, Some(serde_json::json!(false)));
+        assert_eq!(map.high, Some(serde_json::json!(true)));
     }
 }
