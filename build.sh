@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build scripts for claude-benchmark (Rust workspace)
+# Build scripts for llm-benchmark (Rust workspace)
 # Replaces Maven-based build pipeline.
 
 set -euo pipefail
@@ -18,13 +18,13 @@ Commands:
 
 Options:
   --arch         Target architecture for Docker build (linux/amd64 or linux/arm64)
-  --tag          Image tag (default: claude-benchmark/runner:latest)
+  --tag          Image tag (default: llm-benchmark/runner:latest)
 EOF
     exit 1
 }
 
 docker_build() {
-    local tag="${TAG:-claude-benchmark/runner:latest}"
+    local tag="${TAG:-llm-benchmark/runner:latest}"
     local arch="${ARCH:-linux/amd64}"
 
     echo "Building Docker image ${tag} (${arch})..." >&2
@@ -36,7 +36,7 @@ docker_build() {
 }
 
 docker_run() {
-    local tag="${TAG:-claude-benchmark/runner:latest}"
+    local tag="${TAG:-llm-benchmark/runner:latest}"
     shift  # remove 'run' from args
     docker run --rm -it "${tag}" "$@"
 }

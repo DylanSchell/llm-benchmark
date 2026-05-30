@@ -13,7 +13,7 @@ api_key: "api-key"
 # Docker configuration
 docker:
   # Name of the custom Docker image with build tools
-  image: "claude-benchmark/runner:latest"
+  image: "llm-benchmark/runner:latest"
   # Container working directory
   work_dir: "/workspace"
   # Timeout for exercise execution in seconds

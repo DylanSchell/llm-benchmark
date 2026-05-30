@@ -19,6 +19,7 @@ use std::collections::HashMap;
 #[derive(Debug, Deserialize)]
 pub struct QuickParam {
     pub quick: Option<bool>,
+    pub complete: Option<bool>,
 }
 
 #[derive(Debug, Serialize)]
@@ -139,8 +140,10 @@ pub async fn dashboard(
     ctx.insert("completed_width", &format!("{:.1}", completed_width));
     ctx.insert("failed_width", &format!("{:.1}", failed_width));
     ctx.insert("cancelled_width", &format!("{:.1}", cancelled_width));
-    // Pass quick_bench to template so the checkbox is checked when ?quick=true
+    // Pass quick_bench and complete_bench to template so checkboxes reflect URL params
+    let complete_only = params.complete.is_some_and(|c| c);
     ctx.insert("quick_bench", &quick_only);
+    ctx.insert("complete_bench", &complete_only);
 
     match templates.tera.render("dashboard.tera", &ctx) {
         Ok(html) => Html(html),
@@ -357,6 +360,19 @@ pub async fn get_active_sessions(
     Json(ActiveSessionsResponse { sessions: session_maps })
 }
 
+/// API endpoint for completeness info: which agent-model combos have all exercises.
+pub async fn get_completeness(
+    Extension(state): Extension<AppState>,
+    Query(params): Query<QuickParam>,
+) -> Json<serde_json::Value> {
+    let quick_only = params.quick.is_some_and(|q| q);
+    let info = state.service.get_completeness_info(quick_only);
+    Json(serde_json::to_value(&info.first().unwrap_or(&crate::services::result_service::CompletenessInfo {
+        total_exercises: 0,
+        complete_keys: vec![],
+    })).unwrap_or_default())
+}
+
 /// API endpoint to fetch available models from the inference endpoint.
 pub async fn fetch_models_endpoint(Extension(state): Extension<AppState>) -> Json<Vec<String>> {
     match state.service.fetch_models().await {
@@ -400,4 +416,5 @@ pub fn register(app: Router<()>) -> Router<()> {
         .route("/api/active-runs", get(get_active_runs))
         .route("/api/active-sessions", get(get_active_sessions))
         .route("/api/models", get(fetch_models_endpoint))
+        .route("/api/dashboard/completeness", get(get_completeness))
 }

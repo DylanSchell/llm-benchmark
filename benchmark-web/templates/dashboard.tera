@@ -123,10 +123,10 @@
                               {% if item.status == "RUNNING" %}class="status-running"{% elif item.status == "COMPLETED" %}class="status-completed"{% elif item.status == "FAILED" %}class="status-failed"{% elif item.status == "CANCELLED" %}class="status-cancelled"{% else %}class="status-pending"{% endif %}
                               >{{ item.status }}</span>
                     </td>
-                    <td style="padding: 0.5rem;">{{ item.agent_name }}</td>
-                    <td style="padding: 0.5rem;">{{ item.language }}</td>
-                    <td style="padding: 0.5rem;">{{ item.exercise | default(value="All") }}</td>
-                    <td style="padding: 0.5rem;">{{ item.model | default(value="default") }}</td>
+                    <td style="padding: 0.5rem;"><a href="/results?agent={{ item.agent_name }}" style="color: #3498db; text-decoration: none;">{{ item.agent_name }}</a></td>
+                    <td style="padding: 0.5rem;"><a href="/results?language={{ item.language }}" style="color: #3498db; text-decoration: none;">{{ item.language }}</a></td>
+                    <td style="padding: 0.5rem;"><a href="/results?exercise={{ item.exercise | default(value="All") }}" style="color: #3498db; text-decoration: none;">{{ item.exercise | default(value="All") }}</a></td>
+                    <td style="padding: 0.5rem;"><a href="/results?model={{ item.model | default(value="default") }}" style="color: #3498db; text-decoration: none;">{{ item.model | default(value="default") }}</a></td>
                     <td style="padding: 0.5rem;">
                         {% if item.status == "PENDING" %}
                         <button class="btn btn-secondary"
@@ -169,6 +169,18 @@
         <small style="color: #666; display: block; margin-top: 0.25rem;">Show only the curated set of fast exercises (&lt; 60s each)</small>
     </div>
 
+    <!-- Complete Sets Only Toggle -->
+    <div class="card" style="margin-bottom: 1rem;">
+        <label style="display: flex; align-items: center; cursor: pointer; font-size: 1.1rem; font-weight: 600;">
+            <input type="checkbox" id="complete-sets-toggle"
+                   {% if complete_bench %}checked{% endif %}
+                   onchange="toggleCompleteSets()"
+                   style="margin-right: 0.75rem; width: auto; height: 1.2rem;">
+            <span>Complete sets only</span>
+        </label>
+        <small style="color: #666; display: block; margin-top: 0.25rem;">Show only agents/models that have results for all exercises (respects Quick bench filter)</small>
+    </div>
+
     <!-- By Language (NOT collapsible) -->
     <div class="card" style="margin-top: 1rem;" id="by-language-table">
         <h3 style="margin-bottom: 1rem;">By Language</h3>
@@ -192,7 +204,7 @@
                     <td><a href="/results?language={{ item.name }}" style="color: #3498db; text-decoration: none;">{{ item.name }}</a></td>
                     <td>{{ item.total }}</td>
                     <td>{{ success }}</td>
-                    <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
+                    <td data-duration="{{ item.total_duration | default(value=0) }}">{{ item.total_duration_formatted | default(value='0s') }}</td>
                     <td>{{ item.success_rate_formatted }}</td>
                     <td data-tokens="{{ item.output_tokens | default(value=0) }}" title="Uncached / Cached / Output">
                         {{ item.uncached_tokens | default(value=0) | format_number }} /
@@ -237,7 +249,7 @@
                     <td><a href="/results?agent={{ item.name }}" style="color: #3498db; text-decoration: none;">{{ item.name }}</a></td>
                     <td>{{ item.total }}</td>
                     <td>{{ success }}</td>
-                    <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
+                    <td data-duration="{{ item.total_duration | default(value=0) }}">{{ item.total_duration_formatted | default(value='0s') }}</td>
                     <td>{{ item.success_rate_formatted }}</td>
                     <td data-tokens="{{ item.output_tokens | default(value=0) }}" title="Uncached / Cached / Output">
                         {{ item.uncached_tokens | default(value=0) | format_number }} /
@@ -292,7 +304,7 @@
                     </td>
                     <td>{{ item.total }}</td>
                     <td>{{ success }}</td>
-                    <td>{{ item.total_duration_formatted | default(value='0s') }}</td>
+                    <td data-duration="{{ item.total_duration | default(value=0) }}">{{ item.total_duration_formatted | default(value='0s') }}</td>
                     <td>{{ item.success_rate_formatted }}</td>
                     <td data-tokens="{{ item.output_tokens | default(value=0) }}" title="Uncached / Cached / Output">
                         {{ item.uncached_tokens | default(value=0) | format_number }} /
@@ -451,12 +463,20 @@
             actions = '<button class="btn btn-primary" style="font-size:0.75rem;padding:0.25rem 0.5rem;" onclick="retryQueueItem(\'' + item.id + '\')">Retry</button>';
         }
 
+        // Build filter query string for links
+        const filters = [];
+        if (item.agent_name) filters.push('agent=' + encodeURIComponent(item.agent_name));
+        if (item.language) filters.push('language=' + encodeURIComponent(item.language));
+        if (item.exercise && item.exercise !== 'All') filters.push('exercise=' + encodeURIComponent(item.exercise));
+        if (item.model && item.model !== 'default') filters.push('model=' + encodeURIComponent(item.model));
+        const filterQuery = filters.length > 0 ? '?' + filters.join('&') : '/results';
+
         return '<tr style="border-bottom:1px solid #eee;">' +
             '<td style="padding:0.5rem"><span class="status-badge ' + badgeClass + '">' + item.status + '</span></td>' +
-            '<td style="padding:0.5rem">' + (item.agent_name || '') + '</td>' +
-            '<td style="padding:0.5rem">' + (item.language || '') + '</td>' +
-            '<td style="padding:0.5rem">' + (item.exercise || 'All') + '</td>' +
-            '<td style="padding:0.5rem">' + (item.model || 'default') + '</td>' +
+            '<td style="padding:0.5rem"><a href="/results?agent=' + encodeURIComponent(item.agent_name || '') + '" style="color: #3498db; text-decoration: none;">' + (item.agent_name || '') + '</a></td>' +
+            '<td style="padding:0.5rem"><a href="/results?language=' + encodeURIComponent(item.language || '') + '" style="color: #3498db; text-decoration: none;">' + (item.language || '') + '</a></td>' +
+            '<td style="padding:0.5rem"><a href="/results?exercise=' + encodeURIComponent(item.exercise || '') + '" style="color: #3498db; text-decoration: none;">' + (item.exercise || 'All') + '</a></td>' +
+            '<td style="padding:0.5rem"><a href="/results?model=' + encodeURIComponent(item.model || '') + '" style="color: #3498db; text-decoration: none;">' + (item.model || 'default') + '</a></td>' +
             '<td style="padding:0.5rem">' + actions + '</td>' +
             '</tr>';
     }
@@ -523,7 +543,107 @@
         // Save scroll position before reload
         const scrollY = window.scrollY;
         sessionStorage.setItem('dashboardScrollPosition', scrollY);
+        // Invalidate completeness cache since quick bench changes the exercise set
+        completenessData = null;
         window.location.href = url.toString();
+    }
+
+    // Complete sets toggle - reloads page with ?complete=true/false, preserving scroll position
+    function toggleCompleteSets() {
+        const checked = document.getElementById('complete-sets-toggle').checked;
+        const url = new URL(window.location.href);
+        if (checked) {
+            url.searchParams.set('complete', 'true');
+        } else {
+            url.searchParams.delete('complete');
+        }
+        // Save scroll position before reload
+        const scrollY = window.scrollY;
+        sessionStorage.setItem('dashboardScrollPosition', scrollY);
+        // Invalidate completeness cache since filter state changed
+        completenessData = null;
+        window.location.href = url.toString();
+    }
+
+    // ---- Completeness filter ----
+    let completenessData = null;  // cached from API
+
+    async function loadCompletenessData() {
+        if (completenessData !== null) return completenessData;
+        try {
+            const url = new URL('/api/dashboard/completeness', window.location.origin);
+            const quickToggle = document.getElementById('quick-bench-toggle');
+            if (quickToggle && quickToggle.checked) {
+                url.searchParams.set('quick', 'true');
+            }
+            const res = await fetch(url.toString());
+            if (!res.ok) return null;
+            completenessData = await res.json();
+        } catch (e) {
+            console.warn('Failed to load completeness data:', e);
+        }
+        return completenessData;
+    }
+
+    async function applyCompletenessFilterFromAPI() {
+        const data = await loadCompletenessData();
+        if (!data || !data.complete_keys) return;
+        applyCompletenessFilter({ keys: data.complete_keys, byLanguage: [] });
+    }
+
+    function applyCompletenessFilter(filter) {
+        const hasFilter = filter !== null;
+        const filterSet = hasFilter ? new Set(filter.keys) : new Set();
+
+        // By Agent table: hide rows where the agent name doesn't appear in any complete key
+        if (hasFilter && filterSet.size > 0) {
+            const agentTable = document.getElementById('by-agent-table');
+            if (agentTable) {
+                const rows = agentTable.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const agentCell = row.children[0];
+                    if (!agentCell) return;
+                    const agentText = agentCell.textContent.trim();
+                    // An agent is "complete" if any complete key starts with its name
+                    const isComplete = Array.from(filterSet).some(key => {
+                        const keyAgent = key.split(' - ')[0];
+                        return keyAgent === agentText;
+                    });
+                    row.style.display = isComplete ? '' : 'none';
+                });
+            }
+        } else {
+            showAllRows('by-agent-table');
+        }
+
+        // By Model table: hide rows where the name doesn't appear in any complete key
+        // Note: item.name here is "agent - model" format (same as complete keys)
+        if (hasFilter && filterSet.size > 0) {
+            const modelTable = document.getElementById('by-model-table');
+            if (modelTable) {
+                const rows = modelTable.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const modelCell = row.children[0];
+                    if (!modelCell) return;
+                    // The cell contains an <a> with the full "agent - model" name
+                    const link = modelCell.querySelector('a');
+                    const nameText = link ? link.textContent.trim() : modelCell.textContent.trim();
+                    // Direct match — both complete keys and display names use "agent - model" format
+                    const isComplete = filterSet.has(nameText);
+                    row.style.display = isComplete ? '' : 'none';
+                });
+            }
+        } else {
+            showAllRows('by-model-table');
+        }
+    }
+
+    function showAllRows(tableId) {
+        const table = document.getElementById(tableId);
+        if (table) {
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => { row.style.display = ''; });
+        }
     }
 
     // Queue collapsible toggle with localStorage persistence
@@ -567,6 +687,15 @@
                 // Clear the saved position after restoring
                 sessionStorage.removeItem('dashboardScrollPosition');
             });
+        }
+
+        // Pre-load completeness data so it's ready when user toggles the filter
+        loadCompletenessData();
+
+        // Apply completeness filter if URL param is set (but don't toggle — checkbox already reflects state)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('complete') === 'true') {
+            applyCompletenessFilterFromAPI();
         }
     });
 
@@ -649,8 +778,12 @@
             let bVal = b.children[columnIdx].textContent.trim();
 
             if (isNumeric) {
+                // For duration column (index 3), use data-duration attribute for numeric sorting
+                if (columnIdx === 3) {
+                    aVal = parseFloat(a.children[columnIdx].getAttribute('data-duration') || '0');
+                    bVal = parseFloat(b.children[columnIdx].getAttribute('data-duration') || '0');
                 // For token columns (index 5), use data-tokens attribute for sorting by output tokens
-                if (columnIdx === 5) {
+                } else if (columnIdx === 5) {
                     aVal = parseFloat(a.children[columnIdx].getAttribute('data-tokens') || '0');
                     bVal = parseFloat(b.children[columnIdx].getAttribute('data-tokens') || '0');
                 } else if (columnIdx === 6) {

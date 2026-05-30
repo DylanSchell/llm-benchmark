@@ -1,0 +1,3 @@
+- scoring page shows average tokens in table, this makes no sense, it should be total tokens
+- how to we enable configurable reasoning levels in pi for differet models
+- how to deal with timekeeping when performing parallel execution

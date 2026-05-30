@@ -220,6 +220,24 @@ impl BenchmarkService {
         self.result_service.get_model_scores(language, agent, quick_only)
     }
 
+    /// Get completeness info for dashboard filtering.
+    pub fn get_completeness_info(
+        &self,
+        quick_only: bool,
+    ) -> Vec<crate::services::result_service::CompletenessInfo> {
+        // Build the authoritative expected exercise set from the exercise runner
+        let mut expected = std::collections::HashMap::new();
+        for lang in self.exercise_runner.get_available_languages() {
+            let exercises = self.exercise_runner.get_exercises_for_language(&lang);
+            if !exercises.is_empty() {
+                expected.insert(lang, exercises);
+            }
+        }
+        tracing::info!("Completeness check: {} languages with {} total exercises", expected.len(), expected.values().map(|v| v.len()).sum::<usize>());
+        self.result_service
+            .get_completeness_info(quick_only, Some(expected))
+    }
+
     // =============================================================================
     // Model Management
     // =============================================================================

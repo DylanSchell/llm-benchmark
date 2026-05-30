@@ -191,6 +191,7 @@ pub async fn get_queue(
 /// - "single": exercise param specifies which exercise to run per language
 /// - "all": no exercise param — all exercises for selected languages
 /// - "quick": special marker — runs a curated list of fast exercises (< 60s each)
+/// - "slow": special marker — runs all exercises EXCEPT the quick-bench ones
 pub async fn schedule_batch(
     Extension(state): Extension<AppState>,
     FlexibleForm(request): FlexibleForm<ScheduleRequest>,
@@ -217,6 +218,7 @@ fn resolve_exercise_param(mode: &str, exercise: &Option<String>) -> Option<Strin
     match mode {
         "single" => exercise.clone(),
         "quick" => Some("__quick__".to_string()),
+        "slow" => Some("__slow__".to_string()),
         _ => None, // "all" mode — no specific exercise
     }
 }

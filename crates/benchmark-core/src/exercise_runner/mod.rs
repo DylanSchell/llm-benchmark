@@ -1,7 +1,8 @@
+use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
-use tracing::{error, info, warn};
+use std::sync::{Arc, RwLock};
+use tracing::{debug, error, info, warn};
 use benchmark_types::agent::{Agent, AgentResult};
 use benchmark_types::config::Config;
 use benchmark_types::exercise::Exercise;
@@ -16,6 +17,10 @@ pub struct ExerciseRunner {
     run_agent_name: Option<String>,
     run_model: Option<String>,
     run_languages: Option<Vec<String>>,
+    // Cached exercise discovery results (keyed by language)
+    exercises_cache: Arc<RwLock<HashMap<String, Vec<String>>>>,
+    // Cached available languages
+    languages_cache: Arc<RwLock<Option<Vec<String>>>>,
 }
 
 impl ExerciseRunner {
@@ -28,6 +33,8 @@ impl ExerciseRunner {
             run_agent_name: None,
             run_model: None,
             run_languages: None,
+            exercises_cache: Arc::new(RwLock::new(HashMap::new())),
+            languages_cache: Arc::new(RwLock::new(None)),
         }
     }
 
@@ -41,6 +48,8 @@ impl ExerciseRunner {
             run_agent_name: None,
             run_model: None,
             run_languages: None,
+            exercises_cache: Arc::new(RwLock::new(HashMap::new())),
+            languages_cache: Arc::new(RwLock::new(None)),
         }
     }
 
@@ -80,8 +89,16 @@ impl ExerciseRunner {
         self.run_languages.as_deref().unwrap_or(&[])
     }
 
-    /// Gets all exercises for a specific language.
+    /// Gets all exercises for a specific language (cached).
     pub fn get_exercises_for_language(&self, language: &str) -> Vec<String> {
+        // Check cache first
+        {
+            let cache = self.exercises_cache.read().unwrap();
+            if let Some(exercises) = cache.get(language) {
+                return exercises.clone();
+            }
+        }
+
         let exercises_path = self
             .benchmark_path
             .join(language)
@@ -90,6 +107,9 @@ impl ExerciseRunner {
 
         if !exercises_path.exists() {
             warn!("Exercises path not found: {:?}", exercises_path);
+            // Cache empty result
+            let mut cache = self.exercises_cache.write().unwrap();
+            cache.insert(language.to_string(), Vec::new());
             return Vec::new();
         }
 
@@ -116,20 +136,29 @@ impl ExerciseRunner {
             }
         });
 
-        for exercise in &exercises {
-            info!("Found exercise {}/{}", language, exercise);
-        }
+        // Cache the result
+        let mut cache = self.exercises_cache.write().unwrap();
+        cache.insert(language.to_string(), exercises.clone());
+
+        debug!("Discovered {} exercises for language: {}", exercises.len(), language);
 
         exercises
     }
 
-    /// Gets all available languages that have exercises.
+    /// Gets all available languages that have exercises (cached).
     pub fn get_available_languages(&self) -> Vec<String> {
+        // Check cache first
+        if let Some(languages) = self.languages_cache.read().unwrap().as_ref() {
+            return languages.clone();
+        }
+
         let mut languages = Vec::new();
         let benchmark_dir = &self.benchmark_path;
 
         if !benchmark_dir.exists() {
             warn!("Benchmark path does not exist: {:?}", benchmark_dir);
+            // Cache empty result
+            *self.languages_cache.write().unwrap() = Some(Vec::new());
             return languages;
         }
 
@@ -146,6 +175,12 @@ impl ExerciseRunner {
         }
 
         languages.sort_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+
+        // Cache the result
+        *self.languages_cache.write().unwrap() = Some(languages.clone());
+
+        debug!("Discovered {} available languages: {:?}", languages.len(), languages);
+
         languages
     }
 
@@ -352,7 +387,7 @@ impl ExerciseRunner {
         });
 
         for exercise in &exercises {
-            info!("Found exercise {}/{}", language, exercise.name);
+            debug!("Found exercise {}/{}", language, exercise.name);
         }
 
         exercises

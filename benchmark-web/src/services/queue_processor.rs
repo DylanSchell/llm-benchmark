@@ -100,6 +100,48 @@ impl QueueProcessor {
             .collect();
 
         match exercise.as_deref() {
+            Some("__slow__") => {
+                // Slow bench mode - all exercises EXCEPT the quick-bench ones
+                for language in &languages {
+                    let quick_set = QuickBenchConfig::get_quick_exercises_set(language);
+                    let all_exercises = self.exercise_runner.get_exercises_for_language(language);
+                    let slow_exercises: Vec<String> = all_exercises
+                        .into_iter()
+                        .filter(|e| !quick_set.contains(e))
+                        .collect();
+                    if slow_exercises.is_empty() {
+                        info!("No slow-bench exercises for language: {} (all are quick-bench)", language);
+                        continue;
+                    }
+                    for exercise_name in slow_exercises {
+                        if !retry && self.result_exists(&exercise_name, &agent_name, &effective_model, language) {
+                            debug!(
+                                "Skipping slow-bench exercise: {} for language: {} (already completed successfully)",
+                                exercise_name, language
+                            );
+                            continue;
+                        }
+
+                        let key = (agent_name.clone(), language.clone(), exercise_name.clone());
+                        if !retry && existing_keys.contains(&key) {
+                            debug!(
+                                "Skipping slow-bench exercise: {} for language: {} (already in queue)",
+                                exercise_name, language
+                            );
+                            continue;
+                        }
+
+                        let item = BenchmarkQueueItem::new(
+                            agent_name.clone(),
+                            model.clone(),
+                            language.clone(),
+                            exercise_name.clone(),
+                            retry,
+                        );
+                        items.push(item);
+                    }
+                }
+            }
             Some("__quick__") => {
                 // Quick bench mode - use curated list of fast exercises
                 for language in &languages {

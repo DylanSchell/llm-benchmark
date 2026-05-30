@@ -132,7 +132,7 @@ pub struct DockerConfig {
 }
 
 fn default_image() -> String {
-    "claude-benchmark-runner:latest".to_string()
+    "llm-benchmark-runner:latest".to_string()
 }
 
 fn default_work_dir() -> String {
@@ -481,6 +481,11 @@ impl QuickBenchConfig {
         vec!["cpp".to_string(), "go".to_string(), "java".to_string(), "javascript".to_string(), "python".to_string(), "rust".to_string()]
     }
 
+    /// Returns the quick-bench exercise names as a HashSet for O(1) lookup.
+    pub fn get_quick_exercises_set(language: &str) -> std::collections::HashSet<String> {
+        Self::get_exercises_for_language(language).into_iter().collect()
+    }
+
     /// Returns the total number of quick-bench exercise slots across all languages.
     pub fn get_total_exercise_count() -> usize {
         23 + 25 + 28 + 36 + 23 + 20
@@ -501,13 +506,13 @@ mod tests {
     fn test_docker_config_default_values() {
         // Defaults are applied during deserialization, not via Default trait
         let config = DockerConfig {
-            image: "claude-benchmark-runner:latest".to_string(),
+            image: "llm-benchmark-runner:latest".to_string(),
             work_dir: "/workspace".to_string(),
             timeout: 300,
             memory: "2g".to_string(),
             ..Default::default()
         };
-        assert_eq!(config.image, "claude-benchmark-runner:latest");
+        assert_eq!(config.image, "llm-benchmark-runner:latest");
         assert_eq!(config.work_dir, "/workspace");
         assert_eq!(config.timeout, 300);
         assert_eq!(config.memory, "2g");

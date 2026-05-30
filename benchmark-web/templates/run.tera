@@ -56,21 +56,13 @@
         </div>
 
         <div class="form-group">
-            <label>Execution Mode</label>
-            <div style="margin-top: 0.5rem; display: block;">
-                <div style="display: flex; align-items: baseline; line-height: 1.4; white-space: nowrap; margin-bottom: 0.25rem;">
-                    <span style="width: 1.5rem; text-align: center; flex-shrink: 0;"><input type="radio" name="mode" value="quick" onchange="toggleExerciseMode()"></span>
-                    Quick bench
-                </div>
-                <div style="display: flex; align-items: baseline; line-height: 1.4; white-space: nowrap; margin-bottom: 0.25rem;">
-                    <span style="width: 1.5rem; text-align: center; flex-shrink: 0;"><input type="radio" name="mode" value="single" onchange="toggleExerciseMode()"></span>
-                    Single exercise per language
-                </div>
-                <div style="display: flex; align-items: baseline; line-height: 1.4; white-space: nowrap;">
-                    <span style="width: 1.5rem; text-align: center; flex-shrink: 0;"><input type="radio" name="mode" value="all" checked onchange="toggleExerciseMode()"></span>
-                    All exercises per language
-                </div>
-            </div>
+            <label for="mode">Execution Mode</label>
+            <select id="mode" name="mode" onchange="toggleExerciseMode()" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">
+                <option value="all">All exercises</option>
+                <option value="quick">Quick bench (curated fast subset)</option>
+                <option value="slow">Slow bench (everything except quick)</option>
+                <option value="single">Single exercise per language</option>
+            </select>
             <small style="color: #666; display: block; margin-top: 0.25rem;" id="mode-hint">
                 Select one or more languages to run all their exercises
             </small>
@@ -118,12 +110,13 @@
 
     const modeHints = {
         quick: "Runs a curated set of fast exercises (< 60s each) across selected languages",
+        slow: "Runs all exercises EXCEPT the quick-bench subset — typically the more complex ones",
         single: "Select specific exercises to run for each language",
         all: "Select one or more languages to run all their exercises"
     };
 
     function toggleExerciseMode() {
-        const mode = document.querySelector('input[name="mode"]:checked').value;
+        const mode = document.getElementById('mode').value;
         const singleGroup = document.getElementById('single-exercise-group');
         const modeHint = document.getElementById('mode-hint');
         if (modeHint) modeHint.textContent = modeHints[mode] || '';
@@ -142,7 +135,7 @@
     }
 
     function updateExerciseList() {
-        const mode = document.querySelector('input[name="mode"]:checked').value;
+        const mode = document.getElementById('mode').value;
         if (mode !== 'single') return;
         const container = document.getElementById('language-exercises');
         container.innerHTML = '';
@@ -193,7 +186,7 @@
         e.preventDefault();
         const agent = document.getElementById('agent').value;
         const model = document.getElementById('model').value;
-        const mode = document.querySelector('input[name="mode"]:checked').value;
+        const mode = document.getElementById('mode').value;
         const retry = document.getElementById('retry').checked;
         const languages = Array.from(document.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value);
         if (!model) { alert('Please select a model'); return; }
@@ -205,6 +198,18 @@
             params.append('model', model);
             languages.forEach(lang => params.append('languages', lang));
             params.append('mode', 'quick');
+            params.append('retry', retry.toString());
+            await fetch('/api/benchmark/queue/schedule', { method: 'POST', body: params });
+            window.location.href = '/';
+            return;
+        }
+
+        if (mode === 'slow') {
+            const params = new URLSearchParams();
+            params.append('agent', agent);
+            params.append('model', model);
+            languages.forEach(lang => params.append('languages', lang));
+            params.append('mode', 'slow');
             params.append('retry', retry.toString());
             await fetch('/api/benchmark/queue/schedule', { method: 'POST', body: params });
             window.location.href = '/';

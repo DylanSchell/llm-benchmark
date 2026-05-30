@@ -22,7 +22,7 @@ cd polyglot-benchmark && git checkout main && cd ..
 The runner container needs Java, Maven, Gradle, Node.js, Go, Rust, and Claude Code CLI pre-installed:
 
 ```bash
-docker build -f docker/Dockerfile.runner -t claude-benchmark/runner:latest .
+docker build -f docker/Dockerfile.runner -t llm-benchmark/runner:latest .
 ```
 
 ### 2. Configure
@@ -34,7 +34,7 @@ benchmark_path: ../polyglot-benchmark
 parallelism: 4
 
 docker:
-  image: claude-benchmark/runner:latest
+  image: llm-benchmark/runner:latest
   memory: 2g
   timeout: 300
 
@@ -188,15 +188,15 @@ cargo test --package benchmark-core -- exercise_runner::tests::test_find_exercis
 
 All configuration lives in `config.yaml`:
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| `benchmark_path` | string | `../polyglot-benchmark` | Path to the polyglot exercise repo |
-| `parallelism` | int | 1 | Number of concurrent exercises |
-| `docker.image` | string | `claude-benchmark/runner:latest` | Docker image for exercise containers |
-| `docker.memory` | string | `2g` | Container memory limit |
-| `docker.timeout` | int | 300 | Container execution timeout (seconds) |
-| `output.results_dir` | string | `./benchmark-results` | Directory for result files |
-| `output.log_level` | string | `INFO` | Logging level |
+| Key | Type | Default                             | Description |
+|-----|------|-------------------------------------|-------------|
+| `benchmark_path` | string | `../polyglot-benchmark`             | Path to the polyglot exercise repo |
+| `parallelism` | int | 1                                   | Number of concurrent exercises |
+| `docker.image` | string | `llm-benchmark/runner:latest` | Docker image for exercise containers |
+| `docker.memory` | string | `2g`                                | Container memory limit |
+| `docker.timeout` | int | 300                                 | Container execution timeout (seconds) |
+| `output.results_dir` | string | `./benchmark-results`               | Directory for result files |
+| `output.log_level` | string | `INFO`                              | Logging level |
 
 ---
 

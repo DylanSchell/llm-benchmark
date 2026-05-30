@@ -3,6 +3,7 @@
 //! Caches all results in memory on startup for fast access.
 
 use anyhow::Result;
+use benchmark_types::config::QuickBenchConfig;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -1582,6 +1583,90 @@ impl ResultService {
                 }
             })
             .collect()
+    }
+}
+
+/// Completeness info for dashboard filtering.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompletenessInfo {
+    /// Total expected exercise count (full or quick-bench).
+    pub total_exercises: usize,
+    /// List of "agent - model" keys that have results for ALL exercises.
+    pub complete_keys: Vec<String>,
+}
+
+impl ResultService {
+    /// Get completeness info: which agent-model combinations have results for all exercises.
+    ///
+    /// `expected_exercises` provides the authoritative exercise list per language
+    /// (from ExerciseRunner::get_exercises_for_language). When None and not in
+    /// quick-only mode, falls back to discovered exercises from results.
+    pub fn get_completeness_info(
+        &self,
+        quick_only: bool,
+        expected_exercises: Option<HashMap<String, Vec<String>>>,
+    ) -> Vec<CompletenessInfo> {
+        let cached = self.cached_results.read().unwrap();
+
+        // Determine the total expected exercise count.
+        // If quick_only, sum up QuickBenchConfig counts per language.
+        // Otherwise, use all discovered exercises (deduplicated by name).
+        let mut all_exercise_names: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+        if quick_only {
+            // Build expected set from QuickBenchConfig
+            if let Some(ref expected) = expected_exercises {
+                for (lang, _exercises) in expected {
+                    let quick = QuickBenchConfig::get_exercises_for_language(lang);
+                    for ex in quick {
+                        all_exercise_names.insert(ex);
+                    }
+                }
+            }
+        } else {
+            // Use authoritative list from exercise runner if available
+            if let Some(ref expected) = expected_exercises {
+                for exercises in expected.values() {
+                    for ex in exercises {
+                        all_exercise_names.insert(ex.clone());
+                    }
+                }
+            } else {
+                // Fallback: use all discovered exercise names from results
+                for cr in cached.values() {
+                    if !cr.exercise.is_empty() {
+                        all_exercise_names.insert(cr.exercise.clone());
+                    }
+                }
+            }
+        }
+
+        let total_expected = all_exercise_names.len();
+
+        // Build map of agent-model -> set of exercises that have results
+        let mut key_exercises: HashMap<String, std::collections::HashSet<String>> = HashMap::new();
+        for cr in cached.values() {
+            if cr.exercise.is_empty() {
+                continue;
+            }
+            let key = format!("{} - {}", cr.agent, cr.model);
+            key_exercises
+                .entry(key)
+                .or_default()
+                .insert(cr.exercise.clone());
+        }
+
+        // Find keys that have ALL expected exercises
+        let complete_keys: Vec<String> = key_exercises
+            .into_iter()
+            .filter(|(_, exercises)| all_exercise_names.is_subset(exercises))
+            .map(|(key, _)| key)
+            .collect();
+
+        vec![CompletenessInfo {
+            total_exercises: total_expected,
+            complete_keys,
+        }]
     }
 }
 

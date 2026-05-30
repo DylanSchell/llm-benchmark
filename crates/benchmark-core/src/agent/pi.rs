@@ -82,14 +82,36 @@ impl PiAgent {
         let pi_extension_dir = temp_work_dir
             .join(".pi")
             .join("agent")
-            .join("extensions")
-            .join("bash-timeout");
-        fs::create_dir_all(&pi_extension_dir)?;
+            .join("extensions");
 
-        let target_path = pi_extension_dir.join("index.ts");
-        // Use the same bash-timeout.ts content as the Java version
-        let content = include_str!("../../resources/bash-timeout.ts");
+        let target_dir = pi_extension_dir.join("bash-timeout");
+
+        fs::create_dir_all(&target_dir)?;
+
+        let target_path = target_dir.join("index.ts");
+        // Use the same index.ts content as the Java version
+        let content = include_str!("../../resources/extensions/bash-timeout/index.ts");
         fs::write(&target_path, content)?;
+
+        // Install caveman extension
+        let caveman_extension_dir = temp_work_dir
+            .join(".pi")
+            .join("agent")
+            .join("extensions")
+            .join("caveman");
+
+        fs::create_dir_all(&caveman_extension_dir)?;
+        let target_path = caveman_extension_dir.join("index.ts");
+        let content = include_str!("../../resources/extensions/caveman/index.ts");
+        fs::write(&target_path, content)?;
+
+        let skills_dir = temp_work_dir.join(".pi").join("agent").join("skills");
+        let caveman_skill_dir = skills_dir.join("caveman");
+        fs::create_dir_all(&caveman_skill_dir)?;
+        let target_path = caveman_skill_dir.join("SKILL.md");
+        let content = include_str!("../../resources/skills/caveman/SKILL.md");
+        fs::write(&target_path, content)?;
+
         Ok(())
     }
 
@@ -567,6 +589,7 @@ impl PiAgent {
         // Append agent execution instructions (from prompt.md resource)
         let prompt_instructions = include_str!("../../../../benchmark-web/resources/prompt.md");
         prompt.push_str(prompt_instructions);
+        prompt.push_str("\ncaveman mode\n");
 
         Ok(prompt)
     }
