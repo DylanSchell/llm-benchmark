@@ -459,7 +459,9 @@ impl Agent for PiAgent {
 
         // Build and run pi command
         let command = self.build_pi_command(&prompt, &model, thinking_level);
-        let command_refs: Vec<&str> = command.iter().map(|s| s.as_str()).collect();
+        // Prompt is the last element — pass separately so it's never in logs
+        let prompt_arg = command.last().map(|s| s.as_str());
+        let command_refs: Vec<&str> = command[..command.len().saturating_sub(1)].iter().map(|s| s.as_str()).collect();
 
         // Log environment and configuration for debugging
         let env_vars = self.docker_client.get_config().environment().cloned().unwrap_or_default();
@@ -489,6 +491,7 @@ impl Agent for PiAgent {
                 None,
                 Some(&container_work_dir),
                 &command_refs,
+                prompt_arg,
                 None,
                 None,
                 Some(&temp_work_dir.to_string_lossy()),

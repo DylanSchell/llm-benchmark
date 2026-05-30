@@ -239,7 +239,6 @@ impl ClaudeAgent {
             "--verbose",
             "--output-format", "stream-json",
             "--include-partial-messages",
-            prompt,
         ];
 
         let processor = Arc::clone(&self.message_processor);
@@ -249,6 +248,7 @@ impl ClaudeAgent {
                 None,
                 Some("/workspace"),
                 &command,
+                Some(prompt),
                 None,
                 None,
                 Some(&temp_work_dir.to_string_lossy()),

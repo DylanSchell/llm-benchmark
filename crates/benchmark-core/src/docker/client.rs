@@ -144,6 +144,7 @@ impl DockerClient {
             container_image,
             work_dir,
             command,
+            None, // no prompt
             timeout_seconds,
             memory_limit,
             volume_host_dir,
@@ -155,11 +156,16 @@ impl DockerClient {
 
     /// Run a command in a Docker container with resource limits, volume mounts,
     /// and a streaming output callback.
+    ///
+    /// `command` — the executable and its arguments (e.g. ["cargo", "test"])
+    /// `prompt`   — optional prompt text appended as the last argument for agents.
+    ///              Kept separate from command so logs never leak prompts.
     pub async fn run_command_with_limits_and_volume_with_callback(
         &self,
         container_image: Option<&str>,
         work_dir: Option<&str>,
         command: &[&str],
+        prompt: Option<&str>,
         timeout_seconds: Option<u64>,
         memory_limit: Option<&str>,
         volume_host_dir: Option<&str>,
@@ -203,7 +209,13 @@ impl DockerClient {
             let _ = std::fs::create_dir_all(&pi_dir);
         }
 
-        // Build docker command for execution (includes full prompt)
+        // Build the command list: base command + optional prompt appended
+        let mut exec_args = command.to_vec();
+        if let Some(p) = prompt {
+            exec_args.push(p);
+        }
+
+        // Build docker command for execution
         let full_command = build_docker_run_command(
             &container_id,
             image,
@@ -212,10 +224,10 @@ impl DockerClient {
             &self.config.environment,
             &host_dir,
             enable_pi_volume,
-            command,
+            &exec_args,
         );
 
-        // Build a masked version for logging (prompt replaced with placeholder)
+        // Log only the command — never leak prompts
         let log_command = build_docker_run_command(
             &container_id,
             image,
@@ -224,7 +236,7 @@ impl DockerClient {
             &self.config.environment,
             &host_dir,
             enable_pi_volume,
-            &["<prompt>"],
+            command,
         );
 
         debug!(
