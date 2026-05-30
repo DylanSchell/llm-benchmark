@@ -93,6 +93,54 @@ impl std::fmt::Display for ThinkingLevel {
     }
 }
 
+/// How pi should encode thinking levels for a model.
+/// Maps directly to pi's `thinkingFormat` model config option.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ThinkingFormat {
+    /// Default: uses `reasoning_effort` (OpenAI o-series style)
+    Openai,
+    /// Uses `reasoning: { effort }` (OpenRouter style)
+    Openrouter,
+    /// Uses `thinking: { type }` plus `reasoning_effort` (DeepSeek style)
+    Deepseek,
+    /// Uses `reasoning: { enabled }` plus `reasoning_effort` (Together AI style)
+    Together,
+    /// Uses `enable_thinking` (Zai style)
+    Zai,
+    /// Uses `enable_thinking` (Qwen style)
+    Qwen,
+    /// Uses `chat_template_kwargs.enable_thinking` (Qwen chat template style)
+    #[serde(rename = "qwen-chat-template")]
+    QwenChatTemplate,
+}
+
+impl Default for ThinkingFormat {
+    fn default() -> Self {
+        Self::Openai
+    }
+}
+
+/// Whether the provider supports reasoning_effort parameter.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CompatConfig {
+    /// Whether to use `system` role instead of `developer` for system prompts
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub supports_developer_role: Option<bool>,
+    /// Whether the provider supports reasoning_effort parameter
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub supports_reasoning_effort: Option<bool>,
+}
+
+impl Default for CompatConfig {
+    fn default() -> Self {
+        Self {
+            supports_developer_role: None,
+            supports_reasoning_effort: Some(true),
+        }
+    }
+}
+
 /// Which reasoning mechanism a model family uses.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ReasoningMechanism {
@@ -102,8 +150,8 @@ pub enum ReasoningMechanism {
     OpenAIReasoningEffort,
     /// DeepSeek/r1: reasoning is baked into the model architecture. No config needed.
     NativeReasoning,
-    /// llama.cpp / other OpenAI-compatible: custom parameters per model.
-    Custom { kwargs: Vec<(String, String)> },
+    /// llama.cpp / other OpenAI-compatible: uses thinkingFormat for encoding.
+    Custom,
 }
 
 impl ReasoningMechanism {
@@ -121,57 +169,66 @@ impl ReasoningMechanism {
             return Self::OpenAIReasoningEffort;
         }
 
-        // OpenAI non-reasoning models (gpt-4o, gpt-4, etc.) — no reasoning config needed
-        if lower.starts_with("gpt") || lower.starts_with("o1-mini") {
-            return Self::Custom { kwargs: vec![] };
-        }
-
         // DeepSeek reasoning models
         if lower.contains("deepseek") && (lower.contains("r1") || lower.contains("chat")) {
             return Self::NativeReasoning;
         }
 
-        // Default: llama.cpp / other OpenAI-compatible endpoint
-        // These may need custom kwargs — caller can override via ReasoningConfig
-        Self::Custom { kwargs: vec![] }
+        // Default: everything else (qwen, llama, custom OpenAI-compatible endpoints)
+        Self::Custom
     }
 }
 
 /// Configuration that maps pi thinking levels to backend-specific parameters.
 /// This is written into models.json so pi knows how to translate a user-selected
 /// thinking level into the actual API call parameters for the target model.
+///
+/// The config is serialized directly into pi's model config format, which uses:
+/// - `thinkingFormat`: how to encode thinking (e.g., "qwen" → enable_thinking)
+/// - `thinkingLevelMap`: per-level overrides for models with limited support
+/// - `compat`: provider compatibility flags
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ReasoningConfig {
     /// Which mechanism this model family uses.
     pub mechanism: ReasoningMechanism,
 
-    /// Mapping from pi thinking levels to backend-specific values.
-    /// Only needs entries for levels that differ from the default.
+    /// How pi should encode thinking levels for this model.
+    /// Maps to pi's `thinkingFormat` option.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub level_mapping: Option<ThinkingLevelMapping>,
+    pub thinking_format: Option<ThinkingFormat>,
+
+    /// Per-level overrides for models that don't support all levels.
+    /// Keys are pi thinking levels; values are what gets sent to the provider.
+    /// Use `null` to mark a level as unsupported.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub thinking_level_map: Option<ThinkingLevelMap>,
+
+    /// Provider compatibility flags.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub compat: Option<CompatConfig>,
 }
 
-/// Maps each pi thinking level to its backend-specific equivalent.
+/// Per-level overrides for a model's thinking support.
+/// Maps pi thinking levels to provider-specific values (string or null for unsupported).
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ThinkingLevelMapping {
-    /// What the backend receives for `off` thinking level.
+pub struct ThinkingLevelMap {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub off: Option<String>,
+    pub off: Option<serde_json::Value>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub minimal: Option<String>,
+    pub minimal: Option<serde_json::Value>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub low: Option<String>,
+    pub low: Option<serde_json::Value>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub medium: Option<String>,
+    pub medium: Option<serde_json::Value>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub high: Option<String>,
+    pub high: Option<serde_json::Value>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub xhigh: Option<String>,
+    pub xhigh: Option<serde_json::Value>,
 }
 
 // =============================================================================
@@ -183,81 +240,47 @@ impl ReasoningConfig {
     pub fn default_for_mechanism(mechanism: &ReasoningMechanism) -> Self {
         match mechanism {
             ReasoningMechanism::AnthropicThinking => {
-                // Anthropic uses the same level names natively — no translation needed
+                // Anthropic: pi handles via --thinking flag, no extra config needed
                 Self {
                     mechanism: mechanism.clone(),
-                    level_mapping: None,
+                    thinking_format: None,
+                    thinking_level_map: None,
+                    compat: None,
                 }
             }
             ReasoningMechanism::OpenAIReasoningEffort => {
-                // Map pi thinking levels to OpenAI reasoning_effort values
+                // OpenAI o-series: reasoning_effort via thinkingFormat=openai (default)
                 Self {
                     mechanism: mechanism.clone(),
-                    level_mapping: Some(ThinkingLevelMapping {
-                        off: Some("disabled".to_string()),
-                        minimal: Some("low".to_string()),
-                        low: Some("low".to_string()),
-                        medium: Some("medium".to_string()),
-                        high: Some("high".to_string()),
-                        xhigh: Some("high".to_string()),
+                    thinking_format: Some(ThinkingFormat::Openai),
+                    thinking_level_map: Some(ThinkingLevelMap {
+                        off: Some(serde_json::json!("disabled")),
+                        minimal: Some(serde_json::json!("low")),
+                        low: Some(serde_json::json!("low")),
+                        medium: Some(serde_json::json!("medium")),
+                        high: Some(serde_json::json!("high")),
+                        xhigh: Some(serde_json::json!("high")),
                     }),
+                    compat: None,
                 }
             }
             ReasoningMechanism::NativeReasoning => {
                 // DeepSeek-r1 etc. have baked-in reasoning — no config needed
                 Self {
                     mechanism: mechanism.clone(),
-                    level_mapping: None,
+                    thinking_format: None,
+                    thinking_level_map: None,
+                    compat: None,
                 }
             }
-            ReasoningMechanism::Custom { .. } => {
-                // llama.cpp / generic OpenAI-compatible — no default mapping
+            ReasoningMechanism::Custom => {
+                // llama.cpp / qwen / generic OpenAI-compatible — no defaults
+                // Caller should register via ReasoningRegistry
                 Self {
                     mechanism: mechanism.clone(),
-                    level_mapping: None,
-                }
-            }
-        }
-    }
-
-    /// Get the backend-specific level for a given pi thinking level.
-    pub fn resolve(&self, level: ThinkingLevel) -> Option<Vec<(String, serde_json::Value)>> {
-        match &self.mechanism {
-            ReasoningMechanism::AnthropicThinking => {
-                // Pi handles this natively via --thinking flag
-                Some(vec![("thinking_level".to_string(), serde_json::json!(level.to_string()))])
-            }
-            ReasoningMechanism::OpenAIReasoningEffort => {
-                // Map to reasoning_effort API parameter
-                let mapping = self.level_mapping.as_ref()?;
-                let value = match level {
-                    ThinkingLevel::Off => &mapping.off,
-                    ThinkingLevel::Minimal => &mapping.minimal,
-                    ThinkingLevel::Low => &mapping.low,
-                    ThinkingLevel::Medium => &mapping.medium,
-                    ThinkingLevel::High => &mapping.high,
-                    ThinkingLevel::Xhigh => &mapping.xhigh,
-                };
-                value.as_ref().map(|s| {
-                    vec![("reasoning_effort".to_string(), serde_json::json!(s))]
-                })
-            }
-            ReasoningMechanism::NativeReasoning => {
-                // No parameters to set — reasoning is always active
-                None
-            }
-            ReasoningMechanism::Custom { kwargs } => {
-                // Use model-specific kwargs (caller must configure these)
-                if kwargs.is_empty() && !level.is_active() {
-                    None
-                } else {
-                    let mut result: Vec<(String, serde_json::Value)> = kwargs
-                        .iter()
-                        .map(|(k, v)| (k.clone(), serde_json::Value::String(v.clone())))
-                        .collect();
-                    // Add thinking level as a hint for the backend
-                    result.push(("thinking_level".to_string(), serde_json::Value::String(level.to_string())));
-                    Some(result)
+                    thinking_format: None,
+                    thinking_level_map: None,
+                    compat: None,
                 }
             }
         }
@@ -314,71 +337,89 @@ mod tests {
         ));
         assert!(matches!(
             ReasoningMechanism::detect("gpt-4o"),
-            ReasoningMechanism::Custom { .. }
+            ReasoningMechanism::Custom
         ));
         assert!(matches!(
             ReasoningMechanism::detect("llama-3.1-70b"),
-            ReasoningMechanism::Custom { .. }
+            ReasoningMechanism::Custom
+        ));
+        assert!(matches!(
+            ReasoningMechanism::detect("qwen3-235b-a22b"),
+            ReasoningMechanism::Custom
         ));
     }
 
     #[test]
-    fn test_openai_reasoning_effort_mapping() {
+    fn test_openai_reasoning_effort_config() {
         let config = ReasoningConfig::default_for_mechanism(&ReasoningMechanism::OpenAIReasoningEffort);
-        
-        assert_eq!(
-            config.resolve(ThinkingLevel::Off),
-            Some(vec![("reasoning_effort".to_string(), serde_json::json!("disabled"))])
-        );
-        assert_eq!(
-            config.resolve(ThinkingLevel::Low),
-            Some(vec![("reasoning_effort".to_string(), serde_json::json!("low"))])
-        );
-        assert_eq!(
-            config.resolve(ThinkingLevel::Medium),
-            Some(vec![("reasoning_effort".to_string(), serde_json::json!("medium"))])
-        );
-        assert_eq!(
-            config.resolve(ThinkingLevel::High),
-            Some(vec![("reasoning_effort".to_string(), serde_json::json!("high"))])
-        );
-        assert_eq!(
-            config.resolve(ThinkingLevel::Xhigh),
-            Some(vec![("reasoning_effort".to_string(), serde_json::json!("high"))])
-        );
+        assert!(matches!(config.thinking_format, Some(ThinkingFormat::Openai)));
+        assert!(config.thinking_level_map.is_some());
     }
 
     #[test]
-    fn test_anthropic_thinking_mapping() {
+    fn test_anthropic_no_extra_config() {
         let config = ReasoningConfig::default_for_mechanism(&ReasoningMechanism::AnthropicThinking);
-        
-        assert_eq!(
-            config.resolve(ThinkingLevel::High),
-            Some(vec![("thinking_level".to_string(), serde_json::json!("high"))])
-        );
+        assert!(config.thinking_format.is_none());
+        assert!(config.thinking_level_map.is_none());
     }
 
     #[test]
     fn test_native_reasoning_no_config() {
         let config = ReasoningConfig::default_for_mechanism(&ReasoningMechanism::NativeReasoning);
-        assert!(config.resolve(ThinkingLevel::High).is_none());
+        assert!(config.thinking_format.is_none());
+        assert!(config.thinking_level_map.is_none());
     }
 
     #[test]
-    fn test_custom_reasoning_with_kwargs() {
+    fn test_custom_no_defaults() {
+        let config = ReasoningConfig::default_for_mechanism(&ReasoningMechanism::Custom);
+        assert!(config.thinking_format.is_none());
+        assert!(config.thinking_level_map.is_none());
+    }
+
+    #[test]
+    fn test_qwen_config_serialization() {
+        // Example: qwen3-* with enable_thinking
         let config = ReasoningConfig {
-            mechanism: ReasoningMechanism::Custom {
-                kwargs: vec![
-                    ("temperature".to_string(), "0.7".to_string()),
-                ],
-            },
-            level_mapping: None,
+            mechanism: ReasoningMechanism::Custom,
+            thinking_format: Some(ThinkingFormat::Qwen),
+            thinking_level_map: Some(ThinkingLevelMap {
+                off:     Some(serde_json::json!(false)),
+                minimal: Some(serde_json::json!(true)),
+                low:     Some(serde_json::json!(true)),
+                medium:  Some(serde_json::json!(true)),
+                high:    Some(serde_json::json!(true)),
+                xhigh:   Some(serde_json::json!(true)),
+            }),
+            compat: None,
         };
 
-        let result = config.resolve(ThinkingLevel::High).unwrap();
-        assert_eq!(result.len(), 2);
-        assert_eq!(result[0].0, "temperature");
-        assert_eq!(result[1].0, "thinking_level");
+        let json = serde_json::to_string_pretty(&config).unwrap();
+        println!("Qwen config:\n{}", json);
+        assert!(json.contains("\"thinking_format\": \"qwen\""));
+        assert!(json.contains("\"off\": false"));
+        assert!(json.contains("\"minimal\": true"));
+    }
+
+    #[test]
+    fn test_qwen_chat_template_config_serialization() {
+        // Example: qwen with chat_template_kwargs.enable_thinking
+        let config = ReasoningConfig {
+            mechanism: ReasoningMechanism::Custom,
+            thinking_format: Some(ThinkingFormat::QwenChatTemplate),
+            thinking_level_map: Some(ThinkingLevelMap {
+                off:     Some(serde_json::json!(false)),
+                minimal: Some(serde_json::json!(true)),
+                low:     Some(serde_json::json!(true)),
+                medium:  Some(serde_json::json!(true)),
+                high:    Some(serde_json::json!(true)),
+                xhigh:   Some(serde_json::json!(true)),
+            }),
+            compat: None,
+        };
+
+        let json = serde_json::to_string_pretty(&config).unwrap();
+        assert!(json.contains("\"thinking_format\": \"qwen-chat-template\""));
     }
 }
 
@@ -514,53 +555,58 @@ impl ReasoningRegistry {
 
     /// Register built-in defaults. Call this once at application startup.
     pub fn register_defaults() {
-        // Anthropic models — native thinking, no translation needed
-        Self::register(
-            "claude-*",
-            ReasoningConfig {
-                mechanism: ReasoningMechanism::AnthropicThinking,
-                level_mapping: None,
-            },
-        );
-        Self::register("claude", ReasoningConfig {
+        // Anthropic models — native thinking, no extra config needed
+        Self::register("claude-*", ReasoningConfig {
             mechanism: ReasoningMechanism::AnthropicThinking,
-            level_mapping: None,
+            thinking_format: None,
+            thinking_level_map: None,
+            compat: None,
         });
         Self::register("sonnet", ReasoningConfig {
             mechanism: ReasoningMechanism::AnthropicThinking,
-            level_mapping: None,
+            thinking_format: None,
+            thinking_level_map: None,
+            compat: None,
         });
         Self::register("opus", ReasoningConfig {
             mechanism: ReasoningMechanism::AnthropicThinking,
-            level_mapping: None,
+            thinking_format: None,
+            thinking_level_map: None,
+            compat: None,
         });
         Self::register("haiku", ReasoningConfig {
             mechanism: ReasoningMechanism::AnthropicThinking,
-            level_mapping: None,
+            thinking_format: None,
+            thinking_level_map: None,
+            compat: None,
         });
 
-        // OpenAI o-series — reasoning_effort mapping
+        // OpenAI o-series — reasoning_effort (thinkingFormat=openai is default)
         Self::register("o3-*", ReasoningConfig {
             mechanism: ReasoningMechanism::OpenAIReasoningEffort,
-            level_mapping: Some(ThinkingLevelMapping {
-                off: Some("disabled".to_string()),
-                minimal: Some("low".to_string()),
-                low: Some("low".to_string()),
-                medium: Some("medium".to_string()),
-                high: Some("high".to_string()),
-                xhigh: Some("high".to_string()),
+            thinking_format: Some(ThinkingFormat::Openai),
+            thinking_level_map: Some(ThinkingLevelMap {
+                off: Some(serde_json::json!("disabled")),
+                minimal: Some(serde_json::json!("low")),
+                low: Some(serde_json::json!("low")),
+                medium: Some(serde_json::json!("medium")),
+                high: Some(serde_json::json!("high")),
+                xhigh: Some(serde_json::json!("high")),
             }),
+            compat: None,
         });
         Self::register("o1-*", ReasoningConfig {
             mechanism: ReasoningMechanism::OpenAIReasoningEffort,
-            level_mapping: Some(ThinkingLevelMapping {
-                off: Some("disabled".to_string()),
-                minimal: Some("low".to_string()),
-                low: Some("low".to_string()),
-                medium: Some("medium".to_string()),
-                high: Some("high".to_string()),
-                xhigh: Some("high".to_string()),
+            thinking_format: Some(ThinkingFormat::Openai),
+            thinking_level_map: Some(ThinkingLevelMap {
+                off: Some(serde_json::json!("disabled")),
+                minimal: Some(serde_json::json!("low")),
+                low: Some(serde_json::json!("low")),
+                medium: Some(serde_json::json!("medium")),
+                high: Some(serde_json::json!("high")),
+                xhigh: Some(serde_json::json!("high")),
             }),
+            compat: None,
         });
     }
 }
@@ -577,12 +623,16 @@ mod registry_tests {
     fn test_exact_match_priority() {
         // Register a broad pattern then a specific override
         ReasoningRegistry::register("qwen-*", ReasoningConfig {
-            mechanism: ReasoningMechanism::Custom { kwargs: vec![] },
-            level_mapping: None,
+            mechanism: ReasoningMechanism::Custom,
+            thinking_format: None,
+            thinking_level_map: None,
+            compat: None,
         });
         ReasoningRegistry::register("qwen3-235b-a22b", ReasoningConfig {
             mechanism: ReasoningMechanism::AnthropicThinking,
-            level_mapping: None,
+            thinking_format: None,
+            thinking_level_map: None,
+            compat: None,
         });
 
         let specific = ReasoningRegistry::lookup("qwen3-235b-a22b").unwrap();
@@ -592,12 +642,14 @@ mod registry_tests {
     #[test]
     fn test_glob_pattern_match() {
         ReasoningRegistry::register("llama-*", ReasoningConfig {
-            mechanism: ReasoningMechanism::Custom { kwargs: vec![("temperature".to_string(), "0.7".to_string())] },
-            level_mapping: None,
+            mechanism: ReasoningMechanism::Custom,
+            thinking_format: None,
+            thinking_level_map: None,
+            compat: None,
         });
 
         let config = ReasoningRegistry::lookup("llama-3.1-70b").unwrap();
-        assert!(matches!(config.mechanism, ReasoningMechanism::Custom { .. }));
+        assert!(matches!(config.mechanism, ReasoningMechanism::Custom));
     }
 
     #[test]
