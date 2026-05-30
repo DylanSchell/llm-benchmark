@@ -614,8 +614,9 @@ impl ReferenceAgent {
             vec!["npm", "run", "test"]
         } else if polyglot_path.join("CMakeLists.txt").exists() {
             vec![
-                "mkdir", "-p", "build", "&&", "cd", "build", "&&", "cmake",
-                "-DEXERCISM_RUN_ALL_TESTS=1", "-G", "\"Unix Makefiles\"", "..", "&&", "make",
+                "sh",
+                "-c",
+                "mkdir -p build && cd build && cmake -DEXERCISM_RUN_ALL_TESTS=1 -G \"Unix Makefiles\" .. && make",
             ]
         } else if polyglot_path.join("Cargo.toml").exists() {
             vec!["cargo", "test"]
