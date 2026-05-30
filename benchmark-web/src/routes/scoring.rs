@@ -1,14 +1,12 @@
 //! Scoring routes - visualization and ranking of benchmark results.
 
 use super::{AppState, TemplateEngine};
-use axum::extract::{Query, Path};
+use axum::extract::Query;
 use axum::routing::get;
 use axum::Router;
 use axum::Json;
 use axum::Extension;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-
 #[derive(Debug, Deserialize)]
 pub struct ScoreFilterQuery {
     pub language: Option<String>,

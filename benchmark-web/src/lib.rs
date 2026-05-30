@@ -8,11 +8,13 @@ pub mod services;
 use services::{
     BenchmarkExecutor, BenchmarkService, QueueProcessor, QueueConfig, ResultService, SessionManager,
 };
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use tower_http::services::ServeDir;
 
 use std::path::PathBuf;
-use routes::{AppState, TemplateEngine};
+use routes::TemplateEngine;
 
 /// Run the web server with the given configuration.
 /// This function reads configuration from environment variables:
@@ -130,12 +132,17 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     // Build Router
     // =============================================================================
 
-    let state = AppState {
-        service: benchmark_service.clone(),
-    };
+    // Create a shared shutdown flag — SSE streams check this to exit promptly
+    // during shutdown, even if broadcast channel senders are still alive.
+    let shutdown_flag = Arc::new(AtomicBool::new(false));
 
     // Initialize template engine
     let templates = TemplateEngine::new();
+
+    let state = routes::AppState {
+        service: benchmark_service.clone(),
+        shutdown_flag: shutdown_flag.clone(),
+    };
 
     let app = routes::build_router(state, templates);
 
@@ -166,12 +173,19 @@ pub async fn run_web_server() -> anyhow::Result<()> {
         });
     let app = app.fallback_service(ServeDir::new(&static_dir));
 
-    // Start the server using axum's serve
+    // Start the server using axum's serve with a timeout so we don't hang forever
     let service_clone = benchmark_service.clone();
-    axum::serve(listener, app)
-        .with_graceful_shutdown(shutdown_signal(service_clone))
-        .await
-        .expect("Server failed");
+    let shutdown_flag_clone = shutdown_flag.clone();
+    let handle = axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal(service_clone, shutdown_flag_clone))
+        .await;
+
+    // Signal to any stuck SSE streams that they should exit
+    shutdown_flag.store(true, Ordering::SeqCst);
+
+    if let Err(e) = handle {
+        tracing::error!("Server failed: {}", e);
+    }
 
     tracing::info!("Server shut down gracefully");
     
@@ -179,7 +193,7 @@ pub async fn run_web_server() -> anyhow::Result<()> {
 }
 
 /// Handle graceful shutdown - kill containers, abort running tasks, and exit.
-async fn shutdown_signal(service: BenchmarkService) {
+async fn shutdown_signal(service: BenchmarkService, shutdown_flag: Arc<AtomicBool>) {
     tokio::signal::ctrl_c()
         .await
         .expect("Failed to install CTRL+C handler");
@@ -193,15 +207,15 @@ async fn shutdown_signal(service: BenchmarkService) {
     service.shutdown().await;
 
     // Drop all session broadcast senders so SSE receivers close immediately.
-    // Without this, axum's graceful shutdown waits forever for SSE clients
-    // whose recv() is blocked on a channel with no sender to signal closure.
     tracing::info!("Dropping all session broadcasters...");
     let sessions = service.get_all_sessions();
     for (_id, session) in sessions {
-        // Cloning the session drops its msg_tx, closing the broadcast channel
-        // for any receivers still waiting on recv().
         drop(session);
     }
+
+    // Signal to SSE streams that shutdown is happening so they exit even if
+    // broadcast channel senders are still alive (held by SSE handler clones).
+    shutdown_flag.store(true, Ordering::SeqCst);
 
     tracing::info!("Cleanup complete.");
 }

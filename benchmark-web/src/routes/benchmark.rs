@@ -4,7 +4,7 @@
 use super::{AppState, TemplateEngine};
 use axum::extract::{Path, Query};
 use axum::response::{Html, IntoResponse, Sse};
-use axum::response::sse::Event;
+use axum::response::sse::{Event, KeepAlive};
 use axum::routing::{get, post};
 use axum::Router;
 use axum::Json;
@@ -241,6 +241,7 @@ pub async fn stream_output(
     Extension(state): Extension<AppState>,
     Path(id): Path<String>,
 ) -> impl IntoResponse {
+    tracing::info!("SSE stream requested for session {}", id);
     let session = match state.service.get_session(&id) {
         Some(s) => s,
         None => {
@@ -252,9 +253,12 @@ pub async fn stream_output(
 
     // Each call to setup_sse() gets a fresh broadcast subscriber.
     // Broadcast channels support multiple consumers — no "already taken" issue.
+    tracing::info!("Taking session receiver for {}", id);
     let mut rx = state.service.take_session_receiver(&id).expect("session exists");
+    tracing::info!("Session receiver acquired, creating stream for {}", id);
     let session_id = session.id.clone();
     let status = session.status.to_string();
+    let shutdown_flag = state.shutdown_flag.clone();
 
     let event_stream = async_stream::stream! {
         // Send initial session info once
@@ -266,24 +270,21 @@ pub async fn stream_output(
             }))
             .unwrap());
 
-        // Drain any accumulated output that was captured before this client connected
-        // (setup_sse already sent these, but we also render them server-side for
-        // users who have JS disabled or whose connection arrives after the SSE stream starts)
-        let accumulated = session.get_accumulated_output();
-        if !accumulated.is_empty() {
-            yield Ok::<_, anyhow::Error>(Event::default()
-                .event("message")
-                .json_data(&serde_json::json!({
-                    "type": "output",
-                    "data": accumulated
-                }))
-                .unwrap());
-        }
+        // No need to send accumulated output via SSE — it's already rendered
+        // in the server-side HTML template. Just start streaming live updates
+        // from the current position in the broadcast channel.
 
         // Stream live output from broadcast channel — blocks until sender is dropped
+        // or shutdown signal is received.
         loop {
-            match rx.recv().await {
-                Ok(message) => {
+            // Use a short timeout to periodically check the shutdown flag.
+            // This avoids blocking forever on recv() when broadcast senders
+            // are still alive (held by SSE handler session clones).
+            match tokio::time::timeout(
+                std::time::Duration::from_millis(100),
+                rx.recv(),
+            ).await {
+                Ok(Ok(message)) => {
                     yield Ok::<_, anyhow::Error>(Event::default()
                         .event("message")
                         .json_data(&serde_json::json!({
@@ -292,10 +293,17 @@ pub async fn stream_output(
                         }))
                         .unwrap());
                 }
-                Err(tokio::sync::broadcast::error::RecvError::Lagged(n)) => {
+                Ok(Err(tokio::sync::broadcast::error::RecvError::Lagged(n))) => {
                     tracing::warn!("SSE subscriber lagged behind by {} messages, skipping", n);
                 }
-                Err(tokio::sync::broadcast::error::RecvError::Closed) => break,
+                Ok(Err(tokio::sync::broadcast::error::RecvError::Closed)) => break,
+                Err(_) => {
+                    // Timeout — check shutdown flag
+                    if shutdown_flag.load(std::sync::atomic::Ordering::SeqCst) {
+                        tracing::info!("SSE stream for session {} exiting due to shutdown", session_id);
+                        break;
+                    }
+                }
             }
         }
 
@@ -309,7 +317,9 @@ pub async fn stream_output(
             .unwrap());
     };
 
-    Sse::new(event_stream).into_response()
+    Sse::new(event_stream)
+        .keep_alive(KeepAlive::default().interval(std::time::Duration::from_secs(4)))
+        .into_response()
 }
 
 /// Cancel a running benchmark.

@@ -309,8 +309,6 @@ impl ClaudeAgent {
             None
         };
 
-        let output_clone = output.clone();
-
         Ok(AgentResult::builder()
             .exercise_name(exercise.name.clone())
             .language(exercise.language.clone())

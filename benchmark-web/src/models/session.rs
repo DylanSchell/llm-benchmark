@@ -102,22 +102,13 @@ impl Clone for BenchmarkSession {
 impl BenchmarkSession {
     /// Set up an SSE subscriber for this session.
     /// Returns a fresh receiver that will get all future messages.
-    /// Any messages already in accumulated_output are sent first as a snapshot,
-    /// so late-joining clients see what happened before they connected.
+    /// Historical output is read directly (not pushed through the broadcast channel)
+    /// so the live stream starts immediately without buffer backlog.
     pub fn setup_sse(&self) -> broadcast::Receiver<String> {
-        let rx = self.msg_tx.subscribe();
-
-        // Send any accumulated output that was captured before this client connected.
-        // This ensures a late-joining user sees the full history, not just live updates.
-        let output = self.accumulated_output.lock().unwrap().clone();
-        for msg in output {
-            // Ignore send errors — if the receiver buffer is full, the message
-            // will arrive later via live streaming.
-            let _ = self.msg_tx.send(msg);
-        }
-
-        rx
+        self.msg_tx.subscribe()
     }
+
+
 
     /// Emit output: appends to accumulated_output and broadcasts to all SSE subscribers.
     pub fn emit_output(&mut self, message: &str) {

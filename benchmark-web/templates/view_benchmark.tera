@@ -42,28 +42,35 @@
     function connectSSE() {
         const source = new EventSource(`/api/benchmark/${sessionId}/stream`);
         
+        function appendOutput(data) {
+            // Remove placeholder if present
+            if (placeholder) {
+                placeholder.remove();
+                placeholder = null;
+                // Create the pre element if it doesn't exist
+                if (!outputPre) {
+                    outputPre = document.createElement('pre');
+                    outputPre.id = 'output-pre';
+                    outputPre.style.margin = '0';
+                    outputPre.style.padding = '0';
+                    outputPre.style.whiteSpace = 'pre-wrap';
+                    outputPre.style.wordBreak = 'break-word';
+                    outputConsole.appendChild(outputPre);
+                }
+            }
+            // Single DOM write — either a batch of historical output or incremental live tokens
+            outputPre.textContent += data;
+            scrollToBottom();
+        }
+
         source.addEventListener('message', (event) => {
+            // Live incremental output — individual tokens as they arrive.
+            // Historical output is already rendered in the server-side HTML template,
+            // so we only append new live data to avoid duplicates and DOM thrashing.
             try {
                 const data = JSON.parse(event.data);
                 if (data.type === 'output') {
-                    // Remove placeholder if present
-                    if (placeholder) {
-                        placeholder.remove();
-                        placeholder = null;
-                        // Create the pre element if it doesn't exist
-                        if (!outputPre) {
-                            outputPre = document.createElement('pre');
-                            outputPre.id = 'output-pre';
-                            outputPre.style.margin = '0';
-                            outputPre.style.padding = '0';
-                            outputPre.style.whiteSpace = 'pre-wrap';
-                            outputPre.style.wordBreak = 'break-word';
-                            outputConsole.appendChild(outputPre);
-                        }
-                    }
-                    // Append token to the same pre element (like Java does)
-                    outputPre.textContent += data.data;
-                    scrollToBottom();
+                    appendOutput(data.data);
                 }
             } catch (e) {
                 console.error('Failed to parse SSE message:', e);

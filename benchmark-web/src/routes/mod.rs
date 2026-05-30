@@ -22,6 +22,7 @@ use tera::Tera;
 #[derive(Clone)]
 pub struct AppState {
     pub service: crate::services::BenchmarkService,
+    pub shutdown_flag: Arc<std::sync::atomic::AtomicBool>,
 }
 
 
@@ -60,7 +61,6 @@ impl TemplateEngine {
         
         // Add custom filter for formatting large numbers with K/M/G suffixes
         tera.register_filter("format_number", |value: &tera::Value, _args: &std::collections::HashMap<String, tera::Value>| -> tera::Result<tera::Value> {
-            use serde_json::Number;
             let num = match value {
                 tera::Value::Number(n) => {
                     if let Some(i) = n.as_i64() {
@@ -115,4 +115,17 @@ pub fn build_router(state: AppState, templates: TemplateEngine) -> Router<()> {
         .merge(register_scoring(Router::new()))
         .layer(Extension(state))
         .layer(Extension(templates))
+}
+
+/// Build the complete router with all routes, using a provided shutdown flag.
+pub fn build_router_with_shutdown(
+    service: crate::services::BenchmarkService,
+    templates: TemplateEngine,
+    shutdown_flag: Arc<std::sync::atomic::AtomicBool>,
+) -> Router<()> {
+    let state = AppState {
+        service,
+        shutdown_flag,
+    };
+    build_router(state, templates)
 }

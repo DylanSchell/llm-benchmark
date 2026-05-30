@@ -259,11 +259,39 @@ impl PiMessageProcessor {
                     info!("  Writing: {}", file_path);
                     self.send_output(&format!("  Writing: {}\n", file_path));
                 }
+                if let Some(content) = args.get("content").and_then(|v| v.as_str()) {
+                    let display = if content.len() > 500 {
+                        format!("  Content ({} chars, {} lines):\n  {}...\n", content.len(), content.lines().count(), &content[..500])
+                    } else {
+                        format!("  Content ({} chars, {} lines):\n{}\n", content.len(), content.lines().count(), content)
+                    };
+                    let trimmed = display.trim();
+                    info!("  {}", trimmed);
+                    self.send_output(&display);
+                }
             }
             "Edit" => {
                 if let Some(file_path) = args.get("file_path").and_then(|v| v.as_str()) {
                     info!("  Editing: {}", file_path);
                     self.send_output(&format!("  Editing: {}\n", file_path));
+                }
+                if let Some(old_text) = args.get("oldText").and_then(|v| v.as_str()) {
+                    let expanded = old_text.replace("\\n", "\n");
+                    let display = if expanded.len() > 300 {
+                        format!("  Old:\n  {}...\n", &expanded[..300])
+                    } else {
+                        format!("  Old:\n{}\n", expanded)
+                    };
+                    self.send_output(&display);
+                }
+                if let Some(new_text) = args.get("newText").and_then(|v| v.as_str()) {
+                    let expanded = new_text.replace("\\n", "\n");
+                    let display = if expanded.len() > 300 {
+                        format!("  New:\n  {}...\n", &expanded[..300])
+                    } else {
+                        format!("  New:\n{}\n", expanded)
+                    };
+                    self.send_output(&display);
                 }
             }
             "Bash" => {
@@ -287,8 +315,16 @@ impl PiMessageProcessor {
                 }
             }
             _ => {
-                debug!("  Args: {}", args);
-                self.send_output(&format!("  Args: {}\n", args));
+                // Serialize args to JSON string, then expand \n escape sequences for readable output
+                let json_str = args.to_string();
+                let expanded = json_str.replace("\\n", "\n");
+                let display = if expanded.len() > 1000 {
+                    format!("  Args: {}...\n", &expanded[..1000])
+                } else {
+                    format!("  Args: {}\n", expanded)
+                };
+                debug!("  Args: {}", json_str);
+                self.send_output(&display);
             }
         }
     }
@@ -296,12 +332,14 @@ impl PiMessageProcessor {
     fn print_tool_result(&self, _tool_name: &str, result: &Value) {
         if result.is_string() {
             let content = result.as_str().unwrap_or("");
-            let output_text = if content.len() > 1000 {
-                format!("{}...[truncated]", &content[..1000])
+            // Expand JSON escape sequences for readable output
+            let expanded = content.replace("\\n", "\n").replace("\\t", "\t");
+            let output_text = if expanded.len() > 1000 {
+                format!("{}...[truncated]", &expanded[..1000])
             } else {
-                content.to_string()
+                expanded
             };
-            info!("  Output: {}", output_text);
+            info!("  Output: {}", output_text.lines().next().unwrap_or("").trim());
             self.send_output(&format!("  Output: {}\n", output_text));
         }
     }
