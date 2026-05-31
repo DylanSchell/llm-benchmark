@@ -43,6 +43,10 @@ struct PiMessageData {
 struct PiUsage {
     input: Option<i64>,
     output: Option<i64>,
+    #[serde(rename = "cacheRead")]
+    cache_read: Option<i64>,
+    #[serde(rename = "cacheWrite")]
+    cache_write: Option<i64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -80,24 +84,32 @@ struct Usage {
 /// Calculate tokens from a Pi agent trace file.
 /// Returns (input, output, cached, uncached)
 fn calculate_pi_tokens(trace_path: &Path) -> (u64, u64, u64, u64) {
-    let mut input = 0u64;
     let mut output = 0u64;
+    let mut cached = 0u64;
+    let mut uncached = 0u64;
     
     if let Ok(file) = File::open(trace_path) {
         for line in BufReader::new(file).lines().flatten() {
             if let Ok(PiLogEntry::Message(msg)) = serde_json::from_str::<PiLogEntry>(line.trim()) {
                 if let Some(ref data) = msg.message {
                     if let Some(ref usage) = data.usage {
-                        input += usage.input.unwrap_or(0) as u64;
+                        let msg_input = usage.input.unwrap_or(0) as u64;
+                        let msg_cache_read = usage.cache_read.unwrap_or(0) as u64;
+                        let msg_cache_write = usage.cache_write.unwrap_or(0) as u64;
                         output += usage.output.unwrap_or(0) as u64;
+                        
+                        // cached = cache_read, uncached = input + cache_write (newly written to cache)
+                        cached += msg_cache_read;
+                        uncached += msg_input + msg_cache_write;
                     }
                 }
             }
         }
     }
     
-    // Pi doesn't track cached/uncached separately
-    (input, output, 0, 0)
+    // Total input = uncached + cached
+    let input = uncached + cached;
+    (input, output, cached, uncached)
 }
 
 /// Calculate tokens from a Claude agent trace file.

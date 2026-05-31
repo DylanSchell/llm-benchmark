@@ -192,7 +192,7 @@
                     <th onclick="sortTable('by-language-table', 2)" style="cursor: pointer;">Successful &#x2195;</th>
                     <th onclick="sortTable('by-language-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
                     <th onclick="sortTable('by-language-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
-                    <th onclick="sortTable('by-language-table', 5)" style="cursor: pointer;">Tokens &#x2195;</th>
+                    <th onclick="sortTable('by-language-table', 5)" style="cursor: pointer;">Input / Cached / Output &#x2195;</th>
                     <th onclick="sortTable('by-language-table', 6)" style="cursor: pointer;">T/s &#x2195;</th>
                 </tr>
             </thead>
@@ -237,7 +237,7 @@
                     <th onclick="sortTable('by-agent-table', 2)" style="cursor: pointer;">Successful &#x2195;</th>
                     <th onclick="sortTable('by-agent-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
                     <th onclick="sortTable('by-agent-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
-                    <th onclick="sortTable('by-agent-table', 5)" style="cursor: pointer;">Tokens &#x2195;</th>
+                    <th onclick="sortTable('by-agent-table', 5)" style="cursor: pointer;">Input / Cached / Output &#x2195;</th>
                     <th onclick="sortTable('by-agent-table', 6)" style="cursor: pointer;">T/s &#x2195;</th>
                 </tr>
             </thead>
@@ -282,7 +282,7 @@
                     <th onclick="sortTable('by-model-table', 2)" style="cursor: pointer;">Successful &#x2195;</th>
                     <th onclick="sortTable('by-model-table', 3)" style="cursor: pointer;">Duration &#x2195;</th>
                     <th onclick="sortTable('by-model-table', 4)" style="cursor: pointer;">Success Rate &#x2195;</th>
-                    <th onclick="sortTable('by-model-table', 5)" style="cursor: pointer;">Tokens &#x2195;</th>
+                    <th onclick="sortTable('by-model-table', 5)" style="cursor: pointer;">Input / Cached / Output &#x2195;</th>
                     <th onclick="sortTable('by-model-table', 6)" style="cursor: pointer;">T/s &#x2195;</th>
                 </tr>
             </thead>

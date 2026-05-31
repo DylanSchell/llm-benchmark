@@ -143,10 +143,10 @@ fn format_duration(total_seconds: f64) -> String {
     parts.join(" ")
 }
 
-fn format_tokens(uncached: u64, cached: u64, output: u64) -> String {
+fn format_tokens(input: u64, cached: u64, output: u64) -> String {
     format!(
         "{} / {} / {}",
-        format_number(uncached as i64),
+        format_number(input as i64),
         format_number(cached as i64),
         format_number(output as i64)
     )
@@ -287,13 +287,13 @@ pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
 
     let mut markdown = String::new();
     markdown.push_str("# Benchmark Results Summary\n\n");
-    markdown.push_str("| Benchmark | Total Results | Success | Failed | Completion % | Total Duration | Tokens |\n");
-    markdown.push_str("|-----------|---------------|---------|--------|---------------|----------------|--------|\n");
+    markdown.push_str("| Benchmark | Total Results | Success | Failed | Completion % | Total Duration | Input / Cached / Output |\n");
+    markdown.push_str("|-----------|---------------|---------|--------|---------------|----------------|---------------------------|\n");
     dump_sorted_stats(&sorted_stats, &mut markdown);
 
     markdown.push_str("\n# Success rates per exercise\n\n");
-    markdown.push_str("| Exercise | Total Results | Success | Failed | Completion % | Total Duration | Tokens |\n");
-    markdown.push_str("|----------|---------------|---------|--------|---------------|----------------|--------|\n");
+    markdown.push_str("| Exercise | Total Results | Success | Failed | Completion % | Total Duration | Input / Cached / Output |\n");
+    markdown.push_str("|----------|---------------|---------|--------|---------------|----------------|---------------------------|\n");
 
     let mut exercise_stats: Vec<BenchmarkStats> = Vec::new();
     for exercise_name in &all_exercises {
@@ -323,7 +323,7 @@ pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
         markdown.push_str("\n");
         let display_name = benchmark_name.replace('.', "_").replace(':', "-");
         markdown.push_str(&format!("# {}\n\n", display_name));
-        markdown.push_str("| Exercise | Success | Duration | Tokens |\n|----------|---------|----------|--------|\n");
+        markdown.push_str("| Exercise | Success | Duration | Input / Cached / Output |\n|----------|---------|----------|---------------------------|\n");
         for result in results {
             let exercise_display = result.exercise_name.replace('.', "_") + "_" + &result.language;
             // Convert ms to seconds for timeout check
@@ -354,7 +354,7 @@ pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
         markdown.push_str("\n");
         let display_name = exercise.replace('.', "_");
         markdown.push_str(&format!("# {}\n\n", display_name));
-        markdown.push_str("| Model | Success | Duration | Tokens |\n|-------|---------|----------|--------|\n");
+        markdown.push_str("| Model | Success | Duration | Input / Cached / Output |\n|-------|---------|----------|---------------------------|\n");
         let mut sorted_results = results.clone();
         // Sort by duration_ms (already in ms)
         sorted_results.sort_by(|a, b| a.duration_ms.cmp(&b.duration_ms));

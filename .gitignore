@@ -1,0 +1,47 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+**/.gradle/
+build/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Results
+results/
+.gitignore
+.benchmark-temp/
+.run/
+CLAUDE.md
+/polyglot-benchmark/
+/docker/gradle-8.7-bin.zip
+
+# Node
+node_modules/
+package.json
+package-lock.json
