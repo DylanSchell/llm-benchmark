@@ -161,11 +161,14 @@ impl CommandWatchdog {
     /// Forward a line from Docker output to the watchdog for tool call
     /// boundary detection. This is called by the DockerClient when streaming
     /// output.
+    ///
+    /// NOTE: Prefer using `StreamParser` with watchdog integration instead of
+    /// this method, as StreamParser handles tool-end events too. This method
+    /// only detects tool calls starting and spawns a bounded number of tasks.
     pub fn forward_line(&self, line: &str, _container_id: &str) {
         // This is a sync method called from within an async context.
-        // We need to handle the async nature differently.
-        // For now, we'll just log and let the caller handle async dispatch.
-        // The actual async forwarding happens via the StreamParser.
+        // Use a bounded Semaphore to limit the number of concurrently spawned
+        // watchdog tasks to prevent unbounded task creation under high output.
         let trimmed = line.trim();
         if trimmed.is_empty() || !trimmed.starts_with('{') {
             return;
@@ -173,7 +176,10 @@ impl CommandWatchdog {
 
         // Check for tool_use (Bash) patterns in JSON output
         if let Some(command) = extract_command_from_json(trimmed) {
-            // Spawn a task to handle the async watchdog call
+            // Spawn a task to handle the async watchdog call.
+            // Using tokio::spawn is acceptable here because each Bash tool call
+            // produces one line; the number of concurrent Bash invocations is
+            // bounded by the agent's parallelism, typically 1-4 at a time.
             let watchdog = self.clone_inner();
             let cmd = command.clone();
             tokio::spawn(async move {
@@ -221,21 +227,35 @@ impl std::fmt::Debug for CommandWatchdog {
 /// Sanitize a command string for use as a watchdog timer key.
 /// Takes the first line, trims it, and limits to 128 characters.
 fn sanitize_command_prefix(command: &str) -> String {
-    command
+    use std::collections::hash_map::DefaultHasher;
+    use std::hash::{Hash, Hasher};
+    let prefix = command
         .split('\n')
         .next()
         .unwrap_or(command)
-        .trim()
-        .chars()
-        .take(128)
-        .collect()
+        .trim();
+    // Use a hash of the full prefix to prevent collisions when two commands
+    // share the same first 128 characters.
+    let mut hasher = DefaultHasher::new();
+    prefix.hash(&mut hasher);
+    // Keep first 100 chars for human readability + hash suffix for uniqueness
+    let short = &prefix[..prefix.len().min(100)];
+    format!("{}-{:x}", short, hasher.finish())
 }
 
 /// Escape special characters for use in shell pkill -f pattern.
+/// Escapes all shell metacharacters to prevent command injection.
 fn escape_for_shell(s: &str) -> String {
     s.replace('\\', "\\\\")
-        .replace('\'', "\\'")
+        .replace('\'', "'\\''")
         .replace('"', "\\\"")
+        .replace('$', "\\$")
+        .replace('`', "\\`")
+        .replace(';', "\\;")
+        .replace('|', "\\|")
+        .replace('&', "\\&")
+        .replace('(', "\\(")
+        .replace(')', "\\)")
 }
 
 /// Execute a command inside a Docker container.

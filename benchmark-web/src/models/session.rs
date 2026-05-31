@@ -108,11 +108,13 @@ impl BenchmarkSession {
         self.msg_tx.subscribe()
     }
 
-
-
-    /// Emit output: appends to accumulated_output and broadcasts to all SSE subscribers.
+    /// Emit output: appends to accumulated_output (ring-buffer capped at MAX_LINES) and broadcasts to all SSE subscribers.
     pub fn emit_output(&mut self, message: &str) {
+        const MAX_LINES: usize = 10_000;
         if let Ok(mut out) = self.accumulated_output.lock() {
+            if out.len() >= MAX_LINES {
+                out.remove(0);
+            }
             out.push(message.to_string());
         }
         // Ignore send errors — no subscribers means nobody is listening.

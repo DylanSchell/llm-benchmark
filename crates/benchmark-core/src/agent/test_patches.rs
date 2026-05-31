@@ -1,8 +1,12 @@
 use std::fs;
 use std::path::Path;
+use std::sync::OnceLock;
 use tracing::{debug, info};
 use benchmark_types::exercise::Exercise;
 use walkdir::WalkDir;
+
+/// Cached regex for removing @Disabled annotations from Java tests.
+static DISABLED_ANNOTATION_RE: OnceLock<regex::Regex> = OnceLock::new();
 
 /// Patches test files for the exercise (language-specific modifications).
 /// Removes skip annotations so all tests run.
@@ -75,12 +79,11 @@ pub fn run_remove_ignore_annotations(dir: &Path) -> Result<(), Box<dyn std::erro
             continue;
         }
         let content = fs::read_to_string(path)?;
-        let modified = content
-            .replace("#[ignore]", "")
-            .replace("#[ignore()]", "")
-            .replace("#[ignore(\". *\")]", "");
+        let re = regex::Regex::new(r"#\[ignore\([^)]*\)\]")
+            .map_err(|e| format!("Invalid regex: {}", e))?;
+        let modified = re.replace_all(&content.replace("#[ignore]", ""), "").to_string();
         if content != modified {
-            fs::write(path, modified)?;
+            fs::write(path, &modified)?;
             count += 1;
             info!("Removed #[ignore] from {}", path.display());
         }
@@ -104,10 +107,10 @@ pub fn run_remove_disabled_annotations(dir: &Path) -> Result<(), Box<dyn std::er
             continue;
         }
         let content = fs::read_to_string(path)?;
-        let modified = match regex::Regex::new(r"@Disabled\([^)]*\)") {
-            Ok(re) => re.replace_all(&content, ""),
-            Err(_) => std::borrow::Cow::Borrowed(content.as_str()),
-        };
+        let re = DISABLED_ANNOTATION_RE.get_or_init(|| {
+            regex::Regex::new(r"@Disabled\([^)]*\)").expect("invalid Disabled regex")
+        });
+        let modified = re.replace_all(&content, "");
         if content != modified.as_ref() {
             fs::write(path, modified.as_ref())?;
             count += 1;

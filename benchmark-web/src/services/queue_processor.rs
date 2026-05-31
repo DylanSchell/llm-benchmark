@@ -423,12 +423,12 @@ impl QueueProcessor {
             let current_session = session_manager.get_session(&session_id);
             match current_session {
                 Some(s) if s.status == RunStatus::COMPLETED => {
-                    queue.complete_current();
+                    queue.complete_current(&item.id);
                     info!("Queue item completed: {}", item.id);
                     break;
                 }
                 Some(s) if s.status == RunStatus::FAILED || s.status == RunStatus::CANCELLED => {
-                    queue.fail_current();
+                    queue.fail_current(&item.id);
                     warn!("Queue item failed: {}", item.id);
                     break;
                 }
@@ -437,7 +437,7 @@ impl QueueProcessor {
                     tokio::time::sleep(Duration::from_millis(500)).await;
                 }
                 None => {
-                    queue.fail_current();
+                    queue.fail_current(&item.id);
                     error!("Session not found: {}", session_id);
                     break;
                 }

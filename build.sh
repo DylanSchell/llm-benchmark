@@ -37,7 +37,6 @@ docker_build() {
 
 docker_run() {
     local tag="${TAG:-llm-benchmark/runner:latest}"
-    shift  # remove 'run' from args
     docker run --rm -it "${tag}" "$@"
 }
 

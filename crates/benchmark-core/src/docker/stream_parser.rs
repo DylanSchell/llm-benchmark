@@ -7,16 +7,13 @@ use tracing::debug;
 ///
 /// This class is designed to work with both Claude Code's stream-json output
 /// format and Pi's JSON event stream format.
-///
-/// # Usage
-/// Wrap this around the existing output callback in
-/// [`DockerClient::run_command_with_limits_and_volume`].
 pub struct StreamParser {
     downstream: Option<std::sync::Arc<dyn Fn(&str) + Send + Sync + 'static>>,
+    watchdog: Option<std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>,
 }
 
 impl StreamParser {
-    /// Creates a new StreamParser.
+    /// Creates a new StreamParser without watchdog support.
     ///
     /// # Arguments
     /// * `downstream` - The original output consumer (e.g., a logging callback).
@@ -25,6 +22,18 @@ impl StreamParser {
     ) -> Self {
         Self {
             downstream: Some(downstream),
+            watchdog: None,
+        }
+    }
+
+    /// Creates a new StreamParser with watchdog integration.
+    pub fn new_with_watchdog(
+        downstream: std::sync::Arc<dyn Fn(&str) + Send + Sync + 'static>,
+        watchdog: std::sync::Arc<crate::docker::watchdog::CommandWatchdog>,
+    ) -> Self {
+        Self {
+            downstream: Some(downstream),
+            watchdog: Some(watchdog),
         }
     }
 
@@ -48,14 +57,16 @@ impl StreamParser {
 
         // Parse and detect tool call boundaries
         if let Ok(root) = serde_json::from_str::<serde_json::Value>(trimmed) {
+            let wd = self.watchdog.as_ref();
+
             // Claude Code format
-            parse_claude_format(&root);
+            parse_claude_format(&root, wd);
 
             // Pi agent format
-            parse_pi_format(&root);
+            parse_pi_format(&root, wd);
 
             // Pi tool_execution_start / tool_execution_end
-            parse_pi_tool_execution_events(&root);
+            parse_pi_tool_execution_events(&root, wd);
         }
         // If parsing fails, silently ignore — the downstream consumer
         // already received the raw line.
@@ -66,7 +77,7 @@ impl StreamParser {
 
 /// Detects Claude Code tool_use (Bash) and tool_result events in the
 /// assistant/user message format.
-fn parse_claude_format(root: &serde_json::Value) {
+fn parse_claude_format(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>) {
     let type_str = root.get("type").and_then(|v| v.as_str());
 
     // Assistant message with tool_use
@@ -82,6 +93,14 @@ fn parse_claude_format(root: &serde_json::Value) {
                                         "Claude Bash tool call started: {}",
                                         &command[..command.len().min(100)]
                                     );
+                                    // Notify watchdog of tool call start
+                                    if let Some(wd) = watchdog {
+                                        let wd = wd.clone();
+                                        let cmd = command.clone();
+                                        tokio::spawn(async move {
+                                            wd.on_tool_call_started(&cmd).await;
+                                        });
+                                    }
                                 }
                             }
                         }
@@ -98,9 +117,13 @@ fn parse_claude_format(root: &serde_json::Value) {
                 if let Some(items) = content.as_array() {
                     for item in items {
                         if item.get("type").and_then(|v| v.as_str()) == Some("tool_result") {
-                            // All pending tool calls for this message batch are done.
-                            // We can't know exactly which one finished, so we cancel
-                            // the oldest pending timer (FIFO ordering).
+                            // Cancel oldest pending timer (FIFO ordering)
+                            if let Some(wd) = watchdog {
+                                let wd = wd.clone();
+                                tokio::spawn(async move {
+                                    wd.cancel_oldest_timer().await;
+                                });
+                            }
                         }
                     }
                 }
@@ -110,7 +133,7 @@ fn parse_claude_format(root: &serde_json::Value) {
 }
 
 /// Detects Pi agent toolCall events in the message format.
-fn parse_pi_format(root: &serde_json::Value) {
+fn parse_pi_format(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>) {
     let type_str = root.get("type").and_then(|v| v.as_str());
 
     if type_str != Some("message") {
@@ -151,14 +174,26 @@ fn parse_pi_format(root: &serde_json::Value) {
                             "Pi bash tool call started: {}",
                             &command[..command.len().min(100)]
                         );
+                        if let Some(wd) = watchdog {
+                            let wd = wd.clone();
+                            let cmd = command.to_string();
+                            tokio::spawn(async move {
+                                wd.on_tool_call_started(&cmd).await;
+                            });
+                        }
                     }
                 }
             }
         }
 
-        // toolResult inside assistant message (Pi sometimes puts tool results here)
+        // toolResult inside assistant message
         if item.get("type").and_then(|v| v.as_str()) == Some("toolResult") {
-            // Cancel oldest timer
+            if let Some(wd) = watchdog {
+                let wd = wd.clone();
+                tokio::spawn(async move {
+                    wd.cancel_oldest_timer().await;
+                });
+            }
         }
     }
 
@@ -168,13 +203,18 @@ fn parse_pi_format(root: &serde_json::Value) {
         .and_then(|v| v.as_str())
         == Some("toolResult")
     {
-        // Cancel oldest timer
+        if let Some(wd) = watchdog {
+            let wd = wd.clone();
+            tokio::spawn(async move {
+                wd.cancel_oldest_timer().await;
+            });
+        }
     }
 }
 
 /// Detects Pi's explicit tool_execution_start / tool_execution_end events.
 /// These are top-level event types, not nested in messages.
-fn parse_pi_tool_execution_events(root: &serde_json::Value) {
+fn parse_pi_tool_execution_events(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>) {
     let type_str = root.get("type").and_then(|v| v.as_str());
 
     if type_str == Some("tool_execution_start") {
@@ -186,6 +226,13 @@ fn parse_pi_tool_execution_events(root: &serde_json::Value) {
                             "Pi tool_execution_start (Bash): {}",
                             &command[..command.len().min(100)]
                         );
+                        if let Some(wd) = watchdog {
+                            let wd = wd.clone();
+                            let cmd = command.to_string();
+                            tokio::spawn(async move {
+                                wd.on_tool_call_started(&cmd).await;
+                            });
+                        }
                     }
                 }
             }
@@ -195,7 +242,12 @@ fn parse_pi_tool_execution_events(root: &serde_json::Value) {
     if type_str == Some("tool_execution_end") {
         if let Some(tool_name) = root.get("toolName").and_then(|v| v.as_str()) {
             if tool_name.eq_ignore_ascii_case("bash") {
-                // Cancel oldest timer
+                if let Some(wd) = watchdog {
+                    let wd = wd.clone();
+                    tokio::spawn(async move {
+                        wd.cancel_oldest_timer().await;
+                    });
+                }
             }
         }
     }

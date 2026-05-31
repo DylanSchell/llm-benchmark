@@ -56,7 +56,7 @@ impl ReferenceAgent {
 
         let ts = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
+            .unwrap_or_default()
             .as_millis();
         let exercise_temp_dir = base_temp_dir.join(&exercise.name).join(ts.to_string());
         fs::create_dir_all(&exercise_temp_dir)?;

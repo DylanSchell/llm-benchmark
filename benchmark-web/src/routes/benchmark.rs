@@ -149,16 +149,13 @@ pub async fn dashboard(
         Ok(html) => Html(html),
         Err(e) => {
             tracing::error!("Dashboard template error: {}", e);
-            // Return a helpful error page with details
-            let error_html = format!(
-                "<!DOCTYPE html><html><head><title>Error</title></head>\
+            // Return a generic error page — do not leak Tera error details
+            let error_html = "<!DOCTYPE html><html><head><title>Error</title></head>\
                  <body><h1>Template Rendering Error</h1>\
-                 <pre style='background:#fdd;padding:1rem;overflow:auto;'>{}</pre>\
+                 <p>An internal error occurred. Please try again later.</p>\
                  <p><a href='/'>Retry</a></p>\
-                 </body></html>",
-                e
-            );
-            Html(error_html)
+                 </body></html>";
+            Html(error_html.to_string())
         }
     }
 }
@@ -169,11 +166,7 @@ pub async fn run_form(
     Extension(templates): Extension<TemplateEngine>,
 ) -> impl IntoResponse {
     // Fetch models from inference endpoint, fall back to cached if unavailable
-    let models = tokio::task::block_in_place(|| {
-        tokio::runtime::Handle::current().block_on(async {
-            state.service.fetch_models().await.unwrap_or_default()
-        })
-    });
+    let models = state.service.fetch_models().await.unwrap_or_default();
     let mut ctx = tera::Context::new();
     ctx.insert("title", &"Run Benchmark");
     ctx.insert("models", &models);
@@ -246,7 +239,7 @@ pub async fn stream_output(
         Some(s) => s,
         None => {
             return Sse::new(async_stream::stream! {
-                yield Ok::<_, anyhow::Error>(Event::default().event("error").json_data(&serde_json::json!({"message": "Session not found"})).unwrap());
+                yield Ok::<_, anyhow::Error>(Event::default().event("error").json_data(&serde_json::json!({"message": "Session not found"})).unwrap_or_else(|_| Event::default().data("{\"message\":\"Session not found\"}")));
             }).into_response();
         }
     };
@@ -261,14 +254,23 @@ pub async fn stream_output(
     let shutdown_flag = state.shutdown_flag.clone();
 
     let event_stream = async_stream::stream! {
+macro_rules! sse_event {
+            ($event:expr, $data:expr) => {
+                Ok::<_, anyhow::Error>(Event::default()
+                    .event($event)
+                    .json_data($data)
+                    .unwrap_or_else(|e| {
+                        tracing::error!("SSE json_data failed: {}", e);
+                        Event::default().data("{\"error\":\"serialization failed\"}")
+                    }))
+            };
+        }
+
         // Send initial session info once
-        yield Ok::<_, anyhow::Error>(Event::default()
-            .event("session")
-            .json_data(&serde_json::json!({
-                "id": session_id,
-                "status": status
-            }))
-            .unwrap());
+        yield sse_event!("session", &serde_json::json!({
+            "id": session_id,
+            "status": status
+        }));
 
         // No need to send accumulated output via SSE — it's already rendered
         // in the server-side HTML template. Just start streaming live updates
@@ -285,13 +287,10 @@ pub async fn stream_output(
                 rx.recv(),
             ).await {
                 Ok(Ok(message)) => {
-                    yield Ok::<_, anyhow::Error>(Event::default()
-                        .event("message")
-                        .json_data(&serde_json::json!({
-                            "type": "output",
-                            "data": message
-                        }))
-                        .unwrap());
+                    yield sse_event!("message", &serde_json::json!({
+                        "type": "output",
+                        "data": message
+                    }));
                 }
                 Ok(Err(tokio::sync::broadcast::error::RecvError::Lagged(n))) => {
                     tracing::warn!("SSE subscriber lagged behind by {} messages, skipping", n);
@@ -308,13 +307,10 @@ pub async fn stream_output(
         }
 
         // Session complete signal
-        yield Ok::<_, anyhow::Error>(Event::default()
-            .event("complete")
-            .json_data(&serde_json::json!({
-                "id": session_id,
-                "status": status
-            }))
-            .unwrap());
+        yield sse_event!("complete", &serde_json::json!({
+            "id": session_id,
+            "status": status
+        }));
     };
 
     Sse::new(event_stream)

@@ -96,8 +96,8 @@ impl TemplateEngine {
         match self.tera.render(template, context) {
             Ok(html) => html,
             Err(e) => {
-                eprintln!("Template rendering error: {e}");
-                format!("<h1>Error rendering template: {e}</h1>")
+                tracing::error!("Template rendering error in '{}': {}", template, e);
+                "<h1>Internal Server Error</h1><p>Something went wrong. Please try again later.</p>".to_string()
             }
         }
     }

@@ -307,7 +307,7 @@ impl DockerClient {
         let mut cmd = Command::new("docker");
         cmd.args(&["ps", "-q", "--filter", "name=bench-"]);
 
-        match timeout(Duration::from_secs(5), cmd.output()).await {
+        match timeout(Duration::from_secs(30), cmd.output()).await {
             Ok(Ok(output)) => {
                 let container_ids = String::from_utf8_lossy(&output.stdout);
                 for container_id in container_ids.lines() {
@@ -473,7 +473,7 @@ async fn execute_docker_command_v2(
             .await
             .ok()
             .and_then(|s| s.code())
-            .unwrap_or(-1)
+            .unwrap_or(137) // 128 + SIGKILL(9) as conventional sentinel for killed process
     } else {
         let _ = process.kill().await;
         process
@@ -481,7 +481,7 @@ async fn execute_docker_command_v2(
             .await
             .ok()
             .and_then(|s| s.code())
-            .unwrap_or(-1)
+            .unwrap_or(137) // 128 + SIGKILL(9) as conventional sentinel for killed process
     };
 
     // Wait for reader tasks to finish
@@ -508,7 +508,7 @@ async fn cleanup_container(container_name: &str) {
     let mut cmd = Command::new("docker");
     cmd.args(&["rm", "-f", container_name]);
 
-    match timeout(Duration::from_secs(5), cmd.output()).await {
+    match timeout(Duration::from_secs(30), cmd.output()).await {
         Ok(Ok(output)) => {
             if !output.status.success() {
                 let stderr = String::from_utf8_lossy(&output.stderr);
