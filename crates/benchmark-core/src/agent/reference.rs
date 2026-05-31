@@ -361,18 +361,13 @@ impl ReferenceAgent {
                 }
             }
             "python" => {
-                // Match Java PythonHandler: create venv if needed
-                if exercises_path.join("pyproject.toml").exists() {
-                    vec![
-                        "sh".to_string(),
-                        "-c".to_string(),
-                        "if [ ! -d \".venv\" ]; then uv venv; fi".to_string(),
-                    ]
-                } else if exercises_path.join("requirements.txt").exists() {
-                    vec![]
-                } else {
-                    vec![]
-                }
+                // Match Java PythonHandler: always create venv if needed
+                // Python Exercism exercises don't have pyproject.toml or setup.py
+                vec![
+                    "sh".to_string(),
+                    "-c".to_string(),
+                    "if [ ! -d \".venv\" ]; then uv venv; fi".to_string(),
+                ]
             }
             "java" => {
                 // Gradle wrapper is already set up, but we may need to download dependencies
@@ -620,10 +615,9 @@ impl ReferenceAgent {
             ]
         } else if polyglot_path.join("Cargo.toml").exists() {
             vec!["cargo", "test"]
-        } else if polyglot_path.join("pyproject.toml").exists()
-            || polyglot_path.join("setup.py").exists()
-        {
-            // Match Java PythonHandler: activate venv and install pytest
+        } else if exercise.language == "python" {
+            // Match Java PythonHandler: always use this command regardless of build files
+            // Python Exercism exercises don't have pyproject.toml or setup.py
             vec!["sh", "-c", ". .venv/bin/activate && uv pip install -q pytest && pytest"]
         } else if polyglot_path.join("Gemfile").exists() {
             vec!["bundle", "exec", "rake", "test"]
