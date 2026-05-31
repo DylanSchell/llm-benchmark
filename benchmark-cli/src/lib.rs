@@ -51,14 +51,17 @@ pub struct RunArgs {
 /// Run benchmarks with the given arguments.
 pub fn run_benchmark(args: RunArgs) -> anyhow::Result<()> {
     // Initialize tracing based on verbosity
-    let env_filter = if std::env::var("RUST_LOG").is_err() {
-        if args.verbose {
-            EnvFilter::new("benchmark_cli=debug,benchmark_core=debug,info")
-        } else {
-            EnvFilter::new("benchmark_cli=info,benchmark_core=warn,info")
+    let env_filter = match std::env::var("RUST_LOG") {
+        Err(std::env::VarError::NotPresent) => {
+            if args.verbose {
+                EnvFilter::new("benchmark_cli=debug,benchmark_core=debug,info")
+            } else {
+                EnvFilter::new("benchmark_cli=info,benchmark_core=warn,info")
+            }
         }
-    } else {
-        EnvFilter::from_default_env()
+        _ => {
+            EnvFilter::from_default_env()
+        }
     };
 
     tracing_subscriber::fmt()

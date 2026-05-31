@@ -132,7 +132,7 @@ pub struct DockerConfig {
 }
 
 fn default_image() -> String {
-    "llm-benchmark-runner:latest".to_string()
+    "llm-benchmark/runner:latest".to_string()
 }
 
 fn default_work_dir() -> String {
@@ -325,7 +325,7 @@ impl QuickBenchConfig {
                 "sublist".to_string(),
                 "yacht".to_string(),
             ],
-            // Go — 25 exercises under 60s
+            // Go — 24 exercises under 60s
             "go" => vec![
                 "beer-song".to_string(),
                 "book-store".to_string(),
@@ -383,7 +383,7 @@ impl QuickBenchConfig {
                 "two-bucket".to_string(),
                 "word-search".to_string(),
             ],
-            // JavaScript — 36 exercises under 60s
+            // JavaScript — 39 exercises under 60s
             "javascript" => vec![
                 "affine-cipher".to_string(),
                 "alphametics".to_string(),
@@ -451,7 +451,7 @@ impl QuickBenchConfig {
                 "zebra-puzzle".to_string(),
                 "zipper".to_string(),
             ],
-            // Rust — 20 exercises under 60s
+            // Rust — 18 exercises under 60s
             "rust" => vec![
                 "accumulate".to_string(),
                 "acronym".to_string(),
@@ -488,7 +488,7 @@ impl QuickBenchConfig {
 
     /// Returns the total number of quick-bench exercise slots across all languages.
     pub fn get_total_exercise_count() -> usize {
-        23 + 25 + 28 + 36 + 23 + 20
+        23 + 24 + 28 + 39 + 23 + 18
     }
 }
 

@@ -340,7 +340,7 @@ impl ResultService {
         let loaded_flag = loaded.clone();
         let count_flag = result_count.clone();
 
-        thread::spawn(move || {
+        tokio::task::spawn_blocking(move || {
             info!("Starting background loading of benchmark results from: {}", results_dir.display());
             
             // Perform the actual loading (reusing existing logic)
@@ -1490,51 +1490,71 @@ impl ResultService {
             }).collect();
         }
 
-        // Find min/max for normalization
-        let max_duration = successful.iter()
-            .filter_map(|r| r.sort_duration)
-            .fold(f64::NEG_INFINITY, f64::max);
-        let min_duration = successful.iter()
-            .filter_map(|r| r.sort_duration)
-            .fold(f64::INFINITY, f64::min);
+        // Pre-compute per-exercise min/max for speed and token normalization.
+        // We need to do this before consuming `results` since `successful` borrows it.
+        use std::collections::HashMap;
+        #[derive(Default)]
+        struct ExBounds {
+            min_dur: Option<f64>,
+            max_dur: Option<f64>,
+            min_tok: Option<u64>,
+            max_tok: Option<u64>,
+        }
+        let mut ex_bounds: HashMap<(String, String), ExBounds> = HashMap::new();
+        for s in &successful {
+            let key = (s.language.clone(), s.exercise.clone());
+            let b = ex_bounds.entry(key).or_default();
+            if let Some(d) = s.sort_duration {
+                b.min_dur = Some(b.min_dur.map_or(d, |v| v.min(d)));
+                b.max_dur = Some(b.max_dur.map_or(d, |v| v.max(d)));
+            }
+            b.min_tok = Some(b.min_tok.map_or(s.output_tokens, |v| v.min(s.output_tokens)));
+            b.max_tok = Some(b.max_tok.map_or(s.output_tokens, |v| v.max(s.output_tokens)));
+        }
 
-        let max_tokens = successful.iter()
-            .map(|r| r.output_tokens)
-            .fold(0u64, u64::max);
-        let min_tokens = successful.iter()
-            .map(|r| r.output_tokens)
-            .fold(u64::MAX, u64::min);
-
-        // Calculate scores for all results
-        results.into_iter().map(|r| {
+        // Calculate scores for all results, normalizing per-exercise so that
+        // comparison is apples-to-apples: a C++ build isn't compared against
+        // a trivial Python script's token count.
+        let scored: Vec<ScoredResult> = results.into_iter().map(|r| {
             let success_rate = if r.total_exercises > 0 {
                 r.successful as f64 / r.total_exercises as f64
             } else {
                 0.0
             };
 
-            // Speed score: linear normalization (0-1), faster = higher
+            // Speed score: linear normalization within this exercise, faster = higher
             let speed_score = if r.success && r.sort_duration.unwrap_or(0.0) > 0.0 {
-                if max_duration == min_duration {
-                    1.0
+                let key = (r.language.clone(), r.exercise.clone());
+                if let Some(b) = ex_bounds.get(&key) {
+                    let min_d = b.min_dur.unwrap_or(0.0);
+                    let max_d = b.max_dur.unwrap_or(0.0);
+                    if max_d == min_d {
+                        1.0
+                    } else {
+                        (max_d - r.sort_duration.unwrap_or(0.0)) / (max_d - min_d)
+                    }
                 } else {
-                    (max_duration - r.sort_duration.unwrap_or(0.0)) / (max_duration - min_duration)
+                    1.0
                 }
             } else {
                 0.0
             };
 
-            // Token score: power-law normalization with exponent 0.3
-            // Stronger compression to penalize token bloat more aggressively
+            // Token score: power-law normalization within this exercise, fewer = higher
             let token_score = if r.success && r.output_tokens > 0 {
-                let actual_tokens = r.output_tokens as f64;
-                if max_tokens == min_tokens || (max_tokens as f64) <= 0.0 {
-                    1.0
+                let key = (r.language.clone(), r.exercise.clone());
+                if let Some(b) = ex_bounds.get(&key) {
+                    let min_t = b.min_tok.unwrap_or(0);
+                    let max_t = b.max_tok.unwrap_or(0);
+                    if max_t == min_t || max_t == 0 {
+                        1.0
+                    } else {
+                        let normalized = (r.output_tokens as f64 - min_t as f64) / (max_t as f64 - min_t as f64);
+                        let power_normalized = normalized.powf(0.3);
+                        1.0 - power_normalized
+                    }
                 } else {
-                    // Power-law scaling with exponent 0.3 for stronger differentiation
-                    let normalized = (actual_tokens - min_tokens as f64) / (max_tokens as f64 - min_tokens as f64);
-                    let power_normalized = normalized.powf(0.3);
-                    1.0 - power_normalized
+                    1.0
                 }
             } else {
                 0.0
@@ -1566,7 +1586,22 @@ impl ResultService {
                 detail_url: r.detail_url,
             }
         })
-        .collect()
+        .collect();
+
+        // Log per-exercise max scores for debugging
+        use std::collections::BTreeMap;
+        let mut ex_max: BTreeMap<String, f64> = BTreeMap::new();
+        for r in &scored {
+            let key = format!("{}:{}", r.language, r.exercise);
+            let entry = ex_max.entry(key).or_insert(0.0);
+            *entry = entry.max(r.token_score);
+        }
+        let num_at_1: usize = ex_max.values().filter(|&&v| v >= 0.999).count();
+        tracing::info!(
+            "Per-exercise token scores: {}/{} exercises have a max token score >= 0.999",
+            num_at_1, ex_max.len()
+        );
+        scored
     }
 
     /// Get aggregated scoring statistics by model.
@@ -1618,39 +1653,69 @@ impl ResultService {
             entry.5 += result.output_tokens as f64;
         }
         
-        // Calculate averages for all models
-        // Success rate = successful_exercises / total_possible_exercises
-        // Missing exercises are treated as failures to penalize incomplete coverage
-        
-        model_map.into_iter()
+        // Collect raw model averages first (before post-normalization)
+        let raw_models: Vec<(String, f64, f64, f64, u64, u32)> = model_map
+            .into_iter()
             .map(|(name, (_total_score, total_successful, total_runs, total_speed, total_token, total_tokens))| {
-                // Success rate = successful_exercises / benchmark_size
-                // Missing exercises are treated as failures
                 let avg_success_rate = if benchmark_size > 0 {
-                    // Cap at 100% in case we have more successful runs than expected exercises
                     let rate = total_successful as f64 / benchmark_size as f64;
                     rate.min(1.0)
                 } else {
                     0.0
                 };
-                
-                // Calculate composite score at MODEL level using model-level success rate
-                // This ensures incomplete coverage is properly penalized
                 let avg_speed = total_speed / total_runs as f64;
                 let avg_token = total_token / total_runs as f64;
-                let avg_composite_score = if avg_success_rate > 0.0 {
-                    0.6 * avg_success_rate + 0.2 * avg_speed + 0.2 * avg_token
+                (name, avg_success_rate, avg_speed, avg_token, total_tokens as u64, total_runs)
+            })
+            .collect();
+
+        // Find maximum speed and token scores across all models so the best
+        // model always gets 100% for that dimension.
+        let max_speed = raw_models
+            .iter()
+            .map(|(_, _, s, _, _, _)| *s)
+            .fold(0.0f64, f64::max);
+        let max_token = raw_models
+            .iter()
+            .map(|(_, _, _, t, _, _)| *t)
+            .fold(0.0f64, f64::max);
+
+        tracing::info!(
+            "Model scores: max_speed={:.4}, max_token={:.4}, num_models={}",
+            max_speed, max_token, raw_models.len()
+        );
+        for (name, _, s, t, _, _) in &raw_models {
+            tracing::info!("  {}: raw_speed={:.4}, raw_token={:.4}", name, s, t);
+        }
+
+        // Normalize so the best model for each dimension gets 100%,
+        // then compute the final composite score.
+        raw_models
+            .into_iter()
+            .map(|(name, avg_success_rate, avg_speed, avg_token, total_tokens, total_runs)| {
+                let norm_speed = if max_speed > 0.0 {
+                    avg_speed / max_speed
                 } else {
                     0.0
                 };
-                
+                let norm_token = if max_token > 0.0 {
+                    avg_token / max_token
+                } else {
+                    0.0
+                };
+                let avg_composite_score = if avg_success_rate > 0.0 {
+                    0.6 * avg_success_rate + 0.2 * norm_speed + 0.2 * norm_token
+                } else {
+                    0.0
+                };
+
                 ModelScore {
                     name,
                     avg_composite_score,
                     avg_success_rate,
-                    avg_speed_score: avg_speed,
-                    avg_token_score: avg_token,
-                    total_tokens: total_tokens as u64,
+                    avg_speed_score: norm_speed,
+                    avg_token_score: norm_token,
+                    total_tokens,
                     total_runs,
                 }
             })

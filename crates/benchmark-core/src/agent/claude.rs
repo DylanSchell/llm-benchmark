@@ -36,7 +36,7 @@ impl ClaudeAgent {
 
         let ts = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
+            .unwrap_or_default()
             .as_millis();
         let exercise_temp_dir = base_temp_dir.join(&exercise.name).join(ts.to_string());
         fs::create_dir_all(&exercise_temp_dir)?;
@@ -291,6 +291,9 @@ impl ClaudeAgent {
         // runTestsInDocker() after runAgent().
         let test_agent = ReferenceAgent::new(self.docker_client.clone());
         let test_result = test_agent.run_tests_in_docker(exercise, &temp_work_dir).await;
+
+        // Cleanup temporary work directory (prevents disk accumulation over many runs)
+        let _ = fs::remove_dir_all(&temp_work_dir);
 
         // The overall success is determined by whether tests pass.
         let test_ok = match &test_result {

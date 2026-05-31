@@ -85,13 +85,15 @@ pub async fn run(
 
         // Save individual result (retry=true increments attempts, retry=false overwrites)
         let persister = ResultPersister::new();
-        let _ = persister.save_result(
+        if let Err(e) = persister.save_result(
             &result,
             &cli.agent,
             model,
             &results_dir,
             retry,
-        );
+        ) {
+            tracing::error!("Failed to save result: {}", e);
+        }
 
         vec![result]
     } else {
@@ -147,14 +149,16 @@ pub async fn run(
             .into_iter()
             .collect();
 
-        let _ = persister.save_results(
+        if let Err(e) = persister.save_results(
             &all_results,
             &cli.agent,
             model,
             &languages_str.join(","),
             &results_dir,
             retry,
-        );
+        ) {
+            tracing::error!("Failed to save results: {}", e);
+        }
 
         all_results
     };
