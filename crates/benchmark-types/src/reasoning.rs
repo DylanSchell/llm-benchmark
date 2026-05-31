@@ -44,7 +44,7 @@
 
 use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
-use once_cell::sync::Lazy;
+use std::sync::LazyLock;
 
 /// Unified thinking level from the benchmark UI.
 /// These are pi-native levels that get translated to backend-specific parameters.
@@ -646,7 +646,7 @@ impl ReasoningRegistry {
     }
 }
 
-static REASONING_REGISTRY: Lazy<ReasoningRegistry> = Lazy::new(|| ReasoningRegistry {
+static REASONING_REGISTRY: LazyLock<ReasoningRegistry> = LazyLock::new(|| ReasoningRegistry {
     entries: Mutex::new(Vec::new()),
 });
 

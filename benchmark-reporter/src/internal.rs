@@ -1,6 +1,6 @@
 //! Internal report generation implementation.
 
-use benchmark_types::exercise::ExerciseResult;
+use benchmark_types::agent::AgentResult;
 use serde::Deserialize;
 use std::collections::{HashMap, BTreeSet};
 use std::fs::{self, File};
@@ -184,11 +184,11 @@ fn dump_sorted_stats(sorted_stats: &[BenchmarkStats], markdown: &mut String) {
 
 fn process_results_directory(
     dir: &Path,
-    all_results: &mut Vec<ExerciseResult>,
+    all_results: &mut Vec<AgentResult>,
     all_exercises: &mut BTreeSet<String>,
     stats_by_benchmark: &mut HashMap<String, BenchmarkStats>,
-    results_by_benchmark: &mut HashMap<String, Vec<ExerciseResult>>,
-    results_by_exercise: &mut HashMap<String, Vec<ExerciseResult>>,
+    results_by_benchmark: &mut HashMap<String, Vec<AgentResult>>,
+    results_by_exercise: &mut HashMap<String, Vec<AgentResult>>,
 ) {
     let mut result_files: Vec<PathTime> = match fs::read_dir(dir) {
         Ok(entries) => entries.filter_map(|e| e.ok()).filter(|e| is_result_file(&e.file_name().to_string_lossy())).filter_map(|e| { let path = e.path(); let file_time = fs::metadata(&path).ok()?.modified().ok()?; Some(PathTime { path, file_time }) }).collect(),
@@ -208,7 +208,7 @@ fn process_results_directory(
     for pt in &result_files {
         let result_file = &pt.path;
         let content = match fs::read_to_string(result_file) { Ok(c) => c, Err(_) => continue };
-        let mut result: ExerciseResult = match serde_json::from_str(&content) {
+        let mut result: AgentResult = match serde_json::from_str(&content) {
             Ok(r) => r,
             Err(_) => continue,
         };
@@ -226,7 +226,7 @@ fn process_results_directory(
         // Convert duration from seconds (f64) to ms (u64) for display
         let duration_secs = result.duration_ms as f64 / 1000.0;
         stats.total_duration += duration_secs;
-        stats.exit_code = result.exit_code.unwrap_or(0);
+        stats.exit_code = result.exit_code;
         if stats.exit_code != 0 && result.success {
             stats.success_results -= 1;
             stats.failed_results += 1;
@@ -269,11 +269,11 @@ fn process_results_directory(
 }
 
 pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
-    let mut all_results: Vec<ExerciseResult> = Vec::new();
+    let mut all_results: Vec<AgentResult> = Vec::new();
     let mut all_exercises: BTreeSet<String> = BTreeSet::new();
     let mut stats_by_benchmark: HashMap<String, BenchmarkStats> = HashMap::new();
-    let mut results_by_exercise: HashMap<String, Vec<ExerciseResult>> = HashMap::new();
-    let mut results_by_benchmark: HashMap<String, Vec<ExerciseResult>> = HashMap::new();
+    let mut results_by_exercise: HashMap<String, Vec<AgentResult>> = HashMap::new();
+    let mut results_by_benchmark: HashMap<String, Vec<AgentResult>> = HashMap::new();
 
     for entry in walkdir::WalkDir::new(base_dir) {
         let entry = match entry { Ok(e) => e, Err(_) => continue };

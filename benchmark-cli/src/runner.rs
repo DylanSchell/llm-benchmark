@@ -3,12 +3,13 @@
 //! Port of Java's `BenchmarkRunner` — orchestrates agent creation, exercise execution,
 //! result persistence, and summary output.
 
+use std::str::FromStr;
 use std::sync::Arc;
 use tracing::{error, info};
-use benchmark_types::agent::AgentResult;
+use benchmark_types::agent::{AgentKind, AgentResult};
 use benchmark_types::config::Config;
 use benchmark_core::agent::{ClaudeAgent, ClaudeMessageProcessor, PiAgent, ReferenceAgent};
-use benchmark_core::docker::DockerClient;
+use benchmark_core::docker::{DockerClient, DockerConfig};
 use benchmark_core::exercise_runner::ExerciseRunner;
 use benchmark_core::persistence::ResultPersister;
 
@@ -22,39 +23,29 @@ pub async fn run(
     retry: bool,
 ) -> anyhow::Result<()> {
     // Validate agent name
-    match cli.agent.as_str() {
-        "reference" | "claude" | "pi" => {}
-        other => {
-            error!(
-                "Unsupported agent: '{}'. Supported agents: reference, claude, pi",
-                other
-            );
+    let agent_kind = match AgentKind::from_str(&cli.agent) {
+        Ok(k) => k,
+        Err(e) => {
+            error!("{}", e);
             std::process::exit(1);
         }
-    }
+    };
+
+    info!(
+        "Starting benchmark: agent={}, model={}, language(s)={}",
+        agent_kind,
+        model,
+        cli.language
+    );
 
     // Check Docker availability
-    let docker_config = benchmark_core::docker::DockerConfig {
-        image: config.docker.image.clone(),
-        memory: Some(config.docker.memory.clone()),
-        timeout: Some(config.docker.timeout as u64),
-        work_dir: Some(config.docker.work_dir.clone()),
-        environment: Some(config.docker.environment_map()),
-        per_command_timeout: config.docker.per_command_timeout,
-    };
+    let docker_config = DockerConfig::from(&config.docker);
     let docker_client = DockerClient::new(docker_config);
 
     if !docker_client.is_available().await {
         error!("Docker is not available. Please ensure Docker is running.");
         std::process::exit(1);
     }
-
-    info!(
-        "Starting benchmark: agent={}, model={}, language(s)={}",
-        cli.agent,
-        model,
-        cli.language
-    );
 
     // Create exercise runner
     let config_arc = Arc::new(config.clone());
@@ -67,7 +58,7 @@ pub async fn run(
         // Single exercise mode
         info!("Running single exercise: {}", exercise_name);
 
-        let agent = create_agent(&cli.agent, docker_client.clone(), cli.verbose)?;
+        let agent = create_agent(agent_kind, docker_client.clone(), cli.verbose)?;
         let result = exercise_runner
             .run_exercise(
                 agent,
@@ -87,7 +78,7 @@ pub async fn run(
         let persister = ResultPersister::new();
         if let Err(e) = persister.save_result(
             &result,
-            &cli.agent,
+            &agent_kind.to_string(),
             model,
             &results_dir,
             retry,
@@ -114,14 +105,14 @@ pub async fn run(
         for language in &languages {
             info!("Running all exercises for language: {}", language);
 
-            let agent = create_agent(&cli.agent, docker_client.clone(), cli.verbose)?;
+            let agent = create_agent(agent_kind, docker_client.clone(), cli.verbose)?;
 
             // If retry mode, run_all_exercises won't skip already-completed exercises
             let results_for_lang = exercise_runner
                 .run_all_exercises(
                     agent,
                     language,
-                    &cli.agent,
+                    &agent_kind.to_string(),
                     model.to_string(),
                     None,
                     results_dir.clone(),
@@ -151,7 +142,7 @@ pub async fn run(
 
         if let Err(e) = persister.save_results(
             &all_results,
-            &cli.agent,
+            &agent_kind.to_string(),
             model,
             &languages_str.join(","),
             &results_dir,
@@ -174,14 +165,14 @@ pub async fn run(
     Ok(())
 }
 
-/// Create an agent instance based on the CLI agent name.
+/// Create an agent instance based on the CLI agent kind.
 fn create_agent(
-    agent_name: &str,
+    kind: AgentKind,
     docker_client: DockerClient,
     verbose: bool,
 ) -> anyhow::Result<Arc<dyn benchmark_types::agent::Agent + Send + Sync>> {
-    let agent: Arc<dyn benchmark_types::agent::Agent + Send + Sync> = match agent_name {
-        "reference" => {
+    let agent: Arc<dyn benchmark_types::agent::Agent + Send + Sync> = match kind {
+        AgentKind::Reference => {
             let agent = ReferenceAgent::new(docker_client);
             if verbose {
                 agent.set_output_consumer(|msg: &str| {
@@ -190,7 +181,7 @@ fn create_agent(
             }
             Arc::new(agent)
         }
-        "claude" => {
+        AgentKind::Claude => {
             let processor = if verbose {
                 ClaudeMessageProcessor::new(Some(Box::new(|msg: &str| {
                     print!("{}", msg);
@@ -202,7 +193,7 @@ fn create_agent(
             agent.set_message_processor(processor);
             Arc::new(agent)
         }
-        "pi" => {
+        AgentKind::Pi => {
             let processor = if verbose {
                 benchmark_core::agent::PiMessageProcessor::new(Some(Box::new(|msg: &str| {
                     print!("{}", msg);
@@ -214,7 +205,6 @@ fn create_agent(
             agent.set_message_processor(processor);
             Arc::new(agent)
         }
-        _ => unreachable!(), // validated in run()
     };
     Ok(agent)
 }

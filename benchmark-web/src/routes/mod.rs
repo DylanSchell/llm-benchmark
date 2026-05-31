@@ -9,6 +9,7 @@ pub mod results;
 pub mod scoring;
 
 use axum::{Router, Extension};
+use axum::routing::get;
 use benchmark::register as register_benchmark;
 use exercise::register as register_exercise;
 use queue::register as register_queue;
@@ -23,6 +24,7 @@ use tera::Tera;
 pub struct AppState {
     pub service: crate::services::BenchmarkService,
     pub shutdown_flag: Arc<std::sync::atomic::AtomicBool>,
+    pub metrics: crate::metrics::Metrics,
 }
 
 
@@ -106,7 +108,12 @@ impl TemplateEngine {
 /// Build the complete router with all routes.
 /// Uses Extension<AppState> layer to pass state to handlers.
 pub fn build_router(state: AppState, templates: TemplateEngine) -> Router<()> {
+    let metrics_state = state.clone();
     Router::new()
+        .route("/metrics", get(move || {
+            let m = metrics_state.metrics.clone();
+            async move { m.render() }
+        }))
         .merge(register_benchmark(Router::new()))
         .merge(register_exercise(Router::new()))
         .merge(register_queue(Router::new()))
@@ -126,6 +133,7 @@ pub fn build_router_with_shutdown(
     let state = AppState {
         service,
         shutdown_flag,
+        metrics: crate::metrics::Metrics::new(),
     };
     build_router(state, templates)
 }

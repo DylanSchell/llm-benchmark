@@ -4,6 +4,7 @@
 use crate::models::queue_item::{BenchmarkQueueItem, QueueItemStatus};
 use std::collections::{HashMap, VecDeque};
 use std::sync::{Arc, Mutex};
+use tokio::sync::Notify;
 
 /// Internal state, protected by a single Mutex to ensure atomic transitions.
 #[derive(Debug)]
@@ -19,12 +20,15 @@ struct InnerQueue {
 #[derive(Debug)]
 pub struct BenchmarkQueue {
     data: Arc<Mutex<InnerQueue>>,
+    /// Notified whenever items are added to the queue.
+    notifier: Arc<Notify>,
 }
 
 impl Clone for BenchmarkQueue {
     fn clone(&self) -> Self {
         Self {
             data: Arc::clone(&self.data),
+            notifier: Arc::clone(&self.notifier),
         }
     }
 }
@@ -38,6 +42,7 @@ impl BenchmarkQueue {
                 all_items: Vec::new(),
                 current_items: HashMap::new(),
             })),
+            notifier: Arc::new(Notify::new()),
         }
     }
 
@@ -55,6 +60,8 @@ impl BenchmarkQueue {
             data.inner.push_back(item.clone());
             data.all_items.push(item);
         }
+        // Wake the queue worker — items are available
+        self.notifier.notify_waiters();
     }
 
     /// Poll the next item from the queue (removes it).
@@ -214,6 +221,11 @@ impl BenchmarkQueue {
             .filter(|item| item.status == QueueItemStatus::PENDING)
             .cloned()
             .collect()
+    }
+    /// Returns a future that resolves when the queue may have new items.
+    /// Used by the queue worker to avoid busy-polling.
+    pub async fn wait_for_item(&self) {
+        self.notifier.notified().await;
     }
 }
 

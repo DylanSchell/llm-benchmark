@@ -6,38 +6,58 @@ use tokio::process::Command;
 use tokio::time::{timeout, Duration};
 use tracing::{debug, error, info, warn};
 
-/// Configuration for Docker execution.
+/// Runtime configuration for Docker execution.
+/// Constructed from `benchmark_types::config::DockerConfig` via `From`.
 #[derive(Debug, Clone)]
 pub struct DockerConfig {
     pub image: String,
-    pub memory: Option<String>,
-    pub timeout: Option<u64>,
-    pub work_dir: Option<String>,
-    pub environment: Option<HashMap<String, String>>,
+    pub memory: String,
+    pub timeout: u64,
+    pub work_dir: String,
+    pub environment: HashMap<String, String>,
     pub per_command_timeout: u32,
 }
 
+impl From<&benchmark_types::config::DockerConfig> for DockerConfig {
+    fn from(cfg: &benchmark_types::config::DockerConfig) -> Self {
+        Self {
+            image: cfg.image.clone(),
+            memory: cfg.memory.clone(),
+            timeout: cfg.timeout as u64,
+            work_dir: cfg.work_dir.clone(),
+            environment: cfg.environment_map(),
+            per_command_timeout: cfg.per_command_timeout,
+        }
+    }
+}
+
 impl DockerConfig {
+    /// Path to the Docker image.
     pub fn image(&self) -> &str {
         &self.image
     }
 
-    pub fn memory(&self) -> Option<&str> {
-        self.memory.as_deref()
+    /// Memory limit string (e.g., "2g").
+    pub fn memory(&self) -> &str {
+        &self.memory
     }
 
-    pub fn timeout(&self) -> Option<u64> {
+    /// Global timeout in seconds.
+    pub fn timeout(&self) -> u64 {
         self.timeout
     }
 
-    pub fn work_dir(&self) -> Option<&str> {
-        self.work_dir.as_deref()
+    /// Working directory inside the container.
+    pub fn work_dir(&self) -> &str {
+        &self.work_dir
     }
 
-    pub fn environment(&self) -> Option<&HashMap<String, String>> {
-        self.environment.as_ref()
+    /// Environment variables passed to the container.
+    pub fn environment(&self) -> &HashMap<String, String> {
+        &self.environment
     }
 
+    /// Per-command timeout in seconds.
     pub fn per_command_timeout(&self) -> u32 {
         self.per_command_timeout
     }
@@ -45,19 +65,17 @@ impl DockerConfig {
     /// Updates environment variables with the model name.
     /// Sets ANTHROPIC_MODEL and all ANTHROPIC_DEFAULT_*_MODEL variables.
     pub fn update_model_environment(&mut self, model_name: &str) {
-        if let Some(ref mut env) = self.environment {
-            if let Some(v) = env.get_mut("ANTHROPIC_MODEL") {
-                *v = model_name.to_string();
-            }
-            if let Some(v) = env.get_mut("ANTHROPIC_DEFAULT_HAIKU_MODEL") {
-                *v = model_name.to_string();
-            }
-            if let Some(v) = env.get_mut("ANTHROPIC_DEFAULT_OPUS_MODEL") {
-                *v = model_name.to_string();
-            }
-            if let Some(v) = env.get_mut("ANTHROPIC_DEFAULT_SONNET_MODEL") {
-                *v = model_name.to_string();
-            }
+        if let Some(v) = self.environment.get_mut("ANTHROPIC_MODEL") {
+            *v = model_name.to_string();
+        }
+        if let Some(v) = self.environment.get_mut("ANTHROPIC_DEFAULT_HAIKU_MODEL") {
+            *v = model_name.to_string();
+        }
+        if let Some(v) = self.environment.get_mut("ANTHROPIC_DEFAULT_OPUS_MODEL") {
+            *v = model_name.to_string();
+        }
+        if let Some(v) = self.environment.get_mut("ANTHROPIC_DEFAULT_SONNET_MODEL") {
+            *v = model_name.to_string();
         }
     }
 }
@@ -173,13 +191,9 @@ impl DockerClient {
         enable_pi_volume: bool,
     ) -> Result<ProcessResult, anyhow::Error> {
         let image = container_image.unwrap_or(&self.config.image);
-        let work = work_dir
-            .or(self.config.work_dir.as_deref())
-            .unwrap_or("/workspace");
-        let timeout_secs = timeout_seconds
-            .or(self.config.timeout)
-            .unwrap_or(300);
-        let memory = memory_limit.or(self.config.memory.as_deref()).unwrap_or("2g");
+        let work = work_dir.unwrap_or(&self.config.work_dir);
+        let timeout_secs = timeout_seconds.unwrap_or(self.config.timeout);
+        let memory = memory_limit.unwrap_or(&self.config.memory);
         let host_dir = volume_host_dir
             .map(|s| s.to_string())
             .unwrap_or_else(|| {
@@ -334,7 +348,7 @@ fn build_docker_run_command(
     image: &str,
     work: &str,
     memory: &str,
-    environment: &Option<HashMap<String, String>>,
+    environment: &HashMap<String, String>,
     host_dir: &str,
     enable_pi_volume: bool,
     command: &[&str],
@@ -353,11 +367,9 @@ fn build_docker_run_command(
     full_command.push(memory.to_string());
 
     // Add environment variables
-    if let Some(env_vars) = environment {
-        for (key, value) in env_vars {
-            full_command.push("-e".to_string());
-            full_command.push(format!("{}={}", key, value));
-        }
+    for (key, value) in environment {
+        full_command.push("-e".to_string());
+        full_command.push(format!("{}={}", key, value));
     }
 
     // Volume mounts

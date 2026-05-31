@@ -1,0 +1,48 @@
+# LLM Benchmark Configuration
+# Copy to config.yaml and customize for your setup.
+
+# Path to the polyglot-benchmark repository
+benchmark_path: "../polyglot-benchmark"
+parallelism: 1
+
+# Inference endpoint configuration (OpenAI-compatible API)
+inference_endpoint: "http://localhost:8000/v1"
+api_key: ""
+
+# Docker configuration
+docker:
+  # Name of the custom Docker image with build tools
+  image: "llm-benchmark/runner:latest"
+  # Container working directory
+  work_dir: "/workspace"
+  # Timeout for exercise execution in seconds
+  timeout: 3600
+  # Maximum time allowed for any single Bash tool call inside the container (seconds).
+  per_command_timeout: 120
+  # Memory limit for container (e.g., "2g")
+  memory: "2g"
+  # Environment variables passed into the runner container
+  environment:
+    - ANTHROPIC_AUTH_TOKEN: ""
+    - ANTHROPIC_BASE_URL: "http://host.docker.internal:8000"
+    - OPENAI_BASE_URL: "http://host.docker.internal:8000/v1"
+    - OPENAI_API_KEY: ""
+
+# Exercise configuration
+exercise:
+  language: "java"
+  name: ""  # leave empty to run all
+
+# Claude Code CLI configuration
+claude:
+  cli_path: "/usr/local/bin/claude"
+  model: "sonnet"
+  extra_args: []
+
+# Output configuration
+output:
+  results_dir: "../benchmark-results"
+  log_level: "INFO"
+
+server:
+  port: 8081

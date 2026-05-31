@@ -21,15 +21,12 @@ use tracing::{info, warn, error, debug};
 pub struct QueueConfig {
     /// Maximum number of concurrent workers.
     pub parallelism: usize,
-    /// Poll interval when queue is empty (milliseconds).
-    pub poll_interval_ms: u64,
 }
 
 impl Default for QueueConfig {
     fn default() -> Self {
         Self {
             parallelism: 2,
-            poll_interval_ms: 50,
         }
     }
 }
@@ -282,7 +279,6 @@ impl QueueProcessor {
         let active_workers = Arc::clone(&self.active_workers);
         let shutdown_requested = Arc::clone(&self.shutdown_requested);
         let parallelism = self.config.parallelism;
-        let poll_interval = Duration::from_millis(self.config.poll_interval_ms);
 
         info!("Queue worker started (parallelism={})", parallelism);
 
@@ -302,7 +298,8 @@ impl QueueProcessor {
                     let workers = active_workers.lock().await;
                     if *workers >= parallelism {
                         drop(workers);
-                        tokio::time::sleep(poll_interval).await;
+                        // Wait for a notification that capacity may have freed up
+                        queue.wait_for_item().await;
                         continue;
                     }
                 }
@@ -311,20 +308,28 @@ impl QueueProcessor {
                 match worker_semaphore.try_acquire() {
                     Ok(_permit) => {}
                     Err(_) => {
-                        tokio::time::sleep(poll_interval).await;
+                        tokio::time::sleep(Duration::from_millis(50)).await;
                         continue;
                     }
                 }
 
-                // Get next item
-                let item = queue.poll_next();
-                if item.is_none() {
-                    worker_semaphore.add_permits(1);
-                    tokio::time::sleep(poll_interval).await;
-                    continue;
-                }
+                // Get next item — block until something is available
+                let item = loop {
+                    // Check shutdown again while waiting
+                    {
+                        let requested = shutdown_requested.lock().await;
+                        if *requested {
+                            worker_semaphore.add_permits(1);
+                            return;
+                        }
+                    }
 
-                let item = item.unwrap();
+                    if let Some(item) = queue.poll_next() {
+                        break item;
+                    }
+                    // Nothing in queue — wait for a notification
+                    queue.wait_for_item().await;
+                };
                 let item_id = item.id.clone();
 
                 // Increment active workers

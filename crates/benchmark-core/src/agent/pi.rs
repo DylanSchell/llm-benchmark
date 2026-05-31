@@ -31,8 +31,6 @@ impl PiAgent {
 
     /// Creates a models.json configuration file for pi inside the working directory.
     /// Uses the model parameter instead of Docker config env vars (matches Java behavior).
-    /// Creates a models.json configuration file for pi inside the working directory.
-    /// Uses the model parameter instead of Docker config env vars (matches Java behavior).
     /// Includes reasoning configuration that maps pi thinking levels to backend-specific parameters.
     fn create_models_json(
         &self,
@@ -44,7 +42,7 @@ impl PiAgent {
         fs::create_dir_all(&pi_agent_dir)?;
 
         // Read environment configuration from Docker config
-        let env_vars = self.docker_client.get_config().environment().cloned().unwrap_or_default();
+        let env_vars = self.docker_client.get_config().environment().clone();
 
         // Use OpenAI endpoint (derived from ANTHROPIC_BASE_URL with /v1 suffix)
         let base_url = env_vars
@@ -64,7 +62,7 @@ impl PiAgent {
 
         // Build reasoning configuration: check registry first, fall back to mechanism detection
         let reasoning_config = if let Some(level_str) = thinking_level {
-            if let Some(_pi_level) = benchmark_types::reasoning::ThinkingLevel::from_str(level_str) {
+            if benchmark_types::reasoning::ThinkingLevel::from_str(level_str).is_some() {
                 let config = benchmark_types::reasoning::ReasoningRegistry::get_for_model(model);
                 Some(config)
             } else {
@@ -74,46 +72,57 @@ impl PiAgent {
             None
         };
 
-        // Build the model object — pi expects thinkingFormat and thinkingLevelMap
-        // at the model level, not a nested reasoning object.
-        let mut model_obj = format!("{{ \"id\": \"{}\"", self.escape_json(model));
+        // Build the model JSON object using serde_json for proper escaping
+        let mut model_map = serde_json::Map::new();
+        model_map.insert("id".to_string(), serde_json::Value::String(model.to_string()));
 
         if let Some(ref rc) = reasoning_config {
             if let Some(ref tf) = rc.thinking_format {
-                model_obj.push_str(&format!(",\n        \"thinkingFormat\": \"{}\"", tf));
+                model_map.insert(
+                    "thinkingFormat".to_string(),
+                    serde_json::Value::String(tf.to_string()),
+                );
             }
             if let Some(ref tlm) = rc.thinking_level_map {
-                let entries: &[(&str, Option<&serde_json::Value>)] = &[
-                    ("off", tlm.off.as_ref()),
-                    ("minimal", tlm.minimal.as_ref()),
-                    ("low", tlm.low.as_ref()),
-                    ("medium", tlm.medium.as_ref()),
-                    ("high", tlm.high.as_ref()),
-                    ("xhigh", tlm.xhigh.as_ref()),
+                let mut level_map = serde_json::Map::new();
+                let entries: &[(&str, &Option<serde_json::Value>)] = &[
+                    ("off", &tlm.off),
+                    ("minimal", &tlm.minimal),
+                    ("low", &tlm.low),
+                    ("medium", &tlm.medium),
+                    ("high", &tlm.high),
+                    ("xhigh", &tlm.xhigh),
                 ];
-                let parts: Vec<String> = entries
-                    .iter()
-                    .filter_map(|(k, v)| {
-                        v.as_ref().map(|val| {
-                            format!("        \"{}\": {}", k, serde_json::to_string(val).unwrap_or_default())
-                        })
-                    })
-                    .collect();
-                if !parts.is_empty() {
-                    model_obj.push_str(",\n        \"thinkingLevelMap\": {\n");
-                    model_obj.push_str(&parts.join(",\n"));
-                    model_obj.push_str("\n      }");
+                for (k, v) in entries {
+                    if let Some(val) = v {
+                        level_map.insert(k.to_string(), val.clone());
+                    }
+                }
+                if !level_map.is_empty() {
+                    model_map.insert(
+                        "thinkingLevelMap".to_string(),
+                        serde_json::Value::Object(level_map),
+                    );
                 }
             }
         }
-        model_obj.push('}');
+        let model_obj = serde_json::Value::Object(model_map);
 
-        let models_json = format!(
-            "{{\n  \"providers\": {{\n    \"openai\": {{\n      \"baseUrl\": \"{}\",\n      \"apiKey\": \"{}\",\n      \"api\": \"openai-completions\",\n      \"models\": [\n        {}\n      ]\n    }}\n  }}\n}}",
-            self.escape_json(base_url),
-            self.escape_json(api_key),
-            model_obj
-        );
+        // Build providers with serde_json for bulletproof escaping
+        let mut openai_provider = serde_json::Map::new();
+        openai_provider.insert("baseUrl".to_string(), serde_json::Value::String(base_url.to_string()));
+        openai_provider.insert("apiKey".to_string(), serde_json::Value::String(api_key.to_string()));
+        openai_provider.insert("api".to_string(), serde_json::Value::String("openai-completions".to_string()));
+        openai_provider.insert("models".to_string(), serde_json::json!([model_obj]));
+
+        let mut providers = serde_json::Map::new();
+        providers.insert("openai".to_string(), serde_json::Value::Object(openai_provider));
+
+        let mut root = serde_json::Map::new();
+        root.insert("providers".to_string(), serde_json::Value::Object(providers));
+
+        let models_json = serde_json::to_string_pretty(&serde_json::Value::Object(root))
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
 
         let models_file = pi_agent_dir.join("models.json");
         fs::write(&models_file, &models_json)?;
@@ -121,16 +130,6 @@ impl PiAgent {
             models_file, model, thinking_level,
             reasoning_config.as_ref().map(|rc| &rc.mechanism));
         Ok(())
-    }
-
-    /// Escapes special characters for JSON string values.
-    fn escape_json(&self, value: &str) -> String {
-        value
-            .replace('\\', "\\\\")
-            .replace('"', "\\\"")
-            .replace('\n', "\\n")
-            .replace('\r', "\\r")
-            .replace('\t', "\\t")
     }
 
     /// Installs Pi extensions (bash-timeout) into the working directory.
@@ -366,6 +365,7 @@ impl PiAgent {
 
 #[async_trait::async_trait]
 impl Agent for PiAgent {
+    #[tracing::instrument(skip(self), fields(exercise = %exercise.name, language = %exercise.language))]
     async fn run_exercise(
         &self,
         exercise: &Exercise,
@@ -381,66 +381,9 @@ impl Agent for PiAgent {
             exercise.name
         );
 
-        // Create temporary working directory
-        let base_temp_dir = std::env::current_dir()?.join(".benchmark-temp");
-        fs::create_dir_all(&base_temp_dir)?;
-
-        let ts = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_millis();
-        let temp_work_dir = base_temp_dir.join(&exercise.name).join(ts.to_string());
-        fs::create_dir_all(&temp_work_dir)?;
-        info!("Created temporary work directory: {:?}", temp_work_dir);
-
-        // Copy exercise files
-        // For C++, create a subdirectory named after the exercise
-        let exercise_dest = if exercise.language == "cpp" {
-            let dest = temp_work_dir.join(&exercise.name);
-            fs::create_dir_all(&dest)?;
-            info!("Copying C++ exercise files to {}", dest.display());
-            dest
-        } else {
-            temp_work_dir.clone()
-        };
-
-        for entry in WalkDir::new(host_exercise_dir) {
-            let entry = entry?;
-            let source_path = entry.path();
-
-            if source_path.is_dir() {
-                let relative = source_path.strip_prefix(host_exercise_dir).unwrap_or(source_path);
-                // Skip .meta directory
-                if relative.to_string_lossy().contains(".meta") {
-                    continue;
-                }
-                let dest = exercise_dest.join(relative);
-                fs::create_dir_all(&dest)?;
-            } else {
-                let path_str = source_path.to_string_lossy();
-                if path_str.contains(".meta/src/reference") {
-                    debug!("Skipping reference file: {:?}", source_path);
-                    continue;
-                }
-
-                let relative = source_path.strip_prefix(host_exercise_dir).unwrap_or(source_path);
-                let dest = exercise_dest.join(relative);
-                if let Some(parent) = dest.parent() {
-                    let _ = fs::create_dir_all(parent);
-                }
-                fs::copy(source_path, &dest)?;
-            }
-        }
-
-        // For Rust exercises, copy Cargo-example.toml to Cargo.toml if it exists
-        if exercise.language == "rust" {
-            let cargo_example = host_exercise_dir.join(".meta").join("Cargo-example.toml");
-            if cargo_example.exists() {
-                let dest = temp_work_dir.join("Cargo.toml");
-                fs::copy(&cargo_example, &dest)?;
-                info!("Copied Cargo-example.toml to Cargo.toml");
-            }
-        }
+        // Create temporary working directory and copy exercise files (shared logic)
+        let temp_work_dir = super::exercise_files::create_temp_work_dir(exercise)?;
+        super::exercise_files::copy_exercise_files(exercise, host_exercise_dir, &temp_work_dir)?;
 
         // Patch tests (remove @Disabled, #[ignore], xtest) — matches Java behavior
         crate::agent::test_patches::run_patch_tests(exercise, &temp_work_dir)?;
@@ -464,7 +407,7 @@ impl Agent for PiAgent {
         let command_refs: Vec<&str> = command[..command.len().saturating_sub(1)].iter().map(|s| s.as_str()).collect();
 
         // Log environment and configuration for debugging
-        let env_vars = self.docker_client.get_config().environment().cloned().unwrap_or_default();
+        let env_vars = self.docker_client.get_config().environment().clone();
         info!(
             "Running Pi agent for exercise: {} (language: {})",
             exercise.name, exercise.language

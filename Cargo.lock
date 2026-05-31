@@ -262,7 +262,6 @@ dependencies = [
  "anyhow",
  "async-trait",
  "chrono",
- "once_cell",
  "serde",
  "serde_json",
  "serde_yaml",

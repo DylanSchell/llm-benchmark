@@ -329,6 +329,8 @@ pub struct ResultService {
     loaded: Arc<AtomicBool>,
     /// Total number of results in cache (for progress reporting)
     result_count: Arc<AtomicUsize>,
+    /// Timestamp of last full cache refresh (ms since epoch).
+    last_refresh: Arc<std::sync::Mutex<u64>>,
 }
 
 impl ResultService {
@@ -343,6 +345,7 @@ impl ResultService {
             cached_models: Arc::new(RwLock::new(Vec::new())),
             loaded: loaded.clone(),
             result_count: result_count.clone(),
+            last_refresh: Arc::new(std::sync::Mutex::new(0)),
         };
 
         // Start background loading task
@@ -362,6 +365,7 @@ impl ResultService {
                 cached_models: cached_models.clone(),
                 loaded: loaded_flag.clone(),
                 result_count: count_flag.clone(),
+                last_refresh: Arc::new(std::sync::Mutex::new(0)),
             };
             
             temp_service.load_all_results();
@@ -538,8 +542,8 @@ impl ResultService {
     fn load_cached_result(file_path: &Path) -> Result<Option<CachedResult>> {
         let content = fs::read_to_string(file_path)?;
         
-        // Try to deserialize as ExerciseResult first (handles both camelCase and snake_case via serde aliases)
-        let exercise_result: benchmark_types::exercise::ExerciseResult = match serde_json::from_str(&content) {
+        // Deserialize as AgentResult (handles both camelCase and snake_case via serde aliases)
+        let agent_result: benchmark_types::agent::AgentResult = match serde_json::from_str(&content) {
             Ok(r) => r,
             Err(e) => {
                 // Log first few deserialization errors for debugging
@@ -556,14 +560,14 @@ impl ResultService {
         };
         
         // Skip if it doesn't have the required fields (empty exercise name means it's not a real result)
-        if exercise_result.exercise_name.is_empty() || exercise_result.language.is_empty() {
+        if agent_result.exercise_name.is_empty() || agent_result.language.is_empty() {
             static SKIP_COUNT: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
             let count = SKIP_COUNT.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
             if count < 3 {
                 info!("Skipped {} - empty exercise_name='{}' or language='{}'",
                     file_path.display(),
-                    exercise_result.exercise_name,
-                    exercise_result.language);
+                    agent_result.exercise_name,
+                    agent_result.language);
             }
             return Ok(None);
         }
@@ -580,32 +584,32 @@ impl ResultService {
             .to_string_lossy()
             .to_string();
 
-        // Use fields from the deserialized ExerciseResult
-        let exercise = exercise_result.exercise_name.clone();
-        let language = exercise_result.language.clone();
-        let success = exercise_result.success;
+        // Use fields from the deserialized AgentResult
+        let exercise = agent_result.exercise_name.clone();
+        let language = agent_result.language.clone();
+        let success = agent_result.success;
         
         // Model: use from result if present, otherwise derive from directory
-        let model = if !exercise_result.model.is_empty() {
-            exercise_result.model.clone()
+        let model = if !agent_result.model.is_empty() {
+            agent_result.model.clone()
         } else {
             directory.clone()
         };
 
         // Timestamp: format end_time as RFC3339
-        let timestamp = if !exercise_result.end_time.is_empty() {
-            Some(exercise_result.end_time.clone())
+        let timestamp = if !agent_result.end_time.is_empty() {
+            Some(agent_result.end_time.clone())
         } else {
             None
         };
 
-        let start_time = exercise_result.start_time.clone();
-        let end_time = exercise_result.end_time.clone();
+        let start_time = agent_result.start_time.clone();
+        let end_time = agent_result.end_time.clone();
 
         // Agent: try to get from result, otherwise derive from filename
-        let agent = if !exercise_result.model.is_empty() && exercise_result.exercise_name.starts_with("result_") {
+        let agent = if !agent_result.model.is_empty() && agent_result.exercise_name.starts_with("result_") {
             // Try to extract agent from model field if it contains agent info
-            exercise_result.model.clone()
+            agent_result.model.clone()
         } else {
             // Derive from filename: result_<agent>_<lang>_<exercise>.json
             if filename.starts_with("result_") {
@@ -621,13 +625,13 @@ impl ResultService {
         };
 
         // Duration: convert ms to seconds for storage (will be formatted later)
-        let duration_seconds = if exercise_result.duration_ms > 0 {
-            exercise_result.duration_ms as f64 / 1000.0
+        let duration_seconds = if agent_result.duration_ms > 0 {
+            agent_result.duration_ms as f64 / 1000.0
         } else {
             0.0
         };
 
-        let output = exercise_result.output.clone();
+        let output = agent_result.output.clone();
 
         // Build results list for backward compatibility
         // Store duration as numeric value for proper sorting, format later for display
@@ -667,13 +671,13 @@ impl ResultService {
 
         // Use tokens from deserialized result if present, otherwise parse from trace file
         let (input_tokens, output_tokens, cached_input_tokens, uncached_input_tokens) =
-            if exercise_result.input_tokens > 0 || exercise_result.output_tokens > 0 {
+            if agent_result.input_tokens > 0 || agent_result.output_tokens > 0 {
                 // Tokens already in the result file
                 (
-                    exercise_result.input_tokens,
-                    exercise_result.output_tokens,
-                    exercise_result.cached_input_tokens,
-                    exercise_result.uncached_input_tokens,
+                    agent_result.input_tokens,
+                    agent_result.output_tokens,
+                    agent_result.cached_input_tokens,
+                    agent_result.uncached_input_tokens,
                 )
             } else if let Some(ref trace_path_str) = trace_path {
                 if trace_path_str.ends_with(".jsonl") {
@@ -1303,8 +1307,18 @@ impl ResultService {
     }
 
     /// Refresh the result cache.
+    /// Refresh the in-memory cache, but only if more than 5 seconds have passed
+    /// since the last refresh (to avoid rebuilding on every request).
     pub fn refresh_cache(&self) {
-        self.load_all_results();
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis() as u64;
+        let mut last = self.last_refresh.lock().unwrap();
+        if now - *last > 5000 {
+            self.load_all_results();
+            *last = now;
+        }
     }
 
     /// Update the in-memory cache with a single new or updated result file.

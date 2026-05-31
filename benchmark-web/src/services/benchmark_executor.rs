@@ -53,14 +53,7 @@ impl BenchmarkExecutor {
     pub fn new(config: ExecutorConfig) -> Result<Self> {
         let config_ref = Arc::new(Config::load(&config.config_path)?);
 
-        let docker_config = benchmark_core::docker::DockerConfig {
-            image: config_ref.docker.image.clone(),
-            memory: Some(config_ref.docker.memory.clone()),
-            timeout: Some(config_ref.docker.timeout as u64),
-            work_dir: Some(config_ref.docker.work_dir.clone()),
-            environment: Some(config_ref.docker.environment_map()),
-            per_command_timeout: config_ref.docker.per_command_timeout,
-        };
+        let docker_config = benchmark_core::docker::DockerConfig::from(&config_ref.docker);
         let docker_client = Arc::new(DockerClient::new(docker_config));
         let exercise_runner = Arc::new(ExerciseRunner::new_with_docker(config_ref.clone(), Arc::clone(&docker_client)));
         let persister = Arc::new(ResultPersister::new());

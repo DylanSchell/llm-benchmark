@@ -1,10 +1,13 @@
 //! benchmark-web - Rust port of the Java benchmark web application.
 //! Axum-based web server with REST API and SSE streaming.
 
+mod config;
+mod metrics;
 mod models;
 pub mod routes;
 pub mod services;
 
+use config::AppConfig;
 use services::{
     BenchmarkExecutor, BenchmarkService, QueueProcessor, QueueConfig, ResultService, SessionManager,
 };
@@ -13,7 +16,6 @@ use std::sync::Arc;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use tower_http::services::ServeDir;
 
-use std::path::PathBuf;
 use routes::TemplateEngine;
 
 /// Run the web server with the given configuration.
@@ -39,40 +41,7 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     // Configuration
     // =============================================================================
 
-    // Load config.yaml first so we can use its values as defaults
-    let config_path = std::env::var("CONFIG_PATH").unwrap_or_else(|_| "config.yaml".to_string());
-    let config = benchmark_types::config::Config::load(&config_path).ok();
-
-    // SERVER_PORT env var overrides config.yaml; falls back to config value or 8081
-    let server_port = std::env::var("SERVER_PORT")
-        .ok()
-        .and_then(|v| v.parse().ok())
-        .or(config.as_ref().map(|c| c.server.port))
-        .unwrap_or(8081);
-
-    let config_parallelism = config.as_ref().map(|c| c.parallelism as usize);
-
-    // PARALLELISM env var overrides config.yaml; falls back to config value or 1
-    let parallelism = std::env::var("PARALLELISM")
-        .ok()
-        .and_then(|v| v.parse().ok())
-        .or(config_parallelism)
-        .unwrap_or(1);
-
-    if let Some(c) = &config {
-        tracing::info!("Loaded config from {}: parallelism={}, server_port={}, benchmark_path={}", config_path, c.parallelism, c.server.port, c.benchmark_path.display());
-    } else {
-        tracing::warn!("Could not load config from {}: using defaults", config_path);
-    }
-
-    // RESULTS_DIR env var overrides config.yaml; falls back to config value or ./results
-    let results_dir = std::env::var("RESULTS_DIR")
-        .ok()
-        .or(config.as_ref().map(|c| c.output.results_dir.to_string_lossy().to_string()))
-        .unwrap_or_else(|| "./results".to_string());
-    let results_path = PathBuf::from(&results_dir);
-
-    tracing::info!("Configuration: results_dir={}, parallelism={}, port={}", results_dir, parallelism, server_port);
+    let app_config = AppConfig::load();
 
     // =============================================================================
     // Initialize Services
@@ -82,14 +51,17 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     let session_manager = SessionManager::new();
 
     // ResultService loads and caches result files
-    let result_service = ResultService::new(results_path.clone());
+    let result_service = ResultService::new(app_config.results_dir.clone());
 
     // BenchmarkExecutor handles actual execution
-    let config_path_str = std::env::var("CONFIG_PATH").ok().or(config.as_ref().map(|c| c.benchmark_path.to_string_lossy().to_string())).unwrap_or_else(|| "config.yaml".to_string());
+    let config_path_str = std::env::var("CONFIG_PATH")
+        .ok()
+        .or(app_config.config.as_ref().map(|c| c.benchmark_path.to_string_lossy().to_string()))
+        .unwrap_or_else(|| "config.yaml".to_string());
     let executor_config = services::benchmark_executor::ExecutorConfig {
         config_path: config_path_str,
         results_dir_override: if std::env::var("RESULTS_DIR").is_ok() {
-            Some(results_path.clone())
+            Some(app_config.results_dir.clone())
         } else {
             None
         },
@@ -101,7 +73,7 @@ pub async fn run_web_server() -> anyhow::Result<()> {
 
     // QueueProcessor manages the benchmark queue
     let queue_config = QueueConfig {
-        parallelism,
+        parallelism: app_config.parallelism,
         ..QueueConfig::default()
     };
     let exercise_runner = benchmark_executor.get_exercise_runner();
@@ -142,6 +114,7 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     let state = routes::AppState {
         service: benchmark_service.clone(),
         shutdown_flag: shutdown_flag.clone(),
+        metrics: crate::metrics::Metrics::new(),
     };
 
     let app = routes::build_router(state, templates);
@@ -150,7 +123,7 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     // Start Server
     // =============================================================================
 
-    let addr = format!("0.0.0.0:{}", server_port);
+    let addr = format!("0.0.0.0:{}", app_config.server_port);
     tracing::info!("Starting benchmark-web server on {}", addr);
 
     let listener = tokio::net::TcpListener::bind(&addr)

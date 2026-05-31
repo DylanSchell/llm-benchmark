@@ -104,4 +104,3 @@ walkdir = "2.5"
 regex = "1.10"
 rayon = "1.10"
 home = "0.5"
-once_cell = { version = "1", features = ["std"] }

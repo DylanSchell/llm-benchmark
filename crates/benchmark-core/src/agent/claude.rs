@@ -1,13 +1,13 @@
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::{Arc, Mutex};
 use tokio::time::Instant;
 use tracing::{error, info, warn};
 use benchmark_types::agent::{Agent, AgentResult};
 use benchmark_types::exercise::Exercise;
-use walkdir::WalkDir;
 use crate::docker::DockerClient;
 use crate::agent::{reference::ReferenceAgent, ClaudeMessageProcessor};
+use walkdir::WalkDir;
 
 /// Claude agent that invokes Claude Code CLI to solve exercises.
 pub struct ClaudeAgent {
@@ -29,64 +29,6 @@ impl ClaudeAgent {
     }
 
     /// Creates a temporary working directory for the exercise.
-    fn create_temp_work_dir(exercise: &Exercise) -> Result<PathBuf, std::io::Error> {
-        let base_dir = std::env::current_dir()?;
-        let base_temp_dir = base_dir.join(".benchmark-temp");
-        fs::create_dir_all(&base_temp_dir)?;
-
-        let ts = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_millis();
-        let exercise_temp_dir = base_temp_dir.join(&exercise.name).join(ts.to_string());
-        fs::create_dir_all(&exercise_temp_dir)?;
-        Ok(exercise_temp_dir)
-    }
-
-    /// Copies exercise files to temp directory, excluding reference implementation.
-    fn copy_exercise_files(
-        source_dir: &Path,
-        dest_dir: &Path,
-    ) -> Result<(), std::io::Error> {
-        info!(
-            "Copying exercise files from {:?} to {:?}",
-            source_dir, dest_dir
-        );
-
-        let walker = WalkDir::new(source_dir).into_iter();
-        for entry in walker {
-            let entry = entry?;
-            let source_path = entry.path();
-
-            if source_path.is_dir() {
-                let relative = source_path.strip_prefix(source_dir).unwrap_or(source_path);
-                let dest = dest_dir.join(relative);
-                fs::create_dir_all(&dest)?;
-            } else {
-                // Skip reference implementation directory
-                let path_str = source_path.to_string_lossy();
-                if path_str.contains(".meta/src/reference") {
-                    continue;
-                }
-
-                let relative = source_path.strip_prefix(source_dir).unwrap_or(source_path);
-                let dest = dest_dir.join(relative);
-                fs::copy(source_path, &dest)?;
-
-                // Handle gradle-wrapper.properties modification
-                if dest.ends_with("gradle-wrapper.properties") {
-                    let content = fs::read_to_string(&dest)?;
-                    let modified = content.replace(
-                        "distributionUrl=https\\://services.gradle.org/distributions/gradle-8.7-bin.zip",
-                        "distributionUrl=file:///opt/gradle/gradle-8.7-bin.zip",
-                    );
-                    fs::write(&dest, modified)?;
-                }
-            }
-        }
-        Ok(())
-    }
-
     /// Create exercise prompt for Claude Code.
     fn create_exercise_prompt(exercise: &Exercise, temp_dir: &Path) -> Result<String, std::io::Error> {
         let mut prompt = String::new();
@@ -174,6 +116,7 @@ impl ClaudeAgent {
 
 #[async_trait::async_trait]
 impl Agent for ClaudeAgent {
+    #[tracing::instrument(skip(self), fields(exercise = %exercise.name, language = %exercise.language))]
     async fn run_exercise(
         &self,
         exercise: &Exercise,
@@ -186,9 +129,9 @@ impl Agent for ClaudeAgent {
         let start_dt = chrono::Utc::now();
         info!("Starting exercise: {} with Claude agent", exercise.name);
 
-        let temp_work_dir = Self::create_temp_work_dir(exercise)?;
+        let temp_work_dir = super::exercise_files::create_temp_work_dir(exercise)?;
 
-        Self::copy_exercise_files(host_exercise_dir, &temp_work_dir)?;
+        super::exercise_files::copy_exercise_files(exercise, host_exercise_dir, &temp_work_dir)?;
 
         let prompt = Self::create_exercise_prompt(exercise, &temp_work_dir)?;
 

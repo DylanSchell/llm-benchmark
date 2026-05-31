@@ -231,6 +231,10 @@ impl ExerciseRunner {
 
     /// Run all exercises for a given language using the specified agent with parallelism.
     ///
+    /// Uses `config.parallelism` to cap concurrent exercise execution. Each exercise
+    /// runs as a spawned task, but tasks are spawned in buffered batches so at most
+    /// `parallelism` tasks are active at once.
+    ///
     /// If `retry` is true, exercises that already have result files are still executed
     /// (useful for re-running failed or outdated results).
     pub async fn run_all_exercises(
@@ -243,44 +247,58 @@ impl ExerciseRunner {
         results_dir: PathBuf,
         retry: bool,
     ) -> Vec<AgentResult> {
+        use futures::stream::{self, StreamExt};
+
         info!(
             "Running all exercises for language: {} with agent: {}",
             language, agent_name
         );
 
         let exercises = self.find_all_exercises(language);
-        info!("Found {} exercises for language: {}", exercises.len(), language);
+        let parallelism = self.config.parallelism.max(1) as usize;
+        info!(
+            "Found {} exercises for language: {} (parallelism={})",
+            exercises.len(),
+            language,
+            parallelism
+        );
 
-        let results = Arc::new(tokio::sync::Mutex::new(Vec::new()));
         let agent_name_string = agent_name.to_string();
 
-        let tasks: Vec<_> = exercises
-            .into_iter()
+        // Build an async stream of exercise futures, buffered to `parallelism` concurrency
+        let futures_stream = stream::iter(exercises)
             .filter(|exercise| {
                 // Skip exercises that already have a result file (unless retry mode)
-                if !retry {
+                let keep = if !retry {
                     let result_file = self.get_result_path(&exercise.name, agent_name, language);
                     if result_file.exists() {
                         info!(
                             "Result file already exists for {}/{}, skipping",
                             language, exercise.name
                         );
-                        return false;
+                        false
+                    } else {
+                        true
                     }
-                }
-                true
-            })
-            .filter(|exercise| {
-                if let Some(dir) = self.find_exercise_host_dir(language, &exercise.name) {
-                    dir.exists()
                 } else {
-                    false
+                    true
+                };
+                // Also filter exercises with no host dir
+                let has_dir = self
+                    .find_exercise_host_dir(language, &exercise.name)
+                    .map(|d| d.exists())
+                    .unwrap_or(false);
+                if keep && !has_dir {
+                    warn!(
+                        "Exercise host directory not found for {}/{}, skipping",
+                        language, exercise.name
+                    );
                 }
+                async move { keep && has_dir }
             })
             .map(|exercise| {
                 let exercise_host_dir =
                     self.find_exercise_host_dir(language, &exercise.name).unwrap();
-                let results = Arc::clone(&results);
                 let agent = Arc::clone(&agent);
                 let language = language.to_string();
                 let agent_name = agent_name_string.clone();
@@ -288,33 +306,53 @@ impl ExerciseRunner {
                 let thinking_level = thinking_level.clone();
                 let results_dir = results_dir.clone();
 
-                tokio::spawn(async move {
+                async move {
                     info!(
                         "Running {} for exercise {}/{}",
                         agent_name, language, exercise.name
                     );
 
                     let result = agent
-                        .run_exercise(&exercise, &exercise_host_dir, &model, thinking_level.as_deref(), &results_dir)
+                        .run_exercise(
+                            &exercise,
+                            &exercise_host_dir,
+                            &model,
+                            thinking_level.as_deref(),
+                            &results_dir,
+                        )
                         .await;
 
                     match result {
                         Ok(r) => {
-                            let mut results = results.lock().await;
-                            results.push(r);
+                            info!(
+                                "Completed {}/{} (success={})",
+                                language, exercise.name, r.success
+                            );
+                            Some(r)
                         }
                         Err(e) => {
                             error!("Exercise failed: {}", e);
+                            None
                         }
                     }
-                })
+                }
             })
+            .buffer_unordered(parallelism);
+
+        let results: Vec<AgentResult> = futures_stream
+            .collect::<Vec<_>>()
+            .await
+            .into_iter()
+            .flatten()
             .collect();
 
-        futures::future::join_all(tasks).await;
+        info!(
+            "All exercises completed for language {}: {} results",
+            language,
+            results.len()
+        );
 
-        let mutex_ref = Arc::try_unwrap(results).ok().unwrap();
-        mutex_ref.into_inner()
+        results
     }
 
     /// Finds a specific exercise by language and name.

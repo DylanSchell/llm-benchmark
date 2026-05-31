@@ -1,5 +1,5 @@
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::{Arc, Mutex};
 use tokio::time::Instant;
 use tracing::{debug, error, info, warn};
@@ -49,66 +49,6 @@ impl ReferenceAgent {
     }
 
     /// Creates a temporary working directory for the exercise.
-    fn create_temp_work_dir(exercise: &Exercise) -> Result<PathBuf, std::io::Error> {
-        let base_dir = std::env::current_dir()?;
-        let base_temp_dir = base_dir.join(".benchmark-temp");
-        fs::create_dir_all(&base_temp_dir)?;
-
-        let ts = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_millis();
-        let exercise_temp_dir = base_temp_dir.join(&exercise.name).join(ts.to_string());
-        fs::create_dir_all(&exercise_temp_dir)?;
-        Ok(exercise_temp_dir)
-    }
-
-    /// Copies exercise files to temp directory, excluding reference implementation.
-    fn copy_exercise_files(
-        _exercise: &Exercise,
-        source_dir: &Path,
-        dest_dir: &Path,
-    ) -> Result<(), std::io::Error> {
-        info!(
-            "Copying exercise files from {:?} to {:?}",
-            source_dir, dest_dir
-        );
-
-        let walker = WalkDir::new(source_dir).into_iter();
-        for entry in walker {
-            let entry = entry?;
-            let source_path = entry.path();
-
-            if source_path.is_dir() {
-                let relative = source_path.strip_prefix(source_dir).unwrap_or(source_path);
-                let dest = dest_dir.join(relative);
-                fs::create_dir_all(&dest)?;
-            } else {
-                // Skip reference implementation directory
-                let path_str = source_path.to_string_lossy();
-                if path_str.contains(".meta/src/reference") {
-                    debug!("Skipping reference file: {:?}", source_path);
-                    continue;
-                }
-
-                let relative = source_path.strip_prefix(source_dir).unwrap_or(source_path);
-                let dest = dest_dir.join(relative);
-                fs::copy(source_path, &dest)?;
-
-                // Handle gradle-wrapper.properties modification
-                if dest.ends_with("gradle-wrapper.properties") {
-                    let content = fs::read_to_string(&dest)?;
-                    let modified = content.replace(
-                        "distributionUrl=https\\://services.gradle.org/distributions/gradle-8.7-bin.zip",
-                        "distributionUrl=file:///opt/gradle/gradle-8.7-bin.zip",
-                    );
-                    fs::write(&dest, modified)?;
-                }
-            }
-        }
-        Ok(())
-    }
-
     /// Runs the reference agent (copies reference implementation).
     fn run_reference_impl(
         exercise: &Exercise,
@@ -590,7 +530,7 @@ impl ReferenceAgent {
             .exit_code(exit_code)
             .output(output)
             .duration_ms(duration_ms)
-            .start_time(duration_ms.to_string())
+            .start_time(chrono::Utc::now().to_rfc3339())
             .end_time(end_dt.to_rfc3339())
             .error_message(output_for_error)
             .container_id(container_id)
@@ -679,13 +619,6 @@ impl ReferenceAgent {
     }
 
     /// Cleanup temporary directory.
-    fn cleanup_temp_dir(temp_dir: &Path) {
-        if temp_dir.exists() {
-            let _ = fs::remove_dir_all(temp_dir);
-        }
-    }
-
-    /// Returns the agent's name.
     pub fn get_name(&self) -> &str {
         "reference"
     }
@@ -693,6 +626,7 @@ impl ReferenceAgent {
 
 #[async_trait::async_trait]
 impl Agent for ReferenceAgent {
+    #[tracing::instrument(skip(self), fields(exercise = %exercise.name, language = %exercise.language))]
     async fn run_exercise(
         &self,
         exercise: &Exercise,
@@ -705,10 +639,10 @@ impl Agent for ReferenceAgent {
         let start_dt = chrono::Utc::now();
         info!("Running reference agent for exercise: {}", exercise.name);
 
-        let temp_work_dir = Self::create_temp_work_dir(exercise)?;
+        let temp_work_dir = super::exercise_files::create_temp_work_dir(exercise)?;
         info!("Created temporary work directory: {:?}", temp_work_dir);
 
-        Self::copy_exercise_files(exercise, host_exercise_dir, &temp_work_dir)?;
+        super::exercise_files::copy_exercise_files(exercise, host_exercise_dir, &temp_work_dir)?;
 
         // Prepare workspace (npm install, uv pip install, etc.)
         if let Err(e) = self.prepare_workspace(exercise, &temp_work_dir).await {
@@ -726,7 +660,8 @@ impl Agent for ReferenceAgent {
 
         let test_result = self.run_tests_in_docker(exercise, &temp_work_dir).await?;
 
-        Self::cleanup_temp_dir(&temp_work_dir);
+        // Cleanup
+        let _ = fs::remove_dir_all(&temp_work_dir);
 
         let end_dt = chrono::Utc::now();
         let duration_ms = start_time.elapsed().as_millis() as u64;
