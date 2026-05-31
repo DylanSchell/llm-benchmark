@@ -14,9 +14,9 @@ path = "src/main.rs"
 
 [dependencies]
 benchmark-types = { path = "../crates/benchmark-types" }
-anyhow = "1"
-clap = { version = "4", features = ["derive"] }
-serde_json = "1"
+anyhow = { workspace = true }
+clap = { workspace = true }
+serde_json = { workspace = true }
 
 [features]
 bin = []

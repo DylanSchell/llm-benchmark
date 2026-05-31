@@ -25,7 +25,7 @@ benchmark-web = { path = "benchmark-web" }
 benchmark-reporter = { path = "benchmark-reporter" }
 benchmark-token-report = { path = "benchmark-token-report" }
 
-# Common dependencies
+# All dependency versions managed in [workspace.dependencies]
 tokio = { workspace = true, features = ["full"] }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["env-filter"] }
@@ -34,23 +34,19 @@ clap = { workspace = true, features = ["derive"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
 serde_yaml = { workspace = true }
-
-# Web dependencies (for benchmark-web integration)
-axum = { version = "0.8", features = ["macros", "form", "query", "json", "ws"] }
-tower = { version = "0.5", features = ["full"] }
-tower-http = { version = "0.6", features = ["fs", "trace", "cors"] }
-tera = "1"
-uuid = { version = "1.10", features = ["v4", "serde"] }
+axum = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }
+tera = { workspace = true }
+uuid = { workspace = true }
 chrono = { workspace = true }
 futures = { workspace = true }
 async-trait = { workspace = true }
-async-stream = "0.3"
-reqwest = { version = "0.12", features = ["json"] }
-urlencoding = "2.1"
-serde_urlencoded = "0.7"
-
-# Reporter dependencies
-regex = "1"
+async-stream = { workspace = true }
+reqwest = { workspace = true }
+urlencoding = { workspace = true }
+serde_urlencoded = { workspace = true }
+regex = { workspace = true }
 walkdir = { workspace = true }
 
 [[bin]]
@@ -63,18 +59,49 @@ edition = "2021"
 authors = ["llm-benchmark contributors"]
 
 [workspace.dependencies]
+# Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_yaml = "0.9"
+
+# Async runtime
 tokio = { version = "1.40", features = ["full"] }
 tokio-util = "0.7"
+
+# Logging / tracing
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
 anyhow = "1.0"
 thiserror = "2.0"
+
+# Data types
 uuid = { version = "1.10", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
+
+# Async utilities
 async-trait = "0.1"
 futures = "0.3"
-walkdir = "2.5"
+async-stream = "0.3"
+
+# CLI
 clap = { version = "4.5", features = ["derive"] }
+
+# Web server
+axum = { version = "0.8", features = ["macros", "form", "query", "json", "ws"] }
+tower = { version = "0.5", features = ["full"] }
+tower-http = { version = "0.6", features = ["fs", "trace", "cors"] }
+tera = "1"
+urlencoding = "2.1"
+serde_urlencoded = "0.7"
+reqwest = { version = "0.12", features = ["json"] }
+
+# File system
+walkdir = "2.5"
+
+# Miscellaneous
+regex = "1.10"
+rayon = "1.10"
+home = "0.5"
+once_cell = { version = "1", features = ["std"] }

@@ -4,12 +4,12 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-axum = { version = "0.8", features = ["macros", "form", "query", "json", "ws"] }
-tower = { version = "0.5", features = ["full"] }
-serde_urlencoded = "0.7"
-urlencoding = "2.1"
-tera = "1"
-tower-http = { version = "0.6", features = ["fs", "trace", "cors"] }
+axum = { workspace = true }
+tower = { workspace = true }
+serde_urlencoded = { workspace = true }
+urlencoding = { workspace = true }
+tera = { workspace = true }
+tower-http = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }
@@ -20,14 +20,14 @@ chrono = { workspace = true }
 thiserror = { workspace = true }
 futures = { workspace = true }
 async-trait = { workspace = true }
-async-stream = "0.3"
+async-stream = { workspace = true }
 anyhow = { workspace = true }
-reqwest = { version = "0.12", features = ["json"] }
-rayon = "1.10"
+reqwest = { workspace = true }
+rayon = { workspace = true }
 benchmark-core = { path = "../crates/benchmark-core" }
 benchmark-types = { path = "../crates/benchmark-types" }
 
 [dev-dependencies]
 tokio = { workspace = true }
-reqwest = { version = "0.12", features = ["json"] }
+reqwest = { workspace = true }
 dotenv = "0.15"
