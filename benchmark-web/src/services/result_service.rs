@@ -1527,7 +1527,7 @@ impl ResultService {
         // Calculate scores for all results, normalizing per-exercise so that
         // comparison is apples-to-apples: a C++ build isn't compared against
         // a trivial Python script's token count.
-        let scored: Vec<ScoredResult> = results.into_iter().map(|r| {
+        results.into_iter().map(|r| {
             let success_rate = if r.total_exercises > 0 {
                 r.successful as f64 / r.total_exercises as f64
             } else {
@@ -1598,22 +1598,7 @@ impl ResultService {
                 detail_url: r.detail_url,
             }
         })
-        .collect();
-
-        // Log per-exercise max scores for debugging
-        use std::collections::BTreeMap;
-        let mut ex_max: BTreeMap<String, f64> = BTreeMap::new();
-        for r in &scored {
-            let key = format!("{}:{}", r.language, r.exercise);
-            let entry = ex_max.entry(key).or_insert(0.0);
-            *entry = entry.max(r.token_score);
-        }
-        let num_at_1: usize = ex_max.values().filter(|&&v| v >= 0.999).count();
-        tracing::info!(
-            "Per-exercise token scores: {}/{} exercises have a max token score >= 0.999",
-            num_at_1, ex_max.len()
-        );
-        scored
+        .collect()
     }
 
     /// Get aggregated scoring statistics by model.
@@ -1691,14 +1676,6 @@ impl ResultService {
             .iter()
             .map(|(_, _, _, t, _, _)| *t)
             .fold(0.0f64, f64::max);
-
-        tracing::info!(
-            "Model scores: max_speed={:.4}, max_token={:.4}, num_models={}",
-            max_speed, max_token, raw_models.len()
-        );
-        for (name, _, s, t, _, _) in &raw_models {
-            tracing::info!("  {}: raw_speed={:.4}, raw_token={:.4}", name, s, t);
-        }
 
         // Normalize so the best model for each dimension gets 100%,
         // then compute the final composite score.
