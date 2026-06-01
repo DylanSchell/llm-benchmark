@@ -3,7 +3,7 @@
 
 # Path to the polyglot-benchmark repository
 benchmark_path: "/Users/dylan/Developer/polyglot-benchmark"
-parallelism: 4
+parallelism: 1
 model: "reference"
 
 # Inference endpoint configuration (OpenAI-compatible API)
