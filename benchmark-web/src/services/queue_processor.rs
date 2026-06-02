@@ -376,6 +376,9 @@ impl QueueProcessor {
                     }
                     worker_semaphore.add_permits(1);
 
+                    // Wake the main loop — capacity has freed up
+                    queue.notify_capacity();
+
                     let worker_count = *active_workers.lock().await;
                     info!(
                         "Completed queue item: {} (active workers: {})",

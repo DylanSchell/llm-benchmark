@@ -227,6 +227,12 @@ impl BenchmarkQueue {
     pub async fn wait_for_item(&self) {
         self.notifier.notified().await;
     }
+
+    /// Wake the queue worker — used when a worker slot frees up
+    /// (not when items are added, which is handled by add_all).
+    pub fn notify_capacity(&self) {
+        self.notifier.notify_one();
+    }
 }
 
 impl Default for BenchmarkQueue {
