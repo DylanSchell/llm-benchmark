@@ -132,7 +132,13 @@ impl BenchmarkExecutor {
         }
 
         session.emit_output("Benchmark execution completed");
-        session.complete();
+        // Preserve FAILED/CANCELLED status set by inner execution paths.
+        // Only transition to COMPLETED if the session is not already in a terminal failure state.
+        if session.status != RunStatus::FAILED && session.status != RunStatus::CANCELLED {
+            session.complete();
+        } else {
+            session.finished_at = Some(chrono::Utc::now());
+        }
         // Update session manager with final status
         if let Some(sm) = session_manager {
             sm.update_session(session.clone());
