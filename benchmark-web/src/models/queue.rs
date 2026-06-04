@@ -101,33 +101,6 @@ impl BenchmarkQueue {
         }
     }
 
-    /// Complete the oldest current item (for backward compatibility).
-    pub fn complete_current_oldest(&self) -> bool {
-        let mut data = self.data.lock().unwrap();
-        // Remove the item that was first inserted (FIFO among active items)
-        // Since HashMap doesn't preserve order, we find by the item still in all_items
-        // with RUNNING status that was added earliest (lowest index in all_items)
-        let candidates: Vec<String> = data
-            .all_items
-            .iter()
-            .filter(|i| i.status == QueueItemStatus::RUNNING && data.current_items.contains_key(&i.id))
-            .map(|i| i.id.clone())
-            .collect();
-        if let Some(item_id) = candidates.into_iter().next() {
-            if data.current_items.remove(&item_id).is_some() {
-                for existing in data.all_items.iter_mut() {
-                    if existing.id == item_id {
-                        existing.status = QueueItemStatus::COMPLETED;
-                        existing.finished_at = Some(chrono::Utc::now());
-                        break;
-                    }
-                }
-                return true;
-            }
-        }
-        false
-    }
-
     /// Fail a specific item by ID.
     pub fn fail_current(&self, item_id: &str) -> bool {
         let mut data = self.data.lock().unwrap();

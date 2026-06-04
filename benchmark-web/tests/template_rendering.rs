@@ -6,7 +6,7 @@ use tera::Tera;
 #[test]
 fn test_dashboard_template_compiles() {
     // Test that the dashboard template can be loaded and compiled without errors
-    let mut tera = Tera::new("templates/**/*.tera").expect("Failed to load templates");
+    let tera = Tera::new("templates/**/*.tera").expect("Failed to load templates");
     
     // Try to compile the dashboard template
     let result = tera.get_template("dashboard.tera");
@@ -15,7 +15,7 @@ fn test_dashboard_template_compiles() {
 
 #[test]
 fn test_run_template_compiles() {
-    let mut tera = Tera::new("templates/**/*.tera").expect("Failed to load templates");
+    let tera = Tera::new("templates/**/*.tera").expect("Failed to load templates");
     
     let result = tera.get_template("run.tera");
     assert!(result.is_ok(), "Run template failed to load: {:?}", result.err());
@@ -24,7 +24,7 @@ fn test_run_template_compiles() {
 #[test]
 fn test_dashboard_renders_with_minimal_context() {
     use serde_json::json;
-    let mut tera = Tera::new("templates/**/*.tera").expect("Failed to load templates");
+    let tera = Tera::new("templates/**/*.tera").expect("Failed to load templates");
     
     // Create minimal context that should render without errors
     let mut ctx = tera::Context::new();
@@ -59,7 +59,7 @@ fn test_dashboard_renders_with_minimal_context() {
 
 #[test]
 fn test_run_template_renders_with_models() {
-    let mut tera = Tera::new("templates/**/*.tera").expect("Failed to load templates");
+    let tera = Tera::new("templates/**/*.tera").expect("Failed to load templates");
     
     let mut ctx = tera::Context::new();
     ctx.insert("title", &"Test");

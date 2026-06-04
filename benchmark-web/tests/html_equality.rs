@@ -17,10 +17,10 @@
 //! 1. Default: server is started automatically. Run with: `cargo test --test html_equality`
 //! 2. External: `SERVER_URL=http://localhost:8081 cargo test --test html_equality`
 
-use std::fs;
+#![allow(dead_code, unused_variables)]
+
 use std::io::Read;
 use std::net::TcpStream;
-use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
 use std::sync::{Mutex, OnceLock};
 use std::time::Duration;

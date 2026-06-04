@@ -5,7 +5,6 @@
 
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::collections::HashMap;
 use std::sync::Mutex;
 
 /// Thread-safe metrics registry.

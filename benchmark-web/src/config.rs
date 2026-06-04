@@ -66,13 +66,4 @@ impl AppConfig {
         }
     }
 
-    /// Creates a default config for testing or when no config file is available.
-    pub fn default_for_testing() -> Self {
-        Self {
-            server_port: 8081,
-            parallelism: 1,
-            results_dir: PathBuf::from("./results"),
-            config: None,
-        }
-    }
 }

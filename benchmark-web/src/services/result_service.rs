@@ -13,7 +13,6 @@ use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
-use std::thread;
 use tracing::{info, warn};
 
 // =============================================================================

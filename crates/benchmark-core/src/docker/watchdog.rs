@@ -361,51 +361,51 @@ fn extract_command_from_tool_call(node: &serde_json::Value) -> Option<String> {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_basic_lifecycle() {
+    #[tokio::test]
+    async fn test_basic_lifecycle() {
         let watchdog = CommandWatchdog::new("test-container", 120);
-        watchdog.on_tool_call_started("echo hello");
-        watchdog.on_tool_call_finished("echo hello");
+        watchdog.on_tool_call_started("echo hello").await;
+        watchdog.on_tool_call_finished("echo hello").await;
     }
 
-    #[test]
-    fn test_multiple_timers() {
+    #[tokio::test]
+    async fn test_multiple_timers() {
         let watchdog = CommandWatchdog::new("test-container", 120);
-        watchdog.on_tool_call_started("cmd1");
-        watchdog.on_tool_call_started("cmd2");
-        watchdog.on_tool_call_started("cmd3");
-        watchdog.cancel_oldest_timer();
-        watchdog.cancel_oldest_timer();
+        watchdog.on_tool_call_started("cmd1").await;
+        watchdog.on_tool_call_started("cmd2").await;
+        watchdog.on_tool_call_started("cmd3").await;
+        watchdog.cancel_oldest_timer().await;
+        watchdog.cancel_oldest_timer().await;
     }
 
-    #[test]
-    fn test_cancel_oldest_empty() {
+    #[tokio::test]
+    async fn test_cancel_oldest_empty() {
         let watchdog = CommandWatchdog::new("test-container", 120);
         // Should not panic
-        watchdog.cancel_oldest_timer();
+        watchdog.cancel_oldest_timer().await;
     }
 
-    #[test]
-    fn test_cancel_oldest_with_pending() {
+    #[tokio::test]
+    async fn test_cancel_oldest_with_pending() {
         let watchdog = CommandWatchdog::new("test-container", 120);
-        watchdog.on_tool_call_started("echo hello");
-        watchdog.cancel_oldest_timer();
+        watchdog.on_tool_call_started("echo hello").await;
+        watchdog.cancel_oldest_timer().await;
     }
 
-    #[test]
-    fn test_timer_fires_after_timeout() {
+    #[tokio::test]
+    async fn test_timer_fires_after_timeout() {
         let watchdog = CommandWatchdog::new("test-container", 0); // 0 second timeout
-        watchdog.on_tool_call_started("sleep 999");
-        std::thread::sleep(std::time::Duration::from_millis(100));
+        watchdog.on_tool_call_started("sleep 999").await;
+        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
         // Timer should have fired and killed the process
     }
 
-    #[test]
-    fn test_timer_cancelled_before_firing() {
+    #[tokio::test]
+    async fn test_timer_cancelled_before_firing() {
         let watchdog = CommandWatchdog::new("test-container", 0); // 0 second timeout
-        watchdog.on_tool_call_started("sleep 999");
-        watchdog.cancel_oldest_timer(); // Cancel before it fires
-        std::thread::sleep(std::time::Duration::from_millis(100));
+        watchdog.on_tool_call_started("sleep 999").await;
+        watchdog.cancel_oldest_timer().await; // Cancel before it fires
+        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
         // Should not panic
     }
 
@@ -441,12 +441,12 @@ mod tests {
         assert!(cmd.is_none());
     }
 
-    #[test]
-    fn test_watchdog_drops_cleanly() {
+    #[tokio::test]
+    async fn test_watchdog_drops_cleanly() {
         // Ensure Drop doesn't panic
         {
             let watchdog = CommandWatchdog::new("test-container", 120);
-            watchdog.on_tool_call_started("echo hello");
+            watchdog.on_tool_call_started("echo hello").await;
         }
         // watchdog dropped here
     }
