@@ -77,7 +77,7 @@ impl StreamParser {
 
 /// Detects Claude Code tool_use (Bash) and tool_result events in the
 /// assistant/user message format.
-fn parse_claude_format(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>) {
+    fn parse_claude_format(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>) {
     let type_str = root.get("type").and_then(|v| v.as_str());
 
     // Assistant message with tool_use
@@ -93,13 +93,9 @@ fn parse_claude_format(root: &serde_json::Value, watchdog: Option<&std::sync::Ar
                                         "Claude Bash tool call started: {}",
                                         &command[..command.len().min(100)]
                                     );
-                                    // Notify watchdog of tool call start
+                                    // Notify watchdog of tool call start (sync for FIFO ordering)
                                     if let Some(wd) = watchdog {
-                                        let wd = wd.clone();
-                                        let cmd = command.clone();
-                                        tokio::spawn(async move {
-                                            wd.on_tool_call_started(&cmd).await;
-                                        });
+                                        wd.on_tool_call_started_sync(&command);
                                     }
                                 }
                             }
@@ -117,12 +113,9 @@ fn parse_claude_format(root: &serde_json::Value, watchdog: Option<&std::sync::Ar
                 if let Some(items) = content.as_array() {
                     for item in items {
                         if item.get("type").and_then(|v| v.as_str()) == Some("tool_result") {
-                            // Cancel oldest pending timer (FIFO ordering)
+                            // Cancel oldest pending timer (FIFO ordering, sync for correctness)
                             if let Some(wd) = watchdog {
-                                let wd = wd.clone();
-                                tokio::spawn(async move {
-                                    wd.cancel_oldest_timer().await;
-                                });
+                                wd.cancel_oldest_timer_sync();
                             }
                         }
                     }
@@ -133,7 +126,7 @@ fn parse_claude_format(root: &serde_json::Value, watchdog: Option<&std::sync::Ar
 }
 
 /// Detects Pi agent toolCall events in the message format.
-fn parse_pi_format(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>) {
+    fn parse_pi_format(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>) {
     let type_str = root.get("type").and_then(|v| v.as_str());
 
     if type_str != Some("message") {
@@ -175,11 +168,7 @@ fn parse_pi_format(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<cr
                             &command[..command.len().min(100)]
                         );
                         if let Some(wd) = watchdog {
-                            let wd = wd.clone();
-                            let cmd = command.to_string();
-                            tokio::spawn(async move {
-                                wd.on_tool_call_started(&cmd).await;
-                            });
+                            wd.on_tool_call_started_sync(command);
                         }
                     }
                 }
@@ -189,10 +178,7 @@ fn parse_pi_format(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<cr
         // toolResult inside assistant message
         if item.get("type").and_then(|v| v.as_str()) == Some("toolResult") {
             if let Some(wd) = watchdog {
-                let wd = wd.clone();
-                tokio::spawn(async move {
-                    wd.cancel_oldest_timer().await;
-                });
+                wd.cancel_oldest_timer_sync();
             }
         }
     }
@@ -204,10 +190,7 @@ fn parse_pi_format(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<cr
         == Some("toolResult")
     {
         if let Some(wd) = watchdog {
-            let wd = wd.clone();
-            tokio::spawn(async move {
-                wd.cancel_oldest_timer().await;
-            });
+            wd.cancel_oldest_timer_sync();
         }
     }
 }
@@ -227,11 +210,7 @@ fn parse_pi_tool_execution_events(root: &serde_json::Value, watchdog: Option<&st
                             &command[..command.len().min(100)]
                         );
                         if let Some(wd) = watchdog {
-                            let wd = wd.clone();
-                            let cmd = command.to_string();
-                            tokio::spawn(async move {
-                                wd.on_tool_call_started(&cmd).await;
-                            });
+                            wd.on_tool_call_started_sync(command);
                         }
                     }
                 }
@@ -243,10 +222,7 @@ fn parse_pi_tool_execution_events(root: &serde_json::Value, watchdog: Option<&st
         if let Some(tool_name) = root.get("toolName").and_then(|v| v.as_str()) {
             if tool_name.eq_ignore_ascii_case("bash") {
                 if let Some(wd) = watchdog {
-                    let wd = wd.clone();
-                    tokio::spawn(async move {
-                        wd.cancel_oldest_timer().await;
-                    });
+                    wd.cancel_oldest_timer_sync();
                 }
             }
         }

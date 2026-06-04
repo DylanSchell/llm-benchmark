@@ -305,13 +305,17 @@ impl QueueProcessor {
                 }
 
                 // Try to acquire a permit
-                match worker_semaphore.try_acquire() {
-                    Ok(_permit) => {}
+                let _permit = match worker_semaphore.clone().try_acquire_owned() {
+                    Ok(permit) => {
+                        // Forget the owned permit so we don't release it here.
+                        // The worker task will release it on completion via add_permits(1).
+                        permit.forget();
+                    }
                     Err(_) => {
                         tokio::time::sleep(Duration::from_millis(50)).await;
                         continue;
                     }
-                }
+                };
 
                 // Get next item — block until something is available
                 let item = loop {

@@ -77,60 +77,62 @@ impl BenchmarkExecutor {
         session: &mut BenchmarkSession,
         session_manager: Option<&SessionManager>,
     ) -> Result<()> {
-        session.start();
-        // Update session manager if provided
-        if let Some(sm) = session_manager {
-            sm.update_session(session.clone());
-        }
-
-        let languages = session.languages.clone();
-        let agent_name = session.agent_name.clone();
-        let model = session.model.clone(); // Required, never None
-        let thinking_level = session.thinking_level.clone();
-        let exercise_name = session.exercise_name.clone();
-
-        info!(
-            "Starting benchmark execution: agent={}, languages={:?}, model={:?}, thinking_level={:?}, exercise={:?}",
-            agent_name, languages, model, thinking_level, exercise_name
-        );
-
-        // Note: Docker model environment variables are already set from config on startup.
-        // The model is passed through the environment map when DockerClient is created.
-
-        // Create output consumer for live streaming to web UI
-        let output_consumer = session.make_output_consumer();
-
-        // Create agent based on agent name, wiring up message processors for streaming
-        let agent: Arc<dyn Agent + Send + Sync> = match agent_name.as_str() {
-            "reference" => {
-                let ref_agent = ReferenceAgent::new((*self.docker_client).clone());
-                // Wire up output consumer for live streaming
-                ref_agent.set_output_consumer(output_consumer);
-                Arc::new(ref_agent)
+        // Run the body in an inner function so the finalize block always runs
+        // even when execute_inner returns Err. This prevents the session from
+        // staying stuck in RUNNING when an error propagates via ?.
+        let result = async {
+            session.start();
+            // Update session manager if provided
+            if let Some(sm) = session_manager {
+                sm.update_session(session.clone());
             }
-            "pi" => {
-                let mut pi_agent = PiAgent::new((*self.docker_client).clone());
-                // Wire up message processor with output consumer for live streaming
-                let pi_processor = PiMessageProcessor::new(Some(output_consumer));
-                pi_agent.set_message_processor(pi_processor);
-                Arc::new(pi_agent)
-            }
-            _ => {
-                let mut claude_agent = ClaudeAgent::new((*self.docker_client).clone());
-                // Wire up message processor with output consumer for live streaming
-                let claude_processor = ClaudeMessageProcessor::new(Some(output_consumer));
-                claude_agent.set_message_processor(claude_processor);
-                Arc::new(claude_agent)
-            }
-        };
 
-        let model_str = &model;
-        if let Some(ref _exercise) = exercise_name {
-            self.execute_single_exercise(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name).await?;
-        } else {
-            self.execute_all_exercises(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name).await?;
-        }
+            let languages = session.languages.clone();
+            let agent_name = session.agent_name.clone();
+            let model = session.model.clone(); // Required, never None
+            let thinking_level = session.thinking_level.clone();
+            let exercise_name = session.exercise_name.clone();
 
+            info!(
+                "Starting benchmark execution: agent={}, languages={:?}, model={:?}, thinking_level={:?}, exercise={:?}",
+                agent_name, languages, model, thinking_level, exercise_name
+            );
+
+            // Create output consumer for live streaming to web UI
+            let output_consumer = session.make_output_consumer();
+
+            // Create agent based on agent name, wiring up message processors for streaming
+            let agent: Arc<dyn Agent + Send + Sync> = match agent_name.as_str() {
+                "reference" => {
+                    let ref_agent = ReferenceAgent::new((*self.docker_client).clone());
+                    ref_agent.set_output_consumer(output_consumer);
+                    Arc::new(ref_agent)
+                }
+                "pi" => {
+                    let mut pi_agent = PiAgent::new((*self.docker_client).clone());
+                    let pi_processor = PiMessageProcessor::new(Some(output_consumer));
+                    pi_agent.set_message_processor(pi_processor);
+                    Arc::new(pi_agent)
+                }
+                _ => {
+                    let mut claude_agent = ClaudeAgent::new((*self.docker_client).clone());
+                    let claude_processor = ClaudeMessageProcessor::new(Some(output_consumer));
+                    claude_agent.set_message_processor(claude_processor);
+                    Arc::new(claude_agent)
+                }
+            };
+
+            let model_str = &model;
+            if let Some(ref _exercise) = exercise_name {
+                self.execute_single_exercise(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name).await?;
+            } else {
+                self.execute_all_exercises(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name).await?;
+            }
+
+            Ok::<(), anyhow::Error>(())
+        }.await;
+
+        // Finalize: always run regardless of whether execute_inner succeeded or errored.
         session.emit_output("Benchmark execution completed");
         // Preserve FAILED/CANCELLED status set by inner execution paths.
         // Only transition to COMPLETED if the session is not already in a terminal failure state.
@@ -139,12 +141,12 @@ impl BenchmarkExecutor {
         } else {
             session.finished_at = Some(chrono::Utc::now());
         }
-        // Update session manager with final status
+        // Update session manager with final status — ALWAYS, even on error.
         if let Some(sm) = session_manager {
             sm.update_session(session.clone());
         }
 
-        Ok(())
+        result
     }
 
     /// Execute a single exercise across all selected languages.

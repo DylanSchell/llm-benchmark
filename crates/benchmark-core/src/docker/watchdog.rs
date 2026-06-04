@@ -1,4 +1,5 @@
 use tokio::sync::Mutex;
+use tokio::task::JoinHandle;
 use tokio::time::{timeout, Duration};
 use tracing::{debug, info, warn};
 
@@ -18,27 +19,49 @@ use tracing::{debug, info, warn};
 pub struct CommandWatchdog {
     container_name: String,
     timeout_secs: u32,
-    /// Maps command prefix -> start time. Only the first 128 chars of the
-    /// command are used as the key for matching.
+    /// Maps command prefix -> start time. Each entry stores the command
+    /// prefix and the Instant when the timer was started.
     active_timers: std::sync::Arc<Mutex<Vec<(String, tokio::time::Instant)>>>,
+    /// Handle for the periodic timeout-checking task.
+    ticker_handle: std::sync::Arc<Mutex<Option<JoinHandle<()>>>>,
 }
 
 impl CommandWatchdog {
-    /// Creates a new CommandWatchdog.
+    /// Creates a new CommandWatchdog and spawns a periodic ticker that
+    /// calls `check_timeouts()` roughly every second.
     ///
     /// # Arguments
     /// * `container_name` - The Docker container to exec into for killing processes.
     /// * `timeout_secs` - Maximum seconds allowed for any single Bash tool call.
     pub fn new(container_name: &str, timeout_secs: u32) -> Self {
+        let active_timers = std::sync::Arc::new(Mutex::new(Vec::new()));
+
+        // Spawn a periodic ticker to call check_timeouts every ~1s.
+        let wd_for_ticker = Self {
+            container_name: container_name.to_string(),
+            timeout_secs,
+            active_timers: active_timers.clone(),
+            ticker_handle: std::sync::Arc::new(Mutex::new(None)),
+        };
+        let ticker_handle = tokio::spawn(async move {
+            loop {
+                tokio::time::sleep(Duration::from_secs(1)).await;
+                wd_for_ticker.check_timeouts().await;
+            }
+        });
+
         Self {
             container_name: container_name.to_string(),
             timeout_secs,
-            active_timers: std::sync::Arc::new(Mutex::new(Vec::new())),
+            active_timers,
+            ticker_handle: std::sync::Arc::new(Mutex::new(Some(ticker_handle))),
         }
     }
 
     /// Called when a Bash tool call starts. Records the start time for the
     /// given command prefix.
+    ///
+    /// This is the async version — safe to call from any async context.
     ///
     /// # Arguments
     /// * `command` - The full bash command that was issued.
@@ -46,6 +69,19 @@ impl CommandWatchdog {
         let prefix = sanitize_command_prefix(command);
 
         let mut timers = self.active_timers.lock().await;
+        timers.push((prefix.clone(), tokio::time::Instant::now()));
+        debug!(
+            "Watchdog timer started for command: {}",
+            &prefix[..prefix.len().min(100)]
+        );
+    }
+
+    /// Synchronous version for use from non-async contexts (e.g.,
+    /// StreamParser's accept which must preserve FIFO ordering).
+    pub fn on_tool_call_started_sync(&self, command: &str) {
+        let prefix = sanitize_command_prefix(command);
+
+        let mut timers = self.active_timers.blocking_lock();
         timers.push((prefix.clone(), tokio::time::Instant::now()));
         debug!(
             "Watchdog timer started for command: {}",
@@ -74,6 +110,17 @@ impl CommandWatchdog {
     /// it to a specific command.
     pub async fn cancel_oldest_timer(&self) {
         let mut timers = self.active_timers.lock().await;
+        if timers.is_empty() {
+            return;
+        }
+        timers.remove(0);
+        debug!("Cancelled oldest pending watchdog timer");
+    }
+
+    /// Synchronous version of cancel_oldest_timer for use from
+    /// non-async contexts where FIFO ordering must be preserved.
+    pub fn cancel_oldest_timer_sync(&self) {
+        let mut timers = self.active_timers.blocking_lock();
         if timers.is_empty() {
             return;
         }
@@ -188,8 +235,16 @@ impl CommandWatchdog {
         }
     }
 
-    /// Close the watchdog, cancelling all pending timers.
+    /// Close the watchdog, aborting the periodic ticker and
+    /// cancelling all pending timers.
     pub async fn close(&self) {
+        // Abort the periodic ticker.
+        let mut handle = self.ticker_handle.lock().await;
+        if let Some(h) = handle.take() {
+            h.abort();
+        }
+        drop(handle);
+
         let mut timers = self.active_timers.lock().await;
         timers.clear();
         debug!("Watchdog closed, all timers cancelled");
@@ -201,6 +256,7 @@ impl CommandWatchdog {
             container_name: self.container_name.clone(),
             timeout_secs: self.timeout_secs,
             active_timers: self.active_timers.clone(),
+            ticker_handle: std::sync::Arc::new(Mutex::new(None)),
         }
     }
 }
@@ -211,6 +267,20 @@ impl Clone for CommandWatchdog {
             container_name: self.container_name.clone(),
             timeout_secs: self.timeout_secs,
             active_timers: self.active_timers.clone(),
+            ticker_handle: std::sync::Arc::new(Mutex::new(None)),
+        }
+    }
+}
+
+impl Drop for CommandWatchdog {
+    fn drop(&mut self) {
+        // Try to abort the ticker on drop. We can't await, so use
+        // try_lock. If the lock is held, the ticker is active and will
+        // be cleaned up when the Arc drops.
+        if let Ok(mut handle) = self.ticker_handle.try_lock() {
+            if let Some(h) = handle.take() {
+                h.abort();
+            }
         }
     }
 }
@@ -376,6 +446,15 @@ mod tests {
         watchdog.on_tool_call_started("cmd3").await;
         watchdog.cancel_oldest_timer().await;
         watchdog.cancel_oldest_timer().await;
+    }
+
+    #[tokio::test]
+    async fn test_ticker_aborts_on_close() {
+        let watchdog = CommandWatchdog::new("test-container", 120);
+        watchdog.on_tool_call_started("echo hello").await;
+        watchdog.close().await;
+        // Ticker should be aborted
+        assert!(watchdog.ticker_handle.lock().await.is_none());
     }
 
     #[tokio::test]
