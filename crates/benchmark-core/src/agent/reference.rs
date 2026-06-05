@@ -597,6 +597,12 @@ impl Agent for ReferenceAgent {
 
         let agent_result = Self::run_reference_impl(exercise, &temp_work_dir)?;
 
+        // Capture end time after the "agent" phase (copy reference solution).
+        // The remaining steps (copy tests, patch, run tests, cleanup) are
+        // verification and should not count toward agent execution time.
+        let end_dt = chrono::Utc::now();
+        let duration_ms = start_time.elapsed().as_millis() as u64;
+
         // Copy fresh tests (original test files) then patch them to enable all tests.
         // Order matters: copy first, then patch, so @Disabled / #[ignore] / xtest
         // annotations are removed from the freshly-copied test files.
@@ -607,9 +613,6 @@ impl Agent for ReferenceAgent {
 
         // Cleanup
         let _ = fs::remove_dir_all(&temp_work_dir);
-
-        let end_dt = chrono::Utc::now();
-        let duration_ms = start_time.elapsed().as_millis() as u64;
 
         Ok(AgentResult::builder()
             .exercise_name(exercise.name.clone())
