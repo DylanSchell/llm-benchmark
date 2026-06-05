@@ -428,9 +428,11 @@ impl QueueProcessor {
         // Execute the benchmark (session is passed mutably for output consumer setup)
         let result = benchmark_executor.execute(&mut session_clone, Some(session_manager)).await;
 
-        // Wait for session to complete (no timeout - benchmarks can take hours)
+        // Wait for session to complete (with a reasonable upper bound to detect stalls).
+        // The Docker container timeout is 3600s; add 5 minutes of buffer.
         let session_id = session.id.clone();
-
+        let max_wait = Duration::from_secs(3600 + 300);
+        let start_wait = tokio::time::Instant::now();
         loop {
             let current_session = session_manager.get_session(&session_id);
             match current_session {
@@ -445,13 +447,23 @@ impl QueueProcessor {
                     break;
                 }
                 Some(_) => {
+                    if start_wait.elapsed() > max_wait {
+                        queue.fail_current(&item.id);
+                        error!("Queue item timed out waiting for session: {}", item.id);
+                        break;
+                    }
                     // Session is still running, wait a bit and check again
                     tokio::time::sleep(Duration::from_millis(500)).await;
                 }
                 None => {
-                    queue.fail_current(&item.id);
-                    error!("Session not found: {}", session_id);
-                    break;
+                    // Session disappeared — mark as failed after a grace period.
+                    // If the session vanishes within 10s of starting, it's likely a crash.
+                    if start_wait.elapsed() > Duration::from_secs(10) {
+                        queue.fail_current(&item.id);
+                        error!("Session not found (crashed?): {}", session_id);
+                        break;
+                    }
+                    tokio::time::sleep(Duration::from_millis(500)).await;
                 }
             }
         }
