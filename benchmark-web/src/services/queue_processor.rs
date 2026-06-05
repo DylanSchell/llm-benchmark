@@ -426,7 +426,12 @@ impl QueueProcessor {
         info!("Starting benchmark execution for session: {}", session.id);
 
         // Execute the benchmark (session is passed mutably for output consumer setup)
-        let result = benchmark_executor.execute(&mut session_clone, Some(session_manager)).await;
+        if let Err(e) = benchmark_executor.execute(&mut session_clone, Some(session_manager)).await {
+            error!("Benchmark execution error: {:?}", e);
+            queue.fail_current(&item.id);
+            warn!("Queue item failed (executor error): {}", item.id);
+            return Ok(());
+        }
 
         // Wait for session to complete (with a reasonable upper bound to detect stalls).
         // The Docker container timeout is 3600s; add 5 minutes of buffer.
@@ -466,10 +471,6 @@ impl QueueProcessor {
                     tokio::time::sleep(Duration::from_millis(500)).await;
                 }
             }
-        }
-
-        if let Err(e) = result {
-            warn!("Benchmark execution error: {}", e);
         }
 
         Ok(())
