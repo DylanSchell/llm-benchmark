@@ -82,14 +82,13 @@ pub async fn run(
         // Print result
         print_single_result(&result);
 
-        // Save individual result (retry=true increments attempts, retry=false overwrites)
+        // Save individual result
         let persister = ResultPersister::new();
         if let Err(e) = persister.save_result(
             &result,
             &agent_kind.to_string(),
             model,
             &results_dir,
-            retry,
         ) {
             tracing::error!("Failed to save result: {}", e);
         }
@@ -154,7 +153,6 @@ pub async fn run(
             model,
             &languages_str.join(","),
             &results_dir,
-            retry,
         ) {
             tracing::error!("Failed to save results: {}", e);
         }

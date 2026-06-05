@@ -75,6 +75,9 @@ impl PiAgent {
         // Build the model JSON object using serde_json for proper escaping
         let mut model_map = serde_json::Map::new();
         model_map.insert("id".to_string(), serde_json::Value::String(model.to_string()));
+        // All benchmark models have at least 256k context; set it explicitly
+        // to prevent premature auto-compaction (pi defaults to 128k).
+        model_map.insert("contextWindow".to_string(), serde_json::Value::Number(serde_json::Number::from(262_144)));
 
         if let Some(ref rc) = reasoning_config {
             if let Some(ref tf) = rc.thinking_format {

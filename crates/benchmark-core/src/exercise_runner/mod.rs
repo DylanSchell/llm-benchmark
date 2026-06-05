@@ -268,15 +268,25 @@ impl ExerciseRunner {
         // Build an async stream of exercise futures, buffered to `parallelism` concurrency
         let futures_stream = stream::iter(exercises)
             .filter(|exercise| {
-                // Skip exercises that already have a result file (unless retry mode)
+                // Skip exercises that already have a successful result (unless retry mode)
                 let keep = if !retry {
-                    let result_file = self.get_result_path(&exercise.name, agent_name, language);
+                    let result_file = self.get_result_path(&exercise.name, agent_name, language, &model);
                     if result_file.exists() {
-                        info!(
-                            "Result file already exists for {}/{}, skipping",
-                            language, exercise.name
-                        );
-                        false
+                        // Only skip if the existing result was successful
+                        let is_success = std::fs::read_to_string(&result_file)
+                            .ok()
+                            .and_then(|content| serde_json::from_str::<serde_json::Value>(&content).ok())
+                            .and_then(|v| v.get("success")?.as_bool())
+                            .unwrap_or(false);
+                        if is_success {
+                            info!(
+                                "Successful result already exists for {}/{}, skipping",
+                                language, exercise.name
+                            );
+                            false
+                        } else {
+                            true
+                        }
                     } else {
                         true
                     }
@@ -564,9 +574,10 @@ impl ExerciseRunner {
     }
 
     /// Gets the result file path for an exercise.
-    fn get_result_path(&self, exercise_name: &str, agent_name: &str, language: &str) -> PathBuf {
+    fn get_result_path(&self, exercise_name: &str, agent_name: &str, language: &str, model: &str) -> PathBuf {
         let results_dir = &self.config.output.results_dir;
-        results_dir.join(format!(
+        let subdir = format!("{}-{}", agent_name, model);
+        results_dir.join(&subdir).join(format!(
             "result_{}_{}_{}.json",
             agent_name, language, exercise_name
         ))

@@ -27,17 +27,17 @@ impl ResultPersister {
 
     /// Saves a single exercise result to the results directory.
     /// Creates subdirectory as: {agent}-{model}
-    /// Handles retry logic:
-    ///   - If retry=true and overwriting a successful result: only save if faster
-    ///   - If retry=true and overwriting a failure: increment attempts
-    ///   - If retry=false: always save (successes are filtered in scheduling)
+    ///
+    /// When a result file already exists:
+    ///   - Never overwrite a successful result with a failed one
+    ///   - Only overwrite a successful result if the new run is faster
+    ///   - Attempts counter always increments on overwrite
     pub fn save_result(
         &self,
         result: &AgentResult,
         agent_name: &str,
         model: &str,
         results_dir: &Path,
-        retry: bool,
     ) -> Result<PathBuf, std::io::Error> {
         // Compute the subdirectory: {agent}-{model}
         let subdir = format!("{}-{}", agent_name, model);
@@ -77,19 +77,24 @@ impl ResultPersister {
                         })
                         .unwrap_or(u64::MAX);
 
-                    if retry && existing_success && result.success {
-                        // Retry overwriting a successful result: only save if faster
+                    // Never overwrite a successful result with a failed one
+                    if existing_success && !result.success {
+                        info!("Skipping save for {}/{}: new run failed but existing result already succeeded",
+                            agent_name, filename);
+                        should_save = false;
+                    } else if existing_success && result.success {
+                        // Existing was successful, new is also successful:
+                        // only save if the new run is faster
                         let new_duration = result.duration_ms;
                         if new_duration >= existing_duration {
                             // New run was not faster — skip saving, keep the better result
-                            info!("Skipping retry save for {}/{}: new duration {}ms >= existing {}ms",
+                            info!("Skipping save for {}/{}: new duration {}ms >= existing {}ms",
                                 agent_name, filename, new_duration, existing_duration);
                             should_save = false;
                         }
-                        // Preserve existing attempts count
-                        attempts = existing_attempts;
+                        attempts = existing_attempts + 1;
                     } else {
-                        // Overwriting a failure (or retry overwriting a failure): increment attempts
+                        // Overwriting a failure: increment attempts
                         attempts = existing_attempts + 1;
                     }
                 }
@@ -126,7 +131,6 @@ impl ResultPersister {
         model: &str,
         language: &str,
         results_dir: &Path,
-        _retry: bool,
     ) -> Result<PathBuf, std::io::Error> {
         // Compute the subdirectory: {agent}-{model}
         let subdir = format!("{}-{}", agent_name, model);
@@ -300,7 +304,7 @@ mod tests {
         let temp_dir = create_temp_dir();
         let result = create_test_result("two-fer", "java", true);
 
-        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir, false).unwrap();
+        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir).unwrap();
 
         assert!(saved_path.exists());
         assert!(saved_path.to_string_lossy().ends_with(".json"));
@@ -321,7 +325,7 @@ mod tests {
         let temp_dir = create_temp_dir();
         let result = create_test_result("hello-world", "python", false);
 
-        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir, false).unwrap();
+        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir).unwrap();
         assert!(saved_path.exists());
 
         let content = std::fs::read_to_string(&saved_path).unwrap();
@@ -336,7 +340,7 @@ mod tests {
         let temp_dir = create_temp_dir().join("subdir");
         let result = create_test_result("test", "java", true);
 
-        let _ = persister.save_result(&result, "reference", "default", &temp_dir, false).unwrap();
+        let _ = persister.save_result(&result, "reference", "default", &temp_dir).unwrap();
         assert!(temp_dir.exists());
 
         let _ = std::fs::remove_dir_all(temp_dir.parent().unwrap());
@@ -349,8 +353,8 @@ mod tests {
         let result1 = create_test_result("test", "java", true);
         let result2 = create_test_result("test", "java", true);
 
-        let path1 = persister.save_result(&result1, "reference", "default", &temp_dir, false).unwrap();
-        let path2 = persister.save_result(&result2, "claude", "default", &temp_dir, false).unwrap();
+        let path1 = persister.save_result(&result1, "reference", "default", &temp_dir).unwrap();
+        let path2 = persister.save_result(&result2, "claude", "default", &temp_dir).unwrap();
 
         assert!(path1.exists());
         assert!(path2.exists());
@@ -365,7 +369,7 @@ mod tests {
         let mut result = create_test_result("empty-test", "go", true);
         result.output = String::new();
 
-        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir, false).unwrap();
+        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir).unwrap();
         assert!(saved_path.exists());
 
         let _ = std::fs::remove_dir_all(&temp_dir);
@@ -375,20 +379,23 @@ mod tests {
     fn test_save_result_auto_increments_attempts() {
         let persister = ResultPersister::new();
         let temp_dir = create_temp_dir();
-        let result = create_test_result("two-fer", "java", true);
+        // First save: slow success (20s)
+        let mut result = create_test_result("two-fer", "java", true);
+        result.duration_ms = 20_000;
 
-        // First save
-        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir, false).unwrap();
+        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir).unwrap();
 
         // Read and verify attempts = 1
         let content = std::fs::read_to_string(&saved_path).unwrap();
         let value: serde_json::Value = serde_json::from_str(&content).unwrap();
         assert_eq!(value.get("attempts").and_then(|v| v.as_u64()), Some(1));
 
-        // Second save (retry)
-        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir, false).unwrap();
+        // Second save: faster success (10s) — should overwrite and increment attempts
+        let mut result = create_test_result("two-fer", "java", true);
+        result.duration_ms = 10_000;
+        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir).unwrap();
 
-        // Read and verify attempts = 2
+        // Read and verify attempts = 2 (incremented on overwrite)
         let content = std::fs::read_to_string(&saved_path).unwrap();
         let value: serde_json::Value = serde_json::from_str(&content).unwrap();
         assert_eq!(value.get("attempts").and_then(|v| v.as_u64()), Some(2));
@@ -403,19 +410,19 @@ mod tests {
         let result = create_test_result("test", "java", true);
 
         // First save with success
-        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir, false).unwrap();
+        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir).unwrap();
 
         // Manually set attempts to 3
         let content = r#"{"exerciseName":"test","language":"java","success":true,"exitCode":0,"attempts":3}"#;
         std::fs::write(&saved_path, content).unwrap();
 
-        // Save again (retry of successful result)
-        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir, true).unwrap();
+        // Save again (faster success overwriting success — increments attempts)
+        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir).unwrap();
 
-        // Attempts should be preserved at 3 (retry of successful result)
+        // Attempts should increment to 4
         let content = std::fs::read_to_string(&saved_path).unwrap();
         let value: serde_json::Value = serde_json::from_str(&content).unwrap();
-        assert_eq!(value.get("attempts").and_then(|v| v.as_u64()), Some(3));
+        assert_eq!(value.get("attempts").and_then(|v| v.as_u64()), Some(4));
 
         let _ = std::fs::remove_dir_all(&temp_dir);
     }
@@ -434,7 +441,7 @@ mod tests {
 
         // Save a new result (overwriting a failure increments attempts)
         let result = create_test_result("test", "java", false);
-        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir, false).unwrap();
+        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir).unwrap();
 
         // Attempts should be 6 (5 + 1)
         let content = std::fs::read_to_string(&saved_path).unwrap();
@@ -450,7 +457,7 @@ mod tests {
         let temp_dir = create_temp_dir();
         let result = create_test_result("test", "java", true);
 
-        let _ = persister.save_result(&result, "reference", "default", &temp_dir, false).unwrap();
+        let _ = persister.save_result(&result, "reference", "default", &temp_dir).unwrap();
 
         assert!(persister.result_file_exists("test", "reference", "default", "java", &temp_dir));
         assert!(!persister.result_file_exists("nonexistent", "reference", "default", "java", &temp_dir));
@@ -465,17 +472,41 @@ mod tests {
 
         // Save a successful result
         let result = create_test_result("test", "java", true);
-        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir, false).unwrap();
+        let saved_path = persister.save_result(&result, "reference", "default", &temp_dir).unwrap();
         assert!(saved_path.exists());
 
         // result_file_success checks for the file in the results_dir
         assert!(persister.result_file_success("test", "reference", "default", "java", &temp_dir));
 
-        // Save a failed result (overwrites)
-        let result = create_test_result("test", "java", false);
-        let _ = persister.save_result(&result, "reference", "default", &temp_dir, false).unwrap();
+        // Attempt to save a failed result — should NOT overwrite the successful one
+        let failed_result = create_test_result("test", "java", false);
+        let _ = persister.save_result(&failed_result, "reference", "default", &temp_dir).unwrap();
 
-        assert!(!persister.result_file_success("test", "reference", "default", "java", &temp_dir));
+        // The successful result should still be recorded, not overwritten by the failure
+        assert!(persister.result_file_success("test", "reference", "default", "java", &temp_dir));
+
+        let _ = std::fs::remove_dir_all(&temp_dir);
+    }
+
+    #[test]
+    fn test_failed_never_overwrites_successful() {
+        let persister = ResultPersister::new();
+        let temp_dir = create_temp_dir();
+
+        // First save a successful result
+        let success_result = create_test_result("test", "rust", true);
+        let saved_path = persister.save_result(&success_result, "claude", "sonnet", &temp_dir).unwrap();
+
+        // Now try to save a failed result for the same exercise (retry mode)
+        let failed_result = create_test_result("test", "rust", false);
+        let _ = persister.save_result(&failed_result, "claude", "sonnet", &temp_dir).unwrap();
+
+        // The file should still show success
+        let content = std::fs::read_to_string(&saved_path).unwrap();
+        let value: serde_json::Value = serde_json::from_str(&content).unwrap();
+        assert_eq!(value.get("success").and_then(|v| v.as_bool()), Some(true));
+
+        assert!(persister.result_file_success("test", "claude", "sonnet", "rust", &temp_dir));
 
         let _ = std::fs::remove_dir_all(&temp_dir);
     }
@@ -507,7 +538,7 @@ mod tests {
         let temp_dir = create_temp_dir();
         let result = create_test_result("test", "java", true);
 
-        let _ = persister.save_result(&result, "reference", "default", &temp_dir, false).unwrap();
+        let _ = persister.save_result(&result, "reference", "default", &temp_dir).unwrap();
 
         let target_dir = temp_dir.join("reference-default");
         let result_file = target_dir.join("result_reference_java_test.json");

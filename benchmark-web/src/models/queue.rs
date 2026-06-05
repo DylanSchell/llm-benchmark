@@ -51,6 +51,9 @@ impl BenchmarkQueue {
         let mut data = self.data.lock().unwrap();
         data.inner.push_back(item.clone());
         data.all_items.push(item);
+        drop(data);
+        // Wake the queue worker so it picks up the new item
+        self.notifier.notify_waiters();
     }
 
     /// Add multiple items to the queue.

@@ -58,7 +58,7 @@ pub async fn run_benchmark(
     let persister = ResultPersister::new();
     persister.print_summary(&results);
     // Batch save doesn't use retry logic - just saves summary file
-    let _ = persister.save_results(&results, &agent_kind.to_string(), model, language, &output.results_dir, false);
+    let _ = persister.save_results(&results, &agent_kind.to_string(), model, language, &output.results_dir);
 
     Ok(())
 }

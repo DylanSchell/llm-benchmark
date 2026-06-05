@@ -194,7 +194,7 @@ impl BenchmarkExecutor {
                     session.emit_output(&result.output);
 
                     // Save result to file
-                    if let Err(e) = self.save_single_result(&result, agent_name, language, model, session.retry) {
+                    if let Err(e) = self.save_single_result(&result, agent_name, language, model) {
                         warn!("Failed to save result: {}", e);
                     }
 
@@ -280,7 +280,7 @@ impl BenchmarkExecutor {
 
             // Save individual results
             for result in &results {
-                let _ = self.save_single_result(result, agent_name, language, model, session.retry);
+                let _ = self.save_single_result(result, agent_name, language, model);
             }
         }
 
@@ -320,7 +320,6 @@ impl BenchmarkExecutor {
         agent_name: &str,
         language: &str,
         model: &str,
-        retry: bool,
     ) -> Result<()> {
         let results_dir = self
             .config
@@ -328,7 +327,7 @@ impl BenchmarkExecutor {
             .clone()
             .unwrap_or_else(|| self.config_ref.output.results_dir.clone());
         let saved_path = self.persister
-            .save_result(result, agent_name, model, &results_dir, retry)
+            .save_result(result, agent_name, model, &results_dir)
             .with_context(|| format!("Failed to save result for {}/{}", language, result.exercise_name))?;
 
         // Update in-memory cache with the newly saved result (replaces any existing entry
