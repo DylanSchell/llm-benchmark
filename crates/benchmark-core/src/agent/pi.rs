@@ -564,19 +564,20 @@ impl PiAgent {
 
         // Add test file location.
         // The agent runs inside a Docker container where the exercise files
-        // are mounted at /workspace/<language>/exercises/practice/<name>/.
-        // We translate the host path to a container path by replacing the
-        // polyglot-benchmark prefix with /workspace (matching Java ReferenceAgent).
+        // are mounted at /workspace. Translate host paths to container paths
+        // using the exercise_dir prefix.
         if let Some(test_path) = &exercise.test_path {
             if test_path.exists() {
-                let needle = format!(
-                    "../polyglot-benchmark/{}/exercises/practice/{}",
-                    exercise.language, exercise.name
-                );
-                let fixed_test_path = test_path
-                    .to_string_lossy()
-                    .replace(&needle, "/workspace/");
-                prompt.push_str(&format!("Test file location: {}\n", fixed_test_path));
+                let container_path = if let Some(ref exercise_dir) = exercise.exercise_dir {
+                    if let Ok(relative) = test_path.strip_prefix(exercise_dir) {
+                        format!("/workspace/{}", relative.display())
+                    } else {
+                        test_path.to_string_lossy().to_string()
+                    }
+                } else {
+                    test_path.to_string_lossy().to_string()
+                };
+                prompt.push_str(&format!("Test file location: {}\n", container_path));
             }
         }
 

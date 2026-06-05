@@ -58,13 +58,18 @@ impl ClaudeAgent {
 
         if let Some(ref test_path) = exercise.test_path {
             if test_path.exists() {
-                // Translate host path to container path (matching Java ReferenceAgent).
-                let needle = format!(
-                    "../polyglot-benchmark/{}/exercises/practice/{}",
-                    exercise.language, exercise.name
-                );
-                let fixed_path = test_path.to_string_lossy().replace(&needle, "/workspace/");
-                prompt.push_str(&format!("Test file location: {}\n", fixed_path));
+                // Translate host path to container path using exercise_dir prefix.
+                // The container mounts the exercise dir at /workspace.
+                let container_path = if let Some(ref exercise_dir) = exercise.exercise_dir {
+                    if let Ok(relative) = test_path.strip_prefix(exercise_dir) {
+                        format!("/workspace/{}", relative.display())
+                    } else {
+                        test_path.to_string_lossy().to_string()
+                    }
+                } else {
+                    test_path.to_string_lossy().to_string()
+                };
+                prompt.push_str(&format!("Test file location: {}\n", container_path));
             }
         }
 
