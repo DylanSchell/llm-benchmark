@@ -109,9 +109,11 @@ impl ReferenceAgent {
                 info!("Copied reference: {:?}", example_path.file_name().unwrap());
             }
         } else {
-            // JS/Python/Rust/C++/Go: match examples to solution files
+            // JS/Python/Rust/C++/Go: match examples to solution files.
+            // Solution paths from metadata are relative to exercise_dir and already
+            // include directory prefixes (e.g., "src/lib.rs"), so we join with
+            // temp_dir directly rather than a subdirectory.
             let target_dir = match exercise.language.as_str() {
-                "rust" => temp_dir.join("src"),
                 "cpp" => temp_dir.join(&exercise.name),
                 _ => temp_dir.to_path_buf(),
             };
