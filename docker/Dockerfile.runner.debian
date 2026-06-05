@@ -112,8 +112,9 @@ RUN mkdir -p ${GRADLE_DIST_DIR} && \
 # Attempt to install pi extensions
 #RUN pi install git:github.com/v2nic/pi-caveman
 
-# Ensure gradle daemon is disabled
+# Ensure gradle daemon is disabled (belt and suspenders: properties file + env var)
 RUN mkdir -p /home/runner/.gradle && echo "org.gradle.daemon=false" >> /home/runner/.gradle/gradle.properties
+ENV GRADLE_OPTS="-Dorg.gradle.daemon=false"
 #COPY runner/.pi/agent/extensions/bash-timeout/index.ts /home/runner/.pi/agent/extensions/bash-timeout/index.ts
 
 # Default command

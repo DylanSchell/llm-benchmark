@@ -294,11 +294,13 @@ impl ReferenceAgent {
                 ]
             }
             "java" => {
-                // Gradle wrapper is already set up, but we may need to download dependencies
+                // Gradle wrapper is already set up, but we may need to download dependencies.
+                // Use --no-daemon to prevent daemon processes from persisting after the build.
                 if temp_work_dir.join("build.gradle").exists() {
                     vec![
                         "./gradlew".to_string(),
                         "dependencies".to_string(),
+                        "--no-daemon".to_string(),
                         "--quiet".to_string(),
                     ]
                 } else if temp_work_dir.join("pom.xml").exists() {
