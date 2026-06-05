@@ -35,6 +35,8 @@ RUN apt-get update && apt-get install -y \
     cmake \
     unzip \
     libboost-date-time-dev \
+    fd-find \
+    && ln -s /usr/bin/fdfind /usr/local/bin/fd \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 20.x from NodeSource
