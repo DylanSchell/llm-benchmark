@@ -126,7 +126,13 @@
                     <td style="padding: 0.5rem;"><a href="/results?agent={{ item.agent_name }}" style="color: #3498db; text-decoration: none;">{{ item.agent_name }}</a></td>
                     <td style="padding: 0.5rem;"><a href="/results?language={{ item.language }}" style="color: #3498db; text-decoration: none;">{{ item.language }}</a></td>
                     <td style="padding: 0.5rem;"><a href="/results?exercise={{ item.exercise | default(value="All") }}" style="color: #3498db; text-decoration: none;">{{ item.exercise | default(value="All") }}</a></td>
-                    <td style="padding: 0.5rem;"><a href="/results?model={{ item.model | default(value="default") }}" style="color: #3498db; text-decoration: none;">{{ item.model | default(value="default") }}</a></td>
+                    <td style="padding: 0.5rem;">
+                        {% if item.agent_name == "reference" %}
+                        <a href="/results?agent=reference" style="color: #3498db; text-decoration: none;">reference</a>
+                        {% else %}
+                        <a href="/results?model={{ item.model | default(value="default") }}" style="color: #3498db; text-decoration: none;">{{ item.model | default(value="default") }}</a>
+                        {% endif %}
+                    </td>
                     <td style="padding: 0.5rem;">
                         {% if item.status == "PENDING" %}
                         <button class="btn btn-secondary"
