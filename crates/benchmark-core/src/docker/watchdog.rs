@@ -131,54 +131,41 @@ impl CommandWatchdog {
         debug!("Cancelled oldest pending watchdog timer");
     }
 
-    /// Kills processes inside the container whose command line matches the
-    /// given command string. Uses a two-phase approach: SIGTERM first, then
-    /// SIGKILL after a brief grace period.
-    async fn kill_process_by_command(&self, command: &str) {
-        let line = command.split('\n').next().unwrap_or(command).trim();
-        let safe_command = escape_for_shell(line);
+    /// Kills all processes in the container except PID 1 (init).
+    /// Uses a two-phase approach: SIGTERM first, then SIGKILL after a brief grace period.
+    async fn kill_process_by_command(&self, _command: &str) {
+        // Instead of trying to match a specific command (which is fragile due to
+        // quoting differences between the agent's command string and the actual
+        // process table), kill ALL child processes in the container.
+        let kill_all = "pkill -P 1 || true";
 
         // Phase 1: SIGTERM
         info!(
-            "Sending SIGTERM to process matching '{}' in container '{}'",
-            &line[..line.len().min(100)],
+            "Sending SIGTERM to all child processes in container '{}'",
             self.container_name
         );
-
-        let term_result = docker_exec(
-            &self.container_name,
-            &["pkill", "-TERM", "-f", &safe_command],
-        )
-        .await;
-
-        if term_result.is_err() {
-            warn!(
-                "Failed to send SIGTERM to process matching '{}': {:?}",
-                line, term_result
-            );
-        }
+        let _ = docker_exec(&self.container_name, &["sh", "-c", "pkill -TERM -P 1 2>/dev/null || true"]).await;
 
         // Phase 2: SIGKILL after brief grace
         tokio::time::sleep(Duration::from_millis(2000)).await;
 
         let kill_result = docker_exec(
             &self.container_name,
-            &["pkill", "-9", "-f", &safe_command],
+            &["sh", "-c", "pkill -9 -P 1 2>/dev/null || true"],
         )
         .await;
 
         match kill_result {
             Ok(_) => {
                 info!(
-                    "Killed process matching '{}' in container '{}' via SIGKILL",
-                    &line[..line.len().min(100)],
+                    "Killed all child processes in container '{}' via SIGKILL",
                     self.container_name
                 );
             }
             Err(e) => {
                 warn!(
-                    "Failed to SIGKILL process matching '{}': {}",
-                    line, e
+                    "Failed to SIGKILL processes in container '{}': {}",
+                    self.container_name, e
                 );
             }
         }
@@ -325,13 +312,6 @@ fn sanitize_command_prefix(command: &str) -> String {
     format!("{}-{:x}", short, hasher.finish())
 }
 
-/// Escape the command string for use as a pkill -f regex pattern.
-/// pkill -f matches against the full command line using extended regex.
-/// We use regex::escape to handle metacharacters.
-fn escape_for_shell(s: &str) -> String {
-    regex::escape(s)
-}
-
 /// Execute a command inside a Docker container.
 async fn docker_exec(container: &str, args: &[&str]) -> Result<(), anyhow::Error> {
     let mut cmd = tokio::process::Command::new("docker");
@@ -341,7 +321,7 @@ async fn docker_exec(container: &str, args: &[&str]) -> Result<(), anyhow::Error
     cmd.stdout(std::process::Stdio::null());
     cmd.stderr(std::process::Stdio::null());
 
-    let result = timeout(Duration::from_secs(5), cmd.output()).await;
+    let result = timeout(Duration::from_secs(15), cmd.output()).await;
 
     match result {
         Ok(Ok(output)) if output.status.success() => Ok(()),
@@ -350,7 +330,7 @@ async fn docker_exec(container: &str, args: &[&str]) -> Result<(), anyhow::Error
             output.status.code().unwrap_or(-1)
         )),
         Ok(Err(e)) => Err(e.into()),
-        Err(_) => Err(anyhow::anyhow!("docker exec timed out after 5s")),
+        Err(_) => Err(anyhow::anyhow!("docker exec timed out after 15s")),
     }
 }
 
