@@ -202,9 +202,17 @@ pub async fn schedule_batch(
     // Resolve exercise parameter based on mode
     let exercise = resolve_exercise_param(&request.mode, &request.exercise);
 
+    // Reference agent ignores model — use "reference" so queue items display
+    // correctly and results are saved to the right directory.
+    let model = if request.agent == "reference" {
+        "reference".to_string()
+    } else {
+        request.model.clone()
+    };
+
     let items = state.service.schedule_batch_with_retry(
         request.agent.clone(), request.languages.clone(),
-        request.model.clone(), request.thinking_level.clone(), exercise, request.retry,
+        model, request.thinking_level.clone(), exercise, request.retry,
     );
 
     let items_map: Vec<HashMap<String, String>> = items.iter().map(|i| item_to_map(i)).collect();
