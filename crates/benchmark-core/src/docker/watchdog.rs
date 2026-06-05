@@ -19,9 +19,10 @@ use tracing::{debug, info, warn};
 pub struct CommandWatchdog {
     container_name: String,
     timeout_secs: u32,
-    /// Maps command prefix -> start time. Each entry stores the command
-    /// prefix and the Instant when the timer was started.
-    active_timers: std::sync::Arc<Mutex<Vec<(String, tokio::time::Instant)>>>,
+    /// Maps command prefix -> (original_command, start_time).
+    /// The prefix is a short human-readable string for deduplication;
+    /// original_command is the actual command text used for pkill matching.
+    active_timers: std::sync::Arc<Mutex<Vec<(String, String, tokio::time::Instant)>>>,
     /// Handle for the periodic timeout-checking task.
     ticker_handle: std::sync::Arc<Mutex<Option<JoinHandle<()>>>>,
 }
@@ -67,9 +68,10 @@ impl CommandWatchdog {
     /// * `command` - The full bash command that was issued.
     pub async fn on_tool_call_started(&self, command: &str) {
         let prefix = sanitize_command_prefix(command);
+        let original = command.split('\n').next().unwrap_or(command).trim().to_string();
 
         let mut timers = self.active_timers.lock().await;
-        timers.push((prefix.clone(), tokio::time::Instant::now()));
+        timers.push((prefix.clone(), original, tokio::time::Instant::now()));
         debug!(
             "Watchdog timer started for command: {}",
             &prefix[..prefix.len().min(100)]
@@ -80,9 +82,10 @@ impl CommandWatchdog {
     /// StreamParser's accept which must preserve FIFO ordering).
     pub fn on_tool_call_started_sync(&self, command: &str) {
         let prefix = sanitize_command_prefix(command);
+        let original = command.split('\n').next().unwrap_or(command).trim().to_string();
 
         let mut timers = self.active_timers.blocking_lock();
-        timers.push((prefix.clone(), tokio::time::Instant::now()));
+        timers.push((prefix.clone(), original, tokio::time::Instant::now()));
         debug!(
             "Watchdog timer started for command: {}",
             &prefix[..prefix.len().min(100)]
@@ -98,7 +101,7 @@ impl CommandWatchdog {
         let prefix = sanitize_command_prefix(command);
 
         let mut timers = self.active_timers.lock().await;
-        timers.retain(|(p, _)| p != &prefix);
+        timers.retain(|(p, _, _)| p != &prefix);
         debug!(
             "Watchdog timer cancelled for command: {}",
             &prefix[..prefix.len().min(100)]
@@ -187,21 +190,30 @@ impl CommandWatchdog {
         let timers = self.active_timers.lock().await;
         let now = tokio::time::Instant::now();
 
-        let mut timed_out = Vec::new();
-        for (prefix, start) in timers.iter() {
+        let mut timed_out: Vec<(String, String)> = Vec::new();
+        for (prefix, original, start) in timers.iter() {
             if now.duration_since(*start) > Duration::from_secs(self.timeout_secs as u64) {
-                timed_out.push(prefix.clone());
+                timed_out.push((prefix.clone(), original.clone()));
             }
         }
         drop(timers);
 
-        for prefix in timed_out {
+        // Remove timed-out entries from the list
+        if !timed_out.is_empty() {
+            let mut timers = self.active_timers.lock().await;
+            for (_prefix, _original) in &timed_out {
+                let prefix = _prefix;
+                timers.retain(|(p, _, _)| p != prefix);
+            }
+        }
+
+        for (prefix, original) in &timed_out {
             warn!(
                 "Command watchdog timeout: killing process matching '{}' in container '{}'",
-                &prefix[..prefix.len().min(120)],
+                &original[..original.len().min(120)],
                 self.container_name
             );
-            self.kill_process_by_command(&prefix).await;
+            self.kill_process_by_command(original).await;
         }
     }
 
@@ -313,19 +325,14 @@ fn sanitize_command_prefix(command: &str) -> String {
     format!("{}-{:x}", short, hasher.finish())
 }
 
-/// Escape special characters for use in shell pkill -f pattern.
-/// Escapes all shell metacharacters to prevent command injection.
+/// Escape special characters for use in shell pkill -f regex pattern.
+/// pkill -f matches against the full command line using extended regex.
+/// We escape regex metacharacters and wrap in quotes for the shell.
 fn escape_for_shell(s: &str) -> String {
-    s.replace('\\', "\\\\")
-        .replace('\'', "'\\''")
-        .replace('"', "\\\"")
-        .replace('$', "\\$")
-        .replace('`', "\\`")
-        .replace(';', "\\;")
-        .replace('|', "\\|")
-        .replace('&', "\\&")
-        .replace('(', "\\(")
-        .replace(')', "\\)")
+    // Escape regex metacharacters for pkill -f
+    let escaped = regex::escape(s);
+    // Wrap in single quotes for shell, escaping any single quotes inside
+    format!("'{}'", escaped.replace('\'', "'\\''"))
 }
 
 /// Execute a command inside a Docker container.
