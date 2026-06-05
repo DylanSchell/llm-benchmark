@@ -131,41 +131,52 @@ impl CommandWatchdog {
         debug!("Cancelled oldest pending watchdog timer");
     }
 
-    /// Kills all processes in the container except PID 1 (init).
-    /// Uses a two-phase approach: SIGTERM first, then SIGKILL after a brief grace period.
-    async fn kill_process_by_command(&self, _command: &str) {
-        // Instead of trying to match a specific command (which is fragile due to
-        // quoting differences between the agent's command string and the actual
-        // process table), kill ALL child processes in the container.
-        let kill_all = "pkill -P 1 || true";
+    /// Kills the specific timed-out process inside the container.
+    /// Uses pkill with a pattern that matches the shell process running the command.
+    /// We use a two-phase approach: SIGTERM first, then SIGKILL after a brief grace.
+    async fn kill_process_by_command(&self, command: &str) {
+        // Take just the first line and strip quotes — the process table has
+        // the command without shell quoting.
+        let line = command.split('\n').next().unwrap_or(command).trim();
+        // Remove double quotes and single quotes for pattern matching
+        let pattern: String = line.chars().filter(|&c| c != '"' && c != '\'').collect();
+        // Escape regex metacharacters for pkill -f
+        let pattern = regex::escape(&pattern);
 
         // Phase 1: SIGTERM
         info!(
-            "Sending SIGTERM to all child processes in container '{}'",
+            "Sending SIGTERM to process matching '{}' in container '{}'",
+            &line[..line.len().min(100)],
             self.container_name
         );
-        let _ = docker_exec(&self.container_name, &["sh", "-c", "pkill -TERM -P 1 2>/dev/null || true"]).await;
+
+        let term_result = docker_exec(
+            &self.container_name,
+            &["sh", "-c", &format!("pkill -TERM -f '{}' 2>/dev/null || true", pattern)],
+        )
+        .await;
 
         // Phase 2: SIGKILL after brief grace
         tokio::time::sleep(Duration::from_millis(2000)).await;
 
         let kill_result = docker_exec(
             &self.container_name,
-            &["sh", "-c", "pkill -9 -P 1 2>/dev/null || true"],
+            &["sh", "-c", &format!("pkill -9 -f '{}' 2>/dev/null || true", pattern)],
         )
         .await;
 
         match kill_result {
             Ok(_) => {
                 info!(
-                    "Killed all child processes in container '{}' via SIGKILL",
+                    "Killed process matching '{}' in container '{}' via SIGKILL",
+                    &line[..line.len().min(100)],
                     self.container_name
                 );
             }
             Err(e) => {
                 warn!(
-                    "Failed to SIGKILL processes in container '{}': {}",
-                    self.container_name, e
+                    "Failed to SIGKILL process matching '{}': {}",
+                    line, e
                 );
             }
         }
@@ -206,30 +217,33 @@ impl CommandWatchdog {
 
     /// Forward a line from Docker output to the watchdog for tool call
     /// boundary detection. This is called by the DockerClient when streaming
-    /// output.
+    /// output. The StreamParser already handles tool start/stop detection —
+    /// we only need to detect tool starts here for the no-callback case.
     ///
-    /// NOTE: Prefer using `StreamParser` with watchdog integration instead of
-    /// this method, as StreamParser handles tool-end events too. This method
-    /// only detects tool calls starting and spawns a bounded number of tasks.
+    /// NOTE: When an output callback is set, the StreamParser handles both
+    /// start and end events. This method only adds start detection when there
+    /// is no callback (e.g., reference agent).
     pub fn forward_line(&self, line: &str, _container_id: &str) {
-        // This is a sync method called from within an async context.
-        // Use a bounded Semaphore to limit the number of concurrently spawned
-        // watchdog tasks to prevent unbounded task creation under high output.
         let trimmed = line.trim();
         if trimmed.is_empty() || !trimmed.starts_with('{') {
             return;
         }
 
-        // Check for tool_use (Bash) patterns in JSON output
+        // Detect tool_use (Bash) — start a timer
         if let Some(command) = extract_command_from_json(trimmed) {
-            // Spawn a task to handle the async watchdog call.
-            // Using tokio::spawn is acceptable here because each Bash tool call
-            // produces one line; the number of concurrent Bash invocations is
-            // bounded by the agent's parallelism, typically 1-4 at a time.
             let watchdog = self.clone_inner();
             let cmd = command.clone();
             tokio::spawn(async move {
                 watchdog.on_tool_call_started(&cmd).await;
+            });
+            return;
+        }
+
+        // Detect tool_result — cancel oldest pending timer
+        if is_tool_result(trimmed) {
+            let watchdog = self.clone_inner();
+            tokio::spawn(async move {
+                watchdog.cancel_oldest_timer().await;
             });
         }
     }
@@ -405,6 +419,54 @@ fn extract_command_from_tool_use(node: &serde_json::Value) -> Option<String> {
 fn extract_command_from_tool_call(node: &serde_json::Value) -> Option<String> {
     let args = node.get("arguments")?;
     args.get("command").and_then(|v| v.as_str()).map(|s| s.to_string())
+}
+
+/// Detect a tool_result event in JSON output.
+fn is_tool_result(line: &str) -> bool {
+    let trimmed = line.trim();
+    if !trimmed.starts_with('{') {
+        return false;
+    }
+    let value: serde_json::Value = match serde_json::from_str(trimmed) {
+        Ok(v) => v,
+        Err(_) => return false,
+    };
+
+    // Claude format: {"type":"user","message":{"content":[{"type":"tool_result",...}]}}
+    if value.get("type").and_then(|v| v.as_str()) == Some("user") {
+        if let Some(msg) = value.get("message") {
+            if let Some(content) = msg.get("content") {
+                if let Some(items) = content.as_array() {
+                    return items.iter().any(|item| {
+                        item.get("type").and_then(|v| v.as_str()) == Some("tool_result")
+                    });
+                }
+            }
+        }
+    }
+
+    // Pi format: {"type":"tool_execution_end",...}
+    if value.get("type").and_then(|v| v.as_str()) == Some("tool_execution_end") {
+        return true;
+    }
+
+    // Pi toolResult role
+    if value.get("type").and_then(|v| v.as_str()) == Some("message") {
+        if let Some(msg) = value.get("message") {
+            if msg.get("role").and_then(|v| v.as_str()) == Some("toolResult") {
+                return true;
+            }
+            if let Some(content) = msg.get("content") {
+                if let Some(items) = content.as_array() {
+                    return items.iter().any(|item| {
+                        item.get("type").and_then(|v| v.as_str()) == Some("toolResult")
+                    });
+                }
+            }
+        }
+    }
+
+    false
 }
 
 // =============================================================================
