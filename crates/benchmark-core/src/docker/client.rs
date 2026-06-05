@@ -428,8 +428,11 @@ async fn execute_docker_command_v2(
         .take()
         .ok_or_else(|| anyhow!("Failed to take stderr"))?;
 
-    // Channel for collecting output lines
-    let (tx, mut rx) = tokio::sync::mpsc::channel::<String>(1024);
+    // Channel for collecting output lines. Use unbounded to prevent
+    // deadlocks when agents produce large amounts of output (e.g., pi
+    // writing 10MB+ of JSON to stdout). A bounded channel can fill up
+    // and block the reader tasks, preventing process cleanup.
+    let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<String>();
 
     let callback_clone = output_callback.clone();
 
@@ -442,7 +445,7 @@ async fn execute_docker_command_v2(
             // Forward to callback (which also forwards to watchdog)
             callback_clone(&line);
             // Send to channel for collection
-            let _ = tx_for_stdout.send(line.clone()).await;
+            let _ = tx_for_stdout.send(line.clone());
         }
     });
 
@@ -455,7 +458,7 @@ async fn execute_docker_command_v2(
         while let Some(line) = lines.next_line().await.unwrap_or(None) {
             // Forward stderr through callback and channel (merged with stdout)
             callback_clone2(&line);
-            let _ = tx_for_stderr.send(line).await;
+            let _ = tx_for_stderr.send(line);
         }
     });
 
@@ -500,9 +503,9 @@ async fn execute_docker_command_v2(
 
     // Wait for reader tasks to finish
     let _ = tokio::join!(stdout_task, stderr_task);
-    drop(tx); // Close the channel so rx.recv() terminates
+    drop(tx); // Drop the last sender so rx.recv() returns None when empty
 
-    // Collect output from channel
+    // Collect output from channel (unbounded, won't block writers)
     let mut output = String::new();
     while let Some(line) = rx.recv().await {
         output.push_str(&line);
