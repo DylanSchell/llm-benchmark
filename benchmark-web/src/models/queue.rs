@@ -149,10 +149,16 @@ impl BenchmarkQueue {
     /// pending items still waiting in the queue.
     pub fn clear_terminal_items(&self) -> usize {
         let mut data = self.data.lock().unwrap();
-        // Count how many terminal items are in the inner queue before removal
-        let removed = data.inner.iter().filter(|item| item.status.is_terminal()).count();
-        data.inner.retain(|item| !item.status.is_terminal());
-        data.all_items.retain(|item| !item.status.is_terminal());
+        // Only remove COMPLETED and CANCELLED — keep FAILED items visible for retry.
+        let removed = data.inner.iter().filter(|item| {
+            matches!(item.status, QueueItemStatus::COMPLETED | QueueItemStatus::CANCELLED)
+        }).count();
+        data.inner.retain(|item| {
+            !matches!(item.status, QueueItemStatus::COMPLETED | QueueItemStatus::CANCELLED)
+        });
+        data.all_items.retain(|item| {
+            !matches!(item.status, QueueItemStatus::COMPLETED | QueueItemStatus::CANCELLED)
+        });
         removed
     }
 
