@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y \
     libboost-dev \
     cmake \
     unzip \
+    libboost-date-time-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 20.x from NodeSource
