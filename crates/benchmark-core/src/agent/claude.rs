@@ -125,8 +125,6 @@ impl Agent for ClaudeAgent {
         _thinking_level: Option<&str>,
         _results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
-        let start_time = Instant::now();
-        let start_dt = chrono::Utc::now();
         info!("Starting exercise: {} with Claude agent", exercise.name);
 
         let temp_work_dir = super::exercise_files::create_temp_work_dir(exercise)?;
@@ -137,18 +135,17 @@ impl Agent for ClaudeAgent {
 
         let result = self.run_claude_in_docker(exercise, &temp_work_dir, &prompt).await?;
 
-        let end_dt = chrono::Utc::now();
-        let duration_ms = start_time.elapsed().as_millis() as u64;
-
+        // Use the agent's own timing (captured before test verification),
+        // not wall-clock time that includes post-agent work.
         Ok(AgentResult::builder()
             .exercise_name(exercise.name.clone())
             .language(exercise.language.clone())
             .success(result.success)
             .exit_code(result.exit_code)
             .output(result.output)
-            .duration_ms(duration_ms)
-            .start_time(start_dt.to_rfc3339())
-            .end_time(end_dt.to_rfc3339())
+            .duration_ms(result.duration_ms)
+            .start_time(result.start_time)
+            .end_time(result.end_time)
             .error_message(result.error_message)
 
             .container_id(result.container_id)

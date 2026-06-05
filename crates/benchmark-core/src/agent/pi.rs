@@ -446,7 +446,10 @@ impl Agent for PiAgent {
             )
             .await?;
 
-                let end_dt = chrono::Utc::now();
+        // Capture end time and duration right after the agent finishes.
+        // Test verification and trace collection happen afterwards and should
+        // not count toward the agent's execution time.
+        let end_dt = chrono::Utc::now();
         let duration_ms = start_time.elapsed().as_millis() as u64;
         let pi_success = result.completed && result.exit_code == 0;
 
