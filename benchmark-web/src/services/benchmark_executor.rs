@@ -142,6 +142,13 @@ impl BenchmarkExecutor {
 
         // Finalize: always run regardless of whether execute_inner succeeded or errored.
         session.emit_output("Benchmark execution completed\n");
+        // If the execution returned an error, mark as FAILED.
+        if result.is_err() {
+            session.status = RunStatus::FAILED;
+            let err_msg = format!("{:?}", result.as_ref().unwrap_err());
+            session.set_error_message(&err_msg);
+            session.emit_output(&format!("Execution error: {}\n", err_msg));
+        }
         // Preserve FAILED/CANCELLED status set by inner execution paths.
         // Only transition to COMPLETED if the session is not already in a terminal failure state.
         if session.status != RunStatus::FAILED && session.status != RunStatus::CANCELLED {
