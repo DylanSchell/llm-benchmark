@@ -409,9 +409,11 @@ async fn execute_docker_command_v2(
     cmd.args(&full_command[1..]);
 
     // Merge stderr into stdout (like Java's redirectErrorStream(true))
-    // so all output is captured and forwarded through the callback
+    // so all output is captured and forwarded through the callback.
+    // Close stdin so the agent doesn't wait for interactive input.
     cmd.stdout(std::process::Stdio::piped());
     cmd.stderr(std::process::Stdio::piped());
+    cmd.stdin(std::process::Stdio::null());
 
     let mut process = cmd
         .spawn()
