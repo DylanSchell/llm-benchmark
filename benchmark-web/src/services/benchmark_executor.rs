@@ -141,7 +141,7 @@ impl BenchmarkExecutor {
         }.await;
 
         // Finalize: always run regardless of whether execute_inner succeeded or errored.
-        session.emit_output("Benchmark execution completed");
+        session.emit_output("Benchmark execution completed\n");
         // Preserve FAILED/CANCELLED status set by inner execution paths.
         // Only transition to COMPLETED if the session is not already in a terminal failure state.
         if session.status != RunStatus::FAILED && session.status != RunStatus::CANCELLED {
@@ -173,12 +173,12 @@ impl BenchmarkExecutor {
         for language in languages {
             // Check for cancellation
             if session.status == RunStatus::CANCELLED {
-                session.emit_output("Benchmark cancelled");
+                session.emit_output("Benchmark cancelled\n");
                 return Ok(());
             }
 
             session.emit_output(&format!(
-                "Running exercise: {} for language: {}",
+                "Running exercise: {} for language: {}\n",
                 exercise_name, language
             ));
 
@@ -217,7 +217,7 @@ impl BenchmarkExecutor {
         }
 
         session.status = RunStatus::COMPLETED;
-        session.emit_output("All exercises completed successfully!");
+        session.emit_output("All exercises completed successfully!\n");
 
         Ok(())
     }
@@ -239,12 +239,12 @@ impl BenchmarkExecutor {
         for language in languages {
             // Check for cancellation
             if session.status == RunStatus::CANCELLED {
-                session.emit_output("Benchmark cancelled");
+                session.emit_output("Benchmark cancelled\n");
                 return Ok(());
             }
 
             session.emit_output(&format!(
-                "Running all exercises for language: {}",
+                "Running all exercises for language: {}\n",
                 language
             ));
 
@@ -266,7 +266,7 @@ impl BenchmarkExecutor {
                 ));
             } else {
                 session.emit_output(&format!(
-                    "All exercises completed successfully for language: {}",
+                    "All exercises completed successfully for language: {}\n",
                     language
                 ));
             }
@@ -281,7 +281,7 @@ impl BenchmarkExecutor {
 
         if session.status != RunStatus::FAILED {
             session.status = RunStatus::COMPLETED;
-            session.emit_output("All exercises in all languages completed successfully!");
+            session.emit_output("All exercises in all languages completed successfully!\n");
         } else {
             session.set_error_message("Some exercises failed");
         }
