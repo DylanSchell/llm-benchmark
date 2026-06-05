@@ -75,6 +75,7 @@ impl PiAgent {
         // Build the model JSON object using serde_json for proper escaping
         let mut model_map = serde_json::Map::new();
         model_map.insert("id".to_string(), serde_json::Value::String(model.to_string()));
+        model_map.insert("api".to_string(), serde_json::Value::String("openai-completions".to_string()));
 
         if let Some(ref rc) = reasoning_config {
             if let Some(ref tf) = rc.thinking_format {
