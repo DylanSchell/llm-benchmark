@@ -325,14 +325,11 @@ fn sanitize_command_prefix(command: &str) -> String {
     format!("{}-{:x}", short, hasher.finish())
 }
 
-/// Escape special characters for use in shell pkill -f regex pattern.
+/// Escape the command string for use as a pkill -f regex pattern.
 /// pkill -f matches against the full command line using extended regex.
-/// We escape regex metacharacters and wrap in quotes for the shell.
+/// We use regex::escape to handle metacharacters.
 fn escape_for_shell(s: &str) -> String {
-    // Escape regex metacharacters for pkill -f
-    let escaped = regex::escape(s);
-    // Wrap in single quotes for shell, escaping any single quotes inside
-    format!("'{}'", escaped.replace('\'', "'\\''"))
+    regex::escape(s)
 }
 
 /// Execute a command inside a Docker container.
