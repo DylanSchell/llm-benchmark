@@ -63,15 +63,10 @@ pub fn copy_exercise_files(
             }
             fs::copy(source_path, &dest)?;
 
-            // Patch Gradle wrapper to use local zip instead of network download
-            if dest.ends_with("gradle-wrapper.properties") {
-                let content = fs::read_to_string(&dest)?;
-                let modified = content.replace(
-                    "distributionUrl=https\\://services.gradle.org/distributions/gradle-8.7-bin.zip",
-                    "distributionUrl=file:///opt/gradle/gradle-8.7-bin.zip",
-                );
-                fs::write(&dest, modified)?;
-            }
+            // Note: Gradle 8.7 is pre-installed in the Docker image at
+            // ~/.gradle/wrapper/dists/gradle-8.7-bin/bhs2wmbdwecv87pi65oeuq5iu/.
+            // The wrapper finds it by hash with no network access needed.
+            // No URL patching required.
         }
     }
 

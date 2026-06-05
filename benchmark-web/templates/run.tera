@@ -45,7 +45,7 @@
             <small style="color: #666;">Select one or more languages</small>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" id="model-group">
             <label for="model">Model *</label>
             <select id="model" name="model" required>
                 <option value="">Select a model</option>
@@ -53,6 +53,7 @@
                 <option value="{{ model }}">{{ model }}</option>
                 {% endfor %}
             </select>
+            <small id="model-hint" style="color: #666; display: block; margin-top: 0.25rem;">Required for Claude and Pi agents</small>
         </div>
 
         <div class="form-group">
@@ -120,6 +121,22 @@
             cb.addEventListener('change', updateExerciseList);
         });
         updateExerciseList();
+
+        // Disable model select when Reference agent is chosen
+        document.getElementById('agent').addEventListener('change', function() {
+            const modelSelect = document.getElementById('model');
+            const modelHint = document.getElementById('model-hint');
+            if (this.value === 'reference') {
+                modelSelect.value = '';
+                modelSelect.disabled = true;
+                modelSelect.required = false;
+                if (modelHint) modelHint.textContent = 'Not used by reference agent';
+            } else {
+                modelSelect.disabled = false;
+                modelSelect.required = true;
+                if (modelHint) modelHint.textContent = 'Required for Claude and Pi agents';
+            }
+        });
     });
 
     const modeHints = {
@@ -204,7 +221,7 @@
         const mode = document.getElementById('mode').value;
         const retry = document.getElementById('retry').checked;
         const languages = Array.from(document.querySelectorAll('input[name="languages"]:checked')).map(cb => cb.value);
-        if (!model) { alert('Please select a model'); return; }
+        if (agent !== 'reference' && !model) { alert('Please select a model'); return; }
         if (languages.length === 0) { alert('Please select at least one language'); return; }
 
         if (mode === 'quick') {

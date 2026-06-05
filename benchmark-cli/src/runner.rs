@@ -31,6 +31,14 @@ pub async fn run(
         }
     };
 
+    // Reference agent ignores model — always use "reference" to avoid
+    // mixing reference results into model-specific directories.
+    let model = if agent_kind == AgentKind::Reference {
+        "reference"
+    } else {
+        model
+    };
+
     info!(
         "Starting benchmark: agent={}, model={}, language(s)={}",
         agent_kind,

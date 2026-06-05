@@ -61,6 +61,21 @@ pub struct Exercise {
     pub test_path: Option<PathBuf>,
     #[serde(default)]
     pub reference_path: Option<PathBuf>,
+    /// Exercise root directory (for resolving metadata paths)
+    #[serde(default)]
+    pub exercise_dir: Option<PathBuf>,
+    /// Metadata from .meta/config.json
+    #[serde(default)]
+    pub metadata: Option<ExerciseMetadata>,
+    /// Example/reference file paths resolved from metadata (config.json → files.example)
+    #[serde(default)]
+    pub example_paths: Vec<PathBuf>,
+    /// Solution file paths resolved from metadata (config.json → files.solution)
+    #[serde(default)]
+    pub solution_paths: Vec<PathBuf>,
+    /// Test file paths resolved from metadata (config.json → files.test)
+    #[serde(default)]
+    pub test_paths: Vec<PathBuf>,
 }
 
 /// Metadata for an exercise parsed from .meta/config.json

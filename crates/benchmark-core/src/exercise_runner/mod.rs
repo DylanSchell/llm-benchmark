@@ -355,6 +355,49 @@ impl ExerciseRunner {
         results
     }
 
+    /// Builds an Exercise from a directory, parsing .meta/config.json for metadata.
+    fn build_exercise(&self, name: &str, language: &str, exercise_dir: &Path) -> Exercise {
+        let metadata = self.parse_metadata(exercise_dir);
+        let (solution_paths, example_paths, test_paths) =
+            Self::resolve_metadata_paths(exercise_dir, &metadata);
+
+        Exercise {
+            name: name.to_string(),
+            language: language.to_string(),
+            source_path: self.find_source_file(exercise_dir, language),
+            test_path: self.find_test_file(exercise_dir, language),
+            reference_path: self.find_reference_dir(exercise_dir, language),
+            exercise_dir: Some(exercise_dir.to_path_buf()),
+            metadata,
+            example_paths,
+            solution_paths,
+            test_paths,
+        }
+    }
+
+    /// Resolves file paths from metadata (config.json) relative to exercise_dir.
+    fn resolve_metadata_paths(
+        exercise_dir: &Path,
+        metadata: &Option<benchmark_types::exercise::ExerciseMetadata>,
+    ) -> (Vec<PathBuf>, Vec<PathBuf>, Vec<PathBuf>) {
+        let resolve = |paths: &Option<Vec<String>>| -> Vec<PathBuf> {
+            paths
+                .as_ref()
+                .map(|v| v.iter().map(|p| exercise_dir.join(p)).collect())
+                .unwrap_or_default()
+        };
+        if let Some(meta) = metadata {
+            if let Some(ref files) = meta.files {
+                return (
+                    resolve(&files.solution),
+                    resolve(&files.example),
+                    resolve(&files.test),
+                );
+            }
+        }
+        (Vec::new(), Vec::new(), Vec::new())
+    }
+
     /// Finds a specific exercise by language and name.
     fn find_exercise(&self, language: &str, exercise_name: &str) -> Option<Exercise> {
         let mut exercise_dir = self
@@ -376,13 +419,7 @@ impl ExerciseRunner {
             return None;
         }
 
-        Some(Exercise {
-            name: exercise_name.to_string(),
-            language: language.to_string(),
-            source_path: self.find_source_file(&exercise_dir, language),
-            test_path: self.find_test_file(&exercise_dir, language),
-            reference_path: self.find_reference_file(&exercise_dir, language),
-        })
+        Some(self.build_exercise(exercise_name, language, &exercise_dir))
     }
 
     /// Finds all exercises for a given language.
@@ -405,13 +442,7 @@ impl ExerciseRunner {
                 let path = entry.path();
                 if self.is_exercise_directory(&path) {
                     let exercise_name = path.file_name().unwrap().to_string_lossy().to_string();
-                    exercises.push(Exercise {
-                        name: exercise_name,
-                        language: language.to_string(),
-                        source_path: self.find_source_file(&path, language),
-                        test_path: self.find_test_file(&path, language),
-                        reference_path: self.find_reference_file(&path, language),
-                    });
+                    exercises.push(self.build_exercise(&exercise_name, language, &path));
                 }
             }
         }
@@ -482,30 +513,32 @@ impl ExerciseRunner {
         None
     }
 
-    /// Finds the reference implementation for an exercise.
-    fn find_reference_file(
+    /// Finds the reference implementation directory for an exercise.
+    /// Returns the directory containing reference files (used as a fallback
+    /// when metadata is unavailable; the primary paths come from config.json).
+    fn find_reference_dir(
         &self,
         exercise_dir: &Path,
         language: &str,
     ) -> Option<PathBuf> {
         if language == "java" {
             let ref_path = exercise_dir.join(".meta/src/reference/java");
-            if ref_path.exists() {
-                if let Ok(entries) = fs::read_dir(&ref_path) {
-                    for entry in entries.flatten() {
-                        let path = entry.path();
-                        if path.is_file()
-                            && path
-                                .extension()
-                                .map(|e| e == "java")
-                                .unwrap_or(false)
-                        {
-                            return Some(path);
-                        }
-                    }
-                }
+            if ref_path.exists() && ref_path.is_dir() {
+                // Return the directory so all reference files are copied.
+                // Previously returned only the first .java file, which caused
+                // exercises with multiple reference files (e.g. Alphametics +
+                // UnsolvablePuzzleException) to only copy one file.
+                return Some(ref_path);
             }
         } else if language == "go" {
+            let ref_path = exercise_dir.join(".meta");
+            if ref_path.exists() {
+                return Some(ref_path);
+            }
+        } else {
+            // For JavaScript, Python, Rust, C++: reference files live in .meta/
+            // (proof.ci.js, example.py, example.rs, example.cpp/example.h).
+            // The copy_reference_impl renames them to match the stub file names.
             let ref_path = exercise_dir.join(".meta");
             if ref_path.exists() {
                 return Some(ref_path);

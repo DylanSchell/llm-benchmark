@@ -56,8 +56,13 @@ impl ReferenceAgent {
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
         let start_time = Instant::now();
 
-        if let Some(ref_ref) = &exercise.reference_path {
-            Self::copy_reference_impl(exercise, temp_dir, ref_ref);
+        if !exercise.example_paths.is_empty() {
+            Self::copy_reference_impl(exercise, temp_dir);
+        } else if exercise.reference_path.is_some() {
+            // Fallback: walk the reference directory (for languages whose
+            // metadata might not have files.example, like older Go exercises)
+            let ref_dir = exercise.reference_path.as_ref().unwrap();
+            Self::copy_legacy_reference(exercise, temp_dir, ref_dir);
         } else {
             warn!("No reference implementation found for: {}", exercise.name);
         }
@@ -77,7 +82,103 @@ impl ReferenceAgent {
     }
 
     /// Copies reference implementation files to the temp directory.
-    fn copy_reference_impl(exercise: &Exercise, temp_dir: &Path, ref_dir: &Path) {
+    fn copy_reference_impl(exercise: &Exercise, temp_dir: &Path) {
+        // Use metadata paths from config.json (matching Java's LanguageHandler.copyReference).
+        // The .meta/config.json defines files.example → reference implementation paths.
+        //
+        // For Java: all .java files in src/main/java/ are compiled together, so we copy
+        //   examples by their original filename into src/main/java/.
+        // For JS/Python/Rust/C++/Go: the reference file must overwrite the stub file, so we
+        //   match examples to solution files by filename (or by extension as fallback).
+
+        if exercise.example_paths.is_empty() {
+            warn!("No example files in metadata for: {}", exercise.name);
+            return;
+        }
+
+        let uses_directory_compilation = exercise.language == "java";
+
+        if uses_directory_compilation {
+            // Java: copy examples by filename into src/main/java/
+            let target_dir = temp_dir.join("src").join("main").join("java");
+            let _ = fs::create_dir_all(&target_dir);
+            for example_path in &exercise.example_paths {
+                if !example_path.exists() { continue; }
+                let dest_path = target_dir.join(example_path.file_name().unwrap());
+                let _ = fs::copy(example_path, &dest_path);
+                info!("Copied reference: {:?}", example_path.file_name().unwrap());
+            }
+        } else {
+            // JS/Python/Rust/C++/Go: match examples to solution files
+            let target_dir = match exercise.language.as_str() {
+                "rust" => temp_dir.join("src"),
+                "cpp" => temp_dir.join(&exercise.name),
+                _ => temp_dir.to_path_buf(),
+            };
+            let _ = fs::create_dir_all(&target_dir);
+
+            let mut used_solutions: std::collections::HashSet<&std::path::PathBuf> =
+                std::collections::HashSet::new();
+
+            for example_path in &exercise.example_paths {
+                if !example_path.exists() { continue; }
+
+                let example_name = example_path.file_name().unwrap();
+                let example_ext = example_path.extension().and_then(|e| e.to_str()).unwrap_or("");
+
+                // Find matching solution: prefer exact filename, fall back to extension
+                let matching = exercise.solution_paths.iter()
+                    .filter(|s| !used_solutions.contains(*s))
+                    .find(|s| {
+                        s.file_name().and_then(|n| n.to_str()) == example_name.to_str()
+                    })
+                    .or_else(|| {
+                        exercise.solution_paths.iter()
+                            .filter(|s| !used_solutions.contains(*s))
+                            .find(|s| s.extension().and_then(|e| e.to_str()) == Some(example_ext))
+                    });
+
+                let dest_path = if let Some(solution_path) = matching {
+                    used_solutions.insert(solution_path);
+                    if let Some(ref exercise_dir) = exercise.exercise_dir {
+                        if let Ok(relative) = solution_path.strip_prefix(exercise_dir) {
+                            target_dir.join(relative)
+                        } else {
+                            target_dir.join(solution_path.file_name().unwrap())
+                        }
+                    } else {
+                        target_dir.join(solution_path.file_name().unwrap())
+                    }
+                } else {
+                    target_dir.join(example_name)
+                };
+
+                if let Some(parent) = dest_path.parent() {
+                    let _ = fs::create_dir_all(parent);
+                }
+                let _ = fs::copy(example_path, &dest_path);
+                info!("Copied reference: {:?} -> {:?}", example_name, dest_path.file_name().unwrap());
+            }
+        }
+
+        // Also copy Cargo-example.toml for Rust
+        if exercise.language == "rust" {
+            if let Some(ref exercise_dir) = exercise.exercise_dir {
+                let cargo_example = exercise_dir.join(".meta").join("Cargo-example.toml");
+                if cargo_example.exists() {
+                    let dest = temp_dir.join("Cargo.toml");
+                    let _ = fs::copy(&cargo_example, &dest);
+                    info!("Copied Cargo-example.toml to Cargo.toml");
+                }
+            }
+        }
+    }
+
+    /// Finds a non-test stub file in a directory.
+    /// Returns the path to the first matching file, or None.
+    /// Legacy fallback: copies reference files by walking a directory.
+    /// Used when metadata (config.json) is unavailable.
+    fn copy_legacy_reference(exercise: &Exercise, temp_dir: &Path, ref_dir: &Path) {
         if !ref_dir.exists() {
             warn!("Reference directory not found for: {}", exercise.name);
             return;
@@ -87,149 +188,34 @@ impl ReferenceAgent {
             "java" => {
                 let main_src_dir = temp_dir.join("src/main/java");
                 let _ = fs::create_dir_all(&main_src_dir);
-
-                info!(
-                    "Copying reference implementation from {:?} to {:?}",
-                    ref_dir, main_src_dir
-                );
-
+                info!("Copying reference implementation from {:?} to {:?}", ref_dir, main_src_dir);
                 for entry in WalkDir::new(ref_dir) {
-                    match entry {
-                        Ok(entry) => {
-                            let ref_file = entry.path();
-                            if ref_file
-                                .extension()
-                                .map(|e| e == "java")
-                                .unwrap_or(false)
-                            {
-                                let file_name = ref_file
-                                    .file_name()
-                                    .unwrap()
-                                    .to_string_lossy();
-                                let dest_file = main_src_dir.join(&*file_name);
-                                let _ = fs::copy(ref_file, &dest_file);
-                                info!("Copied reference file: {}", file_name);
-                            }
+                    if let Ok(entry) = entry {
+                        let ref_file = entry.path();
+                        if ref_file.extension().map(|e| e == "java").unwrap_or(false) {
+                            let file_name = ref_file.file_name().unwrap().to_string_lossy();
+                            let dest_file = main_src_dir.join(&*file_name);
+                            let _ = fs::copy(ref_file, &dest_file);
+                            info!("Copied reference file: {}", file_name);
                         }
-                        Err(e) => warn!("Error walking directory: {}", e),
                     }
                 }
             }
             "go" => {
                 for entry in WalkDir::new(ref_dir) {
-                    match entry {
-                        Ok(entry) => {
-                            let ref_file = entry.path();
-                            if ref_file
-                                .extension()
-                                .map(|e| e == "go")
-                                .unwrap_or(false)
-                            {
-                                let file_name = ref_file
-                                    .file_name()
-                                    .unwrap()
-                                    .to_string_lossy();
-                                let dest_file = temp_dir.join(&*file_name);
-                                let _ = fs::copy(ref_file, &dest_file);
-                                info!("Copied reference file: {}", file_name);
-                            }
+                    if let Ok(entry) = entry {
+                        let ref_file = entry.path();
+                        if ref_file.extension().map(|e| e == "go").unwrap_or(false) {
+                            let file_name = ref_file.file_name().unwrap().to_string_lossy();
+                            let dest_file = temp_dir.join(&*file_name);
+                            let _ = fs::copy(ref_file, &dest_file);
+                            info!("Copied reference file: {}", file_name);
                         }
-                        Err(e) => warn!("Error walking directory: {}", e),
-                    }
-                }
-            }
-            "rust" => {
-                let src_dir = temp_dir.join("src");
-                let _ = fs::create_dir_all(&src_dir);
-
-                info!(
-                    "Copying reference implementation from {:?} to {:?}",
-                    ref_dir, src_dir
-                );
-
-                for entry in WalkDir::new(ref_dir) {
-                    match entry {
-                        Ok(entry) => {
-                            let ref_file = entry.path();
-                            if ref_file
-                                .extension()
-                                .map(|e| e == "rs")
-                                .unwrap_or(false)
-                            {
-                                let relative = ref_file.strip_prefix(ref_dir).unwrap_or(ref_file);
-                                let dest_file = src_dir.join(relative);
-                                if let Some(parent) = dest_file.parent() {
-                                    let _ = fs::create_dir_all(parent);
-                                }
-                                let _ = fs::copy(ref_file, &dest_file);
-                                info!("Copied reference file: {:?}", relative);
-                            }
-                        }
-                        Err(e) => warn!("Error walking directory: {}", e),
-                    }
-                }
-            }
-            "javascript" | "typescript" => {
-                info!(
-                    "Copying reference implementation from {:?} to {:?}",
-                    ref_dir, temp_dir
-                );
-
-                for entry in WalkDir::new(ref_dir) {
-                    match entry {
-                        Ok(entry) => {
-                            let ref_file = entry.path();
-                            if ref_file
-                                .extension()
-                                .map(|e| e == "js" || e == "ts")
-                                .unwrap_or(false)
-                            {
-                                let file_name = ref_file
-                                    .file_name()
-                                    .unwrap()
-                                    .to_string_lossy();
-                                let dest_file = temp_dir.join(&*file_name);
-                                let _ = fs::copy(ref_file, &dest_file);
-                                info!("Copied reference file: {}", file_name);
-                            }
-                        }
-                        Err(e) => warn!("Error walking directory: {}", e),
-                    }
-                }
-            }
-            "python" => {
-                info!(
-                    "Copying reference implementation from {:?} to {:?}",
-                    ref_dir, temp_dir
-                );
-
-                for entry in WalkDir::new(ref_dir) {
-                    match entry {
-                        Ok(entry) => {
-                            let ref_file = entry.path();
-                            if ref_file
-                                .extension()
-                                .map(|e| e == "py")
-                                .unwrap_or(false)
-                            {
-                                let file_name = ref_file
-                                    .file_name()
-                                    .unwrap()
-                                    .to_string_lossy();
-                                let dest_file = temp_dir.join(&*file_name);
-                                let _ = fs::copy(ref_file, &dest_file);
-                                info!("Copied reference file: {}", file_name);
-                            }
-                        }
-                        Err(e) => warn!("Error walking directory: {}", e),
                     }
                 }
             }
             _ => {
-                warn!(
-                    "Reference implementation copying not implemented for language: {}",
-                    exercise.language
-                );
+                warn!("Legacy reference copy not implemented for: {}", exercise.language);
             }
         }
     }
@@ -241,7 +227,7 @@ impl ReferenceAgent {
         exercise: &Exercise,
         temp_work_dir: &Path,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let prepare_command = Self::get_prepare_command(exercise);
+        let prepare_command = Self::get_prepare_command(exercise, temp_work_dir);
         if prepare_command.is_empty() {
             debug!("No workspace preparation needed for {}", exercise.language);
             return Ok(());
@@ -284,17 +270,13 @@ impl ReferenceAgent {
     }
 
     /// Gets the workspace preparation command for a language.
-    fn get_prepare_command(exercise: &Exercise) -> Vec<String> {
-        let exercises_path = exercise
-            .source_path
-            .as_ref()
-            .map(|p| p.parent())
-            .flatten()
-            .unwrap_or(Path::new(""));
-
+    /// Checks the temp_work_dir (not the original source path) since the
+    /// preparation command runs inside the Docker container against the
+    /// temp directory's contents.
+    fn get_prepare_command(exercise: &Exercise, temp_work_dir: &Path) -> Vec<String> {
         match exercise.language.as_str() {
             "javascript" | "typescript" => {
-                if exercises_path.join("package.json").exists() {
+                if temp_work_dir.join("package.json").exists() {
                     vec!["npm".to_string(), "install".to_string()]
                 } else {
                     vec![]
@@ -311,13 +293,13 @@ impl ReferenceAgent {
             }
             "java" => {
                 // Gradle wrapper is already set up, but we may need to download dependencies
-                if exercises_path.join("build.gradle").exists() {
+                if temp_work_dir.join("build.gradle").exists() {
                     vec![
                         "./gradlew".to_string(),
                         "dependencies".to_string(),
                         "--quiet".to_string(),
                     ]
-                } else if exercises_path.join("pom.xml").exists() {
+                } else if temp_work_dir.join("pom.xml").exists() {
                     vec!["mvn".to_string(), "dependency:resolve".to_string(), "-q".to_string()]
                 } else {
                     vec![]
@@ -328,7 +310,7 @@ impl ReferenceAgent {
                 vec![]
             }
             "go" => {
-                if exercises_path.join("go.mod").exists() {
+                if temp_work_dir.join("go.mod").exists() {
                     vec!["go".to_string(), "mod".to_string(), "download".to_string()]
                 } else {
                     vec![]
@@ -343,93 +325,56 @@ impl ReferenceAgent {
     }
 
     /// Copies fresh test files from the source directory to the temp directory.
+    /// Uses metadata test paths from config.json (matching Java's LanguageHandler.copyTests).
     pub fn copy_fresh_tests(
         &self,
         exercise: &Exercise,
-        source_dir: &Path,
+        _source_dir: &Path,
         dest_dir: &Path,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        info!(
-            "Copying fresh test files from {:?} to {:?}",
-            source_dir, dest_dir
-        );
+        // Use metadata test paths when available (config.json → files.test)
+        if !exercise.test_paths.is_empty() {
+            info!("Copying {} fresh test files from metadata", exercise.test_paths.len());
+            for test_path in &exercise.test_paths {
+                if !test_path.exists() {
+                    warn!("Test file not found: {:?}", test_path);
+                    continue;
+                }
+                // Determine destination by stripping exercise_dir prefix
+                let dest_path = if let Some(ref exercise_dir) = exercise.exercise_dir {
+                    if let Ok(relative) = test_path.strip_prefix(exercise_dir) {
+                        let dest = dest_dir.join(relative);
+                        if let Some(parent) = dest.parent() {
+                            let _ = fs::create_dir_all(parent);
+                        }
+                        dest
+                    } else {
+                        dest_dir.join(test_path.file_name().unwrap())
+                    }
+                } else {
+                    dest_dir.join(test_path.file_name().unwrap())
+                };
+                let _ = fs::copy(test_path, &dest_path);
+                info!("Copied fresh test: {:?}", test_path.file_name().unwrap());
+            }
+            return Ok(());
+        }
 
-        // Copy test files based on language
+        // Fallback for exercises without metadata
         match exercise.language.as_str() {
             "java" => {
-                // Copy test files from src/test/java
-                let test_src = source_dir.join("src").join("test").join("java");
-                if test_src.exists() {
-                    Self::copy_directory_recursive(&test_src, dest_dir)?;
-                }
-            }
-            "javascript" | "typescript" => {
-                // Copy test files (usually in __tests__ or test directories)
-                for test_dir in &["__tests__", "test", "tests"] {
-                    let src = source_dir.join(test_dir);
+                let test_src = exercise.exercise_dir.as_ref()
+                    .map(|d| d.join("src").join("test").join("java"));
+                if let Some(ref src) = test_src {
                     if src.exists() {
-                        Self::copy_directory_recursive(&src, dest_dir)?;
-                    }
-                }
-                // Also copy any *.test.js / *.spec.js files
-                if let Ok(entries) = fs::read_dir(source_dir) {
-                    for entry in entries.flatten() {
-                        let path = entry.path();
-                        if path.is_file() {
-                            let file_name = path.file_name().unwrap().to_string_lossy();
-                            if file_name.ends_with(".test.js")
-                                || file_name.ends_with(".spec.js")
-                                || file_name.ends_with(".test.ts")
-                                || file_name.ends_with(".spec.ts")
-                            {
-                                let dest = dest_dir.join(file_name.as_ref());
-                                let _ = fs::copy(&path, &dest);
-                            }
-                        }
+                        let test_dest = dest_dir.join("src").join("test").join("java");
+                        Self::copy_directory_recursive(src, &test_dest)?;
                     }
                 }
             }
-            "python" => {
-                // Copy test files (usually test_*.py or *_test.py)
-                if let Ok(entries) = fs::read_dir(source_dir) {
-                    for entry in entries.flatten() {
-                        let path = entry.path();
-                        if path.is_file() {
-                            let file_name = path.file_name().unwrap().to_string_lossy();
-                            if file_name.starts_with("test_")
-                                || file_name.ends_with("_test.py")
-                            {
-                                let dest = dest_dir.join(file_name.as_ref());
-                                let _ = fs::copy(&path, &dest);
-                            }
-                        }
-                    }
-                }
+            _ => {
+                info!("copy_fresh_tests: using metadata-based paths for {}", exercise.language);
             }
-            "rust" => {
-                // Rust tests are typically in the same file or in src/
-                // Already copied via copy_exercise_files
-            }
-            "go" => {
-                // Go test files end with _test.go
-                if let Ok(entries) = fs::read_dir(source_dir) {
-                    for entry in entries.flatten() {
-                        let path = entry.path();
-                        if path.is_file() {
-                            let file_name = path.file_name().unwrap().to_string_lossy();
-                            if file_name.ends_with("_test.go") {
-                                let dest = dest_dir.join(file_name.as_ref());
-                                let _ = fs::copy(&path, &dest);
-                            }
-                        }
-                    }
-                }
-            }
-            "cpp" => {
-                // C++ tests may be in various locations
-                // Already copied via copy_exercise_files
-            }
-            _ => {}
         }
 
         Ok(())
@@ -652,11 +597,11 @@ impl Agent for ReferenceAgent {
 
         let agent_result = Self::run_reference_impl(exercise, &temp_work_dir)?;
 
-        // Patch tests before running
-        let _ = self.patch_tests(exercise, &temp_work_dir);
-
-        // Copy fresh tests (original test files)
+        // Copy fresh tests (original test files) then patch them to enable all tests.
+        // Order matters: copy first, then patch, so @Disabled / #[ignore] / xtest
+        // annotations are removed from the freshly-copied test files.
         let _ = self.copy_fresh_tests(exercise, host_exercise_dir, &temp_work_dir);
+        let _ = self.patch_tests(exercise, &temp_work_dir);
 
         let test_result = self.run_tests_in_docker(exercise, &temp_work_dir).await?;
 

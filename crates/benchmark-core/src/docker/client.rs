@@ -440,7 +440,7 @@ async fn execute_docker_command_v2(
             // Forward to callback (which also forwards to watchdog)
             callback_clone(&line);
             // Send to channel for collection
-            let _ = tx_for_stdout.send(line.clone());
+            let _ = tx_for_stdout.send(line.clone()).await;
         }
     });
 
@@ -453,7 +453,7 @@ async fn execute_docker_command_v2(
         while let Some(line) = lines.next_line().await.unwrap_or(None) {
             // Forward stderr through callback and channel (merged with stdout)
             callback_clone2(&line);
-            let _ = tx_for_stderr.send(line);
+            let _ = tx_for_stderr.send(line).await;
         }
     });
 

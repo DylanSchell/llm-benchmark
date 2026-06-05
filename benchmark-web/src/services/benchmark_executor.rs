@@ -93,6 +93,14 @@ impl BenchmarkExecutor {
             let thinking_level = session.thinking_level.clone();
             let exercise_name = session.exercise_name.clone();
 
+            // Reference agent ignores model — always use "reference" to avoid
+            // mixing reference results into model-specific directories.
+            let model = if agent_name == "reference" {
+                "reference".to_string()
+            } else {
+                model
+            };
+
             info!(
                 "Starting benchmark execution: agent={}, languages={:?}, model={:?}, thinking_level={:?}, exercise={:?}",
                 agent_name, languages, model, thinking_level, exercise_name

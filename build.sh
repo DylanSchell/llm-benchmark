@@ -25,11 +25,16 @@ EOF
 
 docker_build() {
     local tag="${TAG:-llm-benchmark/runner:latest}"
-    local arch="${ARCH:-linux/amd64}"
-
-    echo "Building Docker image ${tag} (${arch})..." >&2
+    local arch="${ARCH:-}"
+    local platform_args=()
+    if [[ -n "$arch" ]]; then
+        platform_args=(--platform "$arch")
+        echo "Building Docker image ${tag} (${arch})..." >&2
+    else
+        echo "Building Docker image ${tag} (host arch)..." >&2
+    fi
     docker buildx build \
-        --platform "${arch}" \
+        "${platform_args[@]}" \
         --tag "${tag}" \
         -f docker/Dockerfile.runner.debian \
         "${SCRIPT_DIR}/docker"
@@ -53,19 +58,21 @@ clean_artifacts() {
     echo "Cleaned build artifacts." >&2
 }
 
-# Parse global options first
+# Parse options (can appear before or after the command)
 ARCH=""
 TAG=""
+COMMAND=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --arch) ARCH="$2"; shift 2 ;;
         --tag)  TAG="$2";   shift 2 ;;
+        docker-build|build|docker-run|run|cargo|test|clean)
+            COMMAND="$1"
+            shift
+            ;;
         *)      break ;;
     esac
 done
-
-COMMAND="${1:-docker-build}"
-shift || true
 
 case "$COMMAND" in
     docker-build|build)   docker_build ;;
