@@ -398,6 +398,10 @@ fn build_docker_run_command(
 
 /// Execute a docker command using tokio::process::Command with async streaming.
 /// This version collects output via a channel.
+///
+/// Includes a container liveness monitor that polls `docker inspect` every 5s.
+/// If the container dies but the docker CLI process hangs (known Docker issue),
+/// the liveness monitor signals an abort so the function doesn't stall.
 async fn execute_docker_command_v2(
     full_command: &[String],
     container_id: &str,
@@ -418,6 +422,8 @@ async fn execute_docker_command_v2(
     let mut process = cmd
         .spawn()
         .with_context(|| format!("Failed to spawn docker process: {}", full_command[1..].join(" ")))?;
+
+    let pid = process.id().unwrap_or(0);
 
     let stdout = process
         .stdout
@@ -462,50 +468,75 @@ async fn execute_docker_command_v2(
         }
     });
 
-    // Wait for process with timeout
-    let completed = {
-        let result = timeout(
-            Duration::from_secs(timeout_secs),
-            process.wait(),
-        )
-        .await;
+    // Container liveness monitor: polls `docker inspect` every 5s in parallel
+    // with process.wait(). If the container dies but the docker CLI process
+    // is stuck (e.g. pipe deadlock), this signals an abort instead of hanging.
+    let cid_for_liveness = container_id.to_string();
+    let liveness_dead = std::sync::Arc::new(tokio::sync::Notify::new());
+    let liveness_dead_clone = liveness_dead.clone();
+    let liveness_task = tokio::spawn(async move {
+        loop {
+            tokio::time::sleep(Duration::from_secs(5)).await;
+            match container_is_running(&cid_for_liveness).await {
+                Ok(true) => continue, // alive
+                Ok(false) => {
+                    warn!("Liveness: container {} no longer running — signalling abort", cid_for_liveness);
+                    liveness_dead_clone.notify_one();
+                    return;
+                }
+                Err(_) => continue, // transient error, retry
+            }
+        }
+    });
 
-        match result {
-            Ok(Ok(status)) => status.success(),
-            Ok(Err(e)) => {
-                error!("Process wait error: {}", e);
+    // Wait for process exit, liveness abort, or global timeout
+    let completed = {
+        tokio::select! {
+            biased;
+            status_result = process.wait() => {
+                match status_result {
+                    Ok(status) => status.success(),
+                    Err(e) => { error!("Process wait error: {}", e); false }
+                }
+            }
+            () = liveness_dead.notified() => {
+                warn!("Container {} died — aborting process wait", container_id);
                 false
             }
-            Err(_) => {
+            () = tokio::time::sleep(Duration::from_secs(timeout_secs)) => {
                 warn!("Process timed out after {} seconds", timeout_secs);
                 false
             }
         }
     };
+    liveness_task.abort();
 
-    // Kill the process if it didn't complete
+    // Kill the process if it didn't complete. Guard each phase with its own
+    // timeout so no single failure can stall indefinitely.
     let exit_code = if completed {
-        process
-            .wait()
-            .await
-            .ok()
-            .and_then(|s| s.code())
-            .unwrap_or(137) // 128 + SIGKILL(9) as conventional sentinel for killed process
+        let wait_result = timeout(Duration::from_secs(10), process.wait()).await;
+        match wait_result {
+            Ok(Ok(status)) => status.code().unwrap_or(0),
+            _ => { force_kill_container(container_id).await; 137 }
+        }
     } else {
-        let _ = process.kill().await;
-        process
-            .wait()
-            .await
-            .ok()
-            .and_then(|s| s.code())
-            .unwrap_or(137) // 128 + SIGKILL(9) as conventional sentinel for killed process
+        // Phase 1: kill the docker CLI process
+        let _ = timeout(Duration::from_secs(5), process.kill()).await;
+        // Phase 2: force-kill the container directly (more reliable)
+        force_kill_container(container_id).await;
+        // Phase 3: wait for process to reap, with timeout
+        let wait_result = timeout(Duration::from_secs(15), process.wait()).await;
+        match wait_result {
+            Ok(Ok(status)) => status.code().unwrap_or(137),
+            _ => { error!("Process pid={} did not exit after kill+rm", pid); 137 }
+        }
     };
 
-    // Wait for reader tasks to finish
-    let _ = tokio::join!(stdout_task, stderr_task);
-    drop(tx); // Drop the last sender so rx.recv() returns None when empty
+    // Wait for reader tasks to finish (with timeout, in case pipes won't close)
+    drop(tx);
+    let _ = timeout(Duration::from_secs(30), async { let _ = tokio::join!(stdout_task, stderr_task); }).await;
 
-    // Collect output from channel (unbounded, won't block writers)
+    // Collect output from channel
     let mut output = String::new();
     while let Some(line) = rx.recv().await {
         output.push_str(&line);
@@ -518,6 +549,36 @@ async fn execute_docker_command_v2(
         completed,
         container_id: container_id.to_string(),
     })
+}
+
+/// Check if a Docker container is currently running via `docker inspect`.
+async fn container_is_running(container_id: &str) -> Result<bool, anyhow::Error> {
+    let output = tokio::process::Command::new("docker")
+        .args(&["inspect", "--format={{.State.Running}}", container_id])
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::null())
+        .output()
+        .await?;
+    if output.status.success() {
+        Ok(String::from_utf8_lossy(&output.stdout).trim() == "true")
+    } else {
+        Ok(false) // container doesn't exist
+    }
+}
+
+/// Force-kill a Docker container by name using `docker rm -f`.
+/// More reliable than killing the CLI process when the CLI itself is stuck.
+async fn force_kill_container(container_id: &str) {
+    let mut kill_cmd = tokio::process::Command::new("docker");
+    kill_cmd.args(&["rm", "-f", container_id]);
+    kill_cmd.stdout(std::process::Stdio::null());
+    kill_cmd.stderr(std::process::Stdio::null());
+    match timeout(Duration::from_secs(10), kill_cmd.output()).await {
+        Ok(Ok(o)) if o.status.success() => info!("Force-killed container: {}", container_id),
+        Ok(Ok(o)) => warn!("docker rm -f {} exited with {}", container_id, o.status.code().unwrap_or(-1)),
+        Ok(Err(e)) => warn!("Failed to force-kill container {}: {}", container_id, e),
+        Err(_) => warn!("Timeout force-killing container {}", container_id),
+    }
 }
 
 /// Clean up a Docker container by name.

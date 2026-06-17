@@ -143,7 +143,7 @@ impl StreamParser {
 
     // Handle array or single content
     let items: Vec<_> = if content.is_array() {
-        content.as_array().unwrap().to_vec()
+        content.as_array().map(|a| a.to_vec()).unwrap_or_else(|| vec![content.clone()])
     } else {
         vec![content.clone()]
     };

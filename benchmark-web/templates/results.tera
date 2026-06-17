@@ -235,6 +235,11 @@
                         {% if indResult.has_trace_file %}
                         <a href="{{ indResult.trace_url }}" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.2rem 0.5rem; white-space: nowrap; margin-left: 0.5rem;">View Trace</a>
                         {% endif %}
+                        <button class="btn btn-secondary"
+                                style="font-size: 0.8rem; padding: 0.2rem 0.5rem; white-space: nowrap; margin-left: 0.5rem;"
+                                onclick="retryExercise('{{ indResult.agent }}', '{{ indResult.model }}', '{{ indResult.language }}', '{{ indResult.exercise }}', this)">
+                            Retry
+                        </button>
                     </td>
                 </tr>
             {% endfor %}
@@ -263,6 +268,39 @@
                     cell.textContent = `${year}-${month}-${day} ${hours}:${minutes}`;
                 }
             });
+        }
+
+        // Retry a single exercise from the results table.
+        async function retryExercise(agent, model, language, exercise, btn) {
+            btn.disabled = true;
+            btn.textContent = '...';
+            try {
+                const body = new URLSearchParams();
+                body.append('agent', agent);
+                body.append('languages', language);
+                body.append('model', model);
+                body.append('exercise', exercise);
+                body.append('mode', 'single');
+                body.append('retry', 'true');
+                const resp = await fetch('/api/benchmark/queue/schedule', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: body.toString(),
+                });
+                const data = await resp.json();
+                if (data.status === 'scheduled') {
+                    btn.textContent = '\u2713 Queued';
+                    btn.style.color = '#27ae60';
+                } else {
+                    btn.textContent = 'Error';
+                    btn.style.color = '#e74c3c';
+                }
+            } catch (e) {
+                btn.textContent = 'Error';
+                btn.style.color = '#e74c3c';
+            } finally {
+                btn.disabled = false;
+            }
         }
 
         // Run conversion as soon as DOM is ready

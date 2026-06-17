@@ -154,6 +154,7 @@
         <!-- Queue Actions -->
         <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
             <button onclick="clearCompletedQueue()" class="btn btn-secondary">Clear Completed/Cancelled</button>
+            <button onclick="clearAllQueue()" class="btn btn-danger" style="background: #e74c3c; color: white;">Clear All</button>
         </div>
     </div>
 
@@ -743,6 +744,24 @@
         } catch (e) {
             console.error('Error clearing completed items:', e);
             showToast('Failed to clear completed items');
+        }
+    }
+
+    // Clear all queue items and cancel all active runs
+    async function clearAllQueue() {
+        if (!confirm('This will clear ALL queue items and cancel ALL active benchmark runs. Are you sure?')) {
+            return;
+        }
+        try {
+            const response = await fetch('/api/benchmark/queue/clear-all', {
+                method: 'POST'
+            });
+            const data = await response.json();
+            showToast(data.message || 'Cleared all queue items');
+            window.location.reload();
+        } catch (e) {
+            console.error('Error clearing all items:', e);
+            showToast('Failed to clear all items');
         }
     }
 

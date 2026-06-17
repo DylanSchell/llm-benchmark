@@ -496,6 +496,22 @@ impl QueueProcessor {
         self.queue.clear_terminal_items()
     }
 
+    /// Clear all items from the queue and cancel all active sessions.
+    /// Returns the number of queue items removed.
+    pub async fn clear_all(&self) -> usize {
+        // Cancel all active sessions first
+        let active = self.session_manager.get_active_sessions();
+        for session in &active {
+            info!("Cancelling session: {}", session.id);
+            self.session_manager.cancel_session(&session.id);
+        }
+
+        // Wipe the queue
+        let removed = self.queue.clear_all();
+        info!("Cleared all {} queue items, cancelled {} active sessions", removed, active.len());
+        removed
+    }
+
     /// Get the number of currently active workers.
     pub async fn get_active_worker_count(&self) -> usize {
         *self.active_workers.lock().await

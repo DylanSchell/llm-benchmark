@@ -40,7 +40,13 @@ impl ParallelExecutor {
             let sem = Arc::clone(&semaphore);
             let handle: JoinHandle<Result<Option<T>, tokio::task::JoinError>> =
                 tokio::spawn(async move {
-                    let permit = sem.acquire().await.unwrap();
+                    let permit = match sem.acquire().await {
+                        Ok(permit) => permit,
+                        Err(e) => {
+                            error!("Semaphore closed: {}", e);
+                            return Ok(None);
+                        }
+                    };
                     let result = task().await;
                     drop(permit);
                     Ok(result)
@@ -93,7 +99,13 @@ impl ParallelExecutor {
             let sem = Arc::clone(&semaphore);
             let handle: JoinHandle<Result<Option<T>, tokio::task::JoinError>> =
                 tokio::spawn(async move {
-                    let permit = sem.acquire().await.unwrap();
+                    let permit = match sem.acquire().await {
+                        Ok(permit) => permit,
+                        Err(e) => {
+                            error!("Semaphore closed: {}", e);
+                            return Ok(None);
+                        }
+                    };
                     let result = task().await;
                     drop(permit);
                     Ok(result)
@@ -151,8 +163,8 @@ impl RateLimiter {
     }
 
     /// Acquires a permit. Returns a guard that releases the permit when dropped.
-    pub async fn acquire(&self) -> tokio::sync::SemaphorePermit<'_> {
-        self.semaphore.acquire().await.unwrap()
+    pub async fn acquire(&self) -> Result<tokio::sync::SemaphorePermit<'_>, tokio::sync::AcquireError> {
+        self.semaphore.acquire().await
     }
 
     /// Returns the remaining permits.

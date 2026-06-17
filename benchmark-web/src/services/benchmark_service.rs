@@ -111,6 +111,11 @@ impl BenchmarkService {
         self.queue_processor.clear_completed_and_cancelled()
     }
 
+    /// Clear all items from the queue and cancel all active sessions.
+    pub async fn clear_all(&self) -> usize {
+        self.queue_processor.clear_all().await
+    }
+
     /// Retry a failed queue item.
     pub fn retry_queue_item(&self, item_id: &str) -> Option<BenchmarkQueueItem> {
         self.queue_processor.retry_item(item_id)

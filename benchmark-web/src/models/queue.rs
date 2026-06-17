@@ -165,17 +165,38 @@ impl BenchmarkQueue {
         removed
     }
 
-    /// Retry a failed item by re-adding it to the queue.
-    pub fn retry_item(&self, item_id: &str) -> Option<BenchmarkQueueItem> {
+    /// Clear ALL items from the queue, including pending and running.
+    /// Returns the number of items removed.
+    pub fn clear_all(&self) -> usize {
         let mut data = self.data.lock().unwrap();
-        for item in data.all_items.iter_mut() {
-            if item.id == item_id && item.status == QueueItemStatus::FAILED {
-                let new_item = item.retry();
-                self.add(new_item.clone());
-                return Some(new_item);
+        let removed = data.all_items.len();
+        data.inner.clear();
+        data.all_items.clear();
+        data.current_items.clear();
+        removed
+    }
+
+    /// Retry a failed item by re-adding it to the queue.
+    /// Lock is released before calling self.add() to avoid deadlock
+    /// (std::sync::Mutex is not reentrant).
+    pub fn retry_item(&self, item_id: &str) -> Option<BenchmarkQueueItem> {
+        let new_item = {
+            let mut data = self.data.lock().unwrap();
+            let mut found = None;
+            for item in data.all_items.iter_mut() {
+                if item.id == item_id && item.status == QueueItemStatus::FAILED {
+                    found = Some(item.retry());
+                    break;
+                }
             }
+            found
+            // MutexGuard dropped here — lock released before add()
+        };
+
+        if let Some(ref item) = new_item {
+            self.add(item.clone());
         }
-        None
+        new_item
     }
 
     /// Set the session ID on a queue item.
