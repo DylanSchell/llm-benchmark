@@ -2,6 +2,7 @@
 //! All REST API endpoints matching the Java API exactly.
 
 pub mod benchmark;
+pub mod compare;
 pub mod exercise;
 pub mod queue;
 pub mod result;
@@ -11,6 +12,7 @@ pub mod scoring;
 use axum::{Router, Extension};
 use axum::routing::get;
 use benchmark::register as register_benchmark;
+use compare::register as register_compare;
 use exercise::register as register_exercise;
 use queue::register as register_queue;
 use result::register as register_result;
@@ -115,6 +117,7 @@ pub fn build_router(state: AppState, templates: TemplateEngine) -> Router<()> {
             async move { m.render() }
         }))
         .merge(register_benchmark(Router::new()))
+        .merge(register_compare(Router::new()))
         .merge(register_exercise(Router::new()))
         .merge(register_queue(Router::new()))
         .merge(register_result(Router::new()))

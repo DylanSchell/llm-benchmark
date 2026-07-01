@@ -67,6 +67,7 @@
                 <a href="/">Dashboard</a>
                 <a href="/run">Run Benchmark</a>
                 <a href="/results">Results</a>
+                <a href="/compare">Compare</a>
                 <a href="/scoring">Scoring</a>
             </nav>
         </div>
