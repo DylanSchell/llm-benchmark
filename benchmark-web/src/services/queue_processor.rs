@@ -245,12 +245,71 @@ impl QueueProcessor {
             }
         }
 
+        // In retry mode, sort by previous duration descending (slowest first)
+        // so the longest-running exercises start earliest, maximizing pipeline utilization.
+        if retry {
+            let dir = self.result_service.results_dir().to_path_buf();
+            let durations: std::collections::HashMap<String, u64> = items
+                .iter()
+                .map(|item| {
+                    let key = format!("{}:{}:{}:{}", item.agent_name, item.model, item.language, item.exercise);
+                    let dur = Self::load_previous_duration_ms(&dir, &item.agent_name, &item.model, &item.language, &item.exercise);
+                    (key, dur)
+                })
+                .collect();
+            items.sort_by(|a, b| {
+                let a_key = format!("{}:{}:{}:{}", a.agent_name, a.model, a.language, a.exercise);
+                let b_key = format!("{}:{}:{}:{}", b.agent_name, b.model, b.language, b.exercise);
+                let a_dur = durations.get(&a_key).copied().unwrap_or(0);
+                let b_dur = durations.get(&b_key).copied().unwrap_or(0);
+                b_dur.cmp(&a_dur)
+            });
+            info!("Retry mode: sorted {} items by previous duration (slowest first)", items.len());
+        }
+
         self.queue.add_all(items.clone());
         info!(
             "Scheduled {} queue items total",
             items.len()
         );
         items
+    }
+
+    /// Load the duration (in milliseconds) from a previous result file.
+    /// Returns 0 if no previous result exists or the file cannot be parsed.
+    fn load_previous_duration_ms(
+        results_dir: &std::path::Path,
+        agent_name: &str,
+        model: &str,
+        language: &str,
+        exercise: &str,
+    ) -> u64 {
+        let subdir = format!("{}-{}", agent_name, model);
+        let path = results_dir.join(&subdir).join(format!(
+            "result_{}_{}_{}.json",
+            agent_name, language, exercise
+        ));
+        if !path.exists() {
+            return 0;
+        }
+        match std::fs::read_to_string(&path) {
+            Ok(content) => {
+                if let Ok(value) = serde_json::from_str::<serde_json::Value>(&content) {
+                    // The serialized field is "duration" (in seconds as f64),
+                    // but it may also appear as "duration_ms" (in ms as u64).
+                    if let Some(dur) = value.get("duration").and_then(|v| v.as_f64()) {
+                        (dur * 1000.0) as u64
+                    } else if let Some(dur) = value.get("duration_ms").and_then(|v| v.as_u64()) {
+                        dur
+                    } else {
+                        0
+                    }
+                } else {
+                    0
+                }
+            }
+            Err(_) => 0,
+        }
     }
 
     /// Check if a result file already exists for this exercise and was successful.

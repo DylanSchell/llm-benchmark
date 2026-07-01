@@ -194,6 +194,22 @@ impl ExerciseRunner {
         thinking_level: Option<String>,
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+        self.run_exercise_with_timeout(agent, language, exercise_name, model, thinking_level, results_dir, None).await
+    }
+
+    /// Run a single exercise using any agent, with an optional Docker container
+    /// timeout override (in seconds). When `Some(secs)`, the container timeout is
+    /// capped at that value; when `None`, the default from config is used.
+    pub async fn run_exercise_with_timeout(
+        &self,
+        agent: Arc<dyn Agent + Send + Sync>,
+        language: &str,
+        exercise_name: &str,
+        model: &str,
+        thinking_level: Option<String>,
+        results_dir: &Path,
+        timeout_override_secs: Option<u64>,
+    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
         info!(
             "Running exercise: {} for language: {}",
             exercise_name, language
@@ -226,7 +242,7 @@ impl ExerciseRunner {
             }
         };
 
-        agent.run_exercise(&exercise, &exercise_host_dir, model, thinking_level.as_deref(), results_dir).await
+        agent.run_exercise_with_timeout(&exercise, &exercise_host_dir, model, thinking_level.as_deref(), results_dir, timeout_override_secs).await
     }
 
     /// Run all exercises for a given language using the specified agent with parallelism.
@@ -254,7 +270,7 @@ impl ExerciseRunner {
             language, agent_name
         );
 
-        let exercises = self.find_all_exercises(language);
+        let mut exercises = self.find_all_exercises(language);
         let parallelism = self.config.parallelism.max(1) as usize;
         info!(
             "Found {} exercises for language: {} (parallelism={})",
@@ -264,6 +280,29 @@ impl ExerciseRunner {
         );
 
         let agent_name_string = agent_name.to_string();
+
+        // In retry mode, sort by previous duration descending (slowest first)
+        // so the longest-running exercises start earliest, maximizing pipeline utilization.
+        if retry && !exercises.is_empty() {
+            let agent = &agent_name_string;
+            let lang = language;
+            let mdl = &model;
+            let dir = &results_dir;
+            // Pre-load all durations to avoid repeated file I/O per comparison
+            let durations: std::collections::HashMap<String, u64> = exercises
+                .iter()
+                .map(|ex| {
+                    let dur = Self::load_duration_ms(dir, agent, mdl, lang, &ex.name);
+                    (ex.name.clone(), dur)
+                })
+                .collect();
+            exercises.sort_by(|a, b| {
+                let a_dur = durations.get(&a.name).copied().unwrap_or(0);
+                let b_dur = durations.get(&b.name).copied().unwrap_or(0);
+                b_dur.cmp(&a_dur)
+            });
+            info!("Retry mode: sorted {} exercises by previous duration (slowest first)", exercises.len());
+        }
 
         // Build an async stream of exercise futures, buffered to `parallelism` concurrency
         let futures_stream = stream::iter(exercises)
@@ -478,6 +517,41 @@ impl ExerciseRunner {
     /// Checks if a directory is an exercise directory (contains .meta subdirectory).
     fn is_exercise_directory(&self, dir: &Path) -> bool {
         dir.join(".meta").is_dir()
+    }
+
+    /// Load the duration (in milliseconds) from a previous result file.
+    /// Returns 0 if no previous result exists or the file cannot be parsed.
+    fn load_duration_ms(
+        results_dir: &Path,
+        agent_name: &str,
+        model: &str,
+        language: &str,
+        exercise: &str,
+    ) -> u64 {
+        let subdir = format!("{}-{}", agent_name, model);
+        let path = results_dir.join(&subdir).join(format!(
+            "result_{}_{}_{}.json",
+            agent_name, language, exercise
+        ));
+        if !path.exists() {
+            return 0;
+        }
+        match std::fs::read_to_string(&path) {
+            Ok(content) => {
+                if let Ok(value) = serde_json::from_str::<serde_json::Value>(&content) {
+                    if let Some(dur) = value.get("duration").and_then(|v| v.as_f64()) {
+                        (dur * 1000.0) as u64
+                    } else if let Some(dur) = value.get("duration_ms").and_then(|v| v.as_u64()) {
+                        dur
+                    } else {
+                        0
+                    }
+                } else {
+                    0
+                }
+            }
+            Err(_) => 0,
+        }
     }
 
     /// Finds the main source file for an exercise.

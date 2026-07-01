@@ -15,6 +15,22 @@ use crate::exercise_runner::ExerciseRunner;
 use crate::agent::{ReferenceAgent, ClaudeAgent, PiAgent};
 use crate::persistence::ResultPersister;
 
+/// Safely truncate a string at (or just before) `max_len` bytes on a UTF-8 character boundary.
+pub fn safe_truncate(s: &str, max_len: usize) -> &str {
+    if s.len() <= max_len {
+        s
+    } else if s.is_char_boundary(max_len) {
+        &s[..max_len]
+    } else {
+        // Walk backwards to find the nearest char boundary
+        let mut bound = max_len;
+        while bound > 0 && !s.is_char_boundary(bound) {
+            bound -= 1;
+        }
+        &s[..bound]
+    }
+}
+
 pub async fn run_benchmark(
     config_path: &str,
     language: &str,

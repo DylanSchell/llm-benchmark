@@ -121,16 +121,31 @@ impl ClaudeAgent {
 
 #[async_trait::async_trait]
 impl Agent for ClaudeAgent {
-    #[tracing::instrument(skip(self), fields(exercise = %exercise.name, language = %exercise.language))]
     async fn run_exercise(
+        &self,
+        exercise: &Exercise,
+        host_exercise_dir: &Path,
+        model: &str,
+        thinking_level: Option<&str>,
+        results_dir: &Path,
+    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+        self.run_exercise_with_timeout(exercise, host_exercise_dir, model, thinking_level, results_dir, None).await
+    }
+
+    #[tracing::instrument(skip(self), fields(exercise = %exercise.name, language = %exercise.language))]
+    async fn run_exercise_with_timeout(
         &self,
         exercise: &Exercise,
         host_exercise_dir: &Path,
         _model: &str,
         _thinking_level: Option<&str>,
         _results_dir: &Path,
+        timeout_override_secs: Option<u64>,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
         info!("Starting exercise: {} with Claude agent", exercise.name);
+        if let Some(t) = timeout_override_secs {
+            info!("  Timeout override: {}s", t);
+        }
 
         let temp_work_dir = super::exercise_files::create_temp_work_dir(exercise)?;
 
@@ -138,7 +153,7 @@ impl Agent for ClaudeAgent {
 
         let prompt = Self::create_exercise_prompt(exercise, &temp_work_dir)?;
 
-        let result = self.run_claude_in_docker(exercise, &temp_work_dir, &prompt).await?;
+        let result = self.run_claude_in_docker(exercise, &temp_work_dir, &prompt, timeout_override_secs).await?;
 
         // Use the agent's own timing (captured before test verification),
         // not wall-clock time that includes post-agent work.
@@ -169,6 +184,7 @@ impl ClaudeAgent {
         exercise: &Exercise,
         temp_work_dir: &Path,
         prompt: &str,
+        timeout_override_secs: Option<u64>,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
         let _start_time = Instant::now();
         let start_dt = chrono::Utc::now();
@@ -194,7 +210,7 @@ impl ClaudeAgent {
                 Some("/workspace"),
                 &command,
                 Some(prompt),
-                None,
+                timeout_override_secs,
                 None,
                 Some(&temp_work_dir.to_string_lossy()),
                 Some(std::sync::Arc::new(move |line| {

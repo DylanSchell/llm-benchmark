@@ -295,7 +295,7 @@ impl DockerClient {
 
         if !result.is_success() {
             let output_preview = if result.output.len() > 500 {
-                format!("{}...[truncated]", &result.output[..500])
+                format!("{}...[truncated]", crate::safe_truncate(&result.output, 500))
             } else {
                 result.output.clone()
             };

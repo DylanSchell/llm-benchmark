@@ -53,6 +53,7 @@ impl ResultPersister {
         // Determine whether to save and what attempts count to use.
         let mut should_save = true;
         let mut attempts = 1u64;
+        let mut existing_value_for_patch: Option<serde_json::Value> = None;
 
         if result_file.exists() {
             if let Ok(existing_content) = fs::read_to_string(&result_file) {
@@ -82,6 +83,9 @@ impl ResultPersister {
                         info!("Skipping save for {}/{}: new run failed but existing result already succeeded",
                             agent_name, filename);
                         should_save = false;
+                        attempts = existing_attempts + 1;
+                        // Preserve existing data to patch attempts only
+                        existing_value_for_patch = Some(existing_value);
                     } else if existing_success && result.success {
                         // Existing was successful, new is also successful:
                         // only save if the new run is faster
@@ -91,8 +95,12 @@ impl ResultPersister {
                             info!("Skipping save for {}/{}: new duration {}ms >= existing {}ms",
                                 agent_name, filename, new_duration, existing_duration);
                             should_save = false;
+                            attempts = existing_attempts + 1;
+                            // Preserve existing data to patch attempts only
+                            existing_value_for_patch = Some(existing_value);
+                        } else {
+                            attempts = existing_attempts + 1;
                         }
-                        attempts = existing_attempts + 1;
                     } else {
                         // Overwriting a failure: increment attempts
                         attempts = existing_attempts + 1;
@@ -105,6 +113,17 @@ impl ResultPersister {
         }
 
         if !should_save {
+            // When we skip the full save (e.g., retry failed against a previous
+            // success, or retry was not faster), still update the attempts count
+            // in the existing result file.
+            if let Some(mut existing_value) = existing_value_for_patch {
+                if let Some(obj) = existing_value.as_object_mut() {
+                    obj.insert("attempts".to_string(), serde_json::Value::Number(serde_json::Number::from(attempts)));
+                }
+                let json = serde_json::to_string_pretty(&existing_value)?;
+                fs::write(&result_file, json)?;
+                info!("Updated attempts to {} in existing result: {:?}", attempts, result_file);
+            }
             return Ok(result_file);
         }
 

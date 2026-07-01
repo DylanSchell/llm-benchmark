@@ -26,11 +26,11 @@ docker:
   # Environment variables to be set inside the runner
   environment:
     - ANTHROPIC_AUTH_TOKEN: "your-secret-key"
-    - ANTHROPIC_API_KEY: ""
-    - ANTHROPIC_MODEL: "gpt-oss-20b"
-    - ANTHROPIC_DEFAULT_HAIKU_MODEL: "gpt-oss-20b"
-    - ANTHROPIC_DEFAULT_OPUS_MODEL: "gpt-oss-20b"
-    - ANTHROPIC_DEFAULT_SONNET_MODEL: "gpt-oss-20b"
+    - ANTHROPIC_API_KEY: "claude-sonnet-5"
+    - ANTHROPIC_MODEL: "claude-sonnet-5"
+    - ANTHROPIC_DEFAULT_HAIKU_MODEL: "claude-sonnet-5"
+    - ANTHROPIC_DEFAULT_OPUS_MODEL: "claude-sonnet-5"
+    - ANTHROPIC_DEFAULT_SONNET_MODEL: "claude-sonnet-5"
     - ANTHROPIC_BASE_URL: "http://host.docker.internal:8080"
     - OPENAI_BASE_URL: "http://host.docker.internal:8080/v1"
     - OPENAI_API_KEY: "api-key"

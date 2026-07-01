@@ -189,7 +189,17 @@ impl BenchmarkExecutor {
                 exercise_name, language
             ));
 
-            match self.run_single_exercise(&agent, language, &exercise_name, model, thinking_level, agent_name).await {
+            // Compute timeout override for retries: if the exercise previously
+            // succeeded, cap the Docker container timeout to its previous duration
+            // so a retry can't waste time spinning. If it previously failed, use
+            // the default timeout.
+            let timeout_override = if session.retry {
+                self.compute_retry_timeout(&agent_name, language, &exercise_name, model)
+            } else {
+                None
+            };
+
+            match self.run_single_exercise(&agent, language, &exercise_name, model, thinking_level, agent_name, timeout_override).await {
                 Ok(result) => {
                     session.emit_output(&result.output);
 
@@ -305,12 +315,62 @@ impl BenchmarkExecutor {
         model: &str,
         thinking_level: Option<&str>,
         _agent_name: &str,
+        timeout_override_secs: Option<u64>,
     ) -> Result<AgentResult> {
         let results_dir = self.results_dir();
         self.exercise_runner
-            .run_exercise(Arc::clone(agent), language, exercise_name, model, thinking_level.map(|s| s.to_string()), &results_dir)
+            .run_exercise_with_timeout(Arc::clone(agent), language, exercise_name, model, thinking_level.map(|s| s.to_string()), &results_dir, timeout_override_secs)
             .await
             .map_err(|e| anyhow::anyhow!("Exercise failed: {}", e))
+    }
+
+    /// Computes the Docker container timeout override for a retry.
+    ///
+    /// If the exercise has a previous successful result, returns
+    /// `Some(previous_duration_in_seconds)` so the retry time limit is
+    /// exactly the previous execution time. If the exercise previously
+    /// failed (or has no result), returns `None` so the default timeout is used.
+    fn compute_retry_timeout(
+        &self,
+        agent_name: &str,
+        language: &str,
+        exercise_name: &str,
+        model: &str,
+    ) -> Option<u64> {
+        let results_dir = self.results_dir();
+        let subdir = format!("{}-{}", agent_name, model);
+        let result_file = results_dir.join(&subdir).join(format!(
+            "result_{}_{}_{}.json",
+            agent_name, language, exercise_name
+        ));
+
+        if !result_file.exists() {
+            return None;
+        }
+
+        let content = std::fs::read_to_string(&result_file).ok()?;
+        let value: serde_json::Value = serde_json::from_str(&content).ok()?;
+        let success = value.get("success")?.as_bool().unwrap_or(false);
+
+        if !success {
+            return None; // previously failed — use default timeout
+        }
+
+        let duration_ms = value.get("duration").and_then(|v| {
+            if let Some(f) = v.as_f64() {
+                Some((f * 1000.0) as u64)
+            } else {
+                v.as_u64()
+            }
+        })?;
+
+        // Convert to seconds, minimum 1s
+        let timeout_secs = (duration_ms / 1000).max(1);
+        tracing::info!(
+            "Retry timeout override for {}/{}: {}s (previous duration: {}ms)",
+            language, exercise_name, timeout_secs, duration_ms
+        );
+        Some(timeout_secs)
     }
 
     /// Save a single exercise result to disk and update the in-memory cache.

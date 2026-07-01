@@ -24,6 +24,28 @@ impl PiAgent {
         }
     }
 
+    /// Returns true if the model name indicates an Anthropic-family model
+    /// (Claude, Opus, Sonnet, Haiku) that should be routed through the
+    /// llama-swap Anthropic Messages passthrough instead of the OpenAI
+    /// compatible endpoint.
+    fn is_anthropic_model(model: &str) -> bool {
+        let lower = model.to_lowercase();
+        ["claude", "opus", "sonnet", "haiku"]
+            .iter()
+            .any(|keyword| lower.contains(keyword))
+    }
+
+    /// Returns the pi provider key to use for the given model: "anthropic"
+    /// for Claude/Opus/Sonnet/Haiku models, "openai" otherwise. Must stay in
+    /// sync with the provider key used in `create_models_json`.
+    fn provider_key_for_model(model: &str) -> &'static str {
+        if Self::is_anthropic_model(model) {
+            "anthropic"
+        } else {
+            "openai"
+        }
+    }
+
     /// Set the message processor with an output consumer for web UI streaming.
     pub fn set_message_processor(&mut self, processor: PiMessageProcessor) {
         self.message_processor = Arc::new(Mutex::new(processor));
@@ -44,21 +66,39 @@ impl PiAgent {
         // Read environment configuration from Docker config
         let env_vars = self.docker_client.get_config().environment().clone();
 
-        // Use OpenAI endpoint (derived from ANTHROPIC_BASE_URL with /v1 suffix)
-        let base_url = env_vars
-            .get("OPENAI_BASE_URL")
-            .map(|s| s.as_str())
-            .unwrap_or("http://host.docker.internal:8000/v1");
+        // Claude/Opus/Sonnet/Haiku models are routed through the llama-swap
+        // Anthropic Messages passthrough; everything else keeps using the
+        // OpenAI-compatible endpoint.
+        let use_anthropic = Self::is_anthropic_model(model);
 
-        let api_key = env_vars
-            .get("OPENAI_API_KEY")
-            .map(|s| s.as_str())
-            .unwrap_or_else(|| {
-                env_vars
-                    .get("ANTHROPIC_AUTH_TOKEN")
-                    .map(|s| s.as_str())
-                    .unwrap_or("placeholder-key")
-            });
+        let (base_url, api_key, api_type) = if use_anthropic {
+            let base_url = env_vars
+                .get("ANTHROPIC_BASE_URL")
+                .map(|s| s.as_str())
+                .unwrap_or("http://host.docker.internal:8000");
+            let api_key = env_vars
+                .get("ANTHROPIC_AUTH_TOKEN")
+                .map(|s| s.as_str())
+                .or_else(|| env_vars.get("ANTHROPIC_API_KEY").map(|s| s.as_str()))
+                .unwrap_or("placeholder-key");
+            (base_url, api_key, "anthropic-messages")
+        } else {
+            // Use OpenAI endpoint (derived from ANTHROPIC_BASE_URL with /v1 suffix)
+            let base_url = env_vars
+                .get("OPENAI_BASE_URL")
+                .map(|s| s.as_str())
+                .unwrap_or("http://host.docker.internal:8000/v1");
+            let api_key = env_vars
+                .get("OPENAI_API_KEY")
+                .map(|s| s.as_str())
+                .unwrap_or_else(|| {
+                    env_vars
+                        .get("ANTHROPIC_AUTH_TOKEN")
+                        .map(|s| s.as_str())
+                        .unwrap_or("placeholder-key")
+                });
+            (base_url, api_key, "openai-completions")
+        };
 
         // Build reasoning configuration: check registry first, fall back to mechanism detection
         let reasoning_config = if let Some(level_str) = thinking_level {
@@ -112,14 +152,14 @@ impl PiAgent {
         let model_obj = serde_json::Value::Object(model_map);
 
         // Build providers with serde_json for bulletproof escaping
-        let mut openai_provider = serde_json::Map::new();
-        openai_provider.insert("baseUrl".to_string(), serde_json::Value::String(base_url.to_string()));
-        openai_provider.insert("apiKey".to_string(), serde_json::Value::String(api_key.to_string()));
-        openai_provider.insert("api".to_string(), serde_json::Value::String("openai-completions".to_string()));
-        openai_provider.insert("models".to_string(), serde_json::json!([model_obj]));
+        let mut provider = serde_json::Map::new();
+        provider.insert("baseUrl".to_string(), serde_json::Value::String(base_url.to_string()));
+        provider.insert("apiKey".to_string(), serde_json::Value::String(api_key.to_string()));
+        provider.insert("api".to_string(), serde_json::Value::String(api_type.to_string()));
+        provider.insert("models".to_string(), serde_json::json!([model_obj]));
 
         let mut providers = serde_json::Map::new();
-        providers.insert("openai".to_string(), serde_json::Value::Object(openai_provider));
+        providers.insert(Self::provider_key_for_model(model).to_string(), serde_json::Value::Object(provider));
 
         let mut root = serde_json::Map::new();
         root.insert("providers".to_string(), serde_json::Value::Object(providers));
@@ -129,8 +169,8 @@ impl PiAgent {
 
         let models_file = pi_agent_dir.join("models.json");
         fs::write(&models_file, &models_json)?;
-        debug!("Created models.json at: {:?} with OpenAI provider (model={}, thinking_level={:?}, mechanism={:?})",
-            models_file, model, thinking_level,
+        debug!("Created models.json at: {:?} with {} provider (model={}, thinking_level={:?}, mechanism={:?})",
+            models_file, Self::provider_key_for_model(model), model, thinking_level,
             reasoning_config.as_ref().map(|rc| &rc.mechanism));
         Ok(())
     }
@@ -350,7 +390,7 @@ impl PiAgent {
             "--tools".to_string(),
             "read,bash,edit,write,grep,find,ls".to_string(),
             "--provider".to_string(),
-            "openai".to_string(),
+            Self::provider_key_for_model(model).to_string(),
             "--model".to_string(),
             model.to_string(),
         ];
@@ -368,7 +408,6 @@ impl PiAgent {
 
 #[async_trait::async_trait]
 impl Agent for PiAgent {
-    #[tracing::instrument(skip(self), fields(exercise = %exercise.name, language = %exercise.language))]
     async fn run_exercise(
         &self,
         exercise: &Exercise,
@@ -377,12 +416,28 @@ impl Agent for PiAgent {
         thinking_level: Option<&str>,
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+        self.run_exercise_with_timeout(exercise, host_exercise_dir, model, thinking_level, results_dir, None).await
+    }
+
+    #[tracing::instrument(skip(self), fields(exercise = %exercise.name, language = %exercise.language))]
+    async fn run_exercise_with_timeout(
+        &self,
+        exercise: &Exercise,
+        host_exercise_dir: &Path,
+        model: &str,
+        thinking_level: Option<&str>,
+        results_dir: &Path,
+        timeout_override_secs: Option<u64>,
+    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
         let start_time = Instant::now();
         let start_dt = chrono::Utc::now();
         info!(
             "Running Pi agent for exercise: {}",
             exercise.name
         );
+        if let Some(t) = timeout_override_secs {
+            info!("  Timeout override: {}s", t);
+        }
 
         // Create temporary working directory and copy exercise files (shared logic)
         let temp_work_dir = super::exercise_files::create_temp_work_dir(exercise)?;
@@ -438,7 +493,7 @@ impl Agent for PiAgent {
                 Some(&container_work_dir),
                 &command_refs,
                 prompt_arg,
-                None,
+                timeout_override_secs,
                 None,
                 Some(&temp_work_dir.to_string_lossy()),
                 Some(std::sync::Arc::new(move |line| {
@@ -458,7 +513,7 @@ impl Agent for PiAgent {
 
         if !pi_success {
             let output_preview = if result.output.len() > 1000 {
-                format!("{}...[truncated]", &result.output[..1000])
+                format!("{}...[truncated]", crate::safe_truncate(&result.output, 1000))
             } else {
                 result.output.clone()
             };
@@ -628,5 +683,33 @@ impl PiAgent {
         prompt.push_str("\ncaveman mode\n");
 
         Ok(prompt)
+    }
+}
+
+#[cfg(test)]
+mod provider_routing_tests {
+    use super::PiAgent;
+
+    #[test]
+    fn detects_claude_family_models_case_insensitively() {
+        assert!(PiAgent::is_anthropic_model("claude-sonnet-5"));
+        assert!(PiAgent::is_anthropic_model("Claude-Opus-4-5"));
+        assert!(PiAgent::is_anthropic_model("claude-3-5-haiku-20241022"));
+        assert!(PiAgent::is_anthropic_model("SONNET"));
+        assert!(PiAgent::is_anthropic_model("my-opus-mirror"));
+        assert!(PiAgent::is_anthropic_model("haiku-mini"));
+    }
+
+    #[test]
+    fn does_not_flag_non_anthropic_models() {
+        assert!(!PiAgent::is_anthropic_model("gpt-4o"));
+        assert!(!PiAgent::is_anthropic_model("qwen2.5-coder:7b"));
+        assert!(!PiAgent::is_anthropic_model("llama3.1:8b"));
+    }
+
+    #[test]
+    fn provider_key_matches_model_family() {
+        assert_eq!(PiAgent::provider_key_for_model("claude-sonnet-5"), "anthropic");
+        assert_eq!(PiAgent::provider_key_for_model("gpt-4o"), "openai");
     }
 }

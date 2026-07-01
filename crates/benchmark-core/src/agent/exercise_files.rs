@@ -49,14 +49,14 @@ pub fn copy_exercise_files(
             let dest = exercise_dest.join(relative);
             fs::create_dir_all(&dest)?;
         } else {
-            // Skip reference implementation directory
-            let path_str = source_path.to_string_lossy();
-            if path_str.contains(".meta/src/reference") {
-                debug!("Skipping reference file: {:?}", source_path);
+            let relative = source_path.strip_prefix(source_dir).unwrap_or(source_path);
+
+            // Skip .meta directory tree entirely (example solutions, configs, etc.)
+            // Must come before the dest computation so these files never reach the container
+            if relative.to_string_lossy().contains(".meta") {
+                debug!("Skipping .meta file: {:?}", source_path);
                 continue;
             }
-
-            let relative = source_path.strip_prefix(source_dir).unwrap_or(source_path);
             let dest = exercise_dest.join(relative);
             if let Some(parent) = dest.parent() {
                 fs::create_dir_all(parent)?;
@@ -70,7 +70,10 @@ pub fn copy_exercise_files(
         }
     }
 
-    // For Rust exercises, copy Cargo-example.toml to Cargo.toml if it exists
+    // For Rust exercises, copy Cargo-example.toml to Cargo.toml if it exists.
+    // This replaces the stub Cargo.toml with the one that has all dependency
+    // declarations needed for the exercise. The example.rs source code itself
+    // is NOT copied — only the build configuration.
     if exercise.language == "rust" {
         let cargo_example = source_dir.join(".meta").join("Cargo-example.toml");
         if cargo_example.exists() {

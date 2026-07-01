@@ -216,6 +216,19 @@ pub trait Agent: Send + Sync {
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>>;
 
+    /// Run an exercise with a custom Docker container timeout override (in seconds).
+    /// When `Some(secs)`, overrides the default container timeout. When `None`,
+    /// the default from config is used.
+    async fn run_exercise_with_timeout(
+        &self,
+        exercise: &crate::exercise::Exercise,
+        host_exercise_dir: &Path,
+        model: &str,
+        thinking_level: Option<&str>,
+        results_dir: &Path,
+        timeout_override_secs: Option<u64>,
+    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>>;
+
     /// Returns the agent's name (e.g., "reference", "claude", "pi").
     fn get_name(&self) -> &str;
 }

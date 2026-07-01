@@ -575,14 +575,26 @@ impl ReferenceAgent {
 
 #[async_trait::async_trait]
 impl Agent for ReferenceAgent {
-    #[tracing::instrument(skip(self), fields(exercise = %exercise.name, language = %exercise.language))]
     async fn run_exercise(
+        &self,
+        exercise: &Exercise,
+        host_exercise_dir: &Path,
+        model: &str,
+        thinking_level: Option<&str>,
+        results_dir: &Path,
+    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+        self.run_exercise_with_timeout(exercise, host_exercise_dir, model, thinking_level, results_dir, None).await
+    }
+
+    #[tracing::instrument(skip(self), fields(exercise = %exercise.name, language = %exercise.language))]
+    async fn run_exercise_with_timeout(
         &self,
         exercise: &Exercise,
         host_exercise_dir: &Path,
         _model: &str,
         _thinking_level: Option<&str>,
         _results_dir: &Path,
+        _timeout_override_secs: Option<u64>,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
         let start_time = Instant::now();
         let start_dt = chrono::Utc::now();
