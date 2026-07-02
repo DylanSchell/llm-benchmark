@@ -195,15 +195,31 @@ pub async fn compare_page(
         });
     }
 
+    // Compute speed comparison counts (done in Rust, not Tera — Tera's {% set %}
+    // is loop-scoped, so counter variables in for-loops never actually update).
+    let a_faster_count = rows.iter().filter(|r| r.faster == "a").count();
+    let b_faster_count = rows.iter().filter(|r| r.faster == "b").count();
+    let tie_count = rows.iter().filter(|r| r.faster == "tie").count();
+
+    // Also extract short model names for labels (e.g., "claude-sonnet-5" from "pi - claude-sonnet-5")
+    let a_label = split_model_key(&a_key).1;
+    let b_label = split_model_key(&b_key).1;
+
     let mut ctx = tera::Context::new();
     ctx.insert("title", &"Compare Models");
     ctx.insert("models", &model_keys);
     ctx.insert("a", &a_key);
+    ctx.insert("a_label", &a_label);
     ctx.insert("b", &b_key);
+    ctx.insert("b_label", &b_label);
     ctx.insert("rows", &rows);
     // Row count for display
     let row_count = rows.len();
     ctx.insert("row_count", &row_count);
+    // Speed comparison counts
+    ctx.insert("a_faster_count", &a_faster_count);
+    ctx.insert("b_faster_count", &b_faster_count);
+    ctx.insert("tie_count", &tie_count);
 
     axum::response::Html(templates.render("compare.tera", &ctx))
 }

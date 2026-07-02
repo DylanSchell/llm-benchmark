@@ -38,14 +38,6 @@
 
     {% if a != "" and b != "" %}
     <!-- Summary Stats -->
-    {% set a_faster_count = 0 %}
-    {% set b_faster_count = 0 %}
-    {% set tie_count = 0 %}
-    {% for row in rows %}
-        {% if row.faster == "a" %}{% set a_faster_count = a_faster_count + 1 %}{% endif %}
-        {% if row.faster == "b" %}{% set b_faster_count = b_faster_count + 1 %}{% endif %}
-        {% if row.faster == "tie" %}{% set tie_count = tie_count + 1 %}{% endif %}
-    {% endfor %}
     <div class="card" style="margin-bottom: 1rem;">
         <h3 style="margin-bottom: 1rem;">Summary: {{ a }} vs {{ b }}</h3>
         <div class="stats-grid">
@@ -55,11 +47,11 @@
             </div>
             <div class="stat-card">
                 <div class="stat-value">{{ a_faster_count }}</div>
-                <div class="stat-label">{{ a }} faster</div>
+                <div class="stat-label">{{ a_label | default(value=a) }} faster</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value">{{ b_faster_count }}</div>
-                <div class="stat-label">{{ b }} faster</div>
+                <div class="stat-label">{{ b_label | default(value=b) }} faster</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value">{{ tie_count }}</div>
