@@ -166,6 +166,88 @@ fn parse_tokens_from_trace(trace_path: &Path, agent: &str) -> (u64, u64, u64, u6
     }
 }
 
+/// Parse turn count and tool call count from a trace file.
+/// Returns (turn_count, tool_call_count).
+/// A "turn" is each assistant message. A "tool call" is each tool invocation
+/// (for Pi traces: `toolCall` content blocks; for Claude traces: `tool_use` blocks).
+fn parse_trace_counts(trace_path: &Path, agent: &str) -> (u64, u64) {
+    if !trace_path.exists() {
+        return (0, 0);
+    }
+    if agent.starts_with("pi") {
+        count_pi_turns_and_tools(trace_path)
+    } else {
+        count_claude_turns_and_tools(trace_path)
+    }
+}
+
+/// Count turns and tool calls from a Pi agent trace file (JSONL format).
+fn count_pi_turns_and_tools(trace_path: &Path) -> (u64, u64) {
+    let mut turns = 0u64;
+    let mut tool_calls = 0u64;
+    if let Ok(file) = File::open(trace_path) {
+        for line in BufReader::new(file).lines().flatten() {
+            let v: serde_json::Value = match serde_json::from_str(line.trim()) {
+                Ok(v) => v,
+                _ => continue,
+            };
+            // Pi trace: {"type":"message","message":{"role":"assistant","content":[...]}}
+            if v.get("type").and_then(|t| t.as_str()) == Some("message") {
+                if let Some(msg) = v.get("message") {
+                    if msg.get("role").and_then(|r| r.as_str()) == Some("assistant") {
+                        turns += 1;
+                        if let Some(content) = msg.get("content").and_then(|c| c.as_array()) {
+                            for block in content {
+                                if block.get("type").and_then(|t| t.as_str()) == Some("toolCall") ||
+                                   block.get("type").and_then(|t| t.as_str()) == Some("tool_use") {
+                                    tool_calls += 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    (turns, tool_calls)
+}
+
+/// Count turns and tool calls from a Claude agent trace file (JSONL format).
+fn count_claude_turns_and_tools(trace_path: &Path) -> (u64, u64) {
+    let mut turns = 0u64;
+    let mut tool_calls = 0u64;
+    if let Ok(file) = File::open(trace_path) {
+        for line in BufReader::new(file).lines().flatten() {
+            if let Ok(entry) = serde_json::from_str::<LogEntry>(line.trim()) {
+                if let LogEntry::Assistant(a) = &entry {
+                    if a.message.is_some() {
+                        turns += 1;
+                    }
+                }
+            }
+            // Second pass: Claude assistant entries can have tool_use in their content.
+            // The current LogEntry doesn't expose content blocks,
+            // so for Claude we count tool_use from the raw JSON.
+            let v: serde_json::Value = match serde_json::from_str(line.trim()) {
+                Ok(v) => v,
+                _ => continue,
+            };
+            if v.get("type").and_then(|t| t.as_str()) == Some("assistant") {
+                if let Some(msg) = v.get("message") {
+                    if let Some(content) = msg.get("content").and_then(|c| c.as_array()) {
+                        for block in content {
+                            if block.get("type").and_then(|t| t.as_str()) == Some("tool_use") {
+                                tool_calls += 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    (turns, tool_calls)
+}
+
 // =============================================================================
 // Cached result data for fast in-memory access.
 /// Cached result data for fast in-memory access.
@@ -195,6 +277,11 @@ pub struct CachedResult {
     pub cached_input_tokens: u64,
     #[serde(default)]
     pub uncached_input_tokens: u64,
+    // Turn and tool call counts (parsed from trace file at load time)
+    #[serde(default)]
+    pub turn_count: u64,
+    #[serde(default)]
+    pub tool_call_count: u64,
     // Timestamps for wall-clock computation
     #[serde(default)]
     pub start_time: String,
@@ -234,6 +321,11 @@ pub struct IndividualResult {
     pub total_tokens: u64,
     // Calculated field: tokens per second
     pub tokens_per_sec: Option<f64>,
+    // Turn and tool call counts (from trace file)
+    #[serde(default)]
+    pub turn_count: u64,
+    #[serde(default)]
+    pub tool_call_count: u64,
     // Exercise count fields (from CachedResult)
     pub total_exercises: i32,
     pub successful: i32,
@@ -690,6 +782,15 @@ impl ResultService {
                 (0, 0, 0, 0)
             };
 
+        // Parse turn count and tool call count from trace file
+        let (turn_count, tool_call_count) =
+            if let Some(ref tp) = trace_path {
+                let trace_path_buf = PathBuf::from(tp);
+                parse_trace_counts(&trace_path_buf, &agent)
+            } else {
+                (0, 0)
+            };
+
         Ok(Some(CachedResult {
             filename,
             directory,
@@ -710,6 +811,8 @@ impl ResultService {
             output_tokens,
             cached_input_tokens,
             uncached_input_tokens,
+            turn_count,
+            tool_call_count,
             start_time,
             end_time,
         }))
@@ -900,6 +1003,8 @@ impl ResultService {
                     uncached_input_tokens: cached_result.uncached_input_tokens,
                     total_tokens: cached_result.input_tokens + cached_result.output_tokens,
                     tokens_per_sec: None, // Will be calculated after duration is populated
+                    turn_count: cached_result.turn_count,
+                    tool_call_count: cached_result.tool_call_count,
                     total_exercises: cached_result.total_exercises,
                     successful: cached_result.successful,
                     success_rate: 0.0, // Will be calculated in calculate_scores

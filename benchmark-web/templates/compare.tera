@@ -9,7 +9,7 @@
     <!-- Selectors -->
     <div class="card" style="margin-bottom: 1rem;">
         <form method="get" action="/compare" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
-            <div class="form-group" style="margin-bottom: 0; min-width: 280px;">
+            <div class="form-group" style="margin-bottom: 0; min-width: 250px;">
                 <label for="select-a">Run A</label>
                 <select id="select-a" name="a">
                     <option value="">-- Select Model --</option>
@@ -19,7 +19,7 @@
                 </select>
             </div>
 
-            <div class="form-group" style="margin-bottom: 0; min-width: 280px;">
+            <div class="form-group" style="margin-bottom: 0; min-width: 250px;">
                 <label for="select-b">Run B</label>
                 <select id="select-b" name="b">
                     <option value="">-- Select Model --</option>
@@ -28,6 +28,18 @@
                     {% endfor %}
                 </select>
             </div>
+
+            {% if a != "" and b != "" %}
+            <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+                <label for="select-metric">Compare by</label>
+                <select id="select-metric" name="metric" onchange="this.form.submit()">
+                    <option value="speed" {% if metric == "speed" %}selected{% endif %}>Speed (Duration)</option>
+                    <option value="tokens" {% if metric == "tokens" %}selected{% endif %}>Tokens</option>
+                    <option value="turns" {% if metric == "turns" %}selected{% endif %}>Turns</option>
+                    <option value="toolcalls" {% if metric == "toolcalls" %}selected{% endif %}>Tool Calls</option>
+                </select>
+            </div>
+            {% endif %}
 
             <button type="submit" class="btn btn-primary">Compare</button>
             {% if a != "" and b != "" %}
@@ -39,7 +51,7 @@
     {% if a != "" and b != "" %}
     <!-- Summary Stats -->
     <div class="card" style="margin-bottom: 1rem;">
-        <h3 style="margin-bottom: 1rem;">Summary: {{ a }} vs {{ b }}</h3>
+        <h3 style="margin-bottom: 1rem;">Summary: {{ a }} vs {{ b }} &mdash; {{ metric_label }}</h3>
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-value">{{ row_count }}</div>
@@ -47,11 +59,11 @@
             </div>
             <div class="stat-card">
                 <div class="stat-value">{{ a_faster_count }}</div>
-                <div class="stat-label">{{ a_label | default(value=a) }} faster</div>
+                <div class="stat-label">{{ a_label | default(value=a) }} better</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value">{{ b_faster_count }}</div>
-                <div class="stat-label">{{ b_label | default(value=b) }} faster</div>
+                <div class="stat-label">{{ b_label | default(value=b) }} better</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value">{{ tie_count }}</div>
@@ -73,7 +85,7 @@
             .tie-row { background: #fff3cd; }
             .only-a { background: #d4edda; }
             .only-b { background: #f8d7da; }
-            .duration-cell { font-family: 'Consolas', 'Monaco', monospace; white-space: nowrap; }
+            .metric-cell { font-family: 'Consolas', 'Monaco', monospace; white-space: nowrap; }
             .ratio-cell { font-family: 'Consolas', 'Monaco', monospace; }
             .winner-badge { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.7rem; font-weight: bold; margin-left: 0.3rem; }
             .winner-a-badge { background: #27ae60; color: white; }
@@ -86,10 +98,10 @@
                     <th onclick="sortCompareTable(0)">Language &#x2195;</th>
                     <th onclick="sortCompareTable(1)">Exercise &#x2195;</th>
                     <th onclick="sortCompareTable(2, true)" style="text-align: right;">
-                        {{ a }} Duration &#x2195;
+                        {{ a_label | default(value=a) }}<br><span style="font-weight: normal; font-size: 0.8rem;">{{ metric_label }}</span> &#x2195;
                     </th>
                     <th onclick="sortCompareTable(3, true)" style="text-align: right;">
-                        {{ b }} Duration &#x2195;
+                        {{ b_label | default(value=b) }}<br><span style="font-weight: normal; font-size: 0.8rem;">{{ metric_label }}</span> &#x2195;
                     </th>
                     <th onclick="sortCompareTable(4, true)" style="text-align: right;">Ratio (A/B) &#x2195;</th>
                     <th style="text-align: right;">Winner</th>
@@ -97,7 +109,7 @@
             </thead>
             <tbody>
             {% for row in rows %}
-                {% if row.a_sort and row.b_sort and row.a_sort > 0 and row.b_sort > 0 %}
+                {% if row.sort_a and row.sort_b and row.sort_a > 0 and row.sort_b > 0 %}
                     {% if row.faster == "b" %}
                         <tr class="faster-b">
                     {% elif row.faster == "tie" %}
@@ -105,37 +117,37 @@
                     {% else %}
                         <tr class="faster-a">
                     {% endif %}
-                {% elif row.a_sort %}
+                {% elif row.sort_a > 0 %}
                     <tr class="only-a">
-                {% elif row.b_sort %}
+                {% elif row.sort_b > 0 %}
                     <tr class="only-b">
                 {% else %}
                     <tr>
                 {% endif %}
                     <td>{{ row.language }}</td>
                     <td>{{ row.exercise }}</td>
-                    <td class="duration-cell" style="text-align: right;" data-sort="{{ row.sort_a | default(value=0) }}">
-                        {% if row.a_duration %}
-                            {{ row.a_duration }}
+                    <td class="metric-cell" style="text-align: right;" data-sort="{{ row.sort_a | default(value=0) }}">
+                        {% if row.a_display %}
+                            {{ row.a_display }}
                             {% if row.a_success %}
                                 <span style="color: #27ae60;">&#x2713;</span>
                             {% else %}
                                 <span style="color: #e74c3c;">&#x2717;</span>
                             {% endif %}
-                            {% if row.a_tps %}<span style="color: #7f8c8d; font-size: 0.8rem;"> ({{ row.tps_a_fmt }})</span>{% endif %}
+                            {% if metric == "speed" and row.a_tps %}<span style="color: #7f8c8d; font-size: 0.8rem;"> ({{ row.tps_a_fmt }})</span>{% endif %}
                         {% else %}
                             <span style="color: #ccc;">-</span>
                         {% endif %}
                     </td>
-                    <td class="duration-cell" style="text-align: right;" data-sort="{{ row.sort_b | default(value=0) }}">
-                        {% if row.b_duration %}
-                            {{ row.b_duration }}
+                    <td class="metric-cell" style="text-align: right;" data-sort="{{ row.sort_b | default(value=0) }}">
+                        {% if row.b_display %}
+                            {{ row.b_display }}
                             {% if row.b_success %}
                                 <span style="color: #27ae60;">&#x2713;</span>
                             {% else %}
                                 <span style="color: #e74c3c;">&#x2717;</span>
                             {% endif %}
-                            {% if row.b_tps %}<span style="color: #7f8c8d; font-size: 0.8rem;"> ({{ row.tps_b_fmt }})</span>{% endif %}
+                            {% if metric == "speed" and row.b_tps %}<span style="color: #7f8c8d; font-size: 0.8rem;"> ({{ row.tps_b_fmt }})</span>{% endif %}
                         {% else %}
                             <span style="color: #ccc;">-</span>
                         {% endif %}
@@ -155,14 +167,14 @@
                     </td>
                     <td style="text-align: right;">
                         {% if row.faster == "a" %}
-                            <span class="winner-badge winner-a-badge">{{ a }}</span>
+                            <span class="winner-badge winner-a-badge">{{ a_label | default(value=a) }}</span>
                         {% elif row.faster == "b" %}
-                            <span class="winner-badge winner-b-badge">{{ b }}</span>
-                        {% elif row.a_sort and row.b_sort %}
+                            <span class="winner-badge winner-b-badge">{{ b_label | default(value=b) }}</span>
+                        {% elif row.sort_a > 0 and row.sort_b > 0 %}
                             <span class="winner-badge winner-tie-badge">tie</span>
-                        {% elif row.a_sort %}
+                        {% elif row.sort_a > 0 %}
                             <span class="winner-badge winner-a-badge">only A</span>
-                        {% elif row.b_sort %}
+                        {% elif row.sort_b > 0 %}
                             <span class="winner-badge winner-b-badge">only B</span>
                         {% endif %}
                     </td>

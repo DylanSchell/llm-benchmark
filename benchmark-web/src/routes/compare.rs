@@ -17,26 +17,26 @@ use std::collections::HashMap;
 pub struct CompareQuery {
     pub a: Option<String>,  // model key for run A (format: "agent - model")
     pub b: Option<String>,  // model key for run B (format: "agent - model")
+    #[serde(default)]
+    pub metric: Option<String>,  // which metric to compare: "speed" (default), "tokens", "turns", "toolcalls"
 }
 
-/// A single row in the comparison table — one exercise, two durations.
+/// A single row in the comparison table — one exercise, two values for the selected metric.
 #[derive(Debug, Serialize)]
 pub struct CompareRow {
     pub language: String,
     pub exercise: String,
-    pub a_duration: Option<String>,
-    pub a_sort: Option<f64>,
+    /// Display value for A (depends on selected metric)
+    pub a_display: String,
+    /// Sort value for A
     pub sort_a: f64,
-    pub a_success: bool,
-    pub a_tps: Option<f64>,
-    pub tps_a_fmt: String,
-    pub b_duration: Option<String>,
-    pub b_sort: Option<f64>,
+    /// Display value for B
+    pub b_display: String,
+    /// Sort value for B
     pub sort_b: f64,
+    pub a_success: bool,
     pub b_success: bool,
-    pub b_tps: Option<f64>,
-    pub tps_b_fmt: String,
-    /// Which side is faster: "a", "b", "tie"
+    /// Which side is better: "a", "b", "tie"
     pub faster: String,
     /// Pre-formatted ratio string like "0.75x"
     pub ratio_fmt: String,
@@ -44,6 +44,19 @@ pub struct CompareRow {
     pub sort_ratio: f64,
     /// Which side the ratio favors: "a", "b", or "tie"
     pub ratio_favor: String,
+    /// Column label for the metric being compared
+    pub metric_label: String,
+    /// Display format: "duration" or "count"
+    pub metric_fmt: String,
+    // Legacy duration-specific fields (preserved for backward compatibility)
+    pub a_duration: Option<String>,
+    pub a_sort_duration: Option<f64>,
+    pub b_duration: Option<String>,
+    pub b_sort_duration: Option<f64>,
+    pub a_tps: Option<f64>,
+    pub tps_a_fmt: String,
+    pub b_tps: Option<f64>,
+    pub tps_b_fmt: String,
 }
 
 // =============================================================================
@@ -71,6 +84,14 @@ pub async fn compare_page(
 
     let a_key = params.a.clone().unwrap_or_default();
     let b_key = params.b.clone().unwrap_or_default();
+    let metric = params.metric.clone().unwrap_or_else(|| "speed".to_string());
+
+    let (metric_label, metric_fmt) = match metric.as_str() {
+        "tokens" => ("Total Tokens", "count"),
+        "turns" => ("Turns", "count"),
+        "toolcalls" => ("Tool Calls", "count"),
+        _ => ("Duration", "duration"),
+    };
 
     let mut rows: Vec<CompareRow> = Vec::new();
 
@@ -101,56 +122,109 @@ pub async fn compare_page(
             .map(|r| ((r.language.clone(), r.exercise.clone()), r))
             .collect();
 
+        /// Extract (display_value, sort_value) for the selected metric.
+        fn metric_values(
+            r: &crate::services::result_service::IndividualResult,
+            metric: &str,
+        ) -> (String, Option<f64>) {
+            match metric {
+                "tokens" => {
+                    let v = r.input_tokens + r.output_tokens;
+                    let sort = if v > 0 { Some(v as f64) } else { None };
+                    let disp = if v > 0 { format_tokens_compact(v) } else { String::new() };
+                    (disp, sort)
+                }
+                "turns" => {
+                    let v = r.turn_count;
+                    let sort = if v > 0 { Some(v as f64) } else { None };
+                    let disp = if v > 0 { v.to_string() } else { String::new() };
+                    (disp, sort)
+                }
+                "toolcalls" => {
+                    let v = r.tool_call_count;
+                    let sort = if v > 0 { Some(v as f64) } else { None };
+                    let disp = if v > 0 { v.to_string() } else { String::new() };
+                    (disp, sort)
+                }
+                _ => {
+                    // speed (default) — use duration
+                    (r.duration.clone().unwrap_or_default(), r.sort_duration)
+                }
+            }
+        }
+
+        /// Format a raw u64 token count compactly (e.g. "12.3K", "1.2M").
+        fn format_tokens_compact(n: u64) -> String {
+            if n >= 1_000_000 {
+                format!("{:.1}M", n as f64 / 1_000_000.0)
+            } else if n >= 1_000 {
+                format!("{:.1}K", n as f64 / 1_000.0)
+            } else {
+                n.to_string()
+            }
+        }
+
         // Build rows from A results, merging B data
         for a in &a_results {
             let b = b_map.get(&(a.language.clone(), a.exercise.clone()));
 
-            let a_dur = a.sort_duration;
-            let b_dur = b.and_then(|r| r.sort_duration);
+            let (a_disp, a_sort) = metric_values(a, &metric);
+            let (b_disp, b_sort) = if let Some(b) = b {
+                metric_values(b, &metric)
+            } else {
+                (String::new(), None)
+            };
 
-            let a_tps = a.tokens_per_sec;
-            let b_tps = b.and_then(|r| r.tokens_per_sec);
-
-            let faster = match (a_dur, b_dur) {
-                (Some(ad), Some(bd)) if ad < bd => "a".to_string(),
-                (Some(ad), Some(bd)) if ad > bd => "b".to_string(),
+            // Lower is better for all current metrics
+            let faster = match (a_sort, b_sort) {
+                (Some(av), Some(bv)) if av < bv => "a".to_string(),
+                (Some(av), Some(bv)) if av > bv => "b".to_string(),
                 (Some(_), Some(_)) => "tie".to_string(),
                 (Some(_), None) => "a".to_string(),
                 (None, Some(_)) => "b".to_string(),
                 (None, None) => "tie".to_string(),
             };
 
-            let (ratio_fmt, sort_ratio, ratio_favor) = match (a_dur, b_dur) {
-                (Some(ad), Some(bd)) if bd > 0.0 => {
-                    let r = ad / bd;
+            let (ratio_fmt, sort_ratio, ratio_favor) = match (a_sort, b_sort) {
+                (Some(av), Some(bv)) if bv > 0.0 => {
+                    let r = av / bv;
                     let favor = if r < 1.0 { "a" } else if r > 1.0 { "b" } else { "tie" };
                     (format!("{:.2}x", r), r, favor.to_string())
                 }
                 _ => (String::new(), 999.0, String::new()),
             };
 
+            // Legacy duration-specific fields (for template backward compat)
+            let a_dur = a.sort_duration;
+            let b_dur = b.and_then(|r| r.sort_duration);
+            let a_tps = a.tokens_per_sec;
+            let b_tps = b.and_then(|r| r.tokens_per_sec);
             let tps_a_fmt = a_tps.map(|v| format!("{:.1}t/s", v)).unwrap_or_default();
             let tps_b_fmt = b_tps.map(|v| format!("{:.1}t/s", v)).unwrap_or_default();
 
             rows.push(CompareRow {
                 language: a.language.clone(),
                 exercise: a.exercise.clone(),
-                a_duration: a.duration.clone(),
-                a_sort: a_dur,
-                sort_a: a_dur.unwrap_or(0.0),
+                a_display: a_disp,
+                sort_a: a_sort.unwrap_or(0.0),
+                b_display: b_disp,
+                sort_b: b_sort.unwrap_or(0.0),
                 a_success: a.success,
-                a_tps,
-                tps_a_fmt,
-                b_duration: b.map(|r| r.duration.clone()).flatten(),
-                b_sort: b_dur,
-                sort_b: b_dur.unwrap_or(0.0),
                 b_success: b.map(|r| r.success).unwrap_or(false),
-                b_tps,
-                tps_b_fmt,
                 faster,
                 ratio_fmt,
                 sort_ratio,
                 ratio_favor,
+                metric_label: metric_label.to_string(),
+                metric_fmt: metric_fmt.to_string(),
+                a_duration: a.duration.clone(),
+                a_sort_duration: a_dur,
+                b_duration: b.map(|r| r.duration.clone()).flatten(),
+                b_sort_duration: b_dur,
+                a_tps,
+                tps_a_fmt,
+                b_tps,
+                tps_b_fmt,
             });
         }
 
@@ -162,6 +236,7 @@ pub async fn compare_page(
 
         for b in &b_results {
             if !a_keys.contains(&(b.language.clone(), b.exercise.clone())) {
+                let (b_disp, b_sort) = metric_values(b, &metric);
                 let b_dur = b.sort_duration;
                 let b_tps = b.tokens_per_sec;
                 let tps_b_fmt = b_tps.map(|v| format!("{:.1}t/s", v)).unwrap_or_default();
@@ -169,22 +244,26 @@ pub async fn compare_page(
                 rows.push(CompareRow {
                     language: b.language.clone(),
                     exercise: b.exercise.clone(),
-                    a_duration: None,
-                    a_sort: None,
+                    a_display: String::new(),
                     sort_a: 0.0,
+                    b_display: b_disp,
+                    sort_b: b_sort.unwrap_or(0.0),
                     a_success: false,
-                    a_tps: None,
-                    tps_a_fmt: String::new(),
-                    b_duration: b.duration.clone(),
-                    b_sort: b_dur,
-                    sort_b: b_dur.unwrap_or(0.0),
                     b_success: b.success,
-                    b_tps,
-                    tps_b_fmt,
                     faster: "b".to_string(),
                     ratio_fmt: String::new(),
                     sort_ratio: 999.0,
                     ratio_favor: String::new(),
+                    metric_label: metric_label.to_string(),
+                    metric_fmt: metric_fmt.to_string(),
+                    a_duration: None,
+                    a_sort_duration: None,
+                    b_duration: b.duration.clone(),
+                    b_sort_duration: b_dur,
+                    a_tps: None,
+                    tps_a_fmt: String::new(),
+                    b_tps,
+                    tps_b_fmt,
                 });
             }
         }
@@ -220,6 +299,9 @@ pub async fn compare_page(
     ctx.insert("a_faster_count", &a_faster_count);
     ctx.insert("b_faster_count", &b_faster_count);
     ctx.insert("tie_count", &tie_count);
+    ctx.insert("metric", &metric);
+    ctx.insert("metric_label", &metric_label);
+    ctx.insert("metric_fmt", &metric_fmt);
 
     axum::response::Html(templates.render("compare.tera", &ctx))
 }
