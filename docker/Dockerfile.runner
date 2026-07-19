@@ -28,6 +28,15 @@ RUN npm install -g claude-plugins
 #RUN npx claude-plugins install @anthropics/claude-code-plugins/ralph-wiggum
 RUN npm install -g @mariozechner/pi-coding-agent
 
+# Install pi extensions (loaded via --extension / --skill CLI flags at runtime)
+# supi-bash-timeout peer-depends on @earendil-works/pi-coding-agent; symlink it to
+# the @mariozechner package (same codebase, different npm name) so extensions resolve.
+RUN npm install -g pi-caveman @mrclrchtr/supi-bash-timeout context-mode && \
+    GLOBAL=$(npm root -g) && \
+    mkdir -p "$GLOBAL/@earendil-works" && \
+    ln -s "$GLOBAL/@mariozechner/pi-coding-agent" \
+          "$GLOBAL/@earendil-works/pi-coding-agent"
+
 # Install pytest for Python testing
 #RUN pip3 install --no-cache-dir pytest
 

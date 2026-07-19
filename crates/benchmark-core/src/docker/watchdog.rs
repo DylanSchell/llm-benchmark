@@ -150,7 +150,7 @@ impl CommandWatchdog {
             self.container_name
         );
 
-        let term_result = docker_exec(
+        let _term_result = docker_exec(
             &self.container_name,
             &["sh", "-c", &format!("pkill -TERM -f '{}' 2>/dev/null || true", pattern)],
         )
@@ -205,7 +205,7 @@ impl CommandWatchdog {
             }
         }
 
-        for (prefix, original) in &timed_out {
+        for (_prefix, original) in &timed_out {
             warn!(
                 "Command watchdog timeout: killing process matching '{}' in container '{}'",
                 &original[..original.len().min(120)],

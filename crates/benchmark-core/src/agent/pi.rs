@@ -175,43 +175,7 @@ impl PiAgent {
         Ok(())
     }
 
-    /// Installs Pi extensions (bash-timeout) into the working directory.
-    fn install_pi_extensions(&self, temp_work_dir: &Path) -> std::io::Result<()> {
-        let pi_extension_dir = temp_work_dir
-            .join(".pi")
-            .join("agent")
-            .join("extensions");
 
-        let target_dir = pi_extension_dir.join("bash-timeout");
-
-        fs::create_dir_all(&target_dir)?;
-
-        let target_path = target_dir.join("index.ts");
-        // Use the same index.ts content as the Java version
-        let content = include_str!("../../resources/extensions/bash-timeout/index.ts");
-        fs::write(&target_path, content)?;
-
-        // Install caveman extension
-        let caveman_extension_dir = temp_work_dir
-            .join(".pi")
-            .join("agent")
-            .join("extensions")
-            .join("caveman");
-
-        fs::create_dir_all(&caveman_extension_dir)?;
-        let target_path = caveman_extension_dir.join("index.ts");
-        let content = include_str!("../../resources/extensions/caveman/index.ts");
-        fs::write(&target_path, content)?;
-
-        let skills_dir = temp_work_dir.join(".pi").join("agent").join("skills");
-        let caveman_skill_dir = skills_dir.join("caveman");
-        fs::create_dir_all(&caveman_skill_dir)?;
-        let target_path = caveman_skill_dir.join("SKILL.md");
-        let content = include_str!("../../resources/skills/caveman/SKILL.md");
-        fs::write(&target_path, content)?;
-
-        Ok(())
-    }
 
     /// Collects trace information from pi session files and exports to HTML.
     async fn collect_pi_trace(
@@ -382,7 +346,17 @@ impl PiAgent {
 
     /// Builds the command line arguments for invoking pi.
     /// Includes --thinking flag when thinking_level is specified.
+    /// Extensions are loaded via --extension flags pointing to globally installed npm packages.
     fn build_pi_command(&self, prompt: &str, model: &str, thinking_level: Option<&str>) -> Vec<String> {
+        // Pi extensions installed globally via npm at build time.
+        // Package "pi" fields from package.json:
+        //   pi-caveman: extensions: ["./extensions/caveman.ts"]
+        //   @mrclrchtr/supi-bash-timeout: extensions: ["./src/extension.ts"]
+        //   context-mode: extensions: ["./build/adapters/pi/extension.js"], skills: ["./skills"]
+        // Debian NodeSource installs to /usr/lib/node_modules (not /usr/local).
+        // This must match the npm global root inside the Debian runner image.
+        const NPM_GLOBAL: &str = "/usr/lib/node_modules";
+
         let mut command = vec![
             "pi".to_string(),
             "--mode".to_string(),
@@ -393,6 +367,18 @@ impl PiAgent {
             Self::provider_key_for_model(model).to_string(),
             "--model".to_string(),
             model.to_string(),
+            // bash-timeout extension — injects default timeouts on bash tool calls
+            "--extension".to_string(),
+            format!("{NPM_GLOBAL}/@mrclrchtr/supi-bash-timeout/src/extension.ts"),
+            // caveman extension — token compression mode
+            "--extension".to_string(),
+            format!("{NPM_GLOBAL}/pi-caveman/extensions/caveman.ts"),
+            // context-mode extension — sandboxed code execution, FTS5 knowledge base
+            "--extension".to_string(),
+            format!("{NPM_GLOBAL}/context-mode/build/adapters/pi/extension.js"),
+            // context-mode skills — ctx_search, ctx_execute, etc.
+            "--skill".to_string(),
+            format!("{NPM_GLOBAL}/context-mode/skills"),
         ];
 
         // Add thinking level if specified
@@ -445,9 +431,6 @@ impl Agent for PiAgent {
 
         // Patch tests (remove @Disabled, #[ignore], xtest) — matches Java behavior
         crate::agent::test_patches::run_patch_tests(exercise, &temp_work_dir)?;
-
-        // Install Pi extensions
-        self.install_pi_extensions(&temp_work_dir)?;
 
         // Create exercise prompt
         let prompt = Self::create_exercise_prompt(exercise, &temp_work_dir)?;
