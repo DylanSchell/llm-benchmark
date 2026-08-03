@@ -73,8 +73,11 @@ pub async fn run_benchmark(
 
     let persister = ResultPersister::new();
     persister.print_summary(&results);
-    // Batch save doesn't use retry logic - just saves summary file
-    let _ = persister.save_results(&results, &agent_kind.to_string(), model, language, &output.results_dir);
+    // Batch save doesn't use retry logic - just saves summary file.
+    // Report failures loudly — this is the only persistence in this path.
+    if let Err(e) = persister.save_results(&results, &agent_kind.to_string(), model, language, &output.results_dir) {
+        tracing::error!("Failed to save batch results summary: {:#}", e);
+    }
 
     Ok(())
 }

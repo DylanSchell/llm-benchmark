@@ -313,9 +313,15 @@ impl BenchmarkExecutor {
                 ));
             }
 
-            // Save individual results
-            for result in &results {
-                let _ = self.save_single_result(result, agent_name, language, model);
+            // Save individual results — a persist failure is reported, never swallowed.
+            let save_failures = save_with_reporting(session, &results, |result| {
+                self.save_single_result(result, agent_name, language, model)
+            });
+            if save_failures > 0 {
+                session.emit_output(&format!(
+                    "ERROR: {} result(s) could not be persisted to disk\n",
+                    save_failures
+                ));
             }
         }
 
@@ -443,4 +449,95 @@ impl BenchmarkExecutor {
         self.result_service = Some(result_service);
     }
 
+}
+
+/// Save each result through `save_fn`, returning how many failed to persist.
+/// A persist failure is never silent: each one is logged at error level,
+/// emitted to the session output, and reflected in the session's error
+/// message so a lost result is visible to the user.
+fn save_with_reporting(
+    session: &mut BenchmarkSession,
+    results: &[AgentResult],
+    save_fn: impl Fn(&AgentResult) -> Result<()>,
+) -> usize {
+    let mut failures = 0;
+    for result in results {
+        if let Err(e) = save_fn(result) {
+            tracing::error!("Failed to save result for {}: {:#}", result.exercise_name, e);
+            session.emit_output(&format!(
+                "WARNING: failed to persist result for {}: {}\n",
+                result.exercise_name, e
+            ));
+            failures += 1;
+        }
+    }
+    if failures > 0 {
+        session.set_error_message(&format!("Failed to persist {} result(s)", failures));
+    }
+    failures
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn test_result(exercise_name: &str) -> AgentResult {
+        AgentResult::builder()
+            .exercise_name(exercise_name.to_string())
+            .language("java".to_string())
+            .success(true)
+            .exit_code(0)
+            .output("ok".to_string())
+            .duration_ms(1_000)
+            .start_time(chrono::Utc::now().to_rfc3339())
+            .end_time(chrono::Utc::now().to_rfc3339())
+            .build()
+    }
+
+    fn test_session() -> BenchmarkSession {
+        BenchmarkSession::new(
+            "pi".to_string(),
+            vec!["java".to_string()],
+            "ds4-flash".to_string(),
+            None,
+            None,
+            false,
+            300_000,
+        )
+    }
+
+    /// Regression: a failed result save must be counted, logged, and surfaced
+    /// in the session output — never silently swallowed (was `let _ =`).
+    #[test]
+    fn save_with_reporting_counts_and_surfaces_failures() {
+        let mut session = test_session();
+        let results = vec![test_result("two-fer"), test_result("hello-world")];
+
+        let failures = save_with_reporting(&mut session, &results, |_| {
+            Err(anyhow::anyhow!("disk full"))
+        });
+
+        assert_eq!(failures, 2);
+        let output = session.get_accumulated_output();
+        assert!(output.contains("WARNING"), "expected WARNING, got: {output}");
+        assert!(output.contains("two-fer"));
+        assert!(output.contains("hello-world"));
+        assert_eq!(
+            session.error_message.as_deref(),
+            Some("Failed to persist 2 result(s)")
+        );
+    }
+
+    /// Successful saves stay silent — no warnings, no error message.
+    #[test]
+    fn save_with_reporting_is_silent_on_success() {
+        let mut session = test_session();
+        let results = vec![test_result("two-fer")];
+
+        let failures = save_with_reporting(&mut session, &results, |_| Ok(()));
+
+        assert_eq!(failures, 0);
+        assert!(!session.get_accumulated_output().contains("WARNING"));
+        assert!(session.error_message.is_none());
+    }
 }
