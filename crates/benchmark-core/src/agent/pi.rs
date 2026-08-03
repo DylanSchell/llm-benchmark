@@ -120,12 +120,42 @@ impl PiAgent {
         model_map.insert("contextWindow".to_string(), serde_json::Value::Number(serde_json::Number::from(262_144)));
 
         if let Some(ref rc) = reasoning_config {
+            // pi's hard gate for thinking support: without `reasoning: true`,
+            // getSupportedThinkingLevels() returns only ["off"] and any level
+            // (including the CLI `--thinking` flag) is clamped away, so no
+            // reasoning parameter ever reaches the API.
+            model_map.insert("reasoning".to_string(), serde_json::Value::Bool(true));
+
+            // thinkingFormat is read from model.compat.thinkingFormat, not from
+            // the model top level — a top-level key is silently ignored.
+            let mut compat_map = serde_json::Map::new();
             if let Some(ref tf) = rc.thinking_format {
-                model_map.insert(
+                compat_map.insert(
                     "thinkingFormat".to_string(),
                     serde_json::Value::String(tf.to_string()),
                 );
             }
+            if let Some(ref cc) = rc.compat {
+                if let Some(sre) = cc.supports_reasoning_effort {
+                    compat_map.insert(
+                        "supportsReasoningEffort".to_string(),
+                        serde_json::Value::Bool(sre),
+                    );
+                }
+                if let Some(sdr) = cc.supports_developer_role {
+                    compat_map.insert(
+                        "supportsDeveloperRole".to_string(),
+                        serde_json::Value::Bool(sdr),
+                    );
+                }
+            }
+            if !compat_map.is_empty() {
+                model_map.insert(
+                    "compat".to_string(),
+                    serde_json::Value::Object(compat_map),
+                );
+            }
+
             if let Some(ref tlm) = rc.thinking_level_map {
                 let mut level_map = serde_json::Map::new();
                 let entries: &[(&str, &Option<serde_json::Value>)] = &[
@@ -694,5 +724,97 @@ mod provider_routing_tests {
     fn provider_key_matches_model_family() {
         assert_eq!(PiAgent::provider_key_for_model("claude-sonnet-5"), "anthropic");
         assert_eq!(PiAgent::provider_key_for_model("gpt-4o"), "openai");
+    }
+}
+
+#[cfg(test)]
+mod models_json_tests {
+    use super::*;
+    use crate::docker::{DockerClient, DockerConfig};
+    use std::collections::HashMap;
+
+    fn test_client() -> DockerClient {
+        let mut env = HashMap::new();
+        env.insert("ANTHROPIC_BASE_URL".to_string(), "http://host.docker.internal:8080".to_string());
+        env.insert("OPENAI_BASE_URL".to_string(), "http://host.docker.internal:8080/v1".to_string());
+        env.insert("OPENAI_API_KEY".to_string(), "api-key".to_string());
+        DockerClient::new(DockerConfig {
+            image: "llm-benchmark/runner:latest".to_string(),
+            memory: "2g".to_string(),
+            timeout: 3600,
+            work_dir: "/workspace".to_string(),
+            environment: env,
+            per_command_timeout: 120,
+        })
+    }
+
+    fn temp_work_dir(tag: &str) -> PathBuf {
+        let dir = std::env::temp_dir().join(format!(
+            "pi-models-json-test-{}-{}",
+            tag,
+            uuid::Uuid::new_v4()
+        ));
+        std::fs::create_dir_all(&dir).unwrap();
+        dir
+    }
+
+    fn read_models_json(dir: &Path) -> serde_json::Value {
+        let path = dir.join(".pi").join("agent").join("models.json");
+        let content = std::fs::read_to_string(&path)
+            .unwrap_or_else(|e| panic!("failed to read {:?}: {}", path, e));
+        serde_json::from_str(&content).unwrap()
+    }
+
+    fn model_obj(models_json: &serde_json::Value) -> serde_json::Value {
+        models_json["providers"]["openai"]["models"][0].clone()
+    }
+
+    #[test]
+    fn ds4_flash_with_xhigh_emits_reasoning_config() {
+        benchmark_types::reasoning::ReasoningRegistry::register_defaults();
+        let agent = PiAgent::new(test_client());
+        let dir = temp_work_dir("ds4-xhigh");
+
+        agent.create_models_json(&dir, "ds4-flash", Some("xhigh")).unwrap();
+        let model = model_obj(&read_models_json(&dir));
+        let _ = std::fs::remove_dir_all(&dir);
+
+        // pi's hard gate: without `reasoning: true` it clamps any level to "off"
+        assert_eq!(model["reasoning"], serde_json::json!(true));
+        // thinkingFormat must live under compat — pi reads model.compat.thinkingFormat
+        assert_eq!(model["compat"]["thinkingFormat"], serde_json::json!("openai"));
+        assert!(model.get("thinkingFormat").is_none(), "top-level thinkingFormat is ignored by pi");
+        // ds4-specific level map at model level
+        assert_eq!(model["thinkingLevelMap"]["off"], serde_json::json!("none"));
+        assert_eq!(model["thinkingLevelMap"]["xhigh"], serde_json::json!("max"));
+    }
+
+    #[test]
+    fn ds4_flash_with_off_maps_to_none() {
+        benchmark_types::reasoning::ReasoningRegistry::register_defaults();
+        let agent = PiAgent::new(test_client());
+        let dir = temp_work_dir("ds4-off");
+
+        agent.create_models_json(&dir, "ds4-flash", Some("off")).unwrap();
+        let model = model_obj(&read_models_json(&dir));
+        let _ = std::fs::remove_dir_all(&dir);
+
+        // reasoning must stay enabled so pi explicitly sends reasoning_effort "none"
+        // (ds4-server defaults to thinking ON — absence of the param means HIGH)
+        assert_eq!(model["reasoning"], serde_json::json!(true));
+        assert_eq!(model["thinkingLevelMap"]["off"], serde_json::json!("none"));
+    }
+
+    #[test]
+    fn no_thinking_level_preserves_plain_model() {
+        let agent = PiAgent::new(test_client());
+        let dir = temp_work_dir("no-level");
+
+        agent.create_models_json(&dir, "ds4-flash", None).unwrap();
+        let model = model_obj(&read_models_json(&dir));
+        let _ = std::fs::remove_dir_all(&dir);
+
+        assert!(model.get("reasoning").is_none());
+        assert!(model.get("compat").is_none());
     }
 }

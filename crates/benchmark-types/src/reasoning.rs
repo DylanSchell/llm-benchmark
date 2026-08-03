@@ -643,6 +643,27 @@ impl ReasoningRegistry {
             }),
             compat: None,
         });
+
+        // DS4 (custom ds4-server) — reasoning_effort param. ds4-server only exposes
+        // HIGH and MAX above zero: "minimal".."high" collapse to "high", "xhigh"
+        // maps to true MAX, and reasoning is disabled with "none" (NOT "off" —
+        // any unrecognized value is a hard parse error).
+        Self::register("ds4-*", ReasoningConfig {
+            mechanism: ReasoningMechanism::Custom,
+            thinking_format: Some(ThinkingFormat::Openai),
+            thinking_level_map: Some(ThinkingLevelMap {
+                off:     Some(serde_json::json!("none")),
+                minimal: Some(serde_json::json!("high")),
+                low:     Some(serde_json::json!("high")),
+                medium:  Some(serde_json::json!("high")),
+                high:    Some(serde_json::json!("high")),
+                xhigh:   Some(serde_json::json!("max")),
+            }),
+            compat: Some(CompatConfig {
+                supports_developer_role: None,
+                supports_reasoning_effort: Some(true),
+            }),
+        });
     }
 }
 
@@ -710,5 +731,29 @@ mod registry_tests {
         let map = config.thinking_level_map.as_ref().expect("qwen3 should have level map");
         assert_eq!(map.off, Some(serde_json::json!(false)));
         assert_eq!(map.high, Some(serde_json::json!(true)));
+    }
+
+    #[test]
+    fn test_ds4_builtin_registration() {
+        // Reset registry to avoid pollution from other tests
+        ReasoningRegistry::clear();
+        ReasoningRegistry::register_defaults();
+
+        let config = ReasoningRegistry::get_for_model("ds4-flash");
+        assert_eq!(config.thinking_format, Some(ThinkingFormat::Openai));
+
+        // ds4-server only exposes HIGH and MAX above zero: every level between
+        // minimal and high collapses to "high", and xhigh maps to true "max".
+        let map = config.thinking_level_map.as_ref().expect("ds4 should have level map");
+        assert_eq!(map.off, Some(serde_json::json!("none")));
+        assert_eq!(map.minimal, Some(serde_json::json!("high")));
+        assert_eq!(map.low, Some(serde_json::json!("high")));
+        assert_eq!(map.medium, Some(serde_json::json!("high")));
+        assert_eq!(map.high, Some(serde_json::json!("high")));
+        assert_eq!(map.xhigh, Some(serde_json::json!("max")));
+
+        // pi must emit `reasoning_effort` for ds4; flag it as supported.
+        let compat = config.compat.as_ref().expect("ds4 should have compat");
+        assert_eq!(compat.supports_reasoning_effort, Some(true));
     }
 }
