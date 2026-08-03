@@ -450,7 +450,7 @@ async fn execute_docker_command_v2(
 
     // Read stdout and forward through callback + watchdog + channel
     let tx_for_stdout = tx.clone();
-    let stdout_task = tokio::spawn(async move {
+    let mut stdout_task = tokio::spawn(async move {
         let reader = BufReader::new(stdout);
         let mut lines = reader.lines();
         while let Some(line) = lines.next_line().await.unwrap_or(None) {
@@ -464,7 +464,7 @@ async fn execute_docker_command_v2(
     // Read stderr and forward through same callback + channel (merged with stdout)
     let tx_for_stderr = tx.clone();
     let callback_clone2 = output_callback.clone();
-    let stderr_task = tokio::spawn(async move {
+    let mut stderr_task = tokio::spawn(async move {
         let reader = BufReader::new(stderr);
         let mut lines = reader.lines();
         while let Some(line) = lines.next_line().await.unwrap_or(None) {
@@ -552,16 +552,30 @@ async fn execute_docker_command_v2(
         }
     };
 
-    // Wait for reader tasks to finish (with timeout, in case pipes won't close)
+    // Wait for reader tasks to finish (with timeout, in case pipes won't close).
+    // Keep the handles alive so we can abort them: a grandchild process
+    // inheriting our stdout pipe can keep a reader stuck at EOF forever, and
+    // an un-aborted reader would keep its channel sender alive — making the
+    // unbounded recv() drain below block forever (observed hang).
     drop(tx);
-    let _ = timeout(Duration::from_secs(30), async { let _ = tokio::join!(stdout_task, stderr_task); }).await;
-
-    // Collect output from channel
-    let mut output = String::new();
-    while let Some(line) = rx.recv().await {
-        output.push_str(&line);
-        output.push('\n');
+    let readers_done = timeout(
+        Duration::from_secs(30),
+        async { let _ = tokio::join!(&mut stdout_task, &mut stderr_task); },
+    )
+    .await;
+    if readers_done.is_err() {
+        warn!(
+            "Reader tasks did not finish within 30s (stuck pipe?) — aborting them"
+        );
     }
+    // No-op for tasks that already finished; drops their sender clones so
+    // the drain below terminates.
+    stdout_task.abort();
+    stderr_task.abort();
+
+    // Collect output from the channel, bounded by a silence window so a
+    // leaked sender can never block us forever.
+    let output = drain_output(&mut rx).await;
 
     Ok(ProcessResult {
         exit_code,
@@ -580,6 +594,26 @@ async fn cancel_poll(cancellation: &Option<CancellationToken>) {
         return;
     }
     tokio::time::sleep(Duration::from_millis(500)).await;
+}
+
+/// Silence window after which the output drain gives up. Lines arriving more
+/// frequently than this are all collected; a longer quiet period means the
+/// reader is stuck (pipe held open by a grandchild) or the senders are gone
+/// — either way, blocking longer would only hide the real problem.
+const OUTPUT_DRAIN_SILENCE: Duration = Duration::from_millis(500);
+
+/// Drain buffered output lines from the channel into a single string,
+/// bounded by a short silence window. Unlike `while let Some(l) = rx.recv()`,
+/// this cannot block forever: `recv()` only returns `None` once every sender
+/// is dropped, and a reader task stuck on a pipe that never reaches EOF
+/// keeps its sender alive indefinitely.
+async fn drain_output(rx: &mut tokio::sync::mpsc::UnboundedReceiver<String>) -> String {
+    let mut output = String::new();
+    while let Some(line) = timeout(OUTPUT_DRAIN_SILENCE, rx.recv()).await.unwrap_or(None) {
+        output.push_str(&line);
+        output.push('\n');
+    }
+    output
 }
 
 /// Check if a Docker container is currently running via `docker inspect`.
@@ -744,5 +778,63 @@ mod tests {
         assert!(result.completed);
         assert_eq!(result.exit_code, 0);
         assert_eq!(result.output.trim(), "hi");
+    }
+
+    /// Drain all buffered output lines into a single string, bounded by a
+    /// short silence window. Unlike the raw `rx.recv()` loop, this cannot
+    /// block forever when a sender survives (a pipe held open by a grandchild
+    /// process keeps a reader task — and thus its channel sender — alive).
+    #[tokio::test]
+    async fn drain_output_returns_all_lines_when_senders_dropped() {
+        let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<String>();
+        for i in 0..3 {
+            tx.send(format!("line{i}")).unwrap();
+        }
+        drop(tx); // all senders gone → recv() returns None after draining
+
+        let output = drain_output(&mut rx).await;
+        assert_eq!(output, "line0\nline1\nline2\n");
+    }
+
+    /// Regression for the reported hang: a sender that stays alive (leaked
+    /// reader task) with no new lines must NOT block the drain forever.
+    #[tokio::test]
+    async fn drain_output_is_bounded_when_sender_survives() {
+        let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<String>();
+        tx.send("buffered".to_string()).unwrap();
+        // Keep `tx` alive — simulates a reader stuck on a pipe that never
+        // reaches EOF. The old `while let Some(l) = rx.recv().await` loop
+        // hung here indefinitely.
+        let _kept_alive = tx;
+
+        let started = std::time::Instant::now();
+        let output = drain_output(&mut rx).await;
+        assert_eq!(output, "buffered\n");
+        assert!(
+            started.elapsed() < Duration::from_secs(5),
+            "drain must give up after a short silence, not block forever"
+        );
+    }
+
+    /// Lines arriving continuously must all be collected — the silence
+    /// window must not truncate an in-progress stream.
+    #[tokio::test]
+    async fn drain_output_collects_continuous_stream() {
+        let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<String>();
+        let sender = tokio::spawn(async move {
+            for i in 0..20 {
+                tx.send(format!("line{i}")).unwrap();
+                tokio::time::sleep(Duration::from_millis(20)).await;
+            }
+            drop(tx);
+        });
+
+        let output = drain_output(&mut rx).await;
+        sender.await.unwrap();
+
+        let lines: Vec<&str> = output.lines().collect();
+        assert_eq!(lines.len(), 20, "all 20 lines must be collected");
+        assert_eq!(lines[0], "line0");
+        assert_eq!(lines[19], "line19");
     }
 }
