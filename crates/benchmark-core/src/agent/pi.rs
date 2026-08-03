@@ -9,6 +9,8 @@ use benchmark_types::exercise::Exercise;
 use walkdir::WalkDir;
 use crate::docker::DockerClient;
 use crate::agent::{reference::ReferenceAgent, PiMessageProcessor};
+use benchmark_types::util::recover_poisoned;
+
 
 /// Pi agent that uses the pi coding agent to solve exercises.
 /// Extends ReferenceAgent behavior with Pi-specific setup.
@@ -304,7 +306,7 @@ impl PiAgent {
 
                 // Run: pi --export <jsonl_file> <html_file>
                 // No .pi volume mount — just /workspace where the JSONL was copied.
-                let cancellation = self.cancellation_token.lock().unwrap().clone();
+                let cancellation = recover_poisoned(self.cancellation_token.lock()).clone();
                 let export_result = self
                     .docker_client
                     .run_command_with_limits_and_volume(
@@ -424,7 +426,7 @@ impl PiAgent {
 #[async_trait::async_trait]
 impl Agent for PiAgent {
     fn set_cancellation_token(&self, token: Option<CancellationToken>) {
-        *self.cancellation_token.lock().unwrap() = token;
+        *recover_poisoned(self.cancellation_token.lock()) = token;
     }
 
     async fn run_exercise(
@@ -502,7 +504,7 @@ impl Agent for PiAgent {
         } else {
             "/workspace".to_string()
         };
-        let cancellation = self.cancellation_token.lock().unwrap().clone();
+        let cancellation = recover_poisoned(self.cancellation_token.lock()).clone();
         let result = self
             .docker_client
             .run_command_with_limits_and_volume_with_callback(
@@ -514,7 +516,7 @@ impl Agent for PiAgent {
                 None,
                 Some(&temp_work_dir.to_string_lossy()),
                 Some(std::sync::Arc::new(move |line| {
-                    let proc = processor.lock().unwrap();
+                    let proc = recover_poisoned(processor.lock());
                     proc.process(line);
                 })),
                 true,  // enable .pi volume mount for session data (matches Java)

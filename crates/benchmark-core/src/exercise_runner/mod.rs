@@ -7,6 +7,8 @@ use benchmark_types::agent::{Agent, AgentResult};
 use benchmark_types::config::Config;
 use benchmark_types::exercise::Exercise;
 use crate::docker::DockerClient;
+use benchmark_types::util::recover_poisoned;
+
 
 #[derive(Clone)]
 pub struct ExerciseRunner {
@@ -93,7 +95,7 @@ impl ExerciseRunner {
     pub fn get_exercises_for_language(&self, language: &str) -> Vec<String> {
         // Check cache first
         {
-            let cache = self.exercises_cache.read().unwrap();
+            let cache = recover_poisoned(self.exercises_cache.read());
             if let Some(exercises) = cache.get(language) {
                 return exercises.clone();
             }
@@ -108,7 +110,7 @@ impl ExerciseRunner {
         if !exercises_path.exists() {
             warn!("Exercises path not found: {:?}", exercises_path);
             // Cache empty result
-            let mut cache = self.exercises_cache.write().unwrap();
+            let mut cache = recover_poisoned(self.exercises_cache.write());
             cache.insert(language.to_string(), Vec::new());
             return Vec::new();
         }
@@ -137,7 +139,7 @@ impl ExerciseRunner {
         });
 
         // Cache the result
-        let mut cache = self.exercises_cache.write().unwrap();
+        let mut cache = recover_poisoned(self.exercises_cache.write());
         cache.insert(language.to_string(), exercises.clone());
 
         debug!("Discovered {} exercises for language: {}", exercises.len(), language);
@@ -148,7 +150,7 @@ impl ExerciseRunner {
     /// Gets all available languages that have exercises (cached).
     pub fn get_available_languages(&self) -> Vec<String> {
         // Check cache first
-        if let Some(languages) = self.languages_cache.read().unwrap().as_ref() {
+        if let Some(languages) = recover_poisoned(self.languages_cache.read()).as_ref() {
             return languages.clone();
         }
 
@@ -158,7 +160,7 @@ impl ExerciseRunner {
         if !benchmark_dir.exists() {
             warn!("Benchmark path does not exist: {:?}", benchmark_dir);
             // Cache empty result
-            *self.languages_cache.write().unwrap() = Some(Vec::new());
+            *recover_poisoned(self.languages_cache.write()) = Some(Vec::new());
             return languages;
         }
 
@@ -177,7 +179,7 @@ impl ExerciseRunner {
         languages.sort_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
 
         // Cache the result
-        *self.languages_cache.write().unwrap() = Some(languages.clone());
+        *recover_poisoned(self.languages_cache.write()) = Some(languages.clone());
 
         debug!("Discovered {} available languages: {:?}", languages.len(), languages);
 

@@ -8,6 +8,8 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use tokio::sync::broadcast;
 use tracing::{info, debug, warn};
+use benchmark_types::util::recover_poisoned;
+
 
 /// Manages benchmark session lifecycle.
 #[derive(Debug, Clone)]
@@ -50,11 +52,11 @@ impl SessionManager {
         let id = session.id.clone();
 
         {
-            let mut sessions = self.sessions.write().unwrap();
+            let mut sessions = recover_poisoned(self.sessions.write());
             sessions.insert(id.clone(), session.clone());
         }
         {
-            let mut tokens = self.tokens.write().unwrap();
+            let mut tokens = recover_poisoned(self.tokens.write());
             tokens.insert(id.clone(), CancellationToken::new());
         }
 
@@ -71,7 +73,7 @@ impl SessionManager {
 
     /// Get a session by ID (cloned, read-only).
     pub fn get_session(&self, session_id: &str) -> Option<BenchmarkSession> {
-        let sessions = self.sessions.read().unwrap();
+        let sessions = recover_poisoned(self.sessions.read());
         sessions.get(session_id).cloned()
     }
 
@@ -80,33 +82,33 @@ impl SessionManager {
     /// benchmark executor attaches it to the agent so in-flight Docker runs
     /// abort promptly.
     pub fn get_cancellation_token(&self, session_id: &str) -> Option<CancellationToken> {
-        self.tokens.read().unwrap().get(session_id).cloned()
+        recover_poisoned(self.tokens.read()).get(session_id).cloned()
     }
 
     /// Take the internal message receiver from a session.
     /// Returns a broadcast subscriber if the session exists, None otherwise.
     /// Broadcast channels support multiple consumers — each call creates a fresh subscriber.
     pub fn take_session_receiver(&self, session_id: &str) -> Option<broadcast::Receiver<String>> {
-        let sessions = self.sessions.read().unwrap();
+        let sessions = recover_poisoned(self.sessions.read());
         sessions.get(session_id).map(|s| s.setup_sse())
     }
 
     /// Get all sessions.
     pub fn get_all_sessions(&self) -> HashMap<String, BenchmarkSession> {
-        let sessions = self.sessions.read().unwrap();
+        let sessions = recover_poisoned(self.sessions.read());
         sessions.clone()
     }
 
     /// Cancel a running session.
     pub fn cancel_session(&self, session_id: &str) -> bool {
-        let mut sessions = self.sessions.write().unwrap();
+        let mut sessions = recover_poisoned(self.sessions.write());
         if let Some(session) = sessions.get_mut(session_id) {
             if session.status == RunStatus::RUNNING || session.status == RunStatus::PENDING {
                 session.cancel();
                 // Fire the cancellation token so the in-flight Docker
                 // container (and any between-exercise loops) abort promptly
                 // instead of waiting out the container timeout.
-                if let Some(token) = self.tokens.read().unwrap().get(session_id) {
+                if let Some(token) = recover_poisoned(self.tokens.read()).get(session_id) {
                     token.cancel();
                 }
                 info!("Cancelled session: {}", session_id);
@@ -121,7 +123,7 @@ impl SessionManager {
 
     /// Update an existing session (for status updates during execution).
     pub fn update_session(&self, session: BenchmarkSession) {
-        let mut sessions = self.sessions.write().unwrap();
+        let mut sessions = recover_poisoned(self.sessions.write());
         let session_id = session.id.clone();
         if let Some(existing) = sessions.get_mut(&session_id) {
             *existing = session;
@@ -133,7 +135,7 @@ impl SessionManager {
 
     /// Get the number of active sessions.
     pub fn get_active_session_count(&self) -> usize {
-        let sessions = self.sessions.read().unwrap();
+        let sessions = recover_poisoned(self.sessions.read());
         sessions
             .values()
             .filter(|s| s.status.is_active())
@@ -142,7 +144,7 @@ impl SessionManager {
 
     /// Get all active sessions.
     pub fn get_active_sessions(&self) -> Vec<BenchmarkSession> {
-        let sessions = self.sessions.read().unwrap();
+        let sessions = recover_poisoned(self.sessions.read());
         sessions
             .values()
             .filter(|s| s.status.is_active())
@@ -152,7 +154,7 @@ impl SessionManager {
 
     /// Force to complete all active sessions (for shutdown).
     pub fn shutdown(&self) {
-        let mut sessions = self.sessions.write().unwrap();
+        let mut sessions = recover_poisoned(self.sessions.write());
         info!(
             "Shutting down session manager, completing {} active sessions",
             sessions.len()
@@ -205,7 +207,7 @@ mod tests {
         assert!(!token.is_cancelled());
 
         // Set to RUNNING first (cancel only works on RUNNING sessions)
-        let mut sessions = manager.sessions.write().unwrap();
+        let mut sessions = recover_poisoned(manager.sessions.write());
         if let Some(s) = sessions.get_mut(&session_id) {
             s.status = RunStatus::RUNNING;
         }
@@ -219,6 +221,34 @@ mod tests {
     fn get_cancellation_token_returns_none_for_unknown_session() {
         let manager = create_test_manager();
         assert!(manager.get_cancellation_token("does-not-exist").is_none());
+    }
+
+    /// Regression: a panic while holding the sessions lock must not
+    /// permanently break the session manager (every later access previously
+    /// panicked on the poisoned RwLock).
+    #[test]
+    fn session_manager_recovers_from_poisoned_lock() {
+        let manager = create_test_manager();
+        let session = manager.create_session(
+            "reference".to_string(),
+            vec!["java".to_string()],
+            "default".to_string(),
+            None,
+            None,
+            false,
+            300_000,
+        );
+
+        // Poison the sessions lock: panic while holding it.
+        let sessions = std::sync::Arc::clone(&manager.sessions);
+        let handle = std::thread::spawn(move || {
+            let _guard = recover_poisoned(sessions.write());
+            panic!("boom");
+        });
+        assert!(handle.join().is_err());
+
+        // Must not panic — with poison recovery every access still works.
+        assert!(manager.get_session(&session.id).is_some());
     }
 
     #[test]
@@ -294,7 +324,7 @@ mod tests {
         let session_id = session.id.clone();
 
         // Set to RUNNING first (cancel only works on RUNNING sessions)
-        let mut sessions = manager.sessions.write().unwrap();
+        let mut sessions = recover_poisoned(manager.sessions.write());
         if let Some(s) = sessions.get_mut(&session_id) {
             s.status = RunStatus::RUNNING;
         }
@@ -363,7 +393,7 @@ mod tests {
         );
 
         // Set session1 to RUNNING so it can be cancelled
-        let mut sessions = manager.sessions.write().unwrap();
+        let mut sessions = recover_poisoned(manager.sessions.write());
         if let Some(s) = sessions.get_mut(&session1.id) {
             s.status = RunStatus::RUNNING;
         }
@@ -431,7 +461,7 @@ mod tests {
         );
 
         // Set to RUNNING so shutdown affects it
-        let mut sessions = manager.sessions.write().unwrap();
+        let mut sessions = recover_poisoned(manager.sessions.write());
         if let Some(s) = sessions.get_mut(&session1.id) {
             s.status = RunStatus::RUNNING;
         }

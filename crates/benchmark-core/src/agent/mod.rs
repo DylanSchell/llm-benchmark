@@ -21,6 +21,7 @@ pub use exercise_files::{copy_exercise_files, create_temp_work_dir};
 #[cfg(test)]
 mod tests {
     use super::*;
+    use benchmark_types::util::recover_poisoned;
     use benchmark_types::agent::Agent;
     use crate::docker::{DockerClient, DockerConfig};
     use std::collections::HashMap;
@@ -76,7 +77,7 @@ mod tests {
         let captured = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
         let captured_clone = captured.clone();
         agent.set_output_consumer(move |msg: &str| {
-            captured_clone.lock().unwrap().push(msg.to_string());
+            recover_poisoned(captured_clone.lock()).push(msg.to_string());
         });
 
         // emit_output is internal, but we can verify the consumer was set

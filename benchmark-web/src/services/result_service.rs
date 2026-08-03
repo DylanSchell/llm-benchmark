@@ -14,6 +14,8 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use tracing::{info, warn};
+use benchmark_types::util::recover_poisoned;
+
 
 // =============================================================================
 // Token parsing models (mirrors benchmark-reporter)
@@ -602,7 +604,7 @@ impl ResultService {
         }
 
         // Now merge results into the shared cache (single-threaded, fast write)
-        let mut cached = self.cached_results.write().unwrap();
+        let mut cached = recover_poisoned(self.cached_results.write());
         let mut models: Vec<String> = Vec::new();
 
         for (cache_key, cached_result) in results {
@@ -616,7 +618,7 @@ impl ResultService {
         drop(cached);
 
         // Update models cache
-        let mut models_cache = self.cached_models.write().unwrap();
+        let mut models_cache = recover_poisoned(self.cached_models.write());
         *models_cache = models;
 
         // Update result count
@@ -895,7 +897,7 @@ impl ResultService {
 
     /// Get all model names.
     pub fn get_models(&self) -> Vec<String> {
-        let models = self.cached_models.read().unwrap();
+        let models = recover_poisoned(self.cached_models.read());
         let mut unique: Vec<String> = models.iter().cloned().collect();
         unique.sort();
         unique.dedup();
@@ -904,7 +906,7 @@ impl ResultService {
 
     /// Get all unique languages.
     pub fn get_languages(&self) -> Vec<String> {
-        let cached = self.cached_results.read().unwrap();
+        let cached = recover_poisoned(self.cached_results.read());
         let mut languages: Vec<String> = Vec::new();
         for cached_result in cached.values() {
             if !cached_result.language.is_empty() {
@@ -918,7 +920,7 @@ impl ResultService {
 
     /// Get all exercise names, optionally filtered by language.
     pub fn get_exercises(&self, language: Option<&str>) -> Vec<String> {
-        let cached = self.cached_results.read().unwrap();
+        let cached = recover_poisoned(self.cached_results.read());
         let mut exercises: Vec<String> = Vec::new();
         for cached_result in cached.values() {
             // Treat empty string as "no filter" (match all)
@@ -947,7 +949,7 @@ impl ResultService {
         exercise: Option<&str>,
         quick_only: bool,
     ) -> Vec<IndividualResult> {
-        let cached = self.cached_results.read().unwrap();
+        let cached = recover_poisoned(self.cached_results.read());
         let mut results: Vec<IndividualResult> = Vec::new();
 
         for cached_result in cached.values() {
@@ -1033,7 +1035,7 @@ impl ResultService {
                 .map(|n| n.to_string_lossy().to_string())
                 .unwrap_or_default();
             let cache_key = format!("{}/{}/{}", directory, result.language, result.exercise);
-            if let Some(cached) = self.cached_results.read().unwrap().get(&cache_key) {
+            if let Some(cached) = recover_poisoned(self.cached_results.read()).get(&cache_key) {
                 if let Some(single_result) = cached.results.first() {
                     if let Some(dur_str) = single_result.get("duration") {
                         if let Ok(dur) = dur_str.parse::<f64>() {
@@ -1056,7 +1058,7 @@ impl ResultService {
 
     /// Get a result by its cache key (directory/language/exercise).
     pub fn get_result_by_key(&self, key: &str) -> Option<HashMap<String, String>> {
-        let cached = self.cached_results.read().unwrap();
+        let cached = recover_poisoned(self.cached_results.read());
         cached.get(key).map(Self::to_metadata_map)
     }
 
@@ -1069,7 +1071,7 @@ impl ResultService {
         exercise: Option<&str>,
         quick_only: bool,
     ) -> Statistics {
-        let cached = self.cached_results.read().unwrap();
+        let cached = recover_poisoned(self.cached_results.read());
         let mut total_runs: i32 = 0;
         let mut total_exercises: i32 = 0;
         let mut successful_exercises: i32 = 0;
@@ -1418,7 +1420,7 @@ impl ResultService {
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap_or_default()
             .as_millis() as u64;
-        let mut last = self.last_refresh.lock().unwrap();
+        let mut last = recover_poisoned(self.last_refresh.lock());
         if now - *last > 5000 {
             self.load_all_results();
             *last = now;
@@ -1439,13 +1441,13 @@ impl ResultService {
                     "{}/{}/{}",
                     cached_result.directory, cached_result.language, cached_result.exercise
                 );
-                let mut cached = self.cached_results.write().unwrap();
+                let mut cached = recover_poisoned(self.cached_results.write());
                 let was_present = cached.contains_key(&cache_key);
                 cached.insert(cache_key.clone(), cached_result.clone());
                 drop(cached);
 
                 // Also ensure the model is in the models list
-                let mut models = self.cached_models.write().unwrap();
+                let mut models = recover_poisoned(self.cached_models.write());
                 if !models.contains(&cached_result.model) {
                     models.push(cached_result.model.clone());
                     models.sort();
@@ -1495,7 +1497,7 @@ impl ResultService {
     /// If an HTML trace file already exists, returns it directly.
     /// Otherwise, if a JSONL trace file exists, generates the HTML via 'pi --export'.
     pub fn get_trace_content(&self, key: &str) -> Result<Option<String>> {
-        let cached = self.cached_results.read().unwrap();
+        let cached = recover_poisoned(self.cached_results.read());
         let cached_result = match cached.get(key) {
             Some(c) => c,
             None => {
@@ -1727,7 +1729,7 @@ impl ResultService {
         quick_only: bool,
     ) -> Vec<ModelScore> {
         // Dynamically calculate benchmark sizes from available exercises
-        let cached = self.cached_results.read().unwrap();
+        let cached = recover_poisoned(self.cached_results.read());
         let mut all_exercises: std::collections::HashSet<String> = std::collections::HashSet::new();
         let mut quick_exercises: std::collections::HashSet<String> = std::collections::HashSet::new();
         
@@ -1850,7 +1852,7 @@ impl ResultService {
         quick_only: bool,
         expected_exercises: Option<HashMap<String, Vec<String>>>,
     ) -> Vec<CompletenessInfo> {
-        let cached = self.cached_results.read().unwrap();
+        let cached = recover_poisoned(self.cached_results.read());
 
         // Determine the total expected exercise count.
         // If quick_only, sum up QuickBenchConfig counts per language.

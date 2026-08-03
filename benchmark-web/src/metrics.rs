@@ -6,6 +6,8 @@
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Mutex;
+use benchmark_types::util::recover_poisoned;
+
 
 /// Thread-safe metrics registry.
 #[derive(Clone, Default)]
@@ -36,7 +38,7 @@ impl Metrics {
     /// Record a completed exercise result.
     pub fn record_exercise(&self, agent: &str, language: &str, success: bool) {
         let status = if success { "success" } else { "failure" };
-        let mut exercises = self.exercises.lock().unwrap();
+        let mut exercises = recover_poisoned(self.exercises.lock());
         for metric in exercises.iter_mut() {
             if metric.agent == agent && metric.language == language && metric.status == status {
                 metric.count += 1;
@@ -71,7 +73,7 @@ impl Metrics {
         let mut out = String::new();
 
         // Exercise counter
-        let exercises = self.exercises.lock().unwrap();
+        let exercises = recover_poisoned(self.exercises.lock());
         for metric in exercises.iter() {
             let total = metric.count;
             // For Prometheus, emit one total + per-status breakdown

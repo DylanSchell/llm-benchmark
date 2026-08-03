@@ -1,5 +1,6 @@
 use tracing::debug;
 
+
 /// Wraps the output stream from a Docker container and parses JSON events to
 /// detect Bash tool call boundaries. When a Bash tool call starts, it notifies
 /// a [`CommandWatchdog`] to start a per-command timer. When the tool call
@@ -278,6 +279,7 @@ fn extract_command(tool_use_node: &serde_json::Value) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use benchmark_types::util::recover_poisoned;
 
     fn create_parser() -> StreamParser {
         let downstream = std::sync::Arc::new(|_s: &str| {});
@@ -370,7 +372,7 @@ mod tests {
         let captured = std::sync::Arc::new(std::sync::Mutex::new(String::new()));
         let captured_clone = captured.clone();
         let downstream = std::sync::Arc::new(move |s: &str| {
-            let mut c = captured_clone.lock().unwrap();
+            let mut c = recover_poisoned(captured_clone.lock());
             *c = s.to_string();
         });
         let parser = StreamParser::new(downstream);
@@ -378,7 +380,7 @@ mod tests {
         parser.accept("line1");
         parser.accept("line2");
 
-        let result = captured.lock().unwrap();
+        let result = recover_poisoned(captured.lock());
         assert_eq!(*result, "line2");
     }
 

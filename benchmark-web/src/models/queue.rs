@@ -5,6 +5,8 @@ use crate::models::queue_item::{BenchmarkQueueItem, QueueItemStatus};
 use std::collections::{HashMap, VecDeque};
 use std::sync::{Arc, Mutex};
 use tokio::sync::Notify;
+use benchmark_types::util::recover_poisoned;
+
 
 /// Internal state, protected by a single Mutex to ensure atomic transitions.
 #[derive(Debug)]
@@ -48,7 +50,7 @@ impl BenchmarkQueue {
 
     /// Add a single item to the queue.
     pub fn add(&self, item: BenchmarkQueueItem) {
-        let mut data = self.data.lock().unwrap();
+        let mut data = recover_poisoned(self.data.lock());
         data.inner.push_back(item.clone());
         data.all_items.push(item);
         drop(data);
@@ -58,7 +60,7 @@ impl BenchmarkQueue {
 
     /// Add multiple items to the queue.
     pub fn add_all(&self, items: Vec<BenchmarkQueueItem>) {
-        let mut data = self.data.lock().unwrap();
+        let mut data = recover_poisoned(self.data.lock());
         for item in items {
             data.inner.push_back(item.clone());
             data.all_items.push(item);
@@ -69,7 +71,7 @@ impl BenchmarkQueue {
 
     /// Poll the next item from the queue (removes it).
     pub fn poll_next(&self) -> Option<BenchmarkQueueItem> {
-        let mut data = self.data.lock().unwrap();
+        let mut data = recover_poisoned(self.data.lock());
         if let Some(mut item) = data.inner.pop_front() {
             item.status = QueueItemStatus::RUNNING;
             // Update all_items so get_all_items() reflects RUNNING status
@@ -89,7 +91,7 @@ impl BenchmarkQueue {
 
     /// Complete a specific item by ID (matches Java completeCurrent).
     pub fn complete_current(&self, item_id: &str) -> bool {
-        let mut data = self.data.lock().unwrap();
+        let mut data = recover_poisoned(self.data.lock());
         if data.current_items.remove(item_id).is_some() {
             for existing in data.all_items.iter_mut() {
                 if existing.id == item_id {
@@ -106,7 +108,7 @@ impl BenchmarkQueue {
 
     /// Fail a specific item by ID.
     pub fn fail_current(&self, item_id: &str) -> bool {
-        let mut data = self.data.lock().unwrap();
+        let mut data = recover_poisoned(self.data.lock());
         if data.current_items.remove(item_id).is_some() {
             for existing in data.all_items.iter_mut() {
                 if existing.id == item_id {
@@ -123,7 +125,7 @@ impl BenchmarkQueue {
 
     /// Cancel a specific item by ID.
     pub fn cancel_item(&self, item_id: &str) -> bool {
-        let mut data = self.data.lock().unwrap();
+        let mut data = recover_poisoned(self.data.lock());
         let was_in_queue = data.inner.iter().any(|item| item.id == item_id);
         for item in data.all_items.iter_mut() {
             if item.id == item_id {
@@ -141,7 +143,7 @@ impl BenchmarkQueue {
 
     /// Clear all pending items.
     pub fn clear_pending(&self) {
-        let mut data = self.data.lock().unwrap();
+        let mut data = recover_poisoned(self.data.lock());
         data.inner.retain(|item| item.status != QueueItemStatus::PENDING);
         data.all_items.retain(|item| item.status != QueueItemStatus::PENDING);
     }
@@ -151,7 +153,7 @@ impl BenchmarkQueue {
     /// Does NOT affect items already polled (RUNNING in current_items) or
     /// pending items still waiting in the queue.
     pub fn clear_terminal_items(&self) -> usize {
-        let mut data = self.data.lock().unwrap();
+        let mut data = recover_poisoned(self.data.lock());
         // Only remove COMPLETED and CANCELLED — keep FAILED items visible for retry.
         let removed = data.inner.iter().filter(|item| {
             matches!(item.status, QueueItemStatus::COMPLETED | QueueItemStatus::CANCELLED)
@@ -168,7 +170,7 @@ impl BenchmarkQueue {
     /// Clear ALL items from the queue, including pending and running.
     /// Returns the number of items removed.
     pub fn clear_all(&self) -> usize {
-        let mut data = self.data.lock().unwrap();
+        let mut data = recover_poisoned(self.data.lock());
         let removed = data.all_items.len();
         data.inner.clear();
         data.all_items.clear();
@@ -181,7 +183,7 @@ impl BenchmarkQueue {
     /// (std::sync::Mutex is not reentrant).
     pub fn retry_item(&self, item_id: &str) -> Option<BenchmarkQueueItem> {
         let new_item = {
-            let mut data = self.data.lock().unwrap();
+            let mut data = recover_poisoned(self.data.lock());
             let mut found = None;
             for item in data.all_items.iter_mut() {
                 if item.id == item_id && item.status == QueueItemStatus::FAILED {
@@ -201,7 +203,7 @@ impl BenchmarkQueue {
 
     /// Set the session ID on a queue item.
     pub fn set_session_id(&self, item_id: &str, session_id: String) {
-        let mut data = self.data.lock().unwrap();
+        let mut data = recover_poisoned(self.data.lock());
         for item in data.all_items.iter_mut() {
             if item.id == item_id {
                 item.session_id = Some(session_id);
@@ -214,7 +216,7 @@ impl BenchmarkQueue {
     /// Used by cancellation so a running item's session (and its Docker
     /// container) can be aborted alongside the queue entry.
     pub fn session_id_for(&self, item_id: &str) -> Option<String> {
-        let data = self.data.lock().unwrap();
+        let data = recover_poisoned(self.data.lock());
         data.all_items
             .iter()
             .find(|item| item.id == item_id)
@@ -223,13 +225,13 @@ impl BenchmarkQueue {
 
     /// Get all items (pending, running, completed).
     pub fn get_all_items(&self) -> Vec<BenchmarkQueueItem> {
-        let data = self.data.lock().unwrap();
+        let data = recover_poisoned(self.data.lock());
         data.all_items.clone()
     }
 
     /// Get pending items only.
     pub fn get_pending_items(&self) -> Vec<BenchmarkQueueItem> {
-        let data = self.data.lock().unwrap();
+        let data = recover_poisoned(self.data.lock());
         data.all_items
             .iter()
             .filter(|item| item.status == QueueItemStatus::PENDING)
@@ -252,5 +254,42 @@ impl BenchmarkQueue {
 impl Default for BenchmarkQueue {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+// =============================================================================
+// Tests
+// =============================================================================
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Regression: a panic while holding the queue lock must not permanently
+    /// break the queue. Previously every recover_poisoned(`.lock())` panicked on the
+    /// poisoned lock, taking the whole app down with it.
+    #[test]
+    fn queue_recovers_from_poisoned_lock() {
+        let queue = BenchmarkQueue::new();
+
+        // Poison the internal mutex: panic while holding the lock.
+        let data = std::sync::Arc::clone(&queue.data);
+        let handle = std::thread::spawn(move || {
+            let _guard = recover_poisoned(data.lock());
+            panic!("boom");
+        });
+        assert!(handle.join().is_err());
+
+        // Must not panic — with poison recovery every access still works.
+        assert!(queue.get_all_items().is_empty());
+        queue.add(crate::models::queue_item::BenchmarkQueueItem::new(
+            "reference".to_string(),
+            "default".to_string(),
+            None,
+            "java".to_string(),
+            "two-fer".to_string(),
+            false,
+        ));
+        assert_eq!(queue.get_all_items().len(), 1);
     }
 }

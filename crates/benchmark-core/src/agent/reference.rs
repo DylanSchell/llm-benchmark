@@ -7,6 +7,7 @@ use benchmark_types::agent::{Agent, AgentResult};
 use benchmark_types::cancellation::CancellationToken;
 use benchmark_types::exercise::Exercise;
 use walkdir::WalkDir;
+use benchmark_types::util::recover_poisoned;
 use crate::docker::DockerClient;
 
 /// Reference agent that copies reference implementation and runs tests.
@@ -33,7 +34,7 @@ impl ReferenceAgent {
     where
         F: Fn(&str) + Send + Sync + 'static,
     {
-        let mut guard = self.output_consumer.lock().unwrap();
+        let mut guard = recover_poisoned(self.output_consumer.lock());
         *guard = Some(Box::new(consumer));
     }
 
@@ -248,7 +249,7 @@ impl ReferenceAgent {
             exercise.language
         ));
 
-        let cancellation = self.cancellation_token.lock().unwrap().clone();
+        let cancellation = recover_poisoned(self.cancellation_token.lock()).clone();
         let result = self
             .docker_client
             .run_command_with_limits_and_volume(
@@ -438,7 +439,7 @@ impl ReferenceAgent {
         );
         debug!("Command: {}", command.join(" "));
 
-        let cancellation = self.cancellation_token.lock().unwrap().clone();
+        let cancellation = recover_poisoned(self.cancellation_token.lock()).clone();
         let result = self
             .docker_client
             .run_command_with_limits_and_volume(
@@ -584,7 +585,7 @@ impl ReferenceAgent {
 #[async_trait::async_trait]
 impl Agent for ReferenceAgent {
     fn set_cancellation_token(&self, token: Option<CancellationToken>) {
-        *self.cancellation_token.lock().unwrap() = token;
+        *recover_poisoned(self.cancellation_token.lock()) = token;
     }
 
     async fn run_exercise(

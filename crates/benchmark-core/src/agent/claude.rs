@@ -9,6 +9,8 @@ use benchmark_types::exercise::Exercise;
 use crate::docker::DockerClient;
 use crate::agent::{reference::ReferenceAgent, ClaudeMessageProcessor};
 use walkdir::WalkDir;
+use benchmark_types::util::recover_poisoned;
+
 
 /// Claude agent that invokes Claude Code CLI to solve exercises.
 pub struct ClaudeAgent {
@@ -126,7 +128,7 @@ impl ClaudeAgent {
 #[async_trait::async_trait]
 impl Agent for ClaudeAgent {
     fn set_cancellation_token(&self, token: Option<CancellationToken>) {
-        *self.cancellation_token.lock().unwrap() = token;
+        *recover_poisoned(self.cancellation_token.lock()) = token;
     }
 
     async fn run_exercise(
@@ -211,7 +213,7 @@ impl ClaudeAgent {
         ];
 
         let processor = Arc::clone(&self.message_processor);
-        let cancellation = self.cancellation_token.lock().unwrap().clone();
+        let cancellation = recover_poisoned(self.cancellation_token.lock()).clone();
         let result = self
             .docker_client
             .run_command_with_limits_and_volume_with_callback(
@@ -223,7 +225,7 @@ impl ClaudeAgent {
                 None,
                 Some(&temp_work_dir.to_string_lossy()),
                 Some(std::sync::Arc::new(move |line| {
-                    let proc = processor.lock().unwrap();
+                    let proc = recover_poisoned(processor.lock());
                     proc.process(line);
                 })),
                 false, // no .pi volume mount for Claude agent
