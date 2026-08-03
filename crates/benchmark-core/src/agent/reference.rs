@@ -259,7 +259,7 @@ impl ReferenceAgent {
         if !result.completed || result.exit_code != 0 {
             let err_msg = format!(
                 "Workspace preparation failed for {}: {}",
-                exercise.language, &result.output[..result.output.len().min(500)]
+                exercise.language, crate::safe_truncate(&result.output, 500)
             );
             error!("{}", err_msg);
             self.emit_output(&format!("{}\n", err_msg));

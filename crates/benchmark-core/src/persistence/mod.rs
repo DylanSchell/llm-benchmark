@@ -269,7 +269,7 @@ impl ResultPersister {
             for result in results.iter().filter(|r| !r.success) {
                 println!("  - {}", result.exercise_name);
                 if !result.output.is_empty() {
-                    let preview = &result.output[..result.output.len().min(200)];
+                    let preview = crate::safe_truncate(&result.output, 200);
                     println!("    Output preview: {}", preview);
                     if result.output.len() > 200 {
                         println!("    ... ({} more characters)", result.output.len() - 200);

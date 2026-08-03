@@ -323,7 +323,7 @@ impl PiAgent {
                         result.completed, result.exit_code
                     );
                     if !result.output.is_empty() {
-                        let preview = &result.output[..result.output.len().min(1000)];
+                        let preview = crate::safe_truncate(&result.output, 1000);
                         info!("Export output: {}", preview);
                     }
                 } else {

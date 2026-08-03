@@ -86,3 +86,39 @@ fn make_agent(kind: AgentKind, docker_client: DockerClient) -> Arc<dyn Agent + S
         AgentKind::Pi => Arc::new(PiAgent::new(docker_client)),
     }
 }
+
+#[cfg(test)]
+mod safe_truncate_tests {
+    use super::safe_truncate;
+
+    #[test]
+    fn returns_full_string_when_under_limit() {
+        assert_eq!(safe_truncate("abc", 10), "abc");
+    }
+
+    #[test]
+    fn truncates_ascii_exactly() {
+        assert_eq!(safe_truncate("hello world", 5), "hello");
+    }
+
+    #[test]
+    fn truncates_multibyte_on_char_boundary() {
+        // "héllo": h(1) é(2) l(1) l(1) — byte 5 is a boundary
+        assert_eq!(safe_truncate("héllo wörld", 5), "héll");
+        // byte 4 lands right after é → boundary
+        assert_eq!(safe_truncate("héllo wörld", 4), "hél");
+    }
+
+    #[test]
+    fn never_panics_on_emoji_boundaries() {
+        // a(1) + 👋(4 bytes) + b(1): byte 2 is mid-emoji
+        assert_eq!(safe_truncate("a👋b", 2), "a");
+        // several emoji, limit lands mid-codepoint
+        let s = "👋👋👋";
+        for limit in 1..=s.len() {
+            let t = safe_truncate(s, limit);
+            assert!(t.len() <= limit, "limit {} gave len {}", limit, t.len());
+            assert!(s.starts_with(t));
+        }
+    }
+}

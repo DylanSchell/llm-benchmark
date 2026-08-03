@@ -84,7 +84,7 @@ impl PiMessageProcessor {
                         if let Some(content) = message.get("content") {
                             if content.is_string() {
                                 let text = content.as_str().unwrap_or("");
-                                info!("[Pi User] {}", &text[..text.len().min(200)]);
+                                info!("[Pi User] {}", crate::safe_truncate(&text, 200));
                                 self.send_output(&format!("\n[User]: {}\n", text));
                             } else if content.is_array() {
                                 if let Some(items) = content.as_array() {
@@ -153,7 +153,7 @@ impl PiMessageProcessor {
                         if let Some(content) = message.get("content") {
                             if content.is_string() {
                                 let text = content.as_str().unwrap_or("");
-                                info!("[Pi Tool Result] {}", &text[..text.len().min(500)]);
+                                info!("[Pi Tool Result] {}", crate::safe_truncate(&text, 500));
                                 self.send_output(&format!("[Tool Result]: {}\n", text));
                             } else if content.is_array() {
                                 if let Some(items) = content.as_array() {
@@ -402,14 +402,14 @@ impl PiMessageProcessor {
     fn handle_compaction(&self, json: &Value) {
         let summary = json.get("summary").and_then(|v| v.as_str()).unwrap_or("");
         let tokens_before = json.get("tokensBefore").and_then(|v| v.as_i64()).unwrap_or(0);
-        let preview = &summary[..summary.len().min(100)];
+        let preview = crate::safe_truncate(&summary, 100);
         info!("[Pi Compacted {} tokens: {}]", tokens_before, preview);
         self.send_output(&format!("\n[Compacted {} tokens: {}]\n", tokens_before, preview));
     }
 
     fn handle_branch_summary(&self, json: &Value) {
         let summary = json.get("summary").and_then(|v| v.as_str()).unwrap_or("");
-        let preview = &summary[..summary.len().min(100)];
+        let preview = crate::safe_truncate(&summary, 100);
         info!("[Pi Branched: {}]", preview);
         self.send_output(&format!("\n[Branched: {}]\n", preview));
     }
@@ -459,5 +459,49 @@ impl PiMessageProcessor {
         if let Some(ref consumer) = self.consumer {
             consumer(text);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn with_info_subscriber(f: impl FnOnce()) {
+        let _guard = tracing::subscriber::set_default(
+            tracing_subscriber::fmt()
+                .with_max_level(tracing::Level::INFO)
+                .with_writer(std::io::sink)
+                .finish(),
+        );
+        f();
+    }
+
+    /// Regression: multi-byte UTF-8 user text used to panic the byte-slice
+    /// truncation in the info! log path.
+    #[test]
+    fn non_ascii_user_message_does_not_panic() {
+        with_info_subscriber(|| {
+            let processor = PiMessageProcessor::new(None);
+            // >200 bytes with multi-byte chars straddling the 200-byte limit:
+            // the old raw byte-slice truncation panicked here.
+            let json = format!(
+                r#"{{"type":"message_start","message":{{"role":"user","content":"{}"}}}}"#,
+                "€".repeat(67)
+            );
+            processor.process(&json);
+        });
+    }
+
+    #[test]
+    fn non_ascii_compaction_summary_does_not_panic() {
+        with_info_subscriber(|| {
+            let processor = PiMessageProcessor::new(None);
+            // >100 bytes, multi-byte chars straddling the 100-byte limit
+            let json = format!(
+                r#"{{"type":"compaction","summary":"{}"}}"#,
+                "€".repeat(34)
+            );
+            processor.process(&json);
+        });
     }
 }

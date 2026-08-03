@@ -74,7 +74,7 @@ impl CommandWatchdog {
         timers.push((prefix.clone(), original, tokio::time::Instant::now()));
         debug!(
             "Watchdog timer started for command: {}",
-            &prefix[..prefix.len().min(100)]
+            crate::safe_truncate(&prefix, 100)
         );
     }
 
@@ -88,7 +88,7 @@ impl CommandWatchdog {
         timers.push((prefix.clone(), original, tokio::time::Instant::now()));
         debug!(
             "Watchdog timer started for command: {}",
-            &prefix[..prefix.len().min(100)]
+            crate::safe_truncate(&prefix, 100)
         );
     }
 
@@ -104,7 +104,7 @@ impl CommandWatchdog {
         timers.retain(|(p, _, _)| p != &prefix);
         debug!(
             "Watchdog timer cancelled for command: {}",
-            &prefix[..prefix.len().min(100)]
+            crate::safe_truncate(&prefix, 100)
         );
     }
 
@@ -146,7 +146,7 @@ impl CommandWatchdog {
         // Phase 1: SIGTERM
         info!(
             "Sending SIGTERM to process matching '{}' in container '{}'",
-            &line[..line.len().min(100)],
+            crate::safe_truncate(&line, 100),
             self.container_name
         );
 
@@ -169,7 +169,7 @@ impl CommandWatchdog {
             Ok(_) => {
                 info!(
                     "Killed process matching '{}' in container '{}' via SIGKILL",
-                    &line[..line.len().min(100)],
+                    crate::safe_truncate(&line, 100),
                     self.container_name
                 );
             }
@@ -208,7 +208,7 @@ impl CommandWatchdog {
         for (_prefix, original) in &timed_out {
             warn!(
                 "Command watchdog timeout: killing process matching '{}' in container '{}'",
-                &original[..original.len().min(120)],
+                crate::safe_truncate(&original, 120),
                 self.container_name
             );
             self.kill_process_by_command(original).await;
@@ -322,7 +322,7 @@ fn sanitize_command_prefix(command: &str) -> String {
     let mut hasher = DefaultHasher::new();
     prefix.hash(&mut hasher);
     // Keep first 100 chars for human readability + hash suffix for uniqueness
-    let short = &prefix[..prefix.len().min(100)];
+    let short = crate::safe_truncate(&prefix, 100);
     format!("{}-{:x}", short, hasher.finish())
 }
 

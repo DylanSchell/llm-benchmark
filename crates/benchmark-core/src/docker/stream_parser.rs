@@ -89,10 +89,10 @@ impl StreamParser {
                         if item.get("type").and_then(|v| v.as_str()) == Some("tool_use") {
                             if item.get("name").and_then(|v| v.as_str()) == Some("Bash") {
                                 if let Some(command) = extract_command(item) {
-                                    debug!(
-                                        "Claude Bash tool call started: {}",
-                                        &command[..command.len().min(100)]
-                                    );
+                                        debug!(
+                                            "Claude Bash tool call started: {}",
+                                            crate::safe_truncate(&command, 100)
+                                        );
                                     // Notify watchdog of tool call start (sync for FIFO ordering)
                                     if let Some(wd) = watchdog {
                                         wd.on_tool_call_started_sync(&command);
@@ -165,7 +165,7 @@ impl StreamParser {
                     if let Some(command) = args.get("command").and_then(|v| v.as_str()) {
                         debug!(
                             "Pi bash tool call started: {}",
-                            &command[..command.len().min(100)]
+                            crate::safe_truncate(&command, 100)
                         );
                         if let Some(wd) = watchdog {
                             wd.on_tool_call_started_sync(command);
@@ -207,7 +207,7 @@ fn parse_pi_tool_execution_events(root: &serde_json::Value, watchdog: Option<&st
                     if let Some(command) = args.get("command").and_then(|v| v.as_str()) {
                         debug!(
                             "Pi tool_execution_start (Bash): {}",
-                            &command[..command.len().min(100)]
+                            crate::safe_truncate(&command, 100)
                         );
                         if let Some(wd) = watchdog {
                             wd.on_tool_call_started_sync(command);

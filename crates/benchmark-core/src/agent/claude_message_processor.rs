@@ -192,7 +192,7 @@ impl ClaudeMessageProcessor {
                                     "tool_result" => {
                                         if let Some(tool_content) = item.get("content").and_then(|v| v.as_str()) {
                                             let with_newlines = tool_content.replace("\\n", "\n");
-                                            info!("[Tool result] {}", &with_newlines[..with_newlines.len().min(500)]);
+                                            info!("[Tool result] {}", crate::safe_truncate(&with_newlines, 500));
                                             self.send_output(&format!("tool_result:\n{}\n", with_newlines));
                                         } else {
                                             self.send_output(&format!("tool_result: {}\n", item));
@@ -213,7 +213,7 @@ impl ClaudeMessageProcessor {
                         "tool_result" => {
                             if let Some(tool_content) = content.get("content").and_then(|v| v.as_str()) {
                                 let with_newlines = tool_content.replace("\\n", "\n");
-                                info!("[Tool result] {}", &with_newlines[..with_newlines.len().min(500)]);
+                                info!("[Tool result] {}", crate::safe_truncate(&with_newlines, 500));
                                 self.send_output(&format!("tool_result:\n{}\n", with_newlines));
                             } else {
                                 self.send_output(&format!("tool_result: {}\n", content));
@@ -299,8 +299,8 @@ impl ClaudeMessageProcessor {
                 "Task" => {
                     if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
                         let prompt = input.get("prompt").and_then(|v| v.as_str()).unwrap_or("");
-                        info!("[Tool: Task] {}", &prompt[..prompt.len().min(200)]);
-                        self.send_output(&format!("\ntool_use: Task {}\n", &prompt[..prompt.len().min(200)]));
+                        info!("[Tool: Task] {}", crate::safe_truncate(&prompt, 200));
+                        self.send_output(&format!("\ntool_use: Task {}\n", crate::safe_truncate(&prompt, 200)));
                     }
                 }
                 "TodoWrite" => {
@@ -339,5 +339,49 @@ impl ClaudeMessageProcessor {
         if let Some(ref consumer) = self.consumer {
             consumer(text);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Regression: tool results / prompts containing multi-byte UTF-8 used to
+    /// panic the byte-slice truncation in the log path. With a subscriber at
+    /// INFO the format args are evaluated, so this must not panic.
+    fn with_info_subscriber(f: impl FnOnce()) {
+        let _guard = tracing::subscriber::set_default(
+            tracing_subscriber::fmt()
+                .with_max_level(tracing::Level::INFO)
+                .with_writer(std::io::sink)
+                .finish(),
+        );
+        f();
+    }
+
+    #[test]
+    fn non_ascii_tool_result_does_not_panic() {
+        with_info_subscriber(|| {
+            let processor = ClaudeMessageProcessor::new(None);
+            // >500 bytes, multi-byte chars straddling the 500-byte limit
+            let json = format!(
+                r#"{{"type":"user","message":{{"content":[{{"type":"tool_result","tool_use_id":"t1","content":"{}"}}]}}}}"#,
+                "€".repeat(167)
+            );
+            processor.process(&json);
+        });
+    }
+
+    #[test]
+    fn non_ascii_task_prompt_does_not_panic() {
+        with_info_subscriber(|| {
+            let processor = ClaudeMessageProcessor::new(None);
+            // >200 bytes, multi-byte chars straddling the 200-byte limit
+            let json = format!(
+                r#"{{"type":"assistant","message":{{"content":[{{"type":"tool_use","name":"Task","input":{{"prompt":"{}"}}}}]}}}}"#,
+                "€".repeat(67)
+            );
+            processor.process(&json);
+        });
     }
 }
