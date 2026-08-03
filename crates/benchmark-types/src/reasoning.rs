@@ -674,9 +674,17 @@ static REASONING_REGISTRY: LazyLock<ReasoningRegistry> = LazyLock::new(|| Reason
 #[cfg(test)]
 mod registry_tests {
     use super::*;
+    use std::sync::Mutex;
+    use std::sync::LazyLock;
+
+    /// Serializes tests that mutate the global REASONING_REGISTRY. The
+    /// registry is a process-wide static; without this, parallel tests racing
+    /// on clear()/register()/lookup() fail nondeterministically.
+    static TEST_LOCK: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));
 
     #[test]
     fn test_exact_match_priority() {
+        let _guard = TEST_LOCK.lock().unwrap();
         // Register a broad pattern then a specific override
         ReasoningRegistry::register("qwen-*", ReasoningConfig {
             mechanism: ReasoningMechanism::Custom,
@@ -697,6 +705,7 @@ mod registry_tests {
 
     #[test]
     fn test_glob_pattern_match() {
+        let _guard = TEST_LOCK.lock().unwrap();
         ReasoningRegistry::register("llama-*", ReasoningConfig {
             mechanism: ReasoningMechanism::Custom,
             thinking_format: None,
@@ -710,12 +719,14 @@ mod registry_tests {
 
     #[test]
     fn test_no_match_returns_none() {
+        let _guard = TEST_LOCK.lock().unwrap();
         let result = ReasoningRegistry::lookup("unknown-model-xyz");
         assert!(result.is_none());
     }
 
     #[test]
     fn test_get_for_model_fallback() {
+        let _guard = TEST_LOCK.lock().unwrap();
         // No registrations — should fall back to detect
         let config = ReasoningRegistry::get_for_model("o3-mini");
         assert!(matches!(config.mechanism, ReasoningMechanism::OpenAIReasoningEffort));
@@ -723,6 +734,7 @@ mod registry_tests {
 
     #[test]
     fn test_qwen3_builtin_registration() {
+        let _guard = TEST_LOCK.lock().unwrap();
         // Reset registry to avoid pollution from other tests
         ReasoningRegistry::clear();
         ReasoningRegistry::register_defaults();
@@ -735,6 +747,7 @@ mod registry_tests {
 
     #[test]
     fn test_ds4_builtin_registration() {
+        let _guard = TEST_LOCK.lock().unwrap();
         // Reset registry to avoid pollution from other tests
         ReasoningRegistry::clear();
         ReasoningRegistry::register_defaults();
