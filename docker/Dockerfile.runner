@@ -31,7 +31,7 @@ RUN npm install -g @mariozechner/pi-coding-agent
 # Install pi extensions (loaded via --extension / --skill CLI flags at runtime)
 # supi-bash-timeout peer-depends on @earendil-works/pi-coding-agent; symlink it to
 # the @mariozechner package (same codebase, different npm name) so extensions resolve.
-RUN npm install -g pi-caveman @mrclrchtr/supi-bash-timeout context-mode && \
+RUN npm install -g pi-caveman @mrclrchtr/supi-bash-timeout && \
     GLOBAL=$(npm root -g) && \
     mkdir -p "$GLOBAL/@earendil-works" && \
     ln -s "$GLOBAL/@mariozechner/pi-coding-agent" \

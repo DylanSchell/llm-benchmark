@@ -58,7 +58,7 @@ RUN npm install -g claude-plugins
 RUN npm install -g @earendil-works/pi-coding-agent
 
 # Install pi extensions (loaded via --extension / --skill CLI flags at runtime)
-RUN npm install -g pi-caveman @mrclrchtr/supi-bash-timeout context-mode
+RUN npm install -g pi-caveman @mrclrchtr/supi-bash-timeout
 
 # Install pytest for Python testing
 #RUN pip3 install --no-cache-dir pytest

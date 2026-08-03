@@ -382,7 +382,6 @@ impl PiAgent {
         // Package "pi" fields from package.json:
         //   pi-caveman: extensions: ["./extensions/caveman.ts"]
         //   @mrclrchtr/supi-bash-timeout: extensions: ["./src/extension.ts"]
-        //   context-mode: extensions: ["./build/adapters/pi/extension.js"], skills: ["./skills"]
         // Debian NodeSource installs to /usr/lib/node_modules (not /usr/local).
         // This must match the npm global root inside the Debian runner image.
         const NPM_GLOBAL: &str = "/usr/lib/node_modules";
@@ -403,12 +402,6 @@ impl PiAgent {
             // caveman extension — token compression mode
             "--extension".to_string(),
             format!("{NPM_GLOBAL}/pi-caveman/extensions/caveman.ts"),
-            // context-mode extension — sandboxed code execution, FTS5 knowledge base
-            "--extension".to_string(),
-            format!("{NPM_GLOBAL}/context-mode/build/adapters/pi/extension.js"),
-            // context-mode skills — ctx_search, ctx_execute, etc.
-            "--skill".to_string(),
-            format!("{NPM_GLOBAL}/context-mode/skills"),
         ];
 
         // Add thinking level if specified
