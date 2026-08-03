@@ -1184,9 +1184,11 @@ async fn test_results_has_success_rate_stat() {
 #[tokio::test]
 async fn test_results_has_total_time_stat() {
     let html = fetch_page("/results").await.expect("Results page should return 200");
+    // Rust port renamed the Java "Total Time" stat; the template now renders
+    // "Execution Time" (sum of individual durations) and "Wall-Clock Time".
     assert!(
-        html.contains("Total Time"),
-        "Results page should have 'Total Time' stat"
+        html.contains("Execution Time"),
+        "Results page should have 'Execution Time' stat"
     );
 }
 
