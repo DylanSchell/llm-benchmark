@@ -505,7 +505,14 @@ impl QueueProcessor {
                     info!("Queue item completed: {}", item.id);
                     break;
                 }
-                Some(s) if s.status == RunStatus::FAILED || s.status == RunStatus::CANCELLED => {
+                Some(s) if s.status == RunStatus::CANCELLED => {
+                    // User cancelled the session — mark the item CANCELLED
+                    // (not FAILED) so the UI reflects the user's intent.
+                    queue.cancel_item(&item.id);
+                    info!("Queue item cancelled: {}", item.id);
+                    break;
+                }
+                Some(s) if s.status == RunStatus::FAILED => {
                     queue.fail_current(&item.id);
                     warn!("Queue item failed: {}", item.id);
                     break;
@@ -536,8 +543,26 @@ impl QueueProcessor {
     }
 
     /// Cancel a queue item.
+    /// If the item is currently running (linked to a session), also cancels
+    /// the session so its in-flight Docker container is aborted.
     pub async fn cancel_queue_item(&self, item_id: &str) -> bool {
-        self.queue.cancel_item(item_id)
+        // Fetch the session id BEFORE cancel_item removes the item from
+        // current_items.
+        let session_id = self.queue.session_id_for(item_id);
+        let cancelled = self.queue.cancel_item(item_id);
+        if cancelled {
+            if let Some(sid) = session_id {
+                if self.session_manager.cancel_session(&sid) {
+                    info!("Cancelled session {} for queue item {}", sid, item_id);
+                } else {
+                    warn!(
+                        "Queue item {} cancelled but session {} not in cancellable state",
+                        item_id, sid
+                    );
+                }
+            }
+        }
+        cancelled
     }
 
     /// Get all queue items.

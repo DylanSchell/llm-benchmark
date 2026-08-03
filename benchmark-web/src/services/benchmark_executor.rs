@@ -9,6 +9,7 @@ use crate::services::session_manager::SessionManager;
 use anyhow::{Context, Result};
 use benchmark_core::agent::{ReferenceAgent, ClaudeAgent, PiAgent, ClaudeMessageProcessor, PiMessageProcessor};
 use benchmark_types::agent::Agent;
+use benchmark_types::cancellation::CancellationToken;
 use benchmark_core::docker::DockerClient;
 use benchmark_core::exercise_runner::ExerciseRunner;
 use benchmark_core::persistence::ResultPersister;
@@ -77,6 +78,11 @@ impl BenchmarkExecutor {
         session: &mut BenchmarkSession,
         session_manager: Option<&SessionManager>,
     ) -> Result<()> {
+        // Per-session cancellation signal. Fired by SessionManager::cancel_session;
+        // consulted at exercise boundaries and attached to agents so in-flight
+        // Docker runs abort promptly when the user cancels.
+        let cancellation_token = session_manager.and_then(|sm| sm.get_cancellation_token(&session.id));
+
         // Run the body in an inner function so the finalize block always runs
         // even when execute_inner returns Err. This prevents the session from
         // staying stuck in RUNNING when an error propagates via ?.
@@ -130,11 +136,16 @@ impl BenchmarkExecutor {
                 }
             };
 
+            // Attach the session cancellation token so in-flight Docker runs
+            // abort when the user cancels (default no-op for agents that
+            // don't support cancellation).
+            agent.set_cancellation_token(cancellation_token.clone());
+
             let model_str = &model;
             if let Some(ref _exercise) = exercise_name {
-                self.execute_single_exercise(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name).await?;
+                self.execute_single_exercise(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name, cancellation_token.clone()).await?;
             } else {
-                self.execute_all_exercises(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name).await?;
+                self.execute_all_exercises(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name, cancellation_token.clone()).await?;
             }
 
             Ok::<(), anyhow::Error>(())
@@ -150,6 +161,12 @@ impl BenchmarkExecutor {
             session.emit_output(&format!("Execution error: {}\n", err_msg));
         }
         // Preserve FAILED/CANCELLED status set by inner execution paths.
+        // If the user cancelled (token fired) but this local session copy
+        // never observed the manager's status change, mark it CANCELLED here
+        // so the status propagates back to the manager and queue.
+        if cancellation_token.as_ref().is_some_and(|t| t.is_cancelled()) {
+            session.status = RunStatus::CANCELLED;
+        }
         // Only transition to COMPLETED if the session is not already in a terminal failure state.
         if session.status != RunStatus::FAILED && session.status != RunStatus::CANCELLED {
             session.complete();
@@ -174,12 +191,16 @@ impl BenchmarkExecutor {
         model: &str,
         thinking_level: Option<&str>,
         agent_name: &str,
+        cancellation_token: Option<CancellationToken>,
     ) -> Result<()> {
         let exercise_name = session.exercise_name.clone().unwrap_or_else(|| "unknown".to_string());
 
         for language in languages {
-            // Check for cancellation
-            if session.status == RunStatus::CANCELLED {
+            // Check for cancellation — the token fires even though this local
+            // session copy never sees the manager's status change.
+            if session.status == RunStatus::CANCELLED
+                || cancellation_token.as_ref().is_some_and(|t| t.is_cancelled())
+            {
                 session.emit_output("Benchmark cancelled\n");
                 return Ok(());
             }
@@ -249,13 +270,17 @@ impl BenchmarkExecutor {
         model: &str,
         thinking_level: Option<&str>,
         agent_name: &str,
+        cancellation_token: Option<CancellationToken>,
     ) -> Result<()> {
         let mut total_exercises: i32 = 0;
         let _successful_exercises: i32 = 0;
 
         for language in languages {
-            // Check for cancellation
-            if session.status == RunStatus::CANCELLED {
+            // Check for cancellation — the token fires even though this local
+            // session copy never sees the manager's status change.
+            if session.status == RunStatus::CANCELLED
+                || cancellation_token.as_ref().is_some_and(|t| t.is_cancelled())
+            {
                 session.emit_output("Benchmark cancelled\n");
                 return Ok(());
             }

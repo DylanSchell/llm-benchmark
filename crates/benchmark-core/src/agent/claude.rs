@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 use tokio::time::Instant;
 use tracing::{error, info, warn};
 use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::cancellation::CancellationToken;
 use benchmark_types::exercise::Exercise;
 use crate::docker::DockerClient;
 use crate::agent::{reference::ReferenceAgent, ClaudeMessageProcessor};
@@ -13,6 +14,8 @@ use walkdir::WalkDir;
 pub struct ClaudeAgent {
     docker_client: DockerClient,
     message_processor: Arc<Mutex<ClaudeMessageProcessor>>,
+    /// Session cancellation signal — aborts in-flight Docker runs when fired.
+    cancellation_token: Mutex<Option<CancellationToken>>,
 }
 
 impl ClaudeAgent {
@@ -20,6 +23,7 @@ impl ClaudeAgent {
         Self {
             docker_client,
             message_processor: Arc::new(Mutex::new(ClaudeMessageProcessor::new(None))),
+            cancellation_token: Mutex::new(None),
         }
     }
 
@@ -121,6 +125,10 @@ impl ClaudeAgent {
 
 #[async_trait::async_trait]
 impl Agent for ClaudeAgent {
+    fn set_cancellation_token(&self, token: Option<CancellationToken>) {
+        *self.cancellation_token.lock().unwrap() = token;
+    }
+
     async fn run_exercise(
         &self,
         exercise: &Exercise,
@@ -203,6 +211,7 @@ impl ClaudeAgent {
         ];
 
         let processor = Arc::clone(&self.message_processor);
+        let cancellation = self.cancellation_token.lock().unwrap().clone();
         let result = self
             .docker_client
             .run_command_with_limits_and_volume_with_callback(
@@ -218,6 +227,7 @@ impl ClaudeAgent {
                     proc.process(line);
                 })),
                 false, // no .pi volume mount for Claude agent
+                cancellation,
             )
             .await?;
 

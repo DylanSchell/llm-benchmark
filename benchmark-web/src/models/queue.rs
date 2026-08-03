@@ -210,6 +210,17 @@ impl BenchmarkQueue {
         }
     }
 
+    /// Get the session ID currently linked to an item, if any.
+    /// Used by cancellation so a running item's session (and its Docker
+    /// container) can be aborted alongside the queue entry.
+    pub fn session_id_for(&self, item_id: &str) -> Option<String> {
+        let data = self.data.lock().unwrap();
+        data.all_items
+            .iter()
+            .find(|item| item.id == item_id)
+            .and_then(|item| item.session_id.clone())
+    }
+
     /// Get all items (pending, running, completed).
     pub fn get_all_items(&self) -> Vec<BenchmarkQueueItem> {
         let data = self.data.lock().unwrap();

@@ -205,6 +205,8 @@ where
     }
 }
 
+use crate::cancellation::CancellationToken;
+
 #[async_trait::async_trait]
 pub trait Agent: Send + Sync {
     async fn run_exercise(
@@ -231,6 +233,13 @@ pub trait Agent: Send + Sync {
 
     /// Returns the agent's name (e.g., "reference", "claude", "pi").
     fn get_name(&self) -> &str;
+
+    /// Attach a cancellation token to this agent. When the token is cancelled
+    /// (e.g. the user cancels the benchmark session), the agent should abort
+    /// its in-flight Docker command promptly instead of waiting out the
+    /// container timeout. The default implementation is a no-op for agents
+    /// that don't support cancellation.
+    fn set_cancellation_token(&self, _token: Option<CancellationToken>) {}
 }
 
 /// Unified result from running an exercise through an agent.

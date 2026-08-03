@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 use tokio::time::Instant;
 use tracing::{debug, error, info, warn};
 use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::cancellation::CancellationToken;
 use benchmark_types::exercise::Exercise;
 use walkdir::WalkDir;
 use crate::docker::DockerClient;
@@ -14,6 +15,8 @@ use crate::agent::{reference::ReferenceAgent, PiMessageProcessor};
 pub struct PiAgent {
     docker_client: DockerClient,
     message_processor: Arc<Mutex<PiMessageProcessor>>,
+    /// Session cancellation signal — aborts in-flight Docker runs when fired.
+    cancellation_token: Mutex<Option<CancellationToken>>,
 }
 
 impl PiAgent {
@@ -21,6 +24,7 @@ impl PiAgent {
         Self {
             docker_client,
             message_processor: Arc::new(Mutex::new(PiMessageProcessor::new(None))),
+            cancellation_token: Mutex::new(None),
         }
     }
 
@@ -300,6 +304,7 @@ impl PiAgent {
 
                 // Run: pi --export <jsonl_file> <html_file>
                 // No .pi volume mount — just /workspace where the JSONL was copied.
+                let cancellation = self.cancellation_token.lock().unwrap().clone();
                 let export_result = self
                     .docker_client
                     .run_command_with_limits_and_volume(
@@ -314,6 +319,7 @@ impl PiAgent {
                         Some(60),
                         None,
                         Some(&temp_work_dir.to_string_lossy()),
+                        cancellation,
                     )
                     .await;
 
@@ -417,6 +423,10 @@ impl PiAgent {
 
 #[async_trait::async_trait]
 impl Agent for PiAgent {
+    fn set_cancellation_token(&self, token: Option<CancellationToken>) {
+        *self.cancellation_token.lock().unwrap() = token;
+    }
+
     async fn run_exercise(
         &self,
         exercise: &Exercise,
@@ -492,6 +502,7 @@ impl Agent for PiAgent {
         } else {
             "/workspace".to_string()
         };
+        let cancellation = self.cancellation_token.lock().unwrap().clone();
         let result = self
             .docker_client
             .run_command_with_limits_and_volume_with_callback(
@@ -507,6 +518,7 @@ impl Agent for PiAgent {
                     proc.process(line);
                 })),
                 true,  // enable .pi volume mount for session data (matches Java)
+                cancellation,
             )
             .await?;
 

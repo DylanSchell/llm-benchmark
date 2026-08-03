@@ -3,6 +3,7 @@
 
 use crate::models::session::BenchmarkSession;
 use crate::models::status::RunStatus;
+use benchmark_types::cancellation::CancellationToken;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use tokio::sync::broadcast;
@@ -12,6 +13,9 @@ use tracing::{info, debug, warn};
 #[derive(Debug, Clone)]
 pub struct SessionManager {
     sessions: Arc<RwLock<HashMap<String, BenchmarkSession>>>,
+    /// Per-session cancellation tokens. `cancel_session` fires the token so
+    /// any in-flight Docker container is aborted promptly.
+    tokens: Arc<RwLock<HashMap<String, CancellationToken>>>,
 }
 
 impl SessionManager {
@@ -19,6 +23,7 @@ impl SessionManager {
     pub fn new() -> Self {
         Self {
             sessions: Arc::new(RwLock::new(HashMap::new())),
+            tokens: Arc::new(RwLock::new(HashMap::new())),
         }
     }
 
@@ -48,6 +53,10 @@ impl SessionManager {
             let mut sessions = self.sessions.write().unwrap();
             sessions.insert(id.clone(), session.clone());
         }
+        {
+            let mut tokens = self.tokens.write().unwrap();
+            tokens.insert(id.clone(), CancellationToken::new());
+        }
 
         info!(
             "Created benchmark session: {} for {}/{} (model: {})",
@@ -64,6 +73,14 @@ impl SessionManager {
     pub fn get_session(&self, session_id: &str) -> Option<BenchmarkSession> {
         let sessions = self.sessions.read().unwrap();
         sessions.get(session_id).cloned()
+    }
+
+    /// Get the cancellation token registered for a session.
+    /// The token is fired by [`cancel_session`](Self::cancel_session); the
+    /// benchmark executor attaches it to the agent so in-flight Docker runs
+    /// abort promptly.
+    pub fn get_cancellation_token(&self, session_id: &str) -> Option<CancellationToken> {
+        self.tokens.read().unwrap().get(session_id).cloned()
     }
 
     /// Take the internal message receiver from a session.
@@ -84,8 +101,14 @@ impl SessionManager {
     pub fn cancel_session(&self, session_id: &str) -> bool {
         let mut sessions = self.sessions.write().unwrap();
         if let Some(session) = sessions.get_mut(session_id) {
-            if session.status == RunStatus::RUNNING {
+            if session.status == RunStatus::RUNNING || session.status == RunStatus::PENDING {
                 session.cancel();
+                // Fire the cancellation token so the in-flight Docker
+                // container (and any between-exercise loops) abort promptly
+                // instead of waiting out the container timeout.
+                if let Some(token) = self.tokens.read().unwrap().get(session_id) {
+                    token.cancel();
+                }
                 info!("Cancelled session: {}", session_id);
                 true
             } else {
@@ -160,6 +183,42 @@ mod tests {
 
     fn create_test_manager() -> SessionManager {
         SessionManager::new()
+    }
+
+    #[test]
+    fn cancel_session_cancels_associated_cancellation_token() {
+        let manager = create_test_manager();
+        let session = manager.create_session(
+            "reference".to_string(),
+            vec!["java".to_string()],
+            "default".to_string(),
+            None,
+            None,
+            false,
+            300_000,
+        );
+        let session_id = session.id.clone();
+
+        let token = manager
+            .get_cancellation_token(&session_id)
+            .expect("token should be registered at create_session");
+        assert!(!token.is_cancelled());
+
+        // Set to RUNNING first (cancel only works on RUNNING sessions)
+        let mut sessions = manager.sessions.write().unwrap();
+        if let Some(s) = sessions.get_mut(&session_id) {
+            s.status = RunStatus::RUNNING;
+        }
+        drop(sessions);
+
+        assert!(manager.cancel_session(&session_id));
+        assert!(token.is_cancelled(), "cancelling a session must fire its token");
+    }
+
+    #[test]
+    fn get_cancellation_token_returns_none_for_unknown_session() {
+        let manager = create_test_manager();
+        assert!(manager.get_cancellation_token("does-not-exist").is_none());
     }
 
     #[test]

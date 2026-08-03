@@ -1,5 +1,6 @@
 use super::watchdog::CommandWatchdog;
 use anyhow::{anyhow, Context};
+use benchmark_types::cancellation::CancellationToken;
 use std::collections::HashMap;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
@@ -157,6 +158,7 @@ impl DockerClient {
         timeout_seconds: Option<u64>,
         memory_limit: Option<&str>,
         volume_host_dir: Option<&str>,
+        cancellation: Option<CancellationToken>,
     ) -> Result<ProcessResult, anyhow::Error> {
         self.run_command_with_limits_and_volume_with_callback(
             container_image,
@@ -168,6 +170,7 @@ impl DockerClient {
             volume_host_dir,
             None,
             false, // no .pi volume mount for reference agent
+            cancellation,
         )
         .await
     }
@@ -189,6 +192,7 @@ impl DockerClient {
         volume_host_dir: Option<&str>,
         output_callback: Option<std::sync::Arc<OutputCallback>>,
         enable_pi_volume: bool,
+        cancellation: Option<CancellationToken>,
     ) -> Result<ProcessResult, anyhow::Error> {
         let image = container_image.unwrap_or(&self.config.image);
         let work = work_dir.unwrap_or(&self.config.work_dir);
@@ -283,6 +287,7 @@ impl DockerClient {
             timeout_secs,
             &watchdog,
             &wrapped_callback,
+            cancellation,
         )
         .await
         .with_context(|| format!("Docker command failed: {}", log_command.join(" ")))?;
@@ -408,6 +413,7 @@ async fn execute_docker_command_v2(
     timeout_secs: u64,
     _watchdog: &CommandWatchdog,
     output_callback: &std::sync::Arc<OutputCallback>,
+    cancellation: Option<CancellationToken>,
 ) -> Result<ProcessResult, anyhow::Error> {
     let mut cmd = Command::new(&full_command[0]);
     cmd.args(&full_command[1..]);
@@ -489,23 +495,37 @@ async fn execute_docker_command_v2(
         }
     });
 
-    // Wait for process exit, liveness abort, or global timeout
+    // Wait for process exit, liveness abort, cancellation, or global timeout.
+    // The wait is polled in a loop so the 500ms cancellation check doesn't
+    // reset the timeout deadline (the deadline is absolute).
+    let deadline = tokio::time::Instant::now() + Duration::from_secs(timeout_secs);
     let completed = {
-        tokio::select! {
-            biased;
-            status_result = process.wait() => {
-                match status_result {
-                    Ok(status) => status.success(),
-                    Err(e) => { error!("Process wait error: {}", e); false }
+        loop {
+            tokio::select! {
+                biased;
+                status_result = process.wait() => {
+                    match status_result {
+                        Ok(status) => break status.success(),
+                        Err(e) => { error!("Process wait error: {}", e); break false }
+                    }
                 }
-            }
-            () = liveness_dead.notified() => {
-                warn!("Container {} died — aborting process wait", container_id);
-                false
-            }
-            () = tokio::time::sleep(Duration::from_secs(timeout_secs)) => {
-                warn!("Process timed out after {} seconds", timeout_secs);
-                false
+                () = liveness_dead.notified() => {
+                    warn!("Container {} died — aborting process wait", container_id);
+                    break false;
+                }
+                _ = cancel_poll(&cancellation) => {
+                    if cancellation.as_ref().is_some_and(|t| t.is_cancelled()) {
+                        warn!(
+                            "Session cancelled — killing docker run for container {}",
+                            container_id
+                        );
+                        break false;
+                    }
+                }
+                () = tokio::time::sleep_until(deadline) => {
+                    warn!("Process timed out after {} seconds", timeout_secs);
+                    break false;
+                }
             }
         }
     };
@@ -549,6 +569,17 @@ async fn execute_docker_command_v2(
         completed,
         container_id: container_id.to_string(),
     })
+}
+
+/// Wait for the next cancellation poll tick. Returns immediately when the
+/// token is (already) cancelled; otherwise sleeps 500ms so the caller can
+/// re-check process liveness. The 500ms granularity keeps the Docker CLI
+/// process responsive to user cancellation without busy-polling.
+async fn cancel_poll(cancellation: &Option<CancellationToken>) {
+    if cancellation.as_ref().is_some_and(|t| t.is_cancelled()) {
+        return;
+    }
+    tokio::time::sleep(Duration::from_millis(500)).await;
 }
 
 /// Check if a Docker container is currently running via `docker inspect`.
@@ -608,3 +639,110 @@ async fn cleanup_container(container_name: &str) {
     }
 }
 
+
+// =============================================================================
+// Tests
+// =============================================================================
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use benchmark_types::cancellation::CancellationToken;
+
+    /// Regression: a cancelled session must abort an in-flight Docker run
+    /// promptly instead of waiting out the (default 3600s) container timeout.
+    /// Runs `sleep 999` as the "container process"; docker CLI calls fail
+    /// harmlessly (no daemon needed) — only the process lifecycle matters.
+    #[tokio::test]
+    async fn pre_cancelled_token_aborts_docker_run_promptly() {
+        let token = CancellationToken::new();
+        token.cancel();
+
+        let watchdog = CommandWatchdog::new("bench-cancel-test", 120);
+        let callback: std::sync::Arc<OutputCallback> = std::sync::Arc::new(|_| {});
+
+        let started = std::time::Instant::now();
+        let result = tokio::time::timeout(
+            Duration::from_secs(10),
+            execute_docker_command_v2(
+                &["sleep".to_string(), "999".to_string()],
+                "bench-cancel-test",
+                3600,
+                &watchdog,
+                &callback,
+                Some(token),
+            ),
+        )
+        .await
+        .expect("cancellation must return promptly, not wait for the timeout")
+        .expect("kill path must not return Err");
+
+        assert!(!result.completed, "cancelled run must not report completed");
+        assert_eq!(result.exit_code, 137, "process should be killed (SIGKILL)");
+        assert!(
+            started.elapsed() < Duration::from_secs(10),
+            "abort must happen well before the 3600s timeout"
+        );
+    }
+
+    /// Guard against regressions in the wait-loop refactor: the timeout arm
+    /// must still fire when no cancellation occurs.
+    #[tokio::test]
+    async fn timeout_still_fires_when_not_cancelled() {
+        let token = CancellationToken::new(); // never cancelled
+        let watchdog = CommandWatchdog::new("bench-timeout-test", 120);
+        let callback: std::sync::Arc<OutputCallback> = std::sync::Arc::new(|_| {});
+
+        let started = std::time::Instant::now();
+        let result = tokio::time::timeout(
+            Duration::from_secs(10),
+            execute_docker_command_v2(
+                &["sleep".to_string(), "999".to_string()],
+                "bench-timeout-test",
+                1, // 1s container timeout
+                &watchdog,
+                &callback,
+                Some(token),
+            ),
+        )
+        .await
+        .expect("timeout must fire")
+        .expect("kill path must not return Err");
+
+        assert!(!result.completed);
+        assert_eq!(result.exit_code, 137);
+        assert!(
+            started.elapsed() >= Duration::from_millis(900),
+            "timeout should take ~1s, not abort instantly"
+        );
+        assert!(started.elapsed() < Duration::from_secs(10));
+    }
+
+    /// A normal short command must still complete with a (non-cancelled)
+    /// token attached — no false aborts.
+    #[tokio::test]
+    async fn short_command_completes_with_token_attached() {
+        let token = CancellationToken::new(); // never cancelled
+        let watchdog = CommandWatchdog::new("bench-echo-test", 120);
+        let callback: std::sync::Arc<OutputCallback> = std::sync::Arc::new(|_| {});
+
+        let result = tokio::time::timeout(
+            Duration::from_secs(10),
+            execute_docker_command_v2(
+                &["echo".to_string(), "hi".to_string()],
+                "bench-echo-test",
+                3600,
+                &watchdog,
+                &callback,
+                Some(token),
+            ),
+        )
+        .await
+        .expect("echo should complete")
+        .expect("echo must not return Err");
+
+        assert!(result.completed);
+        assert_eq!(result.exit_code, 0);
+        assert_eq!(result.output.trim(), "hi");
+    }
+}

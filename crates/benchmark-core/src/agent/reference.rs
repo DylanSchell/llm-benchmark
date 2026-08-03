@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 use tokio::time::Instant;
 use tracing::{debug, error, info, warn};
 use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::cancellation::CancellationToken;
 use benchmark_types::exercise::Exercise;
 use walkdir::WalkDir;
 use crate::docker::DockerClient;
@@ -13,6 +14,8 @@ pub struct ReferenceAgent {
     docker_client: DockerClient,
     /// Optional callback for live output streaming.
     output_consumer: Arc<Mutex<Option<Box<dyn Fn(&str) + Send + Sync>>>>,
+    /// Session cancellation signal — aborts in-flight Docker runs when fired.
+    cancellation_token: Mutex<Option<CancellationToken>>,
 }
 
 impl ReferenceAgent {
@@ -20,6 +23,7 @@ impl ReferenceAgent {
         Self {
             docker_client,
             output_consumer: Arc::new(Mutex::new(None)),
+            cancellation_token: Mutex::new(None),
         }
     }
 
@@ -244,6 +248,7 @@ impl ReferenceAgent {
             exercise.language
         ));
 
+        let cancellation = self.cancellation_token.lock().unwrap().clone();
         let result = self
             .docker_client
             .run_command_with_limits_and_volume(
@@ -253,6 +258,7 @@ impl ReferenceAgent {
                 None,
                 None,
                 Some(&temp_work_dir.to_string_lossy()),
+                cancellation,
             )
             .await?;
 
@@ -432,6 +438,7 @@ impl ReferenceAgent {
         );
         debug!("Command: {}", command.join(" "));
 
+        let cancellation = self.cancellation_token.lock().unwrap().clone();
         let result = self
             .docker_client
             .run_command_with_limits_and_volume(
@@ -441,6 +448,7 @@ impl ReferenceAgent {
                 None,
                 None,
                 Some(&temp_work_dir.to_string_lossy()),
+                cancellation,
             )
             .await?;
 
@@ -575,6 +583,10 @@ impl ReferenceAgent {
 
 #[async_trait::async_trait]
 impl Agent for ReferenceAgent {
+    fn set_cancellation_token(&self, token: Option<CancellationToken>) {
+        *self.cancellation_token.lock().unwrap() = token;
+    }
+
     async fn run_exercise(
         &self,
         exercise: &Exercise,
