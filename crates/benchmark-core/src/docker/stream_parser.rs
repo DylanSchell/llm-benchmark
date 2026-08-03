@@ -95,7 +95,10 @@ impl StreamParser {
                                         );
                                     // Notify watchdog of tool call start (sync for FIFO ordering)
                                     if let Some(wd) = watchdog {
-                                        wd.on_tool_call_started_sync(&command);
+                                        wd.on_tool_call_started_sync(
+                                            item.get("id").and_then(|v| v.as_str()),
+                                            &command,
+                                        );
                                     }
                                 }
                             }
@@ -113,9 +116,18 @@ impl StreamParser {
                 if let Some(items) = content.as_array() {
                     for item in items {
                         if item.get("type").and_then(|v| v.as_str()) == Some("tool_result") {
-                            // Cancel oldest pending timer (FIFO ordering, sync for correctness)
+                            // Cancel the timer for THIS tool call (matched by
+                            // id); non-Bash results are no-ops. Falls back to
+                            // FIFO when no id is present.
                             if let Some(wd) = watchdog {
-                                wd.cancel_oldest_timer_sync();
+                                match item.get("tool_use_id").and_then(|v| v.as_str()) {
+                                    Some(id) => {
+                                        wd.cancel_timer_sync(id);
+                                    }
+                                    None => {
+                                        wd.cancel_oldest_timer_sync();
+                                    }
+                                }
                             }
                         }
                     }
@@ -168,7 +180,10 @@ impl StreamParser {
                             crate::safe_truncate(&command, 100)
                         );
                         if let Some(wd) = watchdog {
-                            wd.on_tool_call_started_sync(command);
+                            wd.on_tool_call_started_sync(
+                                item.get("id").and_then(|v| v.as_str()),
+                                command,
+                            );
                         }
                     }
                 }
@@ -178,7 +193,14 @@ impl StreamParser {
         // toolResult inside assistant message
         if item.get("type").and_then(|v| v.as_str()) == Some("toolResult") {
             if let Some(wd) = watchdog {
-                wd.cancel_oldest_timer_sync();
+                match item.get("toolCallId").and_then(|v| v.as_str()) {
+                    Some(id) => {
+                        wd.cancel_timer_sync(id);
+                    }
+                    None => {
+                        wd.cancel_oldest_timer_sync();
+                    }
+                }
             }
         }
     }
@@ -190,7 +212,14 @@ impl StreamParser {
         == Some("toolResult")
     {
         if let Some(wd) = watchdog {
-            wd.cancel_oldest_timer_sync();
+            match message.get("toolCallId").and_then(|v| v.as_str()) {
+                Some(id) => {
+                    wd.cancel_timer_sync(id);
+                }
+                None => {
+                    wd.cancel_oldest_timer_sync();
+                }
+            }
         }
     }
 }
@@ -210,7 +239,10 @@ fn parse_pi_tool_execution_events(root: &serde_json::Value, watchdog: Option<&st
                             crate::safe_truncate(&command, 100)
                         );
                         if let Some(wd) = watchdog {
-                            wd.on_tool_call_started_sync(command);
+                            wd.on_tool_call_started_sync(
+                                root.get("toolCallId").and_then(|v| v.as_str()),
+                                command,
+                            );
                         }
                     }
                 }
@@ -222,6 +254,7 @@ fn parse_pi_tool_execution_events(root: &serde_json::Value, watchdog: Option<&st
         if let Some(tool_name) = root.get("toolName").and_then(|v| v.as_str()) {
             if tool_name.eq_ignore_ascii_case("bash") {
                 if let Some(wd) = watchdog {
+                    // tool_execution_end carries no id — FIFO fallback.
                     wd.cancel_oldest_timer_sync();
                 }
             }
