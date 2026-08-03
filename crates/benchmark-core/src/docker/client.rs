@@ -285,7 +285,6 @@ impl DockerClient {
             &full_command,
             &container_id,
             timeout_secs,
-            &watchdog,
             &wrapped_callback,
             cancellation,
         )
@@ -411,7 +410,6 @@ async fn execute_docker_command_v2(
     full_command: &[String],
     container_id: &str,
     timeout_secs: u64,
-    _watchdog: &CommandWatchdog,
     output_callback: &std::sync::Arc<OutputCallback>,
     cancellation: Option<CancellationToken>,
 ) -> Result<ProcessResult, anyhow::Error> {
@@ -692,7 +690,6 @@ mod tests {
         let token = CancellationToken::new();
         token.cancel();
 
-        let watchdog = CommandWatchdog::new("bench-cancel-test", 120);
         let callback: std::sync::Arc<OutputCallback> = std::sync::Arc::new(|_| {});
 
         let started = std::time::Instant::now();
@@ -702,7 +699,6 @@ mod tests {
                 &["sleep".to_string(), "999".to_string()],
                 "bench-cancel-test",
                 3600,
-                &watchdog,
                 &callback,
                 Some(token),
             ),
@@ -724,7 +720,6 @@ mod tests {
     #[tokio::test]
     async fn timeout_still_fires_when_not_cancelled() {
         let token = CancellationToken::new(); // never cancelled
-        let watchdog = CommandWatchdog::new("bench-timeout-test", 120);
         let callback: std::sync::Arc<OutputCallback> = std::sync::Arc::new(|_| {});
 
         let started = std::time::Instant::now();
@@ -734,7 +729,6 @@ mod tests {
                 &["sleep".to_string(), "999".to_string()],
                 "bench-timeout-test",
                 1, // 1s container timeout
-                &watchdog,
                 &callback,
                 Some(token),
             ),
@@ -757,7 +751,6 @@ mod tests {
     #[tokio::test]
     async fn short_command_completes_with_token_attached() {
         let token = CancellationToken::new(); // never cancelled
-        let watchdog = CommandWatchdog::new("bench-echo-test", 120);
         let callback: std::sync::Arc<OutputCallback> = std::sync::Arc::new(|_| {});
 
         let result = tokio::time::timeout(
@@ -766,7 +759,6 @@ mod tests {
                 &["echo".to_string(), "hi".to_string()],
                 "bench-echo-test",
                 3600,
-                &watchdog,
                 &callback,
                 Some(token),
             ),

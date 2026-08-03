@@ -187,11 +187,7 @@ impl QueueProcessor {
                     tracing::error!("ERROR: No languages provided for single exercise mode!");
                     return items;
                 }
-                
-                // CRITICAL DEBUG: Log exactly what we received
-                tracing::info!("SINGLE EXERCISE RECEIVED: exercise='{}', languages={:?} (count={})", 
-                    exercise_name, languages, languages.len());
-                
+
                 // Sanity check: if we have more than expected languages, log a warning
                 if languages.len() > 1 {
                     tracing::warn!("WARNING: Expected 1 language for single exercise mode, got {}", languages.len());

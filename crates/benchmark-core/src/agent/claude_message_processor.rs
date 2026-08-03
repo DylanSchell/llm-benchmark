@@ -176,6 +176,34 @@ impl ClaudeMessageProcessor {
         }
     }
 
+    /// Render tool result content for the UI trace. String content is shown
+    /// as-is (escaped \n unescaped); an array of content blocks has its text
+    /// extracted and images collapsed to a placeholder — never raw JSON.
+    fn render_tool_result_content(&self, content: &Value) -> String {
+        if let Some(text) = content.as_str() {
+            return text.replace("\\n", "\n");
+        }
+        if let Some(blocks) = content.as_array() {
+            let mut parts: Vec<String> = Vec::new();
+            for block in blocks {
+                match block.get("type").and_then(|v| v.as_str()) {
+                    Some("text") => {
+                        if let Some(text) = block.get("text").and_then(|v| v.as_str()) {
+                            parts.push(text.replace("\\n", "\n"));
+                        }
+                    }
+                    Some("image") => parts.push("[image]".to_string()),
+                    _ => {}
+                }
+            }
+            if !parts.is_empty() {
+                return parts.join("\n");
+            }
+            return format!("[tool result: {} content block(s)]", blocks.len());
+        }
+        "[tool result: unsupported content]".to_string()
+    }
+
     fn handle_user_message(&self, json: &Value) {
         if let Some(message) = json.get("message").and_then(|v| v.as_object()) {
             if let Some(content) = message.get("content") {
@@ -190,12 +218,12 @@ impl ClaudeMessageProcessor {
                                         }
                                     }
                                     "tool_result" => {
-                                        if let Some(tool_content) = item.get("content").and_then(|v| v.as_str()) {
-                                            let with_newlines = tool_content.replace("\\n", "\n");
-                                            info!("[Tool result] {}", crate::safe_truncate(&with_newlines, 500));
-                                            self.send_output(&format!("tool_result:\n{}\n", with_newlines));
+                                        if let Some(tool_content) = item.get("content") {
+                                            let rendered = self.render_tool_result_content(tool_content);
+                                            info!("[Tool result] {}", crate::safe_truncate(&rendered, 500));
+                                            self.send_output(&format!("tool_result:\n{}\n", rendered));
                                         } else {
-                                            self.send_output(&format!("tool_result: {}\n", item));
+                                            self.send_output("tool_result: [no content]\n");
                                         }
                                     }
                                     _ => {}
@@ -211,12 +239,12 @@ impl ClaudeMessageProcessor {
                             }
                         }
                         "tool_result" => {
-                            if let Some(tool_content) = content.get("content").and_then(|v| v.as_str()) {
-                                let with_newlines = tool_content.replace("\\n", "\n");
-                                info!("[Tool result] {}", crate::safe_truncate(&with_newlines, 500));
-                                self.send_output(&format!("tool_result:\n{}\n", with_newlines));
+                            if let Some(tool_content) = content.get("content") {
+                                let rendered = self.render_tool_result_content(tool_content);
+                                info!("[Tool result] {}", crate::safe_truncate(&rendered, 500));
+                                self.send_output(&format!("tool_result:\n{}\n", rendered));
                             } else {
-                                self.send_output(&format!("tool_result: {}\n", content));
+                                self.send_output("tool_result: [no content]\n");
                             }
                         }
                         _ => {}
@@ -383,5 +411,24 @@ mod tests {
             );
             processor.process(&json);
         });
+    }
+
+    /// Regression: tool_result content ARRAYS (text + image blocks) must render
+    /// readable text with an image placeholder — never a raw JSON dump.
+    #[test]
+    fn tool_result_array_content_renders_text_not_raw_json() {
+        let captured: std::sync::Arc<std::sync::Mutex<Vec<String>>> =
+            std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let sink = std::sync::Arc::clone(&captured);
+        let processor = ClaudeMessageProcessor::new(Some(Box::new(move |msg: &str| {
+            sink.lock().unwrap().push(msg.to_string());
+        })));
+        let json = r#"{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"t1","content":[{"type":"text","text":"tests passed"},{"type":"image","source":{"type":"base64"}}]}]}}"#;
+        processor.process(json);
+
+        let out = captured.lock().unwrap().join("");
+        assert!(out.contains("tests passed"), "expected text, got: {out}");
+        assert!(out.contains("[image]"), "expected image placeholder, got: {out}");
+        assert!(!out.contains("\"type\""), "raw JSON leaked into UI: {out}");
     }
 }
