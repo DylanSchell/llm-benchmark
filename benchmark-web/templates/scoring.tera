@@ -104,6 +104,7 @@
                     <th style="width: 120px;">Token Score</th>
                     <th style="width: 120px;">Total Tokens</th>
                     <th style="width: 120px;">Total Chars</th>
+                    <th style="width: 100px;">Tokens/Char</th>
                     <th style="width: 80px;">Runs</th>
                 </tr>
             </thead>
@@ -140,6 +141,12 @@
                     </td>
                     <td style="text-align: right;">{{ model.total_tokens | format_number }}</td>
                     <td style="text-align: right;">{{ model.total_chars | default(value=0) | format_number }}</td>
+                    <td style="text-align: right;">
+                        {% if model.total_chars > 0 %}
+                            {{ (model.total_tokens / model.total_chars * 100) | round / 100 }}
+                        {% else %}-
+                        {% endif %}
+                    </td>
                     <td style="text-align: center; color: #7f8c8d;">{{ model.total_runs }}</td>
                 </tr>
             {% endfor %}
@@ -187,6 +194,7 @@
                     <th onclick="sortScoreTable(this, 'duration')" style="cursor: pointer;">Duration ↕</th>
                     <th onclick="sortScoreTable(this, 'tokens')" style="cursor: pointer;">Tokens ↕</th>
                     <th onclick="sortScoreTable(this, 'chars')" style="cursor: pointer;">Chars ↕</th>
+                    <th onclick="sortScoreTable(this, 'tokchar')" style="cursor: pointer;">Tok/Char ↕</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -227,6 +235,12 @@
                     <td data-sort="{{ result.output_chars }}" title="Input / Output chars">
                         {{ result.input_chars | default(value=0) | format_number }} /
                         {{ result.output_chars | default(value=0) | format_number }}
+                    </td>
+                    <td data-sort="{% if result.output_chars > 0 %}{{ result.output_tokens / result.output_chars }}{% else %}0{% endif %}" title="Output tokens per output char">
+                        {% if result.output_chars > 0 %}
+                            {{ (result.output_tokens / result.output_chars * 100) | round / 100 }}
+                        {% else %}-
+                        {% endif %}
                     </td>
                     <td>
                         <a href="{{ result.detail_url }}" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;">Details</a>
