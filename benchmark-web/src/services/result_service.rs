@@ -1687,10 +1687,10 @@ impl ResultService {
             };
 
             // Composite score: weighted sum
-            // 60% correctness, 20% speed, 20% token efficiency
+            // 70% correctness, 20% speed, 10% token efficiency
             // Correctness is paramount - incomplete or incorrect results should not rank high
             let composite_score = if success_rate > 0.0 {
-                0.6 * success_rate + 0.2 * speed_score + 0.2 * token_score
+                0.7 * success_rate + 0.2 * speed_score + 0.1 * token_score
             } else {
                 0.0
             };
@@ -1815,7 +1815,7 @@ impl ResultService {
                     0.0
                 };
                 let avg_composite_score = if avg_success_rate > 0.0 {
-                    0.6 * avg_success_rate + 0.2 * norm_speed + 0.2 * norm_token
+                    0.7 * avg_success_rate + 0.2 * norm_speed + 0.1 * norm_token
                 } else {
                     0.0
                 };
