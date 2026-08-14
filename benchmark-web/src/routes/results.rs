@@ -103,7 +103,6 @@ pub async fn results_page(
     let languages = state.service.get_languages();
     let exercises = state.service.get_exercises(q.language.as_deref());
 
-    let q = params.cleaned();
     let mut ctx = tera::Context::new();
     ctx.insert("title", &"Results");
     ctx.insert("stats", &stats);

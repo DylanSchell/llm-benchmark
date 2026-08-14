@@ -69,7 +69,6 @@ pub async fn compare_page(
     Extension(templates): Extension<TemplateEngine>,
     Query(params): Query<CompareQuery>,
 ) -> impl axum::response::IntoResponse {
-    let _models = state.service.get_models();
     // Build full "agent - model" keys from individual results
     let all_results = state.service.list_individual_results(None, None, None, None, false);
     let mut model_keys: Vec<String> = Vec::new();

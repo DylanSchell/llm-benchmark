@@ -699,22 +699,16 @@ impl ResultService {
         let start_time = agent_result.start_time.clone();
         let end_time = agent_result.end_time.clone();
 
-        // Agent: try to get from result, otherwise derive from filename
-        let agent = if !agent_result.model.is_empty() && agent_result.exercise_name.starts_with("result_") {
-            // Try to extract agent from model field if it contains agent info
-            agent_result.model.clone()
+        // Agent: derive from filename: result_<agent>_<lang>_<exercise>.json
+        let agent = if filename.starts_with("result_") {
+            let without_prefix = &filename[7..];
+            without_prefix
+                .split('_')
+                .next()
+                .unwrap_or("unknown")
+                .to_string()
         } else {
-            // Derive from filename: result_<agent>_<lang>_<exercise>.json
-            if filename.starts_with("result_") {
-                let without_prefix = &filename[7..];
-                without_prefix
-                    .split('_')
-                    .next()
-                    .unwrap_or("unknown")
-                    .to_string()
-            } else {
-                "unknown".to_string()
-            }
+            "unknown".to_string()
         };
 
         // Duration: convert ms to seconds for storage (will be formatted later)
@@ -848,10 +842,10 @@ impl ResultService {
         filter_exercise: Option<&str>,
     ) -> bool {
         // Treat empty string as "no filter" (match all)
-        let matches_language = filter_lang.map_or(true, |f| !f.is_empty() && cached_lang == f);
-        let matches_agent = filter_agent.map_or(true, |f| !f.is_empty() && cached_agent == f);
-        let matches_model = filter_model.map_or(true, |f| !f.is_empty() && cached_model == f);
-        let matches_exercise = filter_exercise.map_or(true, |f| !f.is_empty() && cached_exercise == f);
+        let matches_language = filter_lang.map_or(true, |f| f.is_empty() || cached_lang == f);
+        let matches_agent = filter_agent.map_or(true, |f| f.is_empty() || cached_agent == f);
+        let matches_model = filter_model.map_or(true, |f| f.is_empty() || cached_model == f);
+        let matches_exercise = filter_exercise.map_or(true, |f| f.is_empty() || cached_exercise == f);
         matches_language && matches_agent && matches_model && matches_exercise
     }
 
@@ -864,14 +858,14 @@ impl ResultService {
             "detailUrl".to_string(),
             format!(
                 "/results/{}/{}/{}/{}",
-                cached.agent, cached.directory, cached.language, cached.exercise
+                cached.agent, cached.model, cached.language, cached.exercise
             ),
         );
         metadata.insert(
             "traceUrl".to_string(),
             format!(
                 "/results/{}/{}/{}/{}/trace",
-                cached.agent, cached.directory, cached.language, cached.exercise
+                cached.agent, cached.model, cached.language, cached.exercise
             ),
         );
         metadata.insert("path".to_string(), cached.path.clone());
@@ -924,7 +918,7 @@ impl ResultService {
         let mut exercises: Vec<String> = Vec::new();
         for cached_result in cached.values() {
             // Treat empty string as "no filter" (match all)
-            let matches_language = language.map_or(true, |l| !l.is_empty() && cached_result.language == *l);
+            let matches_language = language.map_or(true, |l| l.is_empty() || cached_result.language == *l);
             if matches_language && !cached_result.exercise.is_empty() {
                 exercises.push(cached_result.exercise.clone());
             }
@@ -1722,33 +1716,41 @@ impl ResultService {
     }
 
     /// Get aggregated scoring statistics by model.
+    ///
+    /// The success-rate denominator is the **complete** expected benchmark
+    /// (the authoritative exercise list from the exercise runner), not the set
+    /// of results that happen to be cached. Using cached results as the
+    /// denominator lets a model that skips exercises look perfect — the
+    /// denominator shrinks to whatever it actually ran — so the full expected
+    /// set must be used to properly penalize skipped exercises.
     pub fn get_model_scores(
         &self,
         language: Option<&str>,
         agent: Option<&str>,
         quick_only: bool,
+        expected_exercises: &HashMap<String, Vec<String>>,
     ) -> Vec<ModelScore> {
-        // Dynamically calculate benchmark sizes from available exercises
-        let cached = recover_poisoned(self.cached_results.read());
-        let mut all_exercises: std::collections::HashSet<String> = std::collections::HashSet::new();
-        let mut quick_exercises: std::collections::HashSet<String> = std::collections::HashSet::new();
-        
-        for cached_result in cached.values() {
-            let key = format!("{}:{}", cached_result.language, cached_result.exercise);
-            all_exercises.insert(key.clone());
-            if Self::is_quick_bench_exercise(&cached_result.language, &cached_result.exercise) {
-                quick_exercises.insert(key);
+        // Build the complete expected benchmark key set (language-qualified)
+        // from the authoritative exercise list, respecting the language filter.
+        let mut expected_keys: std::collections::HashSet<String> = std::collections::HashSet::new();
+        for (lang, exercises) in expected_exercises {
+            let matches_language = language.map_or(true, |l| l.is_empty() || l == lang);
+            if !matches_language {
+                continue;
+            }
+            for ex in exercises {
+                if !quick_only || Self::is_quick_bench_exercise(lang, ex) {
+                    expected_keys.insert(format!("{}:{}", lang, ex));
+                }
             }
         }
-        
-        let full_benchmark_size = all_exercises.len() as u32;
-        let quick_benchmark_size = quick_exercises.len() as u32;
-        let benchmark_size = if quick_only { quick_benchmark_size } else { full_benchmark_size };
-        
-        tracing::info!("Calculated benchmark sizes: full={}, quick={}", full_benchmark_size, quick_benchmark_size);
-        
-        drop(cached); // Release the lock before calling calculate_scores
-        
+        let benchmark_size = expected_keys.len() as u32;
+
+        tracing::info!(
+            "Calculated benchmark size from expected exercise set: {} (quick_only={}, language={:?})",
+            benchmark_size, quick_only, language
+        );
+
         let scored_results = self.calculate_scores(language, agent, None, None, quick_only);
         
         // Aggregate by model: (total_composite_score, total_successful_runs, total_runs, total_speed, total_token, total_tokens)

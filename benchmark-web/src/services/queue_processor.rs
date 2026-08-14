@@ -203,6 +203,16 @@ impl QueueProcessor {
                         continue;
                     }
 
+                    // Skip if already in queue (unless retry)
+                    let key = (agent_name.clone(), language.clone(), exercise_name.to_string());
+                    if !retry && existing_keys.contains(&key) {
+                        debug!(
+                            "Skipping exercise: {} for language: {} (already in queue)",
+                            exercise_name, language
+                        );
+                        continue;
+                    }
+
                     let item = BenchmarkQueueItem::new(
                         agent_name.clone(),
                         model.clone(),

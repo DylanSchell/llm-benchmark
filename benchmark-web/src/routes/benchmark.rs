@@ -250,7 +250,7 @@ pub async fn stream_output(
     let mut rx = state.service.take_session_receiver(&id).expect("session exists");
     tracing::info!("Session receiver acquired, creating stream for {}", id);
     let session_id = session.id.clone();
-    let status = session.status.to_string();
+    let service = state.service.clone();
     let shutdown_flag = state.shutdown_flag.clone();
 
     let event_stream = async_stream::stream! {
@@ -269,7 +269,9 @@ macro_rules! sse_event {
         // Send initial session info once
         yield sse_event!("session", &serde_json::json!({
             "id": session_id,
-            "status": status
+            "status": service.get_session(&session_id)
+                .map(|s| s.status.to_string())
+                .unwrap_or_default()
         }));
 
         // No need to send accumulated output via SSE — it's already rendered
@@ -306,10 +308,14 @@ macro_rules! sse_event {
             }
         }
 
-        // Session complete signal
+        // Session complete signal — report the actual terminal status rather
+        // than the status captured when the stream opened.
+        let final_status = service.get_session(&session_id)
+            .map(|s| s.status.to_string())
+            .unwrap_or_else(|| "COMPLETED".to_string());
         yield sse_event!("complete", &serde_json::json!({
             "id": session_id,
-            "status": status
+            "status": final_status
         }));
     };
 

@@ -84,7 +84,6 @@ pub async fn run_web_server() -> anyhow::Result<()> {
         exercise_runner,
         queue_config,
     );
-    let _benchmark_executor_for_service = benchmark_executor.clone();
 
     // Create a separate exercise runner for BenchmarkService (needed for dynamic discovery)
     let exercise_runner_for_service = benchmark_executor.get_exercise_runner();

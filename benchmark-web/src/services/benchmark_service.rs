@@ -217,13 +217,25 @@ impl BenchmarkService {
     }
 
     /// Get aggregated model scores.
+    ///
+    /// The success-rate denominator is the complete expected benchmark set,
+    /// derived from the exercise runner (not from cached results), so a model
+    /// that skips exercises is properly penalized. Mirrors get_completeness_info.
     pub fn get_model_scores(
         &self,
         language: Option<&str>,
         agent: Option<&str>,
         quick_only: bool,
     ) -> Vec<crate::services::result_service::ModelScore> {
-        self.result_service.get_model_scores(language, agent, quick_only)
+        // Build the authoritative expected exercise set from the exercise runner.
+        let mut expected: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+        for lang in self.exercise_runner.get_available_languages() {
+            let exercises = self.exercise_runner.get_exercises_for_language(&lang);
+            if !exercises.is_empty() {
+                expected.insert(lang, exercises);
+            }
+        }
+        self.result_service.get_model_scores(language, agent, quick_only, &expected)
     }
 
     /// Get completeness info for dashboard filtering.

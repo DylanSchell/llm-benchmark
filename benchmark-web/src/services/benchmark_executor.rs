@@ -273,7 +273,6 @@ impl BenchmarkExecutor {
         cancellation_token: Option<CancellationToken>,
     ) -> Result<()> {
         let mut total_exercises: i32 = 0;
-        let _successful_exercises: i32 = 0;
 
         for language in languages {
             // Check for cancellation — the token fires even though this local
@@ -297,7 +296,6 @@ impl BenchmarkExecutor {
 
             total_exercises += results.len() as i32;
             let language_successful = results.iter().filter(|r| r.success).count() as i32;
-            let _successful_exercise_count = language_successful;
 
             let failed = results.len() as i32 - language_successful;
             if failed > 0 {

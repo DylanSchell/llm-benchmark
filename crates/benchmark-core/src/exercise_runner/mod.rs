@@ -56,7 +56,6 @@ impl ExerciseRunner {
     }
 
     /// Sets run parameters for result directory computation.
-    /// Also updates the Docker client with the selected model.
     pub fn set_run_params(
         &mut self,
         agent_name: &str,
@@ -66,14 +65,6 @@ impl ExerciseRunner {
         self.run_agent_name = Some(agent_name.to_string());
         self.run_model = Some(if model.is_empty() { "default".to_string() } else { model.to_string() });
         self.run_languages = Some(languages.to_vec());
-        // Update Docker environment with the selected model
-        if let Some(ref dc) = self.docker_client {
-            // DockerClient is Clone, so we can clone and modify
-            let mut client = (**dc).clone();
-            client.set_model(model);
-            // Note: In a production system, we'd store the modified client back.
-            // For now, the model update is applied to the cloned instance.
-        }
     }
 
     /// Gets the current run agent name.
@@ -451,20 +442,12 @@ impl ExerciseRunner {
 
     /// Finds a specific exercise by language and name.
     fn find_exercise(&self, language: &str, exercise_name: &str) -> Option<Exercise> {
-        let mut exercise_dir = self
+        let exercise_dir = self
             .benchmark_path
+            .join(language)
             .join("exercises")
             .join("practice")
             .join(exercise_name);
-
-        if !exercise_dir.exists() {
-            exercise_dir = self
-                .benchmark_path
-                .join(language)
-                .join("exercises")
-                .join("practice")
-                .join(exercise_name);
-        }
 
         if !exercise_dir.exists() {
             return None;

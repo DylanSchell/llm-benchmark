@@ -119,9 +119,9 @@
                 {% for item in queue_items %}
                 <tr data-item-id="{{ item.id }}" style="border-bottom: 1px solid #eee;">
                     <td style="padding: 0.5rem;">
-                        <span class="status-badge"
-                              {% if item.status == "RUNNING" %}class="status-running"{% elif item.status == "COMPLETED" %}class="status-completed"{% elif item.status == "FAILED" %}class="status-failed"{% elif item.status == "CANCELLED" %}class="status-cancelled"{% else %}class="status-pending"{% endif %}
-                              >{{ item.status }}</span>
+                        <span class="status-badge
+                              {% if item.status == "RUNNING" %}status-running{% elif item.status == "COMPLETED" %}status-completed{% elif item.status == "FAILED" %}status-failed{% elif item.status == "CANCELLED" %}status-cancelled{% else %}status-pending{% endif %}">
+                              {{ item.status }}</span>
                     </td>
                     <td style="padding: 0.5rem;"><a href="/results?agent={{ item.agent_name }}" style="color: #3498db; text-decoration: none;">{{ item.agent_name }}</a></td>
                     <td style="padding: 0.5rem;"><a href="/results?language={{ item.language }}" style="color: #3498db; text-decoration: none;">{{ item.language }}</a></td>
@@ -214,7 +214,7 @@
                     </td>
                     <td data-tokens="{{ item.avg_tokens_per_sec | default(value=0) }}">
                         {% if item.avg_tokens_per_sec %}
-                            {% set tps = (item.avg_tokens_per_sec * 10 | round / 10) %}
+                            {% set tps = ((item.avg_tokens_per_sec * 10) | round / 10) %}
                             {{ tps }} t/s
                         {% else %}
                             -
@@ -259,7 +259,7 @@
                     </td>
                     <td data-tokens="{{ item.avg_tokens_per_sec | default(value=0) }}">
                         {% if item.avg_tokens_per_sec %}
-                            {% set tps = (item.avg_tokens_per_sec * 10 | round / 10) %}
+                            {% set tps = ((item.avg_tokens_per_sec * 10) | round / 10) %}
                             {{ tps }} t/s
                         {% else %}
                             -
@@ -314,7 +314,7 @@
                     </td>
                     <td data-tokens="{{ item.avg_tokens_per_sec | default(value=0) }}">
                         {% if item.avg_tokens_per_sec %}
-                            {% set tps = (item.avg_tokens_per_sec * 10 | round / 10) %}
+                            {% set tps = ((item.avg_tokens_per_sec * 10) | round / 10) %}
                             {{ tps }} t/s
                         {% else %}
                             -

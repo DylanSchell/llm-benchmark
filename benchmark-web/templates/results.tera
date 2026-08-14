@@ -224,7 +224,7 @@
                     </td>
                     <td data-sort="{{ indResult.tokens_per_sec | default(value=0) }}">
                         {% if indResult.tokens_per_sec %}
-                            {% set tps = (indResult.tokens_per_sec * 10 | round / 10) %}
+                            {% set tps = ((indResult.tokens_per_sec * 10) | round / 10) %}
                             {{ tps }} t/s
                         {% else %}
                             -
