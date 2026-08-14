@@ -168,6 +168,51 @@ fn parse_tokens_from_trace(trace_path: &Path, agent: &str) -> (u64, u64, u64, u6
     }
 }
 
+/// Calculate input/output character counts from a trace file.
+///
+/// Token counts are model-tokenizer-dependent (each model counts its own tokens),
+/// so they aren't comparable across models. Character counts derived from the
+/// raw message text are tokenizer-independent and give a fair measure of the
+/// actual text volume consumed and produced.
+///
+/// Works for both Pi and Claude trace formats, which share the same shape:
+/// `{"type":"message","message":{"role":"...","content":[{"type":"text","text":"..."}]}}`.
+///
+/// Returns (input_chars, output_chars).
+fn parse_chars_from_trace(trace_path: &Path) -> (u64, u64) {
+    if !trace_path.exists() {
+        return (0, 0);
+    }
+    let mut input_chars: u64 = 0;
+    let mut output_chars: u64 = 0;
+    if let Ok(file) = File::open(trace_path) {
+        for line in BufReader::new(file).lines().flatten() {
+            let v: serde_json::Value = match serde_json::from_str(line.trim()) {
+                Ok(v) => v,
+                _ => continue,
+            };
+            // Skip entries without a nested message (e.g. session, model_change,
+            // custom_message, thinking_level_change).
+            let Some(msg) = v.get("message") else { continue };
+            let role = msg.get("role").and_then(|r| r.as_str()).unwrap_or("");
+            let Some(content) = msg.get("content").and_then(|c| c.as_array()) else {
+                continue;
+            };
+            for block in content {
+                if block.get("type").and_then(|t| t.as_str()) == Some("text") {
+                    let n = block.get("text").and_then(|t| t.as_str()).map(|s| s.chars().count() as u64).unwrap_or(0);
+                    if role == "assistant" {
+                        output_chars += n;
+                    } else if role == "user" {
+                        input_chars += n;
+                    }
+                }
+            }
+        }
+    }
+    (input_chars, output_chars)
+}
+
 /// Parse turn count and tool call count from a trace file.
 /// Returns (turn_count, tool_call_count).
 /// A "turn" is each assistant message. A "tool call" is each tool invocation
@@ -279,6 +324,11 @@ pub struct CachedResult {
     pub cached_input_tokens: u64,
     #[serde(default)]
     pub uncached_input_tokens: u64,
+    // Character counts (parsed from trace message text at load time)
+    #[serde(default)]
+    pub input_chars: u64,
+    #[serde(default)]
+    pub output_chars: u64,
     // Turn and tool call counts (parsed from trace file at load time)
     #[serde(default)]
     pub turn_count: u64,
@@ -321,6 +371,11 @@ pub struct IndividualResult {
     #[serde(default)]
     pub uncached_input_tokens: u64,
     pub total_tokens: u64,
+    // Character counts (parsed from trace message text)
+    #[serde(default)]
+    pub input_chars: u64,
+    #[serde(default)]
+    pub output_chars: u64,
     // Calculated field: tokens per second
     pub tokens_per_sec: Option<f64>,
     // Turn and tool call counts (from trace file)
@@ -778,6 +833,14 @@ impl ResultService {
                 (0, 0, 0, 0)
             };
 
+        // Parse character counts from trace file (tokenizer-independent text volume)
+        let (input_chars, output_chars) = if let Some(ref tp) = trace_path {
+            let trace_path_buf = PathBuf::from(tp);
+            parse_chars_from_trace(&trace_path_buf)
+        } else {
+            (0, 0)
+        };
+
         // Parse turn count and tool call count from trace file
         let (turn_count, tool_call_count) =
             if let Some(ref tp) = trace_path {
@@ -807,6 +870,8 @@ impl ResultService {
             output_tokens,
             cached_input_tokens,
             uncached_input_tokens,
+            input_chars,
+            output_chars,
             turn_count,
             tool_call_count,
             start_time,
@@ -998,6 +1063,8 @@ impl ResultService {
                     cached_input_tokens: cached_result.cached_input_tokens,
                     uncached_input_tokens: cached_result.uncached_input_tokens,
                     total_tokens: cached_result.input_tokens + cached_result.output_tokens,
+                    input_chars: cached_result.input_chars,
+                    output_chars: cached_result.output_chars,
                     tokens_per_sec: None, // Will be calculated after duration is populated
                     turn_count: cached_result.turn_count,
                     tool_call_count: cached_result.tool_call_count,
@@ -1611,6 +1678,8 @@ impl ResultService {
                 composite_score: 0.0,
                 duration: r.duration,
                 output_tokens: r.output_tokens,
+                input_chars: r.input_chars,
+                output_chars: r.output_chars,
                 tokens_per_sec: r.tokens_per_sec,
                 detail_url: r.detail_url,
             }).collect();
@@ -1708,6 +1777,8 @@ impl ResultService {
                 composite_score,
                 duration: r.duration,
                 output_tokens: r.output_tokens,
+                input_chars: r.input_chars,
+                output_chars: r.output_chars,
                 tokens_per_sec: r.tokens_per_sec,
                 detail_url: r.detail_url,
             }
@@ -1753,38 +1824,52 @@ impl ResultService {
 
         let scored_results = self.calculate_scores(language, agent, None, None, quick_only);
         
-        // Aggregate by model: (total_composite_score, total_successful_runs, total_runs, total_speed, total_token, total_tokens)
-        let mut model_map: std::collections::HashMap<String, (f64, i32, u32, f64, f64, f64)> = 
+        // Aggregate by model.
+        #[derive(Default)]
+        struct ModelAgg {
+            composite: f64,
+            successful: i32,
+            runs: u32,
+            speed: f64,
+            token: f64,
+            tokens: f64,
+            input_chars: u64,
+            output_chars: u64,
+        }
+        let mut model_map: std::collections::HashMap<String, ModelAgg> =
             std::collections::HashMap::new();
-        
+
         for result in &scored_results {
             let key = format!("{} - {}", result.agent, result.model);
-            let entry = model_map.entry(key).or_insert((0.0, 0, 0, 0.0, 0.0, 0.0));
-            
-            entry.0 += result.composite_score;
+            let e = model_map.entry(key).or_default();
+
+            e.composite += result.composite_score;
             // Count this as a successful exercise if the run succeeded
             if result.success {
-                entry.1 += 1;  // One successful exercise
+                e.successful += 1;  // One successful exercise
             }
-            entry.2 += 1;  // Count this run (total exercises attempted)
-            entry.3 += result.speed_score;
-            entry.4 += result.token_score;
-            entry.5 += result.output_tokens as f64;
+            e.runs += 1;  // Count this run (total exercises attempted)
+            e.speed += result.speed_score;
+            e.token += result.token_score;
+            e.tokens += result.output_tokens as f64;
+            e.input_chars += result.input_chars;
+            e.output_chars += result.output_chars;
         }
-        
+
         // Collect raw model averages first (before post-normalization)
-        let raw_models: Vec<(String, f64, f64, f64, u64, u32)> = model_map
+        let raw_models: Vec<(String, f64, f64, f64, u64, u64, u32)> = model_map
             .into_iter()
-            .map(|(name, (_total_score, total_successful, total_runs, total_speed, total_token, total_tokens))| {
+            .map(|(name, a)| {
                 let avg_success_rate = if benchmark_size > 0 {
-                    let rate = total_successful as f64 / benchmark_size as f64;
+                    let rate = a.successful as f64 / benchmark_size as f64;
                     rate.min(1.0)
                 } else {
                     0.0
                 };
-                let avg_speed = total_speed / total_runs as f64;
-                let avg_token = total_token / total_runs as f64;
-                (name, avg_success_rate, avg_speed, avg_token, total_tokens as u64, total_runs)
+                let avg_speed = a.speed / a.runs as f64;
+                let avg_token = a.token / a.runs as f64;
+                let total_chars = a.input_chars + a.output_chars;
+                (name, avg_success_rate, avg_speed, avg_token, a.tokens as u64, total_chars, a.runs)
             })
             .collect();
 
@@ -1792,18 +1877,18 @@ impl ResultService {
         // model always gets 100% for that dimension.
         let max_speed = raw_models
             .iter()
-            .map(|(_, _, s, _, _, _)| *s)
+            .map(|(_, _, s, _, _, _, _)| *s)
             .fold(0.0f64, f64::max);
         let max_token = raw_models
             .iter()
-            .map(|(_, _, _, t, _, _)| *t)
+            .map(|(_, _, _, t, _, _, _)| *t)
             .fold(0.0f64, f64::max);
 
         // Normalize so the best model for each dimension gets 100%,
         // then compute the final composite score.
         raw_models
             .into_iter()
-            .map(|(name, avg_success_rate, avg_speed, avg_token, total_tokens, total_runs)| {
+            .map(|(name, avg_success_rate, avg_speed, avg_token, total_tokens, total_chars, total_runs)| {
                 let norm_speed = if max_speed > 0.0 {
                     avg_speed / max_speed
                 } else {
@@ -1827,6 +1912,7 @@ impl ResultService {
                     avg_speed_score: norm_speed,
                     avg_token_score: norm_token,
                     total_tokens,
+                    total_chars,
                     total_runs,
                 }
             })
@@ -1934,6 +2020,8 @@ pub struct ScoredResult {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<String>,
     pub output_tokens: u64,
+    pub input_chars: u64,
+    pub output_chars: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tokens_per_sec: Option<f64>,
     pub detail_url: String,
@@ -1948,5 +2036,43 @@ pub struct ModelScore {
     pub avg_speed_score: f64,
     pub avg_token_score: f64,
     pub total_tokens: u64,
+    pub total_chars: u64,
     pub total_runs: u32,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn write_trace(content: &str) -> std::path::PathBuf {
+        let dir = std::env::temp_dir();
+        let path = dir.join(format!("trace_test_{}.jsonl", std::process::id()));
+        std::fs::write(&path, content).expect("write test trace");
+        path
+    }
+
+    #[test]
+    fn parses_pi_and_claude_chars() {
+        let pi = r#"{"type":"session","id":"s1"}
+{"type":"message","message":{"role":"user","content":[{"type":"text","text":"hello"},{"type":"text","text":" world"}]}}
+{"type":"message","message":{"role":"assistant","content":[{"type":"text","text":"hi there"},{"type":"toolCall","name":"read"}]}}
+"#;
+        let p = write_trace(pi);
+        // input = "hello" + " world" = 11; output = "hi there" = 8
+        assert_eq!(parse_chars_from_trace(&p), (11, 8));
+        std::fs::remove_file(&p).ok();
+
+        let claude = r#"{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"ok"}]}}
+{"type":"user","message":{"role":"user","content":[{"type":"text","text":"abc"}]}}
+{"type":"custom_message","content":[{"type":"text","text":"ignored"}]}
+"#;
+        let p2 = write_trace(claude);
+        assert_eq!(parse_chars_from_trace(&p2), (3, 2));
+        std::fs::remove_file(&p2).ok();
+    }
+
+    #[test]
+    fn missing_trace_returns_zero() {
+        assert_eq!(parse_chars_from_trace(std::path::Path::new("/nonexistent/xyz.jsonl")), (0, 0));
+    }
 }

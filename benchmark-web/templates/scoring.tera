@@ -103,6 +103,7 @@
                     <th style="width: 120px;">Speed Score</th>
                     <th style="width: 120px;">Token Score</th>
                     <th style="width: 120px;">Total Tokens</th>
+                    <th style="width: 120px;">Total Chars</th>
                     <th style="width: 80px;">Runs</th>
                 </tr>
             </thead>
@@ -138,6 +139,7 @@
                         </div>
                     </td>
                     <td style="text-align: right;">{{ model.total_tokens | format_number }}</td>
+                    <td style="text-align: right;">{{ model.total_chars | default(value=0) | format_number }}</td>
                     <td style="text-align: center; color: #7f8c8d;">{{ model.total_runs }}</td>
                 </tr>
             {% endfor %}
@@ -184,6 +186,7 @@
                     <th onclick="sortScoreTable(this, 'exercise')" style="cursor: pointer;">Exercise ↕</th>
                     <th onclick="sortScoreTable(this, 'duration')" style="cursor: pointer;">Duration ↕</th>
                     <th onclick="sortScoreTable(this, 'tokens')" style="cursor: pointer;">Tokens ↕</th>
+                    <th onclick="sortScoreTable(this, 'chars')" style="cursor: pointer;">Chars ↕</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -220,6 +223,10 @@
                                 {{ (result.tokens_per_sec * 10 | round / 10) }} t/s
                             </span>
                         {% endif %}
+                    </td>
+                    <td data-sort="{{ result.output_chars }}" title="Input / Output chars">
+                        {{ result.input_chars | default(value=0) | format_number }} /
+                        {{ result.output_chars | default(value=0) | format_number }}
                     </td>
                     <td>
                         <a href="{{ result.detail_url }}" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;">Details</a>

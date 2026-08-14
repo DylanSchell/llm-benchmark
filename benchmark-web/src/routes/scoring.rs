@@ -35,6 +35,8 @@ pub struct ScoredResultView {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<String>,
     pub output_tokens: u64,
+    pub input_chars: u64,
+    pub output_chars: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tokens_per_sec: Option<f64>,
     pub detail_url: String,
@@ -54,6 +56,7 @@ pub struct ModelScoreView {
     pub avg_speed_score: f64,
     pub avg_token_score: f64,
     pub total_tokens: u64,
+    pub total_chars: u64,
     pub total_runs: u32,
 }
 
@@ -145,6 +148,8 @@ pub async fn get_scored_results(
             composite_score: r.composite_score,
             duration: r.duration,
             output_tokens: r.output_tokens,
+            input_chars: r.input_chars,
+            output_chars: r.output_chars,
             tokens_per_sec: r.tokens_per_sec,
             detail_url: r.detail_url,
         }).collect(),
@@ -183,6 +188,7 @@ pub async fn get_model_scores(
             avg_speed_score: s.avg_speed_score,
             avg_token_score: s.avg_token_score,
             total_tokens: s.total_tokens,
+            total_chars: s.total_chars,
             total_runs: s.total_runs,
         }).collect(),
         filters: ScoreFilters {
