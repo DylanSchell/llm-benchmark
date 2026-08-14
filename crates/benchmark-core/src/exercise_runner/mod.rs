@@ -9,6 +9,10 @@ use benchmark_types::exercise::Exercise;
 use crate::docker::DockerClient;
 use benchmark_types::util::recover_poisoned;
 
+/// Exercises that are deprecated/removed upstream and should not be discovered or run.
+/// E.g. Exercism deprecated the Go `counter` exercise (problem-specifications#80) because
+/// it is not compatible with a standard solve-the-exercise prompt.
+const DEPRECATED_EXERCISES: &[&str] = &["counter"];
 
 #[derive(Clone)]
 pub struct ExerciseRunner {
@@ -501,7 +505,16 @@ impl ExerciseRunner {
 
     /// Checks if a directory is an exercise directory (contains .meta subdirectory).
     fn is_exercise_directory(&self, dir: &Path) -> bool {
-        dir.join(".meta").is_dir()
+        if !dir.join(".meta").is_dir() {
+            return false;
+        }
+        if let Some(name) = dir.file_name().and_then(|n| n.to_str()) {
+            if DEPRECATED_EXERCISES.contains(&name) {
+                debug!("Skipping deprecated exercise directory: {:?}", dir);
+                return false;
+            }
+        }
+        true
     }
 
     /// Load the duration (in milliseconds) from a previous result file.
