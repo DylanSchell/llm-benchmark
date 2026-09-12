@@ -47,7 +47,6 @@ results/
 .run/
 CLAUDE.md
 /polyglot-benchmark/
-/docker/gradle-8.7-bin.zip
 
 # Node
 node_modules/
