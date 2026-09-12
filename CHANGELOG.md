@@ -3,14 +3,17 @@
 - **`v1.3.1` is the first tagged release that ships macOS binaries** — `macos/arm64` and
   `macos/x64` — alongside `linux/{x64,arm64}`. `v1.3.0` was tagged before the macOS job existed, so
   its release carries Linux assets only.
-- **The image was rebuilt and republished at `1.3.1` to match.** Nothing about the image content
-  changed: the pin set is identical, so `inputHash` stays `54f3fa3c8a27…` and only the version label
-  and the `/etc/llm-benchmark/runner-version` marker differ. It was republished rather than left at
-  `1.3.0` because the binary and the image share one version — and `docker_verify` enforces that
-  pairing by comparing the lock's version against `Cargo.toml`, so this bump could not have been
-  committed without the rebuild.
-- **No source change.** The only difference between the `1.3.0` and `1.3.1` binaries is the version
-  string compiled in from `Cargo.toml`, which is what `llm-benchmark --version` prints.
+- **The image was rebuilt and republished at `1.3.1` to match.** The pin set is unchanged, so
+  `inputHash` stays `54f3fa3c8a27…`, and the software inside is the same — verified by running a
+  container per platform (`node v20.20.2`, `pi 0.85.1`, marker `1.3.1`, `claude` absent). The two
+  images are **not** byte-identical, though: the build cache had been pruned, so every `RUN` layer
+  was re-executed and its digest differs (an `apt` or `npm` install is not byte-reproducible),
+  which leaves only the base-image layers shared. Republished rather than left at `1.3.0` because
+  the binary and the image share one version — and `docker_verify` enforces that pairing by
+  comparing the lock's version against `Cargo.toml`, so this bump could not have been committed
+  without the rebuild.
+- **No source change.** The source is identical, so the version string compiled in from `Cargo.toml`
+  — what `llm-benchmark --version` prints — is the only build input that differs.
 
 # Changelog — CI builds, tagged releases, and one version number
 
