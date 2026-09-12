@@ -1,6 +1,6 @@
 # Architecture Overview
 
-This document describes the architecture of the Claude Benchmark Runner, a framework for benchmarking autonomous coding agents against the polyglot exercise suite.
+This document describes the architecture of the LLM Benchmark Runner, a framework for benchmarking autonomous coding agents against the polyglot exercise suite.
 
 ---
 
@@ -8,7 +8,7 @@ This document describes the architecture of the Claude Benchmark Runner, a frame
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     Claude Benchmark Runner                      │
+│                       LLM Benchmark Runner                       │
 │                                                                  │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────────┐  │
 │  │   CLI Mode   │    │ Web UI Mode  │    │  Batch Processing │  │

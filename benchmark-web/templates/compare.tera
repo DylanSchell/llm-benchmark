@@ -1,6 +1,6 @@
 {% extends "layout.tera" %}
 
-{% block title %}Compare Models - Claude Benchmark{% endblock %}
+{% block title %}Compare Models - LLM Benchmark{% endblock %}
 
 {% block content %}
 <div class="container">

@@ -1,6 +1,6 @@
 # Developer Guide
 
-This guide provides everything you need to contribute to the Claude Benchmark Runner.
+This guide provides everything you need to contribute to the LLM Benchmark Runner.
 
 ---
 

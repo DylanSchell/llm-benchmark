@@ -1,6 +1,6 @@
 {% extends "layout.tera" %}
 
-{% block title %}Dashboard - Claude Benchmark{% endblock %}
+{% block title %}Dashboard - LLM Benchmark{% endblock %}
 
 {% block content %}
 <div class="container">

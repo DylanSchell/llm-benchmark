@@ -286,7 +286,7 @@ async fn test_dashboard_has_h3() {
 async fn test_dashboard_has_title() {
     let html = fetch_page("/").await.expect("Dashboard should return 200");
     assert!(
-        html.contains("Dashboard - Claude Benchmark"),
+        html.contains("Dashboard - LLM Benchmark"),
         "Dashboard should have correct title"
     );
 }
@@ -716,11 +716,11 @@ async fn test_dashboard_has_nav_links() {
 }
 
 #[tokio::test]
-async fn test_dashboard_has_claude_benchmark_runner_text() {
+async fn test_dashboard_has_llm_benchmark_runner_text() {
     let html = fetch_page("/").await.expect("Dashboard should return 200");
     assert!(
-        html.contains("Claude Benchmark Runner"),
-        "Dashboard should have 'Claude Benchmark Runner' text"
+        html.contains("LLM Benchmark Runner"),
+        "Dashboard should have 'LLM Benchmark Runner' text"
     );
 }
 
@@ -1037,11 +1037,11 @@ async fn test_run_has_nav_links() {
 }
 
 #[tokio::test]
-async fn test_run_has_claude_benchmark_runner_text() {
+async fn test_run_has_llm_benchmark_runner_text() {
     let html = fetch_page("/run").await.expect("Run page should return 200");
     assert!(
-        html.contains("Claude Benchmark Runner"),
-        "Run page should have 'Claude Benchmark Runner' text"
+        html.contains("LLM Benchmark Runner"),
+        "Run page should have 'LLM Benchmark Runner' text"
     );
 }
 
@@ -1122,7 +1122,7 @@ async fn test_results_has_h3() {
 async fn test_results_has_title() {
     let html = fetch_page("/results").await.expect("Results page should return 200");
     assert!(
-        html.contains("Results - Claude Benchmark"),
+        html.contains("Results - LLM Benchmark"),
         "Results page should have correct title"
     );
 }
@@ -1497,11 +1497,11 @@ async fn test_results_has_nav_links() {
 }
 
 #[tokio::test]
-async fn test_results_has_claude_benchmark_runner_text() {
+async fn test_results_has_llm_benchmark_runner_text() {
     let html = fetch_page("/results").await.expect("Results page should return 200");
     assert!(
-        html.contains("Claude Benchmark Runner"),
-        "Results page should have 'Claude Benchmark Runner' text"
+        html.contains("LLM Benchmark Runner"),
+        "Results page should have 'LLM Benchmark Runner' text"
     );
 }
 
@@ -1768,7 +1768,7 @@ async fn test_dashboard_has_semantic_header() {
         "Dashboard should have h1 in header"
     );
     assert!(
-        html.contains("Claude Benchmark"),
+        html.contains("LLM Benchmark"),
         "Dashboard header should contain site name"
     );
 }
@@ -1781,7 +1781,7 @@ async fn test_results_has_semantic_header() {
         "Results page should have h1 in header"
     );
     assert!(
-        html.contains("Claude Benchmark"),
+        html.contains("LLM Benchmark"),
         "Results page header should contain site name"
     );
 }
@@ -1794,7 +1794,7 @@ async fn test_run_has_semantic_header() {
         "Run page should have h1 in header"
     );
     assert!(
-        html.contains("Claude Benchmark"),
+        html.contains("LLM Benchmark"),
         "Run page header should contain site name"
     );
 }

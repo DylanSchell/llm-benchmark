@@ -1,6 +1,6 @@
 # Configuration Reference
 
-This document describes all configuration options for the Claude Benchmark Runner.
+This document describes all configuration options for the LLM Benchmark Runner.
 
 ---
 
@@ -24,7 +24,7 @@ You can specify a custom config file location using the CLI:
 
 ```yaml
 # ===========================================
-# Claude Benchmark Runner Configuration
+# LLM Benchmark Runner Configuration
 # ===========================================
 
 # Benchmark settings

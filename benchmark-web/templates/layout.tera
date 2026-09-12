@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title | default(value="Claude Benchmark") }} - Claude Benchmark</title>
+    <title>{{ title | default(value="LLM Benchmark") }} - LLM Benchmark</title>
 
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
@@ -62,7 +62,7 @@
 <body>
     <header>
         <div class="container">
-            <h1>Claude Benchmark Runner</h1>
+            <h1>LLM Benchmark Runner</h1>
             <nav style="margin-top: 0.5rem;">
                 <a href="/">Dashboard</a>
                 <a href="/run">Run Benchmark</a>
@@ -78,7 +78,7 @@
     </main>
 
     <footer style="text-align: center; padding: 2rem; color: #7f8c8d; font-size: 0.875rem;">
-        <p>Claude Benchmark Runner - Web Interface</p>
+        <p>LLM Benchmark Runner - Web Interface</p>
     </footer>
 
     <script>

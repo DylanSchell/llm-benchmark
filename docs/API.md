@@ -1,6 +1,6 @@
 # API Documentation
 
-This document describes the REST API endpoints provided by the Claude Benchmark Runner web interface.
+This document describes the REST API endpoints provided by the LLM Benchmark Runner web interface.
 
 ---
 
