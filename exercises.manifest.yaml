@@ -1,0 +1,283 @@
+# exercises.manifest.yaml
+#
+# Controls what is fetched from upstream and packaged into the binary.
+# Third-party exercise content is NOT committed to this repo; it is cloned and pruned
+# at build time. See docs/specs/embedded-exercises.md.
+#
+# Refresh flow:
+#   1. Bump a `ref` below to a reviewed upstream commit.
+#   2. `cargo xtask exercises update` re-resolves and rewrites exercises.lock.yaml.
+
+version: 1
+
+# Upstream Exercism tracks, pinned to the commits that reproduce the current snapshot.
+sources:
+  cpp: { repo: "https://github.com/exercism/cpp", ref: "acc32555eab077cf786f892b6ab27a22184d81c7" }
+  go: { repo: "https://github.com/exercism/go", ref: "26635e19868f0b4fbed09a986b824cd67efdbc2e" }
+  java: { repo: "https://github.com/exercism/java", ref: "1123e5b3dddeb9e57b802835285a886b4428bfcc" }
+  javascript: { repo: "https://github.com/exercism/javascript", ref: "dbfbeae34dd4fce7fad7afd740d075d33cc51b21" }
+  python: { repo: "https://github.com/exercism/python", ref: "7bec634f5c51cce82d233ad88f7ae81a3e98242a" }
+  rust: { repo: "https://github.com/exercism/rust", ref: "6c321382019fa969401b8e923a5e12ff69065561" }
+
+# Where a selected exercise lives upstream and where it lands in the bundle.
+layout:
+  source: "exercises/practice/{exercise}"
+  dest: "{language}/exercises/practice/{exercise}"
+
+# Exercise-level selection is the PRIMARY inclusion control.
+# `include` is the curated subset (it already excludes upstream exercises that are too
+# easy to be informative). `exclude` drops additional exercises and wins over `include`.
+exercises:
+  cpp:
+    include:
+      - all-your-base
+      - allergies
+      - bank-account
+      - binary-search-tree
+      - circular-buffer
+      - clock
+      - complex-numbers
+      - crypto-square
+      - diamond
+      - dnd-character
+      - gigasecond
+      - grade-school
+      - kindergarten-garden
+      - knapsack
+      - linked-list
+      - meetup
+      - parallel-letter-frequency
+      - perfect-numbers
+      - phone-number
+      - queen-attack
+      - robot-name
+      - space-age
+      - spiral-matrix
+      - sublist
+      - yacht
+      - zebra-puzzle
+    exclude: []
+  go:
+    include:
+      - alphametics
+      - beer-song
+      - book-store
+      - bottle-song
+      - bowling
+      - connect
+      - counter
+      - crypto-square
+      - dnd-character
+      - dominoes
+      - error-handling
+      - food-chain
+      - forth
+      - hexadecimal
+      - kindergarten-garden
+      - ledger
+      - markdown
+      - matrix
+      - octal
+      - paasio
+      - palindrome-products
+      - pig-latin
+      - poker
+      - pov
+      - protein-translation
+      - react
+      - robot-simulator
+      - say
+      - scale-generator
+      - simple-linked-list
+      - sublist
+      - transpose
+      - tree-building
+      - trinary
+      - two-bucket
+      - variable-length-quantity
+      - word-search
+      - wordy
+      - zebra-puzzle
+    exclude: []
+  java:
+    include:
+      - affine-cipher
+      - all-your-base
+      - alphametics
+      - bank-account
+      - book-store
+      - bottle-song
+      - bowling
+      - change
+      - circular-buffer
+      - connect
+      - custom-set
+      - dominoes
+      - food-chain
+      - forth
+      - go-counting
+      - hangman
+      - house
+      - kindergarten-garden
+      - ledger
+      - mazy-mice
+      - ocr-numbers
+      - palindrome-products
+      - phone-number
+      - pig-latin
+      - poker
+      - pov
+      - protein-translation
+      - pythagorean-triplet
+      - queen-attack
+      - rational-numbers
+      - react
+      - resistor-color-trio
+      - rest-api
+      - satellite
+      - series
+      - sgf-parsing
+      - simple-linked-list
+      - state-of-tic-tac-toe
+      - transpose
+      - tree-building
+      - twelve-days
+      - two-bucket
+      - variable-length-quantity
+      - word-search
+      - wordy
+      - zebra-puzzle
+      - zipper
+    exclude: []
+  javascript:
+    include:
+      - affine-cipher
+      - alphametics
+      - beer-song
+      - binary
+      - book-store
+      - bottle-song
+      - bowling
+      - complex-numbers
+      - connect
+      - food-chain
+      - forth
+      - go-counting
+      - grade-school
+      - grep
+      - house
+      - killer-sudoku-helper
+      - ledger
+      - list-ops
+      - meetup
+      - ocr-numbers
+      - palindrome-products
+      - parallel-letter-frequency
+      - phone-number
+      - pig-latin
+      - poker
+      - promises
+      - queen-attack
+      - rational-numbers
+      - react
+      - rectangles
+      - resistor-color-trio
+      - rest-api
+      - robot-name
+      - say
+      - scale-generator
+      - simple-linked-list
+      - space-age
+      - state-of-tic-tac-toe
+      - sum-of-multiples
+      - tournament
+      - transpose
+      - triangle
+      - twelve-days
+      - two-bucket
+      - variable-length-quantity
+      - word-search
+      - wordy
+      - zebra-puzzle
+      - zipper
+    exclude: []
+  python:
+    include:
+      - affine-cipher
+      - beer-song
+      - book-store
+      - bottle-song
+      - bowling
+      - connect
+      - dominoes
+      - dot-dsl
+      - food-chain
+      - forth
+      - go-counting
+      - grade-school
+      - grep
+      - hangman
+      - list-ops
+      - paasio
+      - phone-number
+      - pig-latin
+      - poker
+      - pov
+      - proverb
+      - react
+      - rest-api
+      - robot-name
+      - scale-generator
+      - sgf-parsing
+      - simple-linked-list
+      - transpose
+      - tree-building
+      - two-bucket
+      - variable-length-quantity
+      - wordy
+      - zebra-puzzle
+      - zipper
+    exclude: []
+  rust:
+    include:
+      - accumulate
+      - acronym
+      - alphametics
+      - book-store
+      - bowling
+      - decimal
+      - dot-dsl
+      - doubly-linked-list
+      - fizzy
+      - forth
+      - gigasecond
+      - grade-school
+      - grep
+      - luhn-from
+      - macros
+      - nucleotide-codons
+      - ocr-numbers
+      - parallel-letter-frequency
+      - pig-latin
+      - poker
+      - react
+      - robot-name
+      - say
+      - scale-generator
+      - simple-cipher
+      - two-bucket
+      - variable-length-quantity
+      - word-count
+      - wordy
+      - xorcism
+    exclude: []
+
+# File-level rules applied within each selected exercise, in order (last match wins).
+# These remove content the application never reads. Relax a rule later if valuable.
+rules:
+  - exclude: ".git/**"
+  - exclude: ".approaches/**"
+  - exclude: ".articles/**"
+  - exclude: ".meta/tests.toml"
+  - exclude: ".meta/*.j2"
+  - exclude: ".meta/*.tera"
