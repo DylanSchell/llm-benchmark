@@ -90,19 +90,24 @@ ENV PATH="/home/runner/.cargo/bin:$PATH"
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/home/runner/.local/bin:$PATH"
 
-# Pre-install Gradle 8.7 so gradlew finds it pre-extracted at the hash location
-# the wrapper expects. The wrapper computes a hash from the distribution URL;
-# for the default https:// URL with this wrapper JAR, the hash is bhs2wmbdwecv87pi65oeuq5iu.
-# We must also create a .ok marker file so the wrapper knows extraction succeeded.
+# Pre-install Gradle so the wrapper finds it already extracted at the cache location it
+# computes. Gradle names that directory base36(md5(distributionUrl)), so we derive it with
+# docker/gradle-dist-hash.py rather than hardcoding a value that would silently go stale if
+# the Exercism Java track bumps its wrapper (which would make gradlew download at test time).
+# The .ok marker tells the wrapper the extraction completed.
 ARG GRADLE_VERSION=8.7
-ARG GRADLE_HASH=bhs2wmbdwecv87pi65oeuq5iu
-ARG GRADLE_DIST_DIR=/home/runner/.gradle/wrapper/dists/gradle-${GRADLE_VERSION}-bin/${GRADLE_HASH}
-RUN mkdir -p ${GRADLE_DIST_DIR} && \
-    curl -fsSL "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" \
-      -o /tmp/gradle-bin.zip && \
-    unzip -q /tmp/gradle-bin.zip -d ${GRADLE_DIST_DIR} && \
-    touch ${GRADLE_DIST_DIR}/gradle-${GRADLE_VERSION}-bin.zip.ok && \
-    rm /tmp/gradle-bin.zip && \
+ARG GRADLE_SHA256=544c35d6bd849ae8a5ed0bcea39ba677dc40f49df7d1835561582da2009b961d
+COPY gradle-dist-hash.py /usr/local/lib/llm-benchmark/gradle-dist-hash.py
+RUN set -eux; \
+    dist_url="https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"; \
+    hash="$(python3 /usr/local/lib/llm-benchmark/gradle-dist-hash.py "${dist_url}")"; \
+    dist_dir="/home/runner/.gradle/wrapper/dists/gradle-${GRADLE_VERSION}-bin/${hash}"; \
+    mkdir -p "${dist_dir}"; \
+    curl -fsSL "${dist_url}" -o /tmp/gradle-bin.zip; \
+    echo "${GRADLE_SHA256}  /tmp/gradle-bin.zip" | sha256sum -c -; \
+    unzip -q /tmp/gradle-bin.zip -d "${dist_dir}"; \
+    touch "${dist_dir}/gradle-${GRADLE_VERSION}-bin.zip.ok"; \
+    rm /tmp/gradle-bin.zip; \
     chown -R runner:runner /home/runner/.gradle
 
 # Ensure gradle daemon is disabled (belt and suspenders: properties file + env var)
