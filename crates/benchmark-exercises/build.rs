@@ -1,15 +1,14 @@
 //! Build script for the embedded exercise bundle.
 //!
 //! Pipeline: fetch pinned Exercism tracks → prune per `exercises.manifest.yaml` →
-//! stage → refresh `exercises.lock.yaml` → expose the staged tree to `rust-embed`
-//! via `LLM_BENCHMARK_EXERCISES_DIR`.
+//! stage into `target/exercises-bundle` → refresh `exercises.lock.yaml`. The staged
+//! tree is embedded by `rust-embed` through a relative `#[folder]` path.
 //!
 //! Third-party exercise content is never committed to this repository; it lives in
-//! `target/` and is (re)built when the manifest changes.
+//! `target/` and is (re)built when the manifest changes. `cargo clean` removes it.
 //!
-//! Escape hatches:
-//! * `LLM_BENCHMARK_EXERCISES_DIR` — use a prebuilt tree as-is (CI / air-gapped).
-//! * `LLM_BENCHMARK_EXERCISES_OFFLINE=1` — never fetch; fail on a cache miss.
+//! Offline builds reuse `target/exercises-cache`; set
+//! `LLM_BENCHMARK_EXERCISES_OFFLINE=1` to forbid network access entirely.
 
 use std::collections::BTreeMap;
 use std::env;
@@ -26,28 +25,7 @@ fn main() {
     let manifest_path = repo_root.join("exercises.manifest.yaml");
 
     println!("cargo:rerun-if-changed={}", manifest_path.display());
-    println!("cargo:rerun-if-env-changed=LLM_BENCHMARK_EXERCISES_DIR");
     println!("cargo:rerun-if-env-changed=LLM_BENCHMARK_EXERCISES_OFFLINE");
-
-    // Escape hatch: use a caller-provided tree as-is.
-    if let Some(dir) = env::var_os("LLM_BENCHMARK_EXERCISES_DIR") {
-        let dir = PathBuf::from(dir);
-        if dir.is_dir() {
-            println!(
-                "cargo:warning=LLM Benchmark: using prebuilt exercise tree at {}",
-                dir.display()
-            );
-            println!(
-                "cargo:rustc-env=LLM_BENCHMARK_EXERCISES_DIR={}",
-                dir.display()
-            );
-            return;
-        }
-        println!(
-            "cargo:warning=LLM_BENCHMARK_EXERCISES_DIR is set but is not a directory: {}",
-            dir.display()
-        );
-    }
 
     let offline = env::var("LLM_BENCHMARK_EXERCISES_OFFLINE")
         .map(|value| value == "1" || value == "true")
@@ -100,9 +78,4 @@ fn main() {
             lock_path.display()
         );
     }
-
-    println!(
-        "cargo:rustc-env=LLM_BENCHMARK_EXERCISES_DIR={}",
-        staging_root.display()
-    );
 }

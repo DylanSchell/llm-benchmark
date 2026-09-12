@@ -9,9 +9,9 @@ publish = false
 [dependencies]
 benchmark-types = { path = "../benchmark-types" }
 rust-embed = { workspace = true, features = [
+    "compression",
     "debug-embed",
     "deterministic-timestamps",
-    "interpolate-folder-path",
 ] }
 
 [build-dependencies]

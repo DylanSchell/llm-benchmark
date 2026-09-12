@@ -13,10 +13,13 @@ use rust_embed::Embed;
 
 /// The staged exercise bundle produced by `build.rs`.
 ///
-/// `debug-embed` is enabled so debug/test builds use the embedded data too (rather
-/// than reading the staging directory at runtime).
+/// The folder is a *relative* path because `rust-embed`'s `compression` feature
+/// rejects absolute paths; it resolves relative to this crate (where `Cargo.toml`
+/// lives), so this points at `<repo>/target/exercises-bundle`.
+///
+/// `debug-embed` is enabled so debug/test builds use the embedded data too.
 #[derive(Embed)]
-#[folder = "$LLM_BENCHMARK_EXERCISES_DIR"]
+#[folder = "../../target/exercises-bundle"]
 struct Exercises;
 
 const PRACTICE: &str = "exercises/practice/";
