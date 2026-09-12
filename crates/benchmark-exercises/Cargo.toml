@@ -1,0 +1,18 @@
+[package]
+name = "benchmark-exercises"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Embedded exercise bundle, assembled at build time from pinned Exercism sources"
+publish = false
+
+[dependencies]
+benchmark-types = { path = "../benchmark-types" }
+rust-embed = { workspace = true, features = [
+    "debug-embed",
+    "deterministic-timestamps",
+    "interpolate-folder-path",
+] }
+
+[build-dependencies]
+benchmark-exercises-build = { path = "../benchmark-exercises-build" }

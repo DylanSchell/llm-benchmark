@@ -4,6 +4,7 @@ members = [
     "crates/benchmark-types",
     "crates/benchmark-core",
     "crates/benchmark-exercises-build",
+    "crates/benchmark-exercises",
     "benchmark-web",
     "benchmark-token-report",
     "benchmark-reporter",
@@ -105,6 +106,9 @@ tempfile = "3"
 # Exercise bundle assembler (build-time)
 globset = "0.4"
 sha2 = "0.10"
+
+# Embedded exercise bundle
+rust-embed = "8"
 
 # Miscellaneous
 regex = "1.10"
