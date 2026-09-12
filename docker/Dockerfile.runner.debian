@@ -10,6 +10,13 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
+# Which runner-image version this is. Versioned independently of the Rust binary; see
+# docs/specs/runner-image.md and ./build.sh docker-verify.
+ARG RUNNER_VERSION
+LABEL org.opencontainers.image.title="llm-benchmark runner" \
+      org.opencontainers.image.version="${RUNNER_VERSION}" \
+      org.opencontainers.image.description="Language toolchains and agent CLIs for llm-benchmark exercise containers"
+
 # Go 1.21+ is needed for the slices package used by newer Exercism exercises.
 # TARGETARCH is supplied automatically by buildx.
 ARG GO_VERSION
@@ -107,6 +114,10 @@ RUN useradd -m -s /bin/bash -u 1000 runner && \
 
 # Create workspace directory
 RUN mkdir -p /workspace && chown runner:runner /workspace
+
+# Record the version inside the image too, so a running container can be identified without
+# inspecting labels, and a binary/image version mismatch is detectable at runtime.
+RUN mkdir -p /etc/llm-benchmark && printf '%s\n' "${RUNNER_VERSION}" > /etc/llm-benchmark/runner-version
 
 # Set working directory
 WORKDIR /workspace
