@@ -89,6 +89,7 @@ docker_verify() {
 
     version="$(runner_version)"
     hash="$(docker_input_hash)"
+    load_agents
 
     if [[ ! -f "$lock_file" ]]; then
         echo "FAIL: ${lock_file} is missing — run ./build.sh docker-build" >&2
@@ -120,7 +121,7 @@ docker_verify() {
     fi
 
     if (( rc == 0 )); then
-        echo "ok: runner image v${version} matches docker/ inputs (${hash:0:12}…)"
+        echo "ok: runner image v${version} [$(agents_list)] matches docker/ inputs (${hash:0:12}…)"
     fi
     return $rc
 }
@@ -138,6 +139,35 @@ load_pins() {
     set -a
     . "$pins"
     set +a
+}
+
+# Optional-agent selection lives in docker/agents.env so it is part of docker_input_hash: two
+# images built from the same inputs are then guaranteed to contain the same agents, which a bare
+# --build-arg could not promise. See docker/README.md for why Claude Code is off by default.
+load_agents() {
+    local file="${SCRIPT_DIR}/docker/agents.env"
+    if [[ ! -f "$file" ]]; then
+        echo "error: ${file} not found" >&2
+        exit 1
+    fi
+    # shellcheck disable=SC1090
+    set -a
+    . "$file"
+    set +a
+
+    case "${INSTALL_CLAUDE:-}" in
+        0|1) ;;
+        *) echo "error: INSTALL_CLAUDE must be 0 or 1 in ${file}" >&2; exit 1 ;;
+    esac
+}
+
+# Comma-separated agents the image contains, for the OCI label and the in-image marker.
+agents_list() {
+    if [[ "${INSTALL_CLAUDE}" == "1" ]]; then
+        printf 'claude,pi'
+    else
+        printf 'pi'
+    fi
 }
 
 # Build args are derived from this name list, so adding a pin to pins.env plus the Dockerfile
@@ -166,8 +196,10 @@ docker_build() {
     fi
 
     load_pins
-    local version
+    load_agents
+    local version agents
     version="$(runner_version)"
+    agents="$(agents_list)"
     local version_tag="llm-benchmark/runner:${version}"
 
     local -a build_args=()
@@ -176,9 +208,15 @@ docker_build() {
         build_args+=(--build-arg "${name}=${!name}")
     done
     build_args+=(--build-arg "RUNNER_VERSION=${version}")
+    build_args+=(--build-arg "INSTALL_CLAUDE=${INSTALL_CLAUDE}")
+    build_args+=(--build-arg "AGENTS=${agents}")
 
     echo "Pinned: go=${GO_VERSION} rust=${RUST_VERSION} uv=${UV_VERSION} gradle=${GRADLE_VERSION}" >&2
-    echo "        claude-code=${CLAUDE_CODE_VERSION} pi=${PI_CODING_AGENT_VERSION}" >&2
+    if [[ "${INSTALL_CLAUDE}" == "1" ]]; then
+        echo "        agents=${agents} (claude-code=${CLAUDE_CODE_VERSION}, pi=${PI_CODING_AGENT_VERSION})" >&2
+    else
+        echo "        agents=${agents} (pi=${PI_CODING_AGENT_VERSION}; Claude Code excluded)" >&2
+    fi
     echo "Version: ${version} (also tagged ${version_tag})" >&2
 
     docker buildx build \

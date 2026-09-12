@@ -134,6 +134,12 @@ Dropping it loses nothing automated. The dead `collect_claude_trace` path goes w
     release) would only defer the problem. The standalone binary embeds its runtime and is
     published for both linux architectures, so the agent's runtime stops dictating the Node
     version the *exercises* are tested against — which is the more important pin of the two.
+11. **Make the packaged agent set an explicit, hashed build input.** Claude Code is excluded by
+    default: Anthropic licenses it "all rights reserved" with no redistribution grant, which
+    makes any image containing it unpublishable, and the maintainer mostly benchmarks pi. The
+    switch lives in `docker/agents.env` rather than in a `--build-arg` so that
+    `docker_input_hash` covers it — two images built from the same inputs must contain the same
+    agents, so flipping the variant requires a version bump like any other image change.
 
 ## Design
 
@@ -433,3 +439,12 @@ Steps 1–2 are independent; 3 depends on 2; 4 depends on 3; 5 depends on 4; 6 i
   - Verify: in the built image with `node` absent, `pi --version` prints the pinned version and
     both `--extension` paths load (`extension_load_errors=0`, versus `1` for a bogus path).
   - Files: `docker/Dockerfile.runner.debian`, `docker/pins.env`, `docker/pin-agents.sh`, `build.sh`.
+
+- [x] **T12 — Make Claude Code packaging optional** (so that a publishable image exists at all)
+  - Acceptance: `INSTALL_CLAUDE` in `docker/agents.env` selects the agent set; the image records
+    its agents in an OCI label and `/etc/llm-benchmark/agents`; flipping the switch is caught by
+    the input-hash guard; `pin-agents.sh` does not re-pin an agent that is not packaged.
+  - Verify: a default build reports `agents=pi`, has no `claude` on `PATH`, and still loads both
+    pi extensions; `docker-verify` reports `v1.2.0 [pi]`.
+  - Files: `docker/agents.env` (new), `docker/Dockerfile.runner.debian`, `build.sh`,
+    `docker/pin-agents.sh`, `docker/README.md`.

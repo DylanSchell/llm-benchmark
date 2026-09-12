@@ -83,16 +83,30 @@ set_pin() {
 # Pull the package specs out of every `npm install -g` invocation, following line
 # continuations. Quotes are stripped and the block is tokenised on whitespace, so an unquoted
 # or otherwise unpinned package is caught too, not just a quoted one.
+# Extract the package argument list of every `npm install -g` in the Dockerfile.
+#
+# Line continuations are joined first so a multi-line install is one logical line, then the
+# argument list is cut at the first shell metacharacter. The cut matters once an install sits
+# inside a conditional (the optional Claude Code install does): without it, the surrounding shell
+# tokens (`1)`, `esac`, `echo`, `claude`, …) are reported as unpinned packages.
 dockerfile_npm_specs() {
-    awk '/npm install -g/ { grab=1 }
-         grab { print }
-         grab && $0 !~ /\\$/ { grab=0 }' "$DOCKERFILE" \
-        | sed -e 's/\\[[:space:]]*$//' \
-              -e 's/^[[:space:]]*RUN[[:space:]]*//' \
-              -e 's/npm install -g//' \
-              -e 's/"//g' \
-        | tr -s '[:space:]' '\n' \
-        | sed -e '/^$/d' -e '/^[&|;][&|;]*$/d'
+    awk '
+        {
+            if (sub(/\\[[:space:]]*$/, "")) { buf = buf $0; next }
+            buf = buf $0
+            if (match(buf, /npm install -g/)) {
+                rest = substr(buf, RSTART + RLENGTH)
+                split(rest, parts, /[;&|]/)
+                list = parts[1]
+                gsub(/"/, "", list)
+                n = split(list, tokens, /[[:space:]]+/)
+                for (i = 1; i <= n; i++) {
+                    if (tokens[i] != "") print tokens[i]
+                }
+            }
+            buf = ""
+        }
+    ' "$DOCKERFILE"
 }
 
 lint() {
@@ -202,9 +216,17 @@ repin() {
     local -a updates=()
     local entry key pkg current latest u count
 
+    load_agents
+
     echo "Resolving latest published versions…" >&2
     for entry in "${NPM_PINS[@]}"; do
         key="${entry%%=*}"; pkg="${entry#*=}"
+        # Don't re-pin an agent the image does not package: it would change docker_input_hash and
+        # force a version bump for content that never reaches the image (see docker/agents.env).
+        if [[ "$key" == "CLAUDE_CODE_VERSION" && "${INSTALL_CLAUDE}" != "1" ]]; then
+            echo "  skip: ${pkg} (not packaged; see docker/agents.env)" >&2
+            continue
+        fi
         current="$(pin_value "$key")"
         latest="$(latest_version "$pkg")"
         if [[ -z "$latest" ]]; then
@@ -294,4 +316,8 @@ main() {
     esac
 }
 
-main "$@"
+# Only dispatch when executed directly, so the functions above can be sourced by tests without
+# triggering a re-pin.
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi

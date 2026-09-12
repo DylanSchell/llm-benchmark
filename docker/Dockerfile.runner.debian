@@ -13,9 +13,11 @@ FROM ${BASE_IMAGE}
 # Which runner-image version this is. Versioned independently of the Rust binary; see
 # docs/specs/runner-image.md and ./build.sh docker-verify.
 ARG RUNNER_VERSION
+ARG AGENTS
 LABEL org.opencontainers.image.title="llm-benchmark runner" \
       org.opencontainers.image.version="${RUNNER_VERSION}" \
-      org.opencontainers.image.description="Language toolchains and agent CLIs for llm-benchmark exercise containers"
+      org.opencontainers.image.description="Language toolchains and agent CLIs for llm-benchmark exercise containers" \
+      com.llm-benchmark.agents="${AGENTS}"
 
 # Go 1.21+ is needed for the slices package used by newer Exercism exercises.
 # TARGETARCH is supplied automatically by buildx.
@@ -67,8 +69,19 @@ RUN curl -fsSL "https://deb.nodesource.com/setup_${NODE_MAJOR}.x" | bash - \
     && rm -rf /var/lib/apt/lists/*
 
 # Agent CLIs — what the benchmark actually measures, so they are pinned.
+#
+# Claude Code is optional and excluded by default: Anthropic licences it "all rights reserved"
+# with no redistribution grant, so an image containing it cannot be published (docker/README.md,
+# Licensing). The switch is docker/agents.env, which is a hashed build input.
 ARG CLAUDE_CODE_VERSION
-RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+ARG INSTALL_CLAUDE
+RUN set -eux; \
+    case "${INSTALL_CLAUDE}" in \
+      0) echo "Not packaging Claude Code (INSTALL_CLAUDE=0)" ;; \
+      1) npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"; \
+         claude --version ;; \
+      *) echo "INSTALL_CLAUDE must be 0 or 1, got '${INSTALL_CLAUDE}'" >&2; exit 1 ;; \
+    esac
 
 # pi is installed from its official standalone (bun-compiled) binary rather than from npm, so
 # that pi's runtime requirements stop dictating the image's Node version: the npm package needs
@@ -142,9 +155,11 @@ RUN useradd -m -s /bin/bash -u 1000 runner && \
 # Create workspace directory
 RUN mkdir -p /workspace && chown runner:runner /workspace
 
-# Record the version inside the image too, so a running container can be identified without
-# inspecting labels, and a binary/image version mismatch is detectable at runtime.
-RUN mkdir -p /etc/llm-benchmark && printf '%s\n' "${RUNNER_VERSION}" > /etc/llm-benchmark/runner-version
+# Record the version and the packaged agents inside the image too, so a running container can
+# be identified without inspecting labels, and a binary/image mismatch is detectable at runtime.
+RUN mkdir -p /etc/llm-benchmark \
+    && printf '%s\n' "${RUNNER_VERSION}" > /etc/llm-benchmark/runner-version \
+    && printf '%s\n' "${AGENTS}" > /etc/llm-benchmark/agents
 
 # Set working directory
 WORKDIR /workspace

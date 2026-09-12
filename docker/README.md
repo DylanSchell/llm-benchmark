@@ -17,6 +17,7 @@ The image is a separate artifact from the binary and is versioned separately —
 | --- | --- |
 | `Dockerfile.runner.debian` | The single runner image definition. |
 | `pins.env` | Every externally-sourced version. Single source of truth. |
+| `agents.env` | Which optional agents the image packages. A hashed build input. |
 | `pin-agents.sh` | Re-pins the npm packages and lints that nothing is unpinned. |
 | `gradle-dist-hash.py` | Derives the Gradle wrapper cache directory name. |
 | `RUNNER_VERSION` | Current runner image version. |
@@ -70,6 +71,7 @@ Bump `RUNNER_VERSION` for:
 | --- | --- |
 | Dockerfile edit | adding a package, reordering layers |
 | Agent CLI re-pin | `CLAUDE_CODE_VERSION`, `PI_*`, `SUPI_*` |
+| Agent set change | flipping `INSTALL_CLAUDE` in `docker/agents.env` |
 | Test-dependency re-pin | `JEST_VERSION`, `EXERCISM_*` |
 | Toolchain bump | Go, Rust, uv, fd, Gradle, Node major |
 | Base image digest change | new `bellsoft/liberica-openjdk-debian` digest |
@@ -143,11 +145,70 @@ The archive vendors `photon_rs_bg.wasm`, `assets/`, `theme/`, `export-html/` and
 alongside the executable. That is why it is extracted with `--strip-components=1` into `/opt/pi`
 rather than flattened into `/usr/local/bin` — flattening breaks asset resolution.
 
-**claude — native binary via npm.** `npm install -g @anthropic-ai/claude-code` pulls a platform
-package from `optionalDependencies` (`claude-code-linux-arm64`, `…-linux-x64`, the musl variants,
-and so on) whose payload is a pre-compiled ELF; npm selects the one matching the container's
-architecture. Its `engines` field asks for Node ≥22, but that governs the install-time wrapper
-scripts rather than the runtime — the binary itself runs without Node.
+**claude — native binary via npm, and optional.** `npm install -g @anthropic-ai/claude-code`
+pulls a platform package from `optionalDependencies` (`claude-code-linux-arm64`, `…-linux-x64`,
+the musl variants, and so on) whose payload is a pre-compiled ELF; npm selects the one matching
+the container's architecture. Its `engines` field asks for Node ≥22, but that governs the
+install-time wrapper scripts rather than the runtime — the binary itself runs without Node.
+
+It is **not packaged by default**, for licensing reasons (see [Licensing](#licensing)).
+
+### Which agents are packaged
+
+`agents.env` selects them:
+
+| Setting | Image | Publishable |
+| --- | --- | --- |
+| `INSTALL_CLAUDE=0` (default) | pi only | **yes** |
+| `INSTALL_CLAUDE=1` | pi + claude | **no** — see [Licensing](#licensing) |
+
+Because `agents.env` lives under `docker/`, it is part of `docker_input_hash`: changing it makes
+`docker-verify` demand a `RUNNER_VERSION` bump, so two images built from the same inputs are
+guaranteed to contain the same agents. A plain `--build-arg` could not promise that, which is
+why the switch is a file.
+
+The choice is recorded twice in the built image — the `com.llm-benchmark.agents` OCI label and
+`/etc/llm-benchmark/agents` — so a running container can be identified without inspecting build
+history:
+
+```bash
+docker image inspect llm-benchmark/runner:1.2.0 \
+  --format '{{index .Config.Labels "com.llm-benchmark.agents"}}'
+```
+
+`pin-agents.sh` skips re-pinning an agent that is not packaged, so a pin for content that never
+reaches the image cannot force a version bump.
+
+Running a **claude** benchmark against the default image will fail: `claude` is not on `PATH`.
+Rebuild with `INSTALL_CLAUDE=1` for local use only.
+
+## Licensing
+
+What this image may and may not be redistributed as.
+
+**The default (pi-only) image is publishable.** Every component permits redistribution provided
+notices are retained — and they are:
+
+| Component | Licence |
+| --- | --- |
+| pi, pi-caveman, supi-bash-timeout | MIT |
+| Go | BSD-3-Clause, plus `PATENTS` |
+| Gradle, Maven | Apache-2.0 |
+| Node.js | MIT |
+| Python | PSF |
+| Liberica JDK 17 | GPLv2+CE — carries source-offer obligations; BellSoft publishes the source |
+| Debian bookworm | per-package, see `/usr/share/doc/*/copyright` |
+
+**Claude Code cannot be redistributed.** `@anthropic-ai/claude-code` ships a one-line licence:
+
+> © Anthropic PBC. All rights reserved. Use is subject to Anthropic's Commercial Terms of Service.
+
+"All rights reserved" grants no redistribution right, so an image containing it must not be
+pushed to a registry, public or private. That is why it is off by default.
+
+The Exercism exercise content is **not** in this image at all — it is compiled into the Rust
+binary and materialized into the workspace at runtime. Its attribution lives in the repository
+root `THIRD_PARTY_NOTICES`.
 
 ## Gradle
 
@@ -204,3 +265,7 @@ though pi itself is not — they are plain TypeScript packages that the binary l
 **The build fails with `computed checksum did NOT match` for `pi.tar.gz`.** `PI_CODING_AGENT_VERSION`
 was changed without updating the checksums. Run `docker/pin-agents.sh` to refresh both from the
 release's `SHA256SUMS`.
+
+**`claude` is not found inside a container.** The default image is pi-only. Set
+`INSTALL_CLAUDE=1` in `docker/agents.env`, rebuild, and use the result locally — it is not
+redistributable (see [Licensing](#licensing)).
