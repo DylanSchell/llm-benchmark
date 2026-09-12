@@ -281,3 +281,4 @@ rules:
   - exclude: ".meta/tests.toml"
   - exclude: ".meta/*.j2"
   - exclude: ".meta/*.tera"
+  - exclude: "**/.gitignore"

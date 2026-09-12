@@ -167,6 +167,7 @@ rules:
   - exclude: "**/.meta/tests.toml"
   - exclude: "**/.meta/*.j2"
   - exclude: "**/.meta/*.tera"
+  - exclude: "**/.gitignore"
 ```
 
 ## Pruning
@@ -189,6 +190,7 @@ reads, keeping the embedded bundle small:
 | `**/.meta/tests.toml` | unused by app | removes ~200 files |
 | `**/.meta/*.j2` | Exercism codegen template | removes ~28 files |
 | `**/.meta/*.tera` | Exercism codegen template | removes ~15 files |
+| `**/.gitignore` | Exercism adds these; polyglot strips them | removes 80 files |
 
 These can be relaxed later if any are deemed valuable.
 
@@ -206,6 +208,21 @@ These can be relaxed later if any are deemed valuable.
 
 "Same shape" = the packaged tree reproduces the current layout exactly enough that no
 application path logic changes.
+
+**Verified (2025-09-12).** Clean-cloned all six pinned tracks, assembled with the committed
+manifest, and hash-compared the bundle against the local `../polyglot-benchmark` subset:
+
+| Metric | Result |
+|---|---|
+| Exercises | 225/225 |
+| Files matching | **2048/2048** |
+| Missing | 0 |
+| Extra | 0 |
+| Differing content | 0 |
+
+The only divergence found was 80 `.gitignore` files Exercism adds (49 JS, 30 Rust, 1
+Python) which polyglot strips; `**/.gitignore` was added to the rules to close it. The
+bundle is now byte-identical to the current set.
 
 1. **Dev-time diff (primary):** the assembler can run in `--verify-against
    ../polyglot-benchmark` mode and `diff` path sets (+ content hashes) against the local

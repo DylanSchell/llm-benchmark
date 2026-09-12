@@ -766,4 +766,119 @@ mod tests {
         assert!(again.cached);
         assert_eq!(again.resolved, source.reference);
     }
+
+    /// Full-subset fidelity check: clean-clone every pinned track, assemble, and
+    /// hash-compare against a local polyglot-benchmark checkout.
+    #[test]
+    #[ignore = "network: full-subset fidelity check against a local polyglot checkout"]
+    fn full_subset_fidelity() {
+        let repo_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let manifest = Manifest::load(&repo_root.join("exercises.manifest.yaml")).unwrap();
+        let polyglot = std::env::var("POLYGLOT_DIR")
+            .map(PathBuf::from)
+            .unwrap_or_else(|_| repo_root.join("../polyglot-benchmark"));
+        let rules = Rules::compile(&manifest.rules).unwrap();
+
+        let tmp = tempfile::tempdir().unwrap();
+        let cache = tmp.path().join("cache");
+        let staging = tmp.path().join("bundle");
+
+        // 1. Clean clone of every pinned track (fresh temp cache).
+        for (language, source) in &manifest.sources {
+            let exercises = manifest.selection(language).unwrap().effective();
+            let outcome =
+                fetch_language(source, language, &exercises, &manifest.layout, &cache, false)
+                    .unwrap_or_else(|e| panic!("fetch {language}: {e}"));
+            println!(
+                "fetched {language:10} @ {} ({} exercises, cached={})",
+                &outcome.resolved[..10],
+                exercises.len(),
+                outcome.cached
+            );
+        }
+
+        // 2. Assemble with the committed rules.
+        let report = assemble_from(&cache, &staging, &manifest).unwrap();
+        println!(
+            "assembled: {} exercises, {} files, {} pruned\n",
+            report.exercises, report.files, report.excluded_files
+        );
+
+        let staged = hash_tree(&staging).unwrap();
+
+        // 3. Expected tree: polyglot subset, keeping only rule-included files.
+        let mut expected: BTreeMap<String, String> = BTreeMap::new();
+        for language in manifest.sources.keys() {
+            for exercise in manifest.selection(language).unwrap().effective() {
+                let dir = polyglot
+                    .join(language)
+                    .join(render(&manifest.layout.source, language, &exercise));
+                if !dir.is_dir() {
+                    println!("!! polyglot missing {language}/{exercise}");
+                    continue;
+                }
+                for (rel, hash) in hash_tree(&dir).unwrap() {
+                    if !rules.includes(&rel) {
+                        continue;
+                    }
+                    expected.insert(
+                        format!("{language}/exercises/practice/{exercise}/{rel}"),
+                        hash,
+                    );
+                }
+            }
+        }
+
+        let mut missing = Vec::new();
+        let mut differing = Vec::new();
+        for (path, hash) in &expected {
+            match staged.get(path) {
+                Some(h) if h == hash => {}
+                Some(_) => differing.push(path.clone()),
+                None => missing.push(path.clone()),
+            }
+        }
+        let extra: Vec<String> = staged
+            .keys()
+            .filter(|p| !expected.contains_key(*p))
+            .cloned()
+            .collect();
+        missing.sort();
+        differing.sort();
+
+        let sample = |label: &str, items: &[String]| {
+            if items.is_empty() {
+                return;
+            }
+            println!("\n{label} ({}):", items.len());
+            for p in items.iter().take(40) {
+                println!("  {p}");
+            }
+            if items.len() > 40 {
+                println!("  ... and {} more", items.len() - 40);
+            }
+        };
+
+        println!("=== FIDELITY REPORT (staged vs polyglot) ===");
+        println!("expected (polyglot, post-rules): {}", expected.len());
+        println!("staged:                          {}", staged.len());
+        println!("matched:                         {}", expected.len() - missing.len() - differing.len());
+        println!("missing (in polyglot, not staged): {}", missing.len());
+        println!("extra   (in staged, not polyglot): {}", extra.len());
+        println!("differing content:                 {}", differing.len());
+        println!("\nper-language:");
+        for language in manifest.sources.keys() {
+            let prefix = format!("{language}/");
+            let count = |v: &[String]| v.iter().filter(|p| p.starts_with(&prefix)).count();
+            println!(
+                "  {language:10} missing={} extra={} differing={}",
+                count(&missing),
+                count(&extra),
+                count(&differing)
+            );
+        }
+        sample("MISSING", &missing);
+        sample("EXTRA", &extra);
+        sample("DIFFERING", &differing);
+    }
 }
