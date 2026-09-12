@@ -73,7 +73,11 @@ This creates the `llm-benchmark` launcher binary.
 
 ```bash
 ./build.sh docker-build
+./build.sh docker-verify   # confirm docker/ inputs match the recorded version
 ```
+
+The image is versioned separately from the binary, and its build args deliberately have no
+defaults — always build through `build.sh`. See `docker/README.md`.
 
 ---
 
@@ -226,18 +230,26 @@ impl LanguageHandlerRegistry {
 
 ### Step 3: Update Docker Image
 
-Add language runtime to `docker/Dockerfile.runner.debian`:
+Add the language runtime to `docker/Dockerfile.runner.debian`. If it is fetched from outside
+this repository, its version belongs in `docker/pins.env` as a build `ARG` rather than inline:
+`docker/pin-agents.sh --check` rejects unpinned installs, and `docker-verify` rejects one whose
+pin is not declared.
 
 ```dockerfile
 # Install Ruby
-RUN apt-get update && apt-get install -y ruby-full bundler && rm -rf /var/lib/apt/lists/*
+ARG RUBY_VERSION
+RUN apt-get update && apt-get install -y "ruby-full=${RUBY_VERSION}" && rm -rf /var/lib/apt/lists/*
 ```
 
-Rebuild the Docker image:
+Adding a runtime changes the binary↔image contract, so it needs a version bump. Bump
+`docker/RUNNER_VERSION`, then rebuild and check:
 
 ```bash
 ./build.sh docker-build
+./build.sh docker-verify
 ```
+
+See `docker/README.md` for the full bump policy.
 
 ### Step 4: Test Your Handler
 

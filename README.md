@@ -16,11 +16,14 @@ Exercism tracks (see `exercises.manifest.yaml`) and caches it under `target/`.
 
 ### 1. Build the Docker Image
 
-The runner container needs Java, Maven, Gradle, Node.js, Go, Rust, and Claude Code CLI pre-installed:
+The runner container needs Java, Maven, Gradle, Node.js, Go, Rust, and the agent CLIs
+pre-installed. Their versions are pinned in `docker/pins.env`:
 
 ```bash
 ./build.sh docker-build
 ```
+
+See `docker/README.md` for the image version policy and how to re-pin the agents.
 
 ### 2. Configure
 

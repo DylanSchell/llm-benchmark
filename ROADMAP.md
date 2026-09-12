@@ -337,19 +337,18 @@ developers can't run the project without reverse-engineering the config schema.
 **Suggestion:** Add `config.example.yaml` with all fields documented, and
 add `config.yaml` to `.gitignore`.
 
-### 6.3 No `Dockerfile` documentation — *in progress*
+### 6.3 No `Dockerfile` documentation — *resolved*
 The legacy Alpine `docker/Dockerfile.runner` and the 140 MB `docker/gradle-8.7-bin.zip` it
-required have been removed; `docker/Dockerfile.runner.debian` is now the single runner image,
-built via `./build.sh docker-build`. Build instructions and the image-version policy are being
-added as `docker/README.md`.
+required are gone; `docker/Dockerfile.runner.debian` is now the single runner image, built via
+`./build.sh docker-build`. `docker/README.md` documents building the image, the pin/re-pin
+workflow, and the version-bump policy.
 
-**Tracking:** `docs/specs/runner-image.md` (T9).
-
-### 6.4 Runner Dockerfile inspection — *in progress*
-Base-image digest pinning, agent/toolchain pinning, and layer ordering are covered by
-`docs/specs/runner-image.md`.
-
-**Tracking:** `docs/specs/runner-image.md` (T3, T8).
+### 6.4 Runner Dockerfile inspection — *resolved*
+The base image is pinned by manifest-list digest, every external version lives in
+`docker/pins.env`, the Gradle wrapper cache path is derived rather than hardcoded, and unpinned
+installs are rejected by `docker/pin-agents.sh --check`. The image is versioned independently
+of the binary, with `./build.sh docker-verify` failing when a `docker/` input changes without a
+corresponding version bump.
 
 ---
 

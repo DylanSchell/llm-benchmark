@@ -1,6 +1,6 @@
 # Spec: Runner Image Consolidation & Determinism (v1)
 
-**Status:** Approved for implementation
+**Status:** Implemented (T1–T9). T10 outstanding; image-build verification deferred.
 **Author:** llm-benchmark contributors
 **Date:** 2026-09-12
 **Branch:** `feature/runner-image`, **stacked on `feature/embedded-exercises`** and checked out in a
@@ -35,25 +35,30 @@ mounts a workspace; the image provides the language toolchain **and** the agent 
 
 ## Success Criteria
 
-- [ ] `docker/Dockerfile.runner` and `docker/gradle-8.7-bin.zip` do not exist.
-- [ ] `.gitignore` has no `gradle-8.7-bin.zip` line.
-- [ ] `docker/Dockerfile.runner.debian` is the only Dockerfile in the repo.
+- [x] `docker/Dockerfile.runner` and `docker/gradle-8.7-bin.zip` do not exist.
+- [x] `.gitignore` has no `gradle-8.7-bin.zip` line.
+- [x] `docker/Dockerfile.runner.debian` is the only Dockerfile in the repo.
 - [ ] `build.sh docker-build` succeeds from a clean checkout with **no untracked prerequisites**.
-- [ ] Every `npm install -g` / `uv tool install` in the Dockerfile takes its version from
+- [x] Every `npm install -g` / `uv tool install` in the Dockerfile takes its version from
       `docker/pins.env`; no bare unpinned installs remain.
-- [ ] `build.sh docker-verify` exits **non-zero** when a `docker/` input changes without a
+- [x] `build.sh docker-verify` exits **non-zero** when a `docker/` input changes without a
       `RUNNER_VERSION` bump, and **zero** when inputs and version are in sync.
-- [ ] `docker/pin-agents.sh` re-resolves every pin in one command, prints a diff, and bumps
+- [x] `docker/pin-agents.sh` re-resolves every pin in one command, prints a diff, and bumps
       the runner patch version.
 - [ ] `docker run --rm llm-benchmark/runner:<VERSION> cat /etc/llm-benchmark/runner-version`
       prints `<VERSION>`.
-- [ ] `docker/README.md` documents the bump policy table.
-- [ ] No doc references the Alpine `Dockerfile.runner`, and no doc shows a build context that
-      cannot work.
-- [ ] No `claude-plugins` / `claude-code-transcripts` install remains, and the dead
-      `claude-archive` / `collect_claude_trace` code path is gone.
+- [x] `docker/README.md` documents the bump policy table.
+- [x] No doc references the Alpine `Dockerfile.runner`, and no doc shows a build context that
+      cannot work. (`ROADMAP.md` §6.3 names it only to record that it was removed.)
+- [x] No `claude-plugins` / `claude-code-transcripts` install remains.
+- [ ] The dead `claude-archive` / `collect_claude_trace` code path is gone.
 - [ ] A Java exercise runs to completion in the rebuilt image (validates the Gradle pre-seed).
 - [ ] A `pi`-agent exercise runs to completion (validates the extension load paths).
+
+**Outstanding:** the image build itself, the in-image version marker check, and both
+reference-agent runs all need a real image build, so they are deferred until the benchmark run
+occupying the Docker daemon finishes. The dead `claude-archive` path is T10 (see below) and
+`crates/benchmark-core/src/agent/claude.rs` has deliberately not been touched yet.
 
 ## Current State (audit — verified, not inferred)
 
@@ -363,48 +368,48 @@ Steps 1–2 are independent; 3 depends on 2; 4 depends on 3; 5 depends on 4; 6 i
 
 ## Tasks
 
-- [ ] **T1 — Remove the legacy Alpine image**
+- [x] **T1 — Remove the legacy Alpine image**
   - Acceptance: `docker/Dockerfile.runner` gone; no doc references it; `build.sh docker-build` unaffected.
   - Verify: `rg -n 'Dockerfile.runner\b' --glob '!Dockerfile.runner.debian' .` returns nothing but the debian name.
   - Files: `docker/Dockerfile.runner` (delete), `README.md`, `docs/DEVELOPER.md`, `ROADMAP.md`.
 
-- [ ] **T2 — Drop the Gradle zip + gitignore line**
+- [x] **T2 — Drop the Gradle zip + gitignore line**
   - Acceptance: zip and `.gitignore:50` gone; repo clean.
   - Verify: `git status --short` clean; `ls docker/` has no zip.
   - Files: `docker/gradle-8.7-bin.zip`, `.gitignore`.
 
-- [ ] **T3 — Clean the Debian Dockerfile**
+- [x] **T3 — Clean the Debian Dockerfile**
   - Acceptance: no duplicate `ARG TARGETARCH`/`fd-find`; `claude-plugins`, the ralph line, and
     `claude-code-transcripts` gone; `.lck` touch gone.
   - Verify: `rg -n 'claude-plugins|ralph|zip.lck|transcripts' docker/Dockerfile.runner.debian` empty.
   - Files: `docker/Dockerfile.runner.debian`.
 
-- [ ] **T4 — Derive the Gradle dist hash**
+- [x] **T4 — Derive the Gradle dist hash**
   - Acceptance: hash computed at build time; download checksummed; no hardcoded hash.
   - Verify: `gradle-dist-hash.py` returns `bhs2wmbdwecv87pi65oeuq5iu` for the 8.7 URL; a Java exercise passes end-to-end.
   - Files: `docker/gradle-dist-hash.py` (new), `docker/Dockerfile.runner.debian`.
 
-- [ ] **T5 — Add `pins.env` and parameterise installs**
+- [x] **T5 — Add `pins.env` and parameterise installs**
   - Acceptance: every `npm install -g` / `uv tool install` uses a `${…_VERSION}` arg; bare `docker build` fails.
   - Verify: `rg -n 'npm install -g' docker/Dockerfile.runner.debian` shows a `@${` on every package.
   - Files: `docker/pins.env` (new), `docker/Dockerfile.runner.debian`, `build.sh`.
 
-- [ ] **T6 — Add `pin-agents.sh`**
+- [x] **T6 — Add `pin-agents.sh`**
   - Acceptance: one command re-pins all, prints a diff, bumps patch; `--check` lints.
   - Verify: `./docker/pin-agents.sh --dry-run` lists current→latest; `--check` passes on a clean tree and fails on a de-pinned edit.
   - Files: `docker/pin-agents.sh` (new).
 
-- [ ] **T7 — Add `RUNNER_VERSION`, `runner.lock`, and the guard**
+- [x] **T7 — Add `RUNNER_VERSION`, `runner.lock`, and the guard**
   - Acceptance: `docker-build` tags `:${VERSION}` + `:latest` and writes the lock; `docker-verify` fails on an unversioned `docker/` change.
   - Verify: edit a docker file → `docker-verify` fails; bump version → passes.
   - Files: `docker/RUNNER_VERSION` (new), `docker/runner.lock` (generated), `build.sh`.
 
-- [ ] **T8 — Bake the version into the image**
+- [x] **T8 — Bake the version into the image** (landed with T7 — the Dockerfile `ARG` and the `build.sh` that supplies it have to move together)
   - Acceptance: label + `/etc/llm-benchmark/runner-version` present.
   - Verify: `docker run --rm llm-benchmark/runner:<VERSION> cat /etc/llm-benchmark/runner-version`.
   - Files: `docker/Dockerfile.runner.debian`.
 
-- [ ] **T9 — Write `docker/README.md`**
+- [x] **T9 — Write `docker/README.md`**
   - Acceptance: build instructions, image contents, and the bump-policy table.
   - Verify: read-through; links resolve.
   - Files: `docker/README.md` (new), `ROADMAP.md` (§6.3/§6.4 resolved).
