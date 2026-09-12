@@ -135,6 +135,11 @@ jobs:
     permissions:
       contents: write
     steps:
+      # gh shells out to git to work out which repository it is in, so this job needs a checkout even
+      # though it only moves artifacts around. `--repo` then states the target explicitly rather than
+      # leaving gh to infer it.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           path: dist
@@ -149,4 +154,4 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${GITHUB_REF_NAME}" dist/* --verify-tag --generate-notes
+        run: gh release create "${GITHUB_REF_NAME}" dist/* --repo "${GITHUB_REPOSITORY}" --verify-tag --generate-notes
