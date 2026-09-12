@@ -20,8 +20,10 @@ The image is a separate artifact from the binary and is versioned separately —
 | `agents.env` | Which optional agents the image packages. A hashed build input. |
 | `pin-agents.sh` | Re-pins the npm packages and lints that nothing is unpinned. |
 | `gradle-dist-hash.py` | Derives the Gradle wrapper cache directory name. |
-| `RUNNER_VERSION` | Current runner image version. |
 | `runner.lock` | Generated. Records the version and input hash of the last build. |
+
+The image version is deliberately **not** a file in here — it is the project version in `Cargo.toml`,
+because the binary embeds that one at compile time. See [Versioning](#versioning).
 
 ## Building
 
@@ -33,7 +35,8 @@ The image is a separate artifact from the binary and is versioned separately —
 ./build.sh docker-build --image ghcr.io/you/fork   # different repository
 ```
 
-Every build tags the image twice: `<image>:${RUNNER_VERSION}` and `<image>:latest`, where `<image>`
+Every build tags the image twice: `<image>:<version>` and `<image>:latest`, where `<version>` is the
+project version from `Cargo.toml` and `<image>`
 defaults to `ghcr.io/dylanschell/llm-benchmark-runner`. `:latest` is the development convenience
 that `config.yaml` expects; use the version tag when you need to record exactly which image
 produced a result.
@@ -85,7 +88,7 @@ a build's decision to make:
 ./build.sh docker-push
 ```
 
-It pushes `<image>:${RUNNER_VERSION}` and then `<image>:latest`, and refuses to run unless:
+It pushes `<image>:<version>` and then `<image>:latest`, and refuses to run unless:
 
 - `docker-verify` passes, so the tag cannot describe inputs that have since changed;
 - the image is present locally, so it can never push a stale or unintended one;
@@ -110,14 +113,23 @@ currently free, so visibility is a sharing decision rather than a cost one; chan
 
 ## Versioning
 
-`docker/RUNNER_VERSION` versions the **`docker/` inputs**, not the Rust binary. The two
-artifacts change for different reasons and at different rates, so coupling them would mean
-bumping the image on every binary refactor and vice versa.
+One number identifies the project, and it lives in `Cargo.toml`:
 
-`docker/runner.lock` records the version and a SHA-256 over the image's build inputs — every
-file under `docker/` except `runner.lock`, `RUNNER_VERSION` and documentation — at the last
-successful build. Because the hash is a pure function of the inputs, it also identifies the
-commit an image was built from.
+- `llm-benchmark --version` prints it, through clap's `CARGO_PKG_VERSION`;
+- `build.sh` tags the image `<image>:<version>`; and
+- GitHub Releases are tagged `v<version>`, and the release workflow rejects a tag that disagrees.
+
+`Cargo.toml` is the source of truth because it is the only place Cargo reads a version from at
+compile time — the binary embeds it, so nothing else could feed `--version`. A separate
+`docker/RUNNER_VERSION` could only ever mirror it, and a mirror is one more thing to forget, so that
+file was retired. The consequence is that the image and the binary now move together: a re-pin bumps
+the version the binary reports too. That is the intended trade — the two artifacts are consumed as a
+pair and share a contract, so one number for both is easier to reason about than a compatibility
+table.
+
+`docker/runner.lock` records that version and a SHA-256 over the image's build inputs — every file
+under `docker/` except `runner.lock` and documentation — at the last successful build. Because the
+hash is a pure function of the inputs, it also identifies the commit an image was built from.
 
 Check it with:
 
@@ -127,8 +139,8 @@ Check it with:
 
 which fails when either:
 
-- a `docker/` input changed without `RUNNER_VERSION` being bumped, or
-- `RUNNER_VERSION` was bumped without a rebuild to refresh `runner.lock`.
+- a `docker/` input changed and `runner.lock` has not been refreshed by a rebuild, or
+- the version recorded in `runner.lock` no longer matches `Cargo.toml`.
 
 ### Image digest reproducibility
 
@@ -146,7 +158,7 @@ pinned inputs and recorded in `runner.lock`, reproducibility is worth more than 
 
 ### Bump policy
 
-Bump `RUNNER_VERSION` for:
+Bump the version in `Cargo.toml` for:
 
 | Change | Example |
 | --- | --- |
@@ -243,10 +255,9 @@ It is **not packaged by default**, for licensing reasons (see [Licensing](#licen
 | `INSTALL_CLAUDE=0` (default) | pi only | **yes** |
 | `INSTALL_CLAUDE=1` | pi + claude | **no** — see [Licensing](#licensing) |
 
-Because `agents.env` lives under `docker/`, it is part of `docker_input_hash`: changing it makes
-`docker-verify` demand a `RUNNER_VERSION` bump, so two images built from the same inputs are
-guaranteed to contain the same agents. A plain `--build-arg` could not promise that, which is
-why the switch is a file.
+Because `agents.env` lives under `docker/`, it is part of `docker_input_hash`: changing it moves the
+hash, so two images built from the same inputs are guaranteed to contain the same agents. A plain
+`--build-arg` could not promise that, which is why the switch is a file.
 
 The choice is recorded twice in the built image — the `com.llm-benchmark.agents` OCI label and
 `/etc/llm-benchmark/agents` — so a running container can be identified without inspecting build
@@ -330,11 +341,12 @@ docker image inspect ghcr.io/dylanschell/llm-benchmark-runner:latest \
 **`docker build` fails with an empty build arg.** The Dockerfile has no defaults by design.
 Build with `./build.sh docker-build`.
 
-**`docker-verify` reports the inputs changed.** You edited something under `docker/`. Bump
-`RUNNER_VERSION`, then run `./build.sh docker-build` to rebuild and refresh `runner.lock`.
+**`docker-verify` reports the inputs changed.** You edited something under `docker/`. If the edit
+changes image content, bump the version in `Cargo.toml`; either way run `./build.sh docker-build` to
+rebuild and refresh `runner.lock`.
 
-**`docker-verify` reports the lock is stale.** `RUNNER_VERSION` was bumped without a rebuild.
-Run `./build.sh docker-build`.
+**`docker-verify` reports the lock is stale.** The version in `Cargo.toml` no longer matches
+`runner.lock`. Run `./build.sh docker-build`.
 
 **A Java exercise tries to download Gradle.** The wrapper's `distributionUrl` no longer matches
 what the image seeded. Check `GRADLE_VERSION`, and let the image rebuild the cache.

@@ -1,3 +1,32 @@
+# Changelog — CI builds, tagged releases, and one version number
+
+## One version number
+
+- **The project version lives in `Cargo.toml`, and `docker/RUNNER_VERSION` is retired.** The version
+  has to be in the manifest because clap prints it from `CARGO_PKG_VERSION`, which Cargo resolves at
+  compile time — an external file could only ever mirror it. `build.sh` reads it through
+  `runner_version()`, and `pin-agents.sh` writes it back through `set_runner_version()`, refreshing
+  `Cargo.lock` with it (CI builds with `--locked`, so a stale lock is a hard failure).
+- **The cost, deliberately accepted:** a re-pin now bumps the version the binary reports, so the image
+  cannot be patched without cutting a binary release. The two artifacts are consumed as a pair and
+  share a contract, so one number beats a compatibility table. This reverses the earlier "the image is
+  versioned separately from the binary" framing, which predated the release pipeline.
+- The version is **`1.3.0`**, matching the published image. The change is provably image-neutral: the
+  rebuild that refreshed `runner.lock` produced the identical index digest `sha256:7f5464199442…`.
+
+## GitHub Actions
+
+- **`.github/workflows/build.yml`** builds and tests all four binaries (`llm-benchmark`,
+  `benchmark-cli`, `benchmark-reporter`, `benchmark-token-report`) on `ubuntu-24.04` and
+  `ubuntu-24.04-arm`, and uploads them as tarballs with `README.md` and `THIRD_PARTY_NOTICES`. Free
+  and unmetered, because standard GitHub-hosted runners are free for public repositories.
+- **Tagging `v<version>` publishes a release** with both tarballs and `SHA256SUMS`. The workflow
+  refuses to publish if the tag disagrees with `Cargo.toml`.
+- **A `docker-inputs` job** runs `./build.sh docker-verify` on every push, so a `docker/` edit that
+  forgot a version bump fails on the PR. It needs neither Docker nor the Rust toolchain.
+- Also gated: the exercise lock (`git diff --exit-code exercises.lock.yaml`) proves the committed lock
+  still matches the pinned upstreams.
+
 # Changelog — runner image packaging & publishing
 
 ## Publishing

@@ -42,7 +42,7 @@ mounts a workspace; the image provides the language toolchain **and** the agent 
 - [x] Every `npm install -g` / `uv tool install` in the Dockerfile takes its version from
       `docker/pins.env`; no bare unpinned installs remain.
 - [x] `build.sh docker-verify` exits **non-zero** when a `docker/` input changes without a
-      `RUNNER_VERSION` bump, and **zero** when inputs and version are in sync.
+      version bump in `Cargo.toml`, and **zero** when inputs and version are in sync.
 - [x] `docker/pin-agents.sh` re-resolves every pin in one command, prints a diff, and bumps
       the runner patch version.
 - [ ] `docker run --rm ghcr.io/dylanschell/llm-benchmark-runner:<VERSION> cat /etc/llm-benchmark/runner-version`
@@ -141,7 +141,7 @@ Dropping it loses nothing automated. The dead `collect_claude_trace` path goes w
     `docker_input_hash` covers it — two images built from the same inputs must contain the same
     agents, so flipping the variant requires a version bump like any other image change.
 12. **The image is built under its published name, and publishing is a separate verb.** The build
-    tags `ghcr.io/dylanschell/llm-benchmark-runner:${RUNNER_VERSION}` and `:latest`, and
+    tags `ghcr.io/dylanschell/llm-benchmark-runner:<version>` and `:latest`, and
     `config.yaml` plus `DockerConfig::default_image()` default to that same name — so the artifact
     you run and the artifact you publish are the same string, which a local-only name could not
     guarantee. `docker-push` is deliberately not folded into the build: it re-runs `docker-verify`
@@ -152,7 +152,7 @@ Dropping it loses nothing automated. The dead `collect_claude_trace` path goes w
     whose payload embeds the build time. Without it, every rebuild produced a new index digest while
     the image config and all 19 layers stayed identical — so re-pushing a versioned tag silently
     changed it. This is a build-tooling change that does not alter image content, so it needs no
-    `RUNNER_VERSION` bump under the policy above.
+    version bump in `Cargo.toml` under the policy above.
 14. **Both architectures come from one pin, and publishing is unchanged.** `--arch` takes a
     comma-separated platform list, so `linux/amd64,linux/arm64` produces an OCI index that a plain
     `docker push` publishes — no per-arch staging tags and no `buildx --push` path. That works only
@@ -162,6 +162,16 @@ Dropping it loses nothing automated. The dead `collect_claude_trace` path goes w
     image instead of being hardcoded per arch. amd64 is built under QEMU on an arm64 host, which is
     where the second architecture's cost lives. `docker-push` reports the platform set and warns
     when a push would narrow an already multi-platform tag.
+15. **One version number, and `Cargo.toml` owns it.** The image and the binary are consumed as a
+    pair and share a contract — `pi.rs` hardcodes `/usr/lib/node_modules` extension paths, and the
+    image bakes `/etc/llm-benchmark/runner-version` — so identifying a release by one number beats
+    maintaining a compatibility table. That number has to live in `Cargo.toml`: clap prints it via
+    `CARGO_PKG_VERSION`, which Cargo resolves from the manifest at compile time, and Cargo offers no
+    way to read a version from an external file. A `docker/RUNNER_VERSION` could therefore only ever
+    mirror it, so the file was retired and `build.sh` reads `Cargo.toml` instead. The accepted cost
+    is that the image cannot be patched without cutting a binary release. This reverses the earlier
+    "the image is versioned separately from the binary" framing, which predated the release
+    pipeline — deciding to ship tagged releases is what exposed the need for one number.
 
 ## Design
 
@@ -235,9 +245,10 @@ Dockerfile declares `ARG X` **without defaults**, so a bare `docker build` fails
 rather than silently building an unpinned image. `build.sh docker-build` is the only
 supported build path (documented).
 
-### 4. Version: `docker/RUNNER_VERSION` + `docker/runner.lock`
+### 4. Version: `Cargo.toml` + `docker/runner.lock`
 
-- `docker/RUNNER_VERSION` — a semver (`1.0.0`). Human-owned.
+- `Cargo.toml` (`[workspace.package].version`) — the project version, and the single source of truth
+  for it. Read through `build.sh`'s `runner_version`, written through `set_runner_version`.
 - `docker/runner.lock` — machine-generated: `{ version, inputHash }`, where `inputHash` is a
   sha256 over the sorted `(path, sha256)` of every file under `docker/` (excluding
   `runner.lock` itself).
@@ -249,8 +260,8 @@ inputs, not the binary.**
 
 | Command | Behaviour |
 |---|---|
-| `build.sh docker-build [--tag T] [--arch A]` | Sources `pins.env`, passes build args, builds, tags `:${RUNNER_VERSION}` **and** `:latest`, rewrites `runner.lock`. |
-| `build.sh docker-verify` | Recomputes `inputHash`. Fails if inputs changed while `RUNNER_VERSION` is unchanged; fails if the lock's version ≠ `RUNNER_VERSION` (i.e. built-but-not-recorded). Also runs the pin lint. |
+| `build.sh docker-build [--tag T] [--arch A]` | Sources `pins.env`, passes build args, builds, tags `:<version>` **and** `:latest`, rewrites `runner.lock`. |
+| `build.sh docker-verify` | Recomputes `inputHash`. Fails if inputs changed without a rebuild to refresh `runner.lock`; fails if the lock's version ≠ `Cargo.toml`. Also runs the pin lint. |
 | `build.sh docker-repin [--minor\|--major]` | Convenience wrapper for `docker/pin-agents.sh`. |
 
 `inputHash` uses `shasum -a 256` with a `sha256sum` fallback (the script runs on the host,
@@ -258,7 +269,7 @@ i.e. macOS today).
 
 ### 6. Tags and introspection
 
-Tag `:${RUNNER_VERSION}` as canonical, plus `:latest` as a documented convenience alias so
+Tag `:<version>` as canonical, plus `:latest` as a documented convenience alias so
 nothing breaks immediately. Bake the version into the image so a run can be traced back to
 its environment:
 
@@ -290,9 +301,10 @@ Two easy-to-miss entries: **adding a language is both a binary and an image chan
 ## Re-pin Tooling — `docker/pin-agents.sh`
 
 - **Default:** resolve `latest` for each npm package (`npm view <pkg> version`) and for the
-  `uv` tool, rewrite `pins.env`, print a before/after diff, then **bump `RUNNER_VERSION`
-  patch** and refresh `runner.lock` — because per the policy above, a pin change *is* an
-  image change. `--minor` / `--major` for deliberate jumps, `--dry-run` to preview.
+  `uv` tool, rewrite `pins.env`, print a before/after diff, then **bump the patch version in
+  `Cargo.toml`** — refreshing `Cargo.lock` and `runner.lock` with it, because per the policy above,
+  a pin change *is* an image change. `--minor` / `--major` for deliberate jumps, `--dry-run` to
+  preview.
 - **`--check`:** lint — fail if the Dockerfile installs any package without a version
   placeholder, or if `pins.env` and the Dockerfile disagree.
 - **`--verify-fresh` (optional):** report which pins are behind `latest` without changing
@@ -340,7 +352,6 @@ cargo test --workspace --lib --bins
 docker/
   Dockerfile.runner.debian   # the only runner image definition
   pins.env                   # single source of truth for external versions
-  RUNNER_VERSION             # human-owned semver
   runner.lock                # generated: { version, inputHash }
   pin-agents.sh              # re-pin to latest (+ --check)
   gradle-dist-hash.py        # computes base36(md5(distributionUrl))
@@ -365,7 +376,7 @@ docs/specs/
 ## Boundaries
 
 - **Always:** run `build.sh docker-verify` before committing anything under `docker/`;
-  bump `RUNNER_VERSION` when the guard says so; keep pins in `pins.env` only.
+  bump the version in `Cargo.toml` when the guard says so; keep pins in `pins.env` only.
 - **Ask first:** changing the tag scheme; pinning the base image to a digest (it makes base
   updates a manual, version-bumping chore); any change to `pi.rs`'s hardcoded npm root.
 - **Never:** commit the Gradle zip or any other large third-party binary; reintroduce a

@@ -4,7 +4,7 @@
 # build arg by ./build.sh docker-build. The ARGs below deliberately have no defaults, so a bare
 # `docker build` fails loudly instead of silently producing an unpinned image.
 #
-# Changing this file is a runner-image change: bump docker/RUNNER_VERSION.
+# Changing this file is a runner-image change: bump the version in Cargo.toml.
 # See docs/specs/runner-image.md and docker/README.md.
 
 ARG BASE_IMAGE

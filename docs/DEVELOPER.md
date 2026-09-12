@@ -76,8 +76,9 @@ This creates the `llm-benchmark` launcher binary.
 ./build.sh docker-verify   # confirm docker/ inputs match the recorded version
 ```
 
-The image is versioned separately from the binary, and its build args deliberately have no
-defaults — always build through `build.sh`. See `docker/README.md`.
+The image version is the project version in `Cargo.toml` — one number for the binary, the image tag
+and the release tag. Its build args deliberately have no defaults — always build through `build.sh`.
+See `docker/README.md`.
 
 ---
 
@@ -241,8 +242,8 @@ ARG RUBY_VERSION
 RUN apt-get update && apt-get install -y "ruby-full=${RUBY_VERSION}" && rm -rf /var/lib/apt/lists/*
 ```
 
-Adding a runtime changes the binary↔image contract, so it needs a version bump. Bump
-`docker/RUNNER_VERSION`, then rebuild and check:
+Adding a runtime changes the binary↔image contract, so it needs a version bump. Bump the version in
+`Cargo.toml` (and refresh `Cargo.lock` with it), then rebuild and check:
 
 ```bash
 ./build.sh docker-build
@@ -564,13 +565,38 @@ Create an issue with:
 
 ## Release Process
 
-1. Update version in `pom.xml`
-2. Update changelog
-3. Create release branch
-4. Run full test suite
-5. Build and push Docker image
-6. Create Git tag
-7. Publish release
+One number identifies a release — the git tag, the version the binary reports, and the image tag —
+and it lives in `Cargo.toml`. Cutting one:
+
+1. Bump `version` under `[workspace.package]` in `Cargo.toml`, and refresh `Cargo.lock` with it.
+   `./docker/pin-agents.sh --patch` does both as part of a re-pin; to bump alone:
+
+   ```bash
+   cargo metadata --format-version 1 > /dev/null
+   ```
+
+   CI builds with `--locked`, so a stale `Cargo.lock` is a hard failure.
+2. Update `CHANGELOG.md`.
+3. If `docker/` changed, rebuild and publish the image at the same number:
+
+   ```bash
+   ./build.sh docker-build --arch linux/amd64,linux/arm64
+   ./build.sh docker-push
+   ```
+
+   `./build.sh docker-verify` tells you whether this is needed.
+4. Tag the same number and push. That is the release:
+
+   ```bash
+   git tag "v$(bash -c '. ./build.sh >/dev/null 2>&1; runner_version')"
+   git push github main --follow-tags
+   ```
+
+   The tag starts `.github/workflows/build.yml`, which builds both architectures, runs the tests, and
+   attaches the tarballs plus `SHA256SUMS` to a GitHub Release. It refuses to publish if the tag
+   disagrees with `Cargo.toml`.
+
+There is no release branch and no manual build — the workflow is the build.
 
 ---
 
@@ -583,6 +609,3 @@ Create an issue with:
 
 ---
 
-**Version:** 1.0  
-**Last Updated:** 2026-02-28  
-**Maintained by:** Development Team

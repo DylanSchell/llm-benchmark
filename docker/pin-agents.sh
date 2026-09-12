@@ -5,16 +5,17 @@
 # runtime does not dictate the image's Node version). Re-pinning pi therefore also refreshes
 # both of its linux asset checksums from that release's SHA256SUMS file.
 #
-# Any pin change is a runner-image change, so this script bumps docker/RUNNER_VERSION and
-# refreshes docker/runner.lock for you. See docs/specs/runner-image.md.
+# Any pin change is a runner-image change, so this script bumps the version in Cargo.toml (and
+# refreshes Cargo.lock with it), then refreshes docker/runner.lock for you. See
+# docs/specs/runner-image.md.
 #
 # Usage:
 #   pin-agents.sh [--dry-run] [--allow-major] [--patch|--minor|--major]
 #   pin-agents.sh --check
 #
 #   (default)      Resolve the latest published version of every npm pin, update
-#                  docker/pins.env, bump the runner version (patch by default) and refresh
-#                  docker/runner.lock.
+#                  docker/pins.env, bump the version in Cargo.toml (patch by default) and
+#                  refresh Cargo.lock and docker/runner.lock.
 #   --dry-run      Print what would change; write nothing.
 #   --allow-major  Also accept updates that cross a major version. Without this, a major jump
 #                  is reported and skipped, because it is the kind of change that silently
@@ -35,7 +36,6 @@ DOCKER_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${DOCKER_DIR}/.." && pwd)"
 PINS="${DOCKER_DIR}/pins.env"
 DOCKERFILE="${DOCKER_DIR}/Dockerfile.runner.debian"
-VERSION_FILE="${DOCKER_DIR}/RUNNER_VERSION"
 
 # build.sh supplies runner_version / docker_input_hash / write_runner_lock.
 # shellcheck source=../build.sh
@@ -281,15 +281,26 @@ repin() {
     local old_version new_version
     old_version="$(runner_version)"
     new_version="$(bump_version "$bump_part")"
-    printf '%s\n' "$new_version" > "$VERSION_FILE"
+    set_runner_version "$new_version"
 
-    # pins.env and RUNNER_VERSION are now updated, so the lock can be regenerated. This is the
+    # Cargo.lock records workspace member versions and CI builds with --locked, so it has to move
+    # with the version. `cargo metadata` re-resolves against the existing lock, so no dependency
+    # version moves — only the workspace packages' own version.
+    if command -v cargo >/dev/null 2>&1; then
+        ( cd "$REPO_DIR" && cargo metadata --format-version 1 >/dev/null )
+    else
+        echo "warning: cargo not found, so Cargo.lock was not refreshed." >&2
+        echo "         Run 'cargo metadata' before committing, or CI's --locked build fails." >&2
+    fi
+
+    # pins.env and Cargo.toml are now updated, so the lock can be regenerated. This is the
     # same computation `docker-build` performs after a successful build.
     write_runner_lock "$new_version" "$(docker_input_hash)"
 
     echo >&2
-    echo "Updated ${count} pin(s); runner ${old_version} -> ${new_version}." >&2
-    echo "docker/runner.lock refreshed. Rebuild the image with: ./build.sh docker-build" >&2
+    echo "Updated ${count} pin(s); version ${old_version} -> ${new_version}." >&2
+    echo "Cargo.toml, Cargo.lock and docker/runner.lock refreshed." >&2
+    echo "Rebuild the image with: ./build.sh docker-build" >&2
 }
 
 main() {
