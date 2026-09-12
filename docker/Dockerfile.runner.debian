@@ -68,16 +68,43 @@ RUN curl -fsSL "https://deb.nodesource.com/setup_${NODE_MAJOR}.x" | bash - \
 
 # Agent CLIs — what the benchmark actually measures, so they are pinned.
 ARG CLAUDE_CODE_VERSION
-ARG PI_CODING_AGENT_VERSION
-ARG PI_CAVEMAN_VERSION
-ARG SUPI_BASH_TIMEOUT_VERSION
 RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
-RUN npm install -g "@earendil-works/pi-coding-agent@${PI_CODING_AGENT_VERSION}"
+
+# pi is installed from its official standalone (bun-compiled) binary rather than from npm, so
+# that pi's runtime requirements stop dictating the image's Node version: the npm package needs
+# Node >=22.19.0, while the JS track pins Node 20. The binary embeds the bun runtime and runs
+# with no Node present at all.
+#
+# The tarball vendors photon_rs_bg.wasm, assets/, theme/, export-html/ and node_modules/ next to
+# the executable, so -C /opt/pi --strip-components=1 keeps that layout intact. Flattening the
+# archive into /usr/local/bin breaks asset resolution; putting /opt/pi on PATH works instead.
+# Both linux architectures are published, selected here with buildx's TARGETARCH.
+ARG PI_CODING_AGENT_VERSION
+ARG PI_SHA256_X64
+ARG PI_SHA256_ARM64
+RUN set -eux; \
+    case "${TARGETARCH}" in \
+      amd64) PI_ARCH=x64;   PI_SHA256="${PI_SHA256_X64}" ;; \
+      arm64) PI_ARCH=arm64; PI_SHA256="${PI_SHA256_ARM64}" ;; \
+      *)     echo "unsupported TARGETARCH for pi: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac; \
+    wget -q -O /tmp/pi.tar.gz \
+      "https://github.com/earendil-works/pi/releases/download/v${PI_CODING_AGENT_VERSION}/pi-linux-${PI_ARCH}.tar.gz"; \
+    echo "${PI_SHA256}  /tmp/pi.tar.gz" | sha256sum -c -; \
+    mkdir -p /opt/pi; \
+    tar -xzf /tmp/pi.tar.gz -C /opt/pi --strip-components=1; \
+    chmod +x /opt/pi/pi; \
+    rm /tmp/pi.tar.gz; \
+    PI_SKIP_VERSION_CHECK=1 /opt/pi/pi --version
+ENV PATH="/opt/pi:$PATH"
 
 # pi extensions, loaded by the binary via --extension flags. crates/benchmark-core/src/agent/pi.rs
 # hardcodes /usr/lib/node_modules (Debian's npm global root) and paths inside these packages
 # (extensions/caveman.ts, src/extension.ts), so the npm root and their internal layout are part
-# of the binary-image contract.
+# of the binary-image contract. They stay npm-installed: they are plain TypeScript packages, and
+# Node is present for the JS track regardless.
+ARG PI_CAVEMAN_VERSION
+ARG SUPI_BASH_TIMEOUT_VERSION
 RUN npm install -g \
     "pi-caveman@${PI_CAVEMAN_VERSION}" \
     "@mrclrchtr/supi-bash-timeout@${SUPI_BASH_TIMEOUT_VERSION}"

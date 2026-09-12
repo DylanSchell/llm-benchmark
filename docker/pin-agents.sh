@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# Re-pin the npm packages the runner image installs, and lint that none of them is unpinned.
+# Re-pin the packages the runner image installs, and lint that none of them is unpinned.
+#
+# Most pins come from npm, but pi is installed from its standalone binary release (so that its
+# runtime does not dictate the image's Node version). Re-pinning pi therefore also refreshes
+# both of its linux asset checksums from that release's SHA256SUMS file.
 #
 # Any pin change is a runner-image change, so this script bumps docker/RUNNER_VERSION and
 # refreshes docker/runner.lock for you. See docs/specs/runner-image.md.
@@ -38,9 +42,16 @@ VERSION_FILE="${DOCKER_DIR}/RUNNER_VERSION"
 . "${REPO_DIR}/build.sh"
 
 # pin variable -> npm package. Every entry must appear in the Dockerfile's npm install blocks.
+# pi is installed from a GitHub release asset rather than npm, so it is tracked separately:
+# the version plus one checksum per published linux architecture. Kept in sync with the
+# Dockerfile, which selects between them using buildx's TARGETARCH.
+PI_NPM_PACKAGE="@earendil-works/pi-coding-agent"
+PI_RELEASE_URL_BASE="https://github.com/earendil-works/pi/releases/download"
+PI_RELEASE_PINS=(PI_CODING_AGENT_VERSION PI_SHA256_X64 PI_SHA256_ARM64)
+
+# npm-installed packages. pi is deliberately absent — see PI_RELEASE_PINS above.
 NPM_PINS=(
     "CLAUDE_CODE_VERSION=@anthropic-ai/claude-code"
-    "PI_CODING_AGENT_VERSION=@earendil-works/pi-coding-agent"
     "PI_CAVEMAN_VERSION=pi-caveman"
     "SUPI_BASH_TIMEOUT_VERSION=@mrclrchtr/supi-bash-timeout"
     "JEST_VERSION=jest"
@@ -120,6 +131,23 @@ lint() {
         fi
     done
 
+    # Release-asset pins (pi) are not npm installs, so check them on their own terms.
+    local var
+    for var in "${PI_RELEASE_PINS[@]}"; do
+        if ! grep -qE "^${var}=" "$PINS"; then
+            echo "FAIL: ${var} is not defined in docker/pins.env" >&2
+            rc=1
+        fi
+        if ! grep -qE "^ARG ${var}$" "$DOCKERFILE"; then
+            echo "FAIL: ${var} is not declared as an ARG in ${DOCKERFILE##*/}" >&2
+            rc=1
+        fi
+        if ! grep -qF "\${${var}}" "$DOCKERFILE"; then
+            echo "FAIL: ${var} is defined but never used in ${DOCKERFILE##*/}" >&2
+            rc=1
+        fi
+    done
+
     if (( rc == 0 )); then
         echo "ok: all npm installs are pinned through docker/pins.env"
     fi
@@ -128,6 +156,28 @@ lint() {
 
 latest_version() {
     npm view "$1" version 2>/dev/null | tr -d '[:space:]'
+}
+
+fetch_url() {
+    if command -v curl >/dev/null 2>&1; then
+        curl -fsSL "$1"
+    elif command -v wget >/dev/null 2>&1; then
+        wget -q -O - "$1"
+    else
+        return 1
+    fi
+}
+
+# Echoes "<x64-sha256> <arm64-sha256>" for the given pi release, from its SHA256SUMS file.
+pi_asset_hashes() {
+    local version="$1" sums x64 arm64
+    sums="$(fetch_url "${PI_RELEASE_URL_BASE}/v${version}/SHA256SUMS")" || return 1
+    x64="$(printf '%s\n' "$sums" | awk '$2 == "pi-linux-x64.tar.gz" {print $1}')"
+    arm64="$(printf '%s\n' "$sums" | awk '$2 == "pi-linux-arm64.tar.gz" {print $1}')"
+    if [[ -z "$x64" || -z "$arm64" ]]; then
+        return 1
+    fi
+    printf '%s %s' "$x64" "$arm64"
 }
 
 same_major() {
@@ -170,9 +220,30 @@ repin() {
         updates+=("${key}=${latest}")
     done
 
+    # pi: the version is resolved from npm (it tracks the release), and both asset checksums are
+    # refreshed from that release's SHA256SUMS so a version bump cannot leave stale hashes behind.
+    local pi_current pi_latest pair
+    pi_current="$(pin_value PI_CODING_AGENT_VERSION)"
+    pi_latest="$(latest_version "$PI_NPM_PACKAGE")"
+    if [[ -n "$pi_latest" && "$pi_latest" != "$pi_current" ]]; then
+        if same_major "$pi_latest" "$pi_current" || [[ "$allow_major" == "1" ]]; then
+            echo "  PI_CODING_AGENT_VERSION: ${pi_current} -> ${pi_latest}  (release asset)" >&2
+            updates+=("PI_CODING_AGENT_VERSION=${pi_latest}")
+            if pair="$(pi_asset_hashes "$pi_latest")"; then
+                updates+=("PI_SHA256_X64=${pair%% *}")
+                updates+=("PI_SHA256_ARM64=${pair##* }")
+                echo "    refreshed both linux asset checksums from SHA256SUMS" >&2
+            else
+                echo "    warn: could not fetch SHA256SUMS for v${pi_latest}; update the checksums by hand" >&2
+            fi
+        else
+            echo "  skip: pi ${pi_current} -> ${pi_latest}  (major jump; re-run with --allow-major)" >&2
+        fi
+    fi
+
     count="${#updates[@]}"
     if (( count == 0 )); then
-        echo "Nothing to do — every npm pin is current." >&2
+        echo "Nothing to do — every pin is current." >&2
         return 0
     fi
 
