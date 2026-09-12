@@ -1,6 +1,6 @@
 # Architecture Overview
 
-This document describes the architecture of the LLM Benchmark Runner, a framework for benchmarking autonomous coding agents against the polyglot exercise suite.
+This document describes the architecture of the LLM Benchmark Runner, a framework for benchmarking autonomous coding agents against a curated Exercism exercise suite.
 
 ---
 
@@ -142,7 +142,7 @@ benchmark-reporter/               # Report generator
 2. BenchmarkRunner creates BenchmarkSession
    │
    ▼
-3. ExerciseRunner loads exercises from polyglot-benchmark repo
+3. ExerciseRunner loads exercises from the embedded exercise bundle
    │
    ▼
 4. For each exercise:
@@ -316,9 +316,7 @@ impl BenchmarkRunner {
 
 ```yaml
 # config.yaml
-benchmark:
-  path: ../polyglot-benchmark     # Path to exercise repo
-  parallelism: 4                  # Concurrent executions
+parallelism: 4                    # Concurrent executions
 
 docker:
   image: llm-benchmark/runner:latest

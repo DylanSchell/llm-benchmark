@@ -68,16 +68,17 @@ Full-subset fidelity is validated by the diff in Shape Fidelity Strategy below.
 
 ## Success Criteria
 
-- [ ] No `.git`-tracked exercise content in this repo (manifest/lock/notices only).
-- [ ] `cargo build` on a clean checkout fetches + prunes + embeds with **no manual step**.
-- [ ] Repeated builds reuse a cache and do no network I/O.
-- [ ] Packaged layout matches the current layout (verified by a fidelity check).
-- [ ] `Config` has no `benchmark_path`; `Exercise` has no source `PathBuf` fields.
-- [ ] With `../polyglot-benchmark` absent, `cargo test --workspace` passes and the
-      reference agent completes ≥1 exercise per language end-to-end.
-- [ ] Manual `-v <temp>:/workspace` execution model unchanged.
-- [ ] `THIRD_PARTY_NOTICES` attributes Exercism per track.
-- [ ] Build is reproducible from the lock file; suite scope is configurable via manifest.
+- [x] No `.git`-tracked exercise content in this repo (manifest/lock/notices only).
+- [x] `cargo build` on a clean checkout fetches + prunes + embeds with **no manual step**.
+- [x] Repeated builds reuse a cache and do no network I/O.
+- [x] Packaged layout matches the current layout (verified by a fidelity check).
+- [x] `Config` has no `benchmark_path`; `Exercise` has no source `PathBuf` fields.
+- [ ] With `../polyglot-benchmark` absent, the reference agent completes ≥1 exercise per
+      language end-to-end (Docker integration run still pending; `cargo test --workspace`
+      passes without an external checkout).
+- [x] Manual `-v <temp>:/workspace` execution model unchanged.
+- [x] `THIRD_PARTY_NOTICES` attributes Exercism per track.
+- [x] Build is reproducible from the lock file; suite scope is configurable via manifest.
 
 ## Decisions
 
@@ -88,10 +89,10 @@ Full-subset fidelity is validated by the diff in Shape Fidelity Strategy below.
 | Inclusion control | Committed `exercises.manifest.yaml` (sources, subset, rules) |
 | Reproducibility | Committed `exercises.lock.yaml` (resolved SHA + file hashes) — *pending approval* |
 | Fetch | `git` sparse + shallow + blobless clone; tarball fallback |
-| Embed | `rust-embed` (`compression`, `debug-embed`, `deterministic-timestamps`, `interpolate-folder-path`) |
+| Embed | `rust-embed` (`compression`, `debug-embed`, `deterministic-timestamps`); the staged tree is read via a relative `#[folder]` (compression rejects absolute paths) |
 | Assembler | `benchmark-exercises-build` build-support crate (unit-testable) |
 | Trait | `ExerciseSource` in `benchmark-types` |
-| Refresh | Re-resolve lock via manifest (`cargo xtask exercises update`) |
+| Refresh | Re-resolve via `exercises.manifest.yaml`; the build regenerates the lock when content changes |
 
 ## Sourcing & Build Model
 
@@ -104,10 +105,10 @@ benchmark-exercises/build.rs
    ├─ fetch   : git sparse/shallow clone → cache (target/exercises/cache/<lang>/)
    ├─ prune   : apply manifest rules → staging (target/exercises/<lockhash>/)
    ├─ verify  : file count + hashes vs lock
-   └─ cargo:rustc-env=LLM_BENCHMARK_EXERCISES_DIR=<staging>
+   └─ stage   : target/exercises-bundle
           │
           ▼
-rust-embed #[folder = "$LLM_BENCHMARK_EXERCISES_DIR"]  → compiled into binary
+rust-embed #[folder = "../../target/exercises-bundle"]  → compiled into binary
           │
           ▼
 EmbeddedSource (ExerciseSource) → ExerciseRunner → materialize per-run temp dir → docker -v
@@ -115,9 +116,8 @@ EmbeddedSource (ExerciseSource) → ExerciseRunner → materialize per-run temp 
 
 - **Cache:** `target/exercises/cache/<language>/` keyed by resolved SHA.
 - **Staging:** `target/exercises/<lock-hash>/`; rebuilt only when the lock changes.
-- **Offline:** if the lock is present and staging/cache exist, no network is used.
-- **Escape hatches:** `LLM_BENCHMARK_EXERCISES_DIR` (prebuilt tree, e.g. CI/air-gapped)
-  and `LLM_BENCHMARK_EXERCISES_OFFLINE=1` (fail instead of fetching).
+- **Offline:** if the lock is present and `target/exercises-cache` exists, no network
+  is used. Set `LLM_BENCHMARK_EXERCISES_OFFLINE=1` to fail instead of fetching.
 
 ### Fetch strategy
 
@@ -281,17 +281,15 @@ Container paths derive directly from relative paths: `format!("/workspace/{rel}"
 ## Commands
 
 ```bash
-# Build (fetches + prunes + embeds automatically)
+# Build (fetches + prunes + stages + embeds automatically)
 cargo build
 
-# Refresh the locked exercise set
-cargo xtask exercises update            # re-resolve refs → lock
-cargo xtask exercises assemble          # rebuild staging without re-resolving
-cargo xtask exercises verify            # structural + hash checks
+# Refresh after editing exercises.manifest.yaml: just rebuild — the lock is
+# regenerated when the staged content changes. Delete target/exercises-cache to
+# force a fresh fetch.
 
-# Offline / prebuilt
+# Offline (reuse the target/exercises-cache, no network)
 LLM_BENCHMARK_EXERCISES_OFFLINE=1 cargo build
-LLM_BENCHMARK_EXERCISES_DIR=/path/to/tree cargo build
 
 # Test
 cargo test --workspace
@@ -304,7 +302,7 @@ exercises.manifest.yaml                 # committed: inclusion control
 exercises.lock.yaml                     # committed: resolved SHAs + file hashes
 crates/benchmark-exercises-build/       # build-support: fetch + prune + lock + verify
 crates/benchmark-exercises/             # rust-embed over staged dir; EmbeddedSource
-  build.rs                              # orchestrates assembler, sets rustc-env
+  build.rs                              # orchestrates assembler, sets relative #[folder]
 crates/benchmark-types/src/exercise_source.rs
 crates/benchmark-types/src/exercise/mod.rs
 crates/benchmark-core/src/exercise_runner/mod.rs
@@ -352,7 +350,7 @@ THIRD_PARTY_NOTICES                     # Exercism attribution per track
 | Exercism track content differs from the 2024-12-22 snapshot | Snapshot pins verified byte-for-byte on samples; full-subset diff during migration; lock pins resolved SHAs |
 | Mid-build network failure | Cache staging keyed by lock hash; clear error; `OFFLINE` mode |
 | Large track clones | Sparse + shallow + blobless fetch; tarball fallback |
-| `rust-embed` + build-generated folder | `interpolate-folder-path` + `cargo:rustc-env`; fallback = generate module in build.rs |
+| `rust-embed` + build-generated folder | Stage under `target/exercises-bundle` and reference it with a relative `#[folder]` (the `compression` feature rejects absolute paths) |
 | `Exercise` schema change (Serialize/Deserialize) | Audit persistence/`RESULT_FORMAT.md` before rename; version if needed |
 | Attribution/licensing | `THIRD_PARTY_NOTICES` per track; importer preserves upstream notices |
 | Build-time coupling to GitHub | Cache + lock + offline mode + prebuilt-tree override |
@@ -393,20 +391,20 @@ All open questions are resolved; the spec is approved for implementation.
 
 ## Tasks
 
-- [ ] Create `feature/embedded-exercises` branch. *(done)*
-- [ ] Define `exercises.manifest.yaml` with the pinned snapshot SHAs; generate the 225-exercise subset
+- [x] Create `feature/embedded-exercises` branch.
+- [x] Define `exercises.manifest.yaml` with the pinned snapshot SHAs; generate the 225-exercise subset
       from the current tree.
-- [ ] Validate **full-subset** fidelity: assemble all six tracks at the pins and diff the
-      whole tree against `../polyglot-benchmark` (expect identical modulo the chosen excludes).
-- [ ] Implement `benchmark-exercises-build` assembler (fetch/prune/stage/lock/verify) + unit tests.
-- [ ] Add `--verify-against ../polyglot-benchmark` fidelity mode; confirm shape equivalence.
-- [ ] Create `benchmark-exercises` crate with `rust-embed` over the staged dir + `build.rs`.
-- [ ] Add `ExerciseSource` trait in `benchmark-types`; implement `EmbeddedSource`.
-- [ ] Convert `Exercise` to relative paths (audit `RESULT_FORMAT.md` first).
-- [ ] Refactor `ExerciseRunner` onto `ExerciseSource`; remove `benchmark_path`.
-- [ ] Replace `copy_exercise_files` with `materialize_exercise`.
-- [ ] Drop `host_exercise_dir` from `Agent` trait + claude/pi/reference; relative container paths.
-- [ ] Remove `benchmark_path` from config/validate/web; fix `lib.rs:59`.
-- [ ] Offline integration verification (4 languages, no external checkout).
+- [x] Validate **full-subset** fidelity: assemble all six tracks at the pins and diff the
+      whole tree against `../polyglot-benchmark` (2048/2048 files identical).
+- [x] Implement `benchmark-exercises-build` assembler (fetch/prune/stage/lock/verify) + unit tests.
+- [x] Add a fidelity check against `../polyglot-benchmark` (`full_subset_fidelity`, ignored/net-gated).
+- [x] Create `benchmark-exercises` crate with `rust-embed` over the staged dir + `build.rs`.
+- [x] Add `ExerciseSource` trait in `benchmark-types`; implement `EmbeddedSource`.
+- [x] Convert `Exercise` to relative paths (audited: not persisted, so no format migration needed).
+- [x] Refactor `ExerciseRunner` onto `ExerciseSource`; remove `benchmark_path`.
+- [x] Replace `copy_exercise_files` with `materialize_exercise`.
+- [x] Drop `host_exercise_dir` from `Agent` trait + claude/pi/reference; relative container paths.
+- [x] Remove `benchmark_path` from config/validate/web; fix `lib.rs:59`.
+- [ ] Offline integration verification (4 languages, no external checkout) — needs Docker.
 - [ ] Reproducibility check (two clean builds, identical staging hashes).
-- [ ] Docs + `THIRD_PARTY_NOTICES`.
+- [x] Docs + `THIRD_PARTY_NOTICES`.

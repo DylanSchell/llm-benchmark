@@ -1,6 +1,6 @@
 # LLM Benchmark Runner
 
-A Rust framework for benchmarking autonomous coding agents against the [polyglot exercise suite](https://github.com/Aider-AI/polyglot-benchmark). Agents run exercises inside isolated Docker containers and produce structured results with JSONL trace files.
+A Rust framework for benchmarking autonomous coding agents against a curated [Exercism](https://exercism.org) exercise suite. The exercises are fetched from pinned Exercism tracks and embedded into the binary at build time — no external checkout is required. Agents run exercises inside isolated Docker containers and produce structured results with JSONL trace files.
 
 ---
 
@@ -10,12 +10,9 @@ A Rust framework for benchmarking autonomous coding agents against the [polyglot
 
 - **Rust 1.75+** (with `cargo`)
 - **Docker** (running)
-- **polyglot-benchmark repo** — clone it alongside this project:
 
-```bash
-git clone https://github.com/Aider-AI/polyglot-benchmark
-cd polyglot-benchmark && git checkout main && cd ..
-```
+The exercise suite is embedded in the binary; the build fetches it from the pinned
+Exercism tracks (see `exercises.manifest.yaml`) and caches it under `target/`.
 
 ### 1. Build the Docker Image
 
@@ -30,7 +27,6 @@ docker build -f docker/Dockerfile.runner -t llm-benchmark/runner:latest .
 Create a `config.yaml` in the project root (copy from `config.yaml.example` if available):
 
 ```yaml
-benchmark_path: ../polyglot-benchmark
 parallelism: 4
 
 docker:
@@ -190,7 +186,6 @@ All configuration lives in `config.yaml`:
 
 | Key | Type | Default                             | Description |
 |-----|------|-------------------------------------|-------------|
-| `benchmark_path` | string | `../polyglot-benchmark`             | Path to the polyglot exercise repo |
 | `parallelism` | int | 1                                   | Number of concurrent exercises |
 | `docker.image` | string | `llm-benchmark/runner:latest` | Docker image for exercise containers |
 | `docker.memory` | string | `2g`                                | Container memory limit |

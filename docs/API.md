@@ -223,7 +223,7 @@ Starts multiple benchmark runs in sequence.
 
 **GET** `/api/exercises`
 
-Returns all available exercises from the polyglot-benchmark repository.
+Returns all available exercises from the embedded exercise bundle.
 
 **Query Parameters:**
 | Parameter | Type | Description |

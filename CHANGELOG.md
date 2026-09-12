@@ -1,3 +1,30 @@
+# Changelog — feature/embedded-exercises
+
+## Embedded exercise suite
+
+- **Exercises are embedded in the binary** — the ~225-exercise suite is fetched from
+  pinned Exercism tracks at build time (`exercises.manifest.yaml`), pruned, staged, and
+  compiled in with `rust-embed`. No external `../polyglot-benchmark` checkout is required
+  at runtime. Third-party content is never committed; `exercises.lock.yaml` records the
+  resolved SHAs and per-file hashes, and `THIRD_PARTY_NOTICES` provides attribution.
+- **`benchmark-exercises` crate + `build.rs`** — orchestrates fetch → prune → stage →
+  lock and points `rust-embed` at the staged tree via a relative `#[folder]`. Compression
+  keeps the embedded payload at ~2 MB (down from 21.5 MB raw).
+- **`ExerciseSource` trait** — added to `benchmark-types`; `EmbeddedSource` implements it.
+  All exercise access is relative-path based.
+- **Domain refactor** — `Exercise` now carries exercise-relative paths only
+  (`source_file`, `test_file`, `reference_dir`, `example_files`, `solution_files`,
+  `test_files`). `ExerciseRunner` reads from `ExerciseSource`; `benchmark_path` and
+  `find_exercise_host_dir` are removed.
+- **`materialize_exercise`** — replaces `copy_exercise_files`; writes the exercise from
+  the source into a per-run temp dir (still skipping `.meta`, applying the Rust
+  `Cargo-example.toml` swap and the C++ subdirectory layout). The `Agent` trait now takes
+  `&dyn ExerciseSource` instead of `host_exercise_dir`.
+- **Config cleanup** — removed `Config.benchmark_path` and its filesystem validation;
+  fixed `benchmark-web` falling back to `benchmark_path` as `CONFIG_PATH`.
+
+---
+
 # Changelog — 2026-05-31
 
 ## Correctness fixes

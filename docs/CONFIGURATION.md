@@ -29,8 +29,6 @@ You can specify a custom config file location using the CLI:
 
 # Benchmark settings
 benchmark:
-  # Path to the polyglot-benchmark repository
-  path: ../polyglot-benchmark
   
   # Number of concurrent exercise executions
   parallelism: 4
@@ -81,15 +79,17 @@ agents:
 
 ### Benchmark Settings
 
+The exercise suite is embedded in the binary — it is fetched from pinned
+Exercism tracks at build time (see `exercises.manifest.yaml`), so there is no
+exercise-path setting.
+
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `benchmark.path` | string | `../polyglot-benchmark` | Path to the polyglot-benchmark repository |
 | `benchmark.parallelism` | int | `4` | Number of concurrent exercise executions |
 
 **Example:**
 ```yaml
 benchmark:
-  path: /opt/polyglot-benchmark
   parallelism: 8
 ```
 
@@ -279,8 +279,8 @@ public record OutputConfig(
 ### Minimal Configuration
 
 ```yaml
-benchmark:
-  path: ../polyglot-benchmark
+# Exercises are embedded in the binary; no external checkout is required.
+parallelism: 4
 
 docker:
   image: llm-benchmark/runner:latest
@@ -293,7 +293,6 @@ output:
 
 ```yaml
 benchmark:
-  path: /opt/polyglot-benchmark
   parallelism: 8
 
 docker:
@@ -325,7 +324,6 @@ agents:
 
 ```yaml
 benchmark:
-  path: ../polyglot-benchmark
   parallelism: 2
 
 docker:
@@ -355,7 +353,6 @@ The application validates configuration on startup. Common validation errors:
 ### Missing Required Properties
 
 ```
-ConfigurationError: Missing required property 'benchmark.path'
 ```
 
 **Solution:** Add the missing property to config.yaml

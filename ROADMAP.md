@@ -324,13 +324,11 @@ consumption.
 
 ## 6. Configuration & Deployment
 
-### 6.1 Hardcoded paths in `config.rs`
-`default_benchmark_path()` returns `PathBuf::from("../polyglot-benchmark")` and
-`default_results_dir()` returns `PathBuf::from("../benchmark-results")`. These
-are resolved relative to the current working directory, not the crate.
-
-**Suggestion:** Use `std::env::var("BENCHMARK_PATH")` as an override, or use
-`config.yaml` with a mandatory `benchmark_path` field (no default).
+### 6.1 Hardcoded paths in `config.rs` — *resolved*
+`benchmark_path` (and `default_benchmark_path()`) has been removed: the exercise
+suite is now embedded in the binary, sourced from a committed manifest at build
+time, so no external checkout path is needed. `results_dir` still defaults to
+`../benchmark-results`.
 
 ### 6.2 `config.yaml` not included in repo
 The file exists locally but may not be in version control. Without it,

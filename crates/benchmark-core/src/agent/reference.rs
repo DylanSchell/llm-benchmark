@@ -463,31 +463,31 @@ impl ReferenceAgent {
     }
 
     /// Gets test command based on build system.
-    fn get_test_command<'a>(exercise: &'a Exercise, polyglot_path: &Path) -> Vec<&'a str> {
-        if polyglot_path.join("pom.xml").exists() {
+    fn get_test_command<'a>(exercise: &'a Exercise, work_dir: &Path) -> Vec<&'a str> {
+        if work_dir.join("pom.xml").exists() {
             vec!["mvn", "test", "-q"]
-        } else if polyglot_path.join("build.gradle").exists() {
+        } else if work_dir.join("build.gradle").exists() {
             vec!["./gradlew", "test", "--no-daemon", "-q"]
-        } else if polyglot_path.join("go.mod").exists() {
+        } else if work_dir.join("go.mod").exists() {
             vec!["go", "test"]
-        } else if polyglot_path.join("package.json").exists() {
+        } else if work_dir.join("package.json").exists() {
             vec!["npm", "run", "test"]
-        } else if polyglot_path.join("CMakeLists.txt").exists() {
+        } else if work_dir.join("CMakeLists.txt").exists() {
             vec![
                 "sh",
                 "-c",
                 "mkdir -p build && cd build && cmake -DEXERCISM_RUN_ALL_TESTS=1 -G \"Unix Makefiles\" .. && make",
             ]
-        } else if polyglot_path.join("Cargo.toml").exists() {
+        } else if work_dir.join("Cargo.toml").exists() {
             vec!["cargo", "test"]
         } else if exercise.language == "python" {
             // Match Java PythonHandler: always use this command regardless of build files
             // Python Exercism exercises don't have pyproject.toml or setup.py
             vec!["sh", "-c", ". .venv/bin/activate && uv pip install -q pytest && pytest"]
-        } else if polyglot_path.join("Gemfile").exists() {
+        } else if work_dir.join("Gemfile").exists() {
             vec!["bundle", "exec", "rake", "test"]
-        } else if Self::has_extension(polyglot_path, "csproj")
-            || Self::has_extension(polyglot_path, "sln")
+        } else if Self::has_extension(work_dir, "csproj")
+            || Self::has_extension(work_dir, "sln")
         {
             vec!["dotnet", "test"]
         } else {

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-/// All programming languages supported by the polyglot benchmark.
+/// All programming languages supported by the benchmark suite.
 pub static SUPPORTED_LANGUAGES: &[&str] = &[
     "java", "go", "rust", "javascript", "typescript", "python", "ruby", "c",
     "cpp", "csharp", "kotlin", "scala", "swift", "php", "dart", "haskell",

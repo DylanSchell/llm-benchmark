@@ -1,0 +1,46 @@
+# Third-Party Notices
+
+This project embeds a curated set of programming exercises in the compiled binary.
+The exercise content is **not** vendored into this repository; it is fetched at build
+time from the upstream repositories below (pinned to specific commits) and pruned
+according to `exercises.manifest.yaml`. The resolved commits and per-file hashes are
+recorded in `exercises.lock.yaml`.
+
+## Exercism exercise tracks
+
+All exercise content below is provided by [Exercism](https://exercism.org) and is
+licensed under the **MIT License**.
+
+| Language | Upstream repository | Pinned commit |
+|---|---|---|
+| C++ | https://github.com/exercism/cpp | `acc32555eab077cf786f892b6ab27a22184d81c7` |
+| Go | https://github.com/exercism/go | `26635e19868f0b4fbed09a986b824cd67efdbc2e` |
+| Java | https://github.com/exercism/java | `1123e5b3dddeb9e57b802835285a886b4428bfcc` |
+| JavaScript | https://github.com/exercism/javascript | `dbfbeae34dd4fce7fad7afd740d075d33cc51b21` |
+| Python | https://github.com/exercism/python | `7bec634f5c51cce82d233ad88f7ae81a3e98242a` |
+| Rust | https://github.com/exercism/rust | `6c321382019fa969401b8e923a5e12ff69065561` |
+
+Copyright is held by the individual exercise authors and contributors, as listed in
+each exercise's `.meta/config.json`. The full text of the upstream license is included
+below.
+
+## MIT License
+
+Copyright (c) Exercism and the exercise authors and contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify,
+merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be included in all copies
+or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+THE USE OR OTHER DEALINGS IN THE SOFTWARE.

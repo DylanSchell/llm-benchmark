@@ -32,12 +32,6 @@ git clone https://github.com/your-org/llm-benchmark.git
 cd llm-benchmark
 ```
 
-### Clone Polyglot Benchmark
-
-```bash
-git clone https://github.com/Aider-AI/polyglot-benchmark ../polyglot-benchmark
-```
-
 ### Configure Environment
 
 1. Copy the example configuration:
@@ -49,9 +43,6 @@ cp config.example.yaml config.yaml
 2. Edit `config.yaml` with your settings:
 
 ```yaml
-benchmark:
-  path: ../polyglot-benchmark
-
 docker:
   image: llm-benchmark/runner:latest
   memory: 2g
@@ -287,7 +278,14 @@ impl GeminiAgent {
 }
 
 impl Agent for GeminiAgent {
-    fn run(&self, exercise: &Exercise, exercise_dir: &Path, result_dir: &Path) -> Result<AgentResult> {
+    async fn run_exercise(
+        &self,
+        exercise: &Exercise,
+        source: &dyn ExerciseSource,
+        model: &str,
+        thinking_level: Option<&str>,
+        results_dir: &Path,
+    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
         info!("Running Gemini agent for {} in {}", exercise.name, exercise.language);
         
         // Implement agent logic here
