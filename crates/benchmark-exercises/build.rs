@@ -58,6 +58,12 @@ fn main() {
 
     let report = benchmark_exercises_build::assemble_from(&cache_root, &staging_root, &manifest)
         .unwrap_or_else(|e| panic!("assembling exercise bundle: {e:#}"));
+
+    // `rust-embed` embeds contents only, so the modes of the staged tree have to be
+    // carried alongside it; the embedder reads this back via `include_str!`.
+    let out_dir = PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR is set for build scripts"));
+    benchmark_exercises_build::write_mode_manifest(&staging_root, &out_dir.join("file-modes.txt"))
+        .unwrap_or_else(|e| panic!("writing exercise mode manifest: {e:#}"));
     println!(
         "cargo:warning=LLM Benchmark: bundled {} exercises / {} files ({} pruned)",
         report.exercises, report.files, report.excluded_files

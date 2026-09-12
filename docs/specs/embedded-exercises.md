@@ -224,6 +224,14 @@ The only divergence found was 80 `.gitignore` files Exercism adds (49 JS, 30 Rus
 Python) which polyglot strips; `**/.gitignore` was added to the rules to close it. The
 bundle is now byte-identical to the current set.
 
+**Modes are a separate axis.** The hash comparison above covers *contents* only —
+`hash_tree` (and therefore `exercises.lock.yaml`) uses `sha256_file` and is blind to
+permissions. Modes are still part of shape fidelity, because the Java track runs
+`./gradlew` directly: a `0644` `gradlew` fails with `exec ./gradlew: permission denied`.
+Since `rust-embed` stores contents only, the assembler records non-default modes in an
+out-of-band manifest that the embedder reapplies on materialization (see
+[`ExerciseSource::mode`](#exercisesource-cratesbenchmark-typessrcexercise_sourcers)).
+
 1. **Dev-time diff (primary):** the assembler can run in `--verify-against
    ../polyglot-benchmark` mode and `diff` path sets (+ content hashes) against the local
    checkout. Not committed; used during migration and by the author.
@@ -244,8 +252,14 @@ pub trait ExerciseSource: Send + Sync {
     fn has_exercise(&self, language: &str, exercise: &str) -> bool;
     fn list_files(&self, language: &str, exercise: &str) -> Vec<String>; // incl. .meta
     fn read(&self, language: &str, exercise: &str, relative: &str) -> Option<Vec<u8>>;
+    /// Unix mode bits when the file has a notable one (default: `None`).
+    fn mode(&self, language: &str, exercise: &str, relative: &str) -> Option<u32>;
 }
 ```
+
+`mode` exists because `rust-embed` has no concept of permissions: the embedder has to
+carry modes out of band (`build.rs` writes them via `write_mode_manifest`) and hand them
+back so the materializer can restore them.
 
 ### `Exercise` (relative model)
 
@@ -277,6 +291,9 @@ pub fn materialize_exercise(
 
 Container paths derive directly from relative paths: `format!("/workspace/{rel}")`
 (cpp keeps its `<exercise>/` subdirectory). No `strip_prefix` remains.
+
+Each written file has its recorded mode restored afterwards (`fs::write` produces `0644`),
+which is what keeps `./gradlew` executable inside the container.
 
 ## Commands
 

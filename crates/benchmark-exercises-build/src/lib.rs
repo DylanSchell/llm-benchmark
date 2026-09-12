@@ -241,6 +241,64 @@ pub fn assemble_from(
     Ok(report)
 }
 
+/// Mode of files the build tools write; anything else is recorded as non-default.
+const DEFAULT_FILE_MODE: u32 = 0o644;
+
+/// Record the modes of a staged bundle as `<octal-mode> <bundle-relative-path>`
+/// lines, returning how many entries were written.
+///
+/// `rust-embed` embeds file *contents* only and has no concept of permissions, so a
+/// mode cannot survive embedding on its own. The embedder reads this manifest back
+/// and reapplies the modes when it materializes an exercise — without it the Java
+/// track's `gradlew` is extracted as `0644` and `./gradlew test` fails with
+/// "permission denied".
+///
+/// Only files differing from [`DEFAULT_FILE_MODE`] are listed, which keeps this to
+/// the handful of files that actually need it (~48 of ~2048).
+#[cfg(unix)]
+pub fn write_mode_manifest(root: &Path, out: &Path) -> Result<usize> {
+    use std::os::unix::fs::PermissionsExt;
+
+    let mut entries: Vec<String> = Vec::new();
+    for entry in WalkDir::new(root).into_iter().filter_map(|e| e.ok()) {
+        if !entry.file_type().is_file() {
+            continue;
+        }
+        let mode = entry.metadata()?.permissions().mode() & 0o777;
+        if mode == DEFAULT_FILE_MODE {
+            continue;
+        }
+        let relative = entry
+            .path()
+            .strip_prefix(root)
+            .expect("walkdir entry is under root")
+            .to_string_lossy()
+            .replace('\\', "/");
+        entries.push(format!("{mode:o} {relative}"));
+    }
+    entries.sort();
+
+    if let Some(parent) = out.parent() {
+        fs::create_dir_all(parent).with_context(|| format!("creating {}", parent.display()))?;
+    }
+    let mut body = entries.join("\n");
+    if !body.is_empty() {
+        body.push('\n');
+    }
+    fs::write(out, body).with_context(|| format!("writing {}", out.display()))?;
+    Ok(entries.len())
+}
+
+/// Windows has no executable bit, so there is nothing to carry across.
+#[cfg(not(unix))]
+pub fn write_mode_manifest(_root: &Path, out: &Path) -> Result<usize> {
+    if let Some(parent) = out.parent() {
+        fs::create_dir_all(parent).with_context(|| format!("creating {}", parent.display()))?;
+    }
+    fs::write(out, "").with_context(|| format!("writing {}", out.display()))?;
+    Ok(0)
+}
+
 /// Copy every rule-included file from `source` to `dest`, preserving relative paths.
 fn copy_pruned(source: &Path, dest: &Path, rules: &Rules) -> Result<(usize, usize)> {
     let mut copied = 0usize;

@@ -31,6 +31,17 @@ pub trait ExerciseSource: Send + Sync {
     /// Raw bytes for an exercise-relative path, or `None` if it does not exist.
     fn read(&self, language: &str, exercise: &str, relative: &str) -> Option<Vec<u8>>;
 
+    /// Unix mode bits for an exercise-relative file, or `None` when the file does not
+    /// have a notable one.
+    ///
+    /// Materialized files otherwise get the platform default, which silently drops the
+    /// executable bit. Embedding implementations have to carry modes out of band
+    /// (`rust-embed` stores contents only), so this is how they get handed back to the
+    /// materializer.
+    fn mode(&self, _language: &str, _exercise: &str, _relative: &str) -> Option<u32> {
+        None
+    }
+
     /// Whether an exercise exists. Defaults to probing its files.
     fn has_exercise(&self, language: &str, exercise: &str) -> bool {
         !self.list_files(language, exercise).is_empty()

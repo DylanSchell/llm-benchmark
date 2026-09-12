@@ -34,6 +34,36 @@ fn write_file(
         fs::create_dir_all(parent)?;
     }
     fs::write(dest, bytes)?;
+    apply_mode(source, exercise, relative, dest)?;
+    Ok(())
+}
+
+/// Reapplies the recorded mode for an embedded file, when it has a notable one.
+///
+/// A plain `fs::write` produces `0644`, which is why the executable bit has to be
+/// restored explicitly — without this, the Java track's `gradlew` cannot be run.
+#[cfg(unix)]
+fn apply_mode(
+    source: &dyn ExerciseSource,
+    exercise: &Exercise,
+    relative: &str,
+    dest: &Path,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    use std::os::unix::fs::PermissionsExt;
+    if let Some(mode) = source.mode(&exercise.language, &exercise.name, relative) {
+        fs::set_permissions(dest, fs::Permissions::from_mode(mode))?;
+    }
+    Ok(())
+}
+
+/// Windows has no executable bit, so there is nothing to restore.
+#[cfg(not(unix))]
+fn apply_mode(
+    _source: &dyn ExerciseSource,
+    _exercise: &Exercise,
+    _relative: &str,
+    _dest: &Path,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     Ok(())
 }
 
@@ -154,5 +184,26 @@ mod tests {
         assert!(dest.join("allergies.cpp").exists());
         // Nothing spills into the temp root.
         assert!(!dir.path().join("CMakeLists.txt").exists());
+    }
+
+    /// `rust-embed` stores contents only, so modes are carried out of band. Dropping
+    /// them regresses to `exec ./gradlew: permission denied` on the Java track.
+    #[cfg(unix)]
+    #[test]
+    fn java_materialization_restores_the_executable_bit() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let source = EmbeddedSource::new();
+        let dir = tempfile::tempdir().unwrap();
+
+        materialize_exercise(&source, &exercise("series", "java"), dir.path()).unwrap();
+
+        let gradlew = fs::metadata(dir.path().join("gradlew")).unwrap();
+        let mode = gradlew.permissions().mode();
+        assert_ne!(mode & 0o111, 0, "gradlew must be executable, got {mode:o}");
+
+        // Ordinary files keep the platform default rather than becoming executable.
+        let build_gradle = fs::metadata(dir.path().join("build.gradle")).unwrap();
+        assert_eq!(build_gradle.permissions().mode() & 0o777, 0o644);
     }
 }

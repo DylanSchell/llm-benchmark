@@ -10,6 +10,8 @@
 
 use benchmark_types::ExerciseSource;
 use rust_embed::Embed;
+use std::collections::HashMap;
+use std::sync::OnceLock;
 
 /// The staged exercise bundle produced by `build.rs`.
 ///
@@ -23,6 +25,24 @@ use rust_embed::Embed;
 struct Exercises;
 
 const PRACTICE: &str = "exercises/practice/";
+
+/// Modes for files that are not plain `0644`, keyed by bundle-relative path.
+///
+/// `rust-embed` stores contents only, so `build.rs` records the modes it observed in
+/// the staged tree here (see `write_mode_manifest`) and [`ExerciseSource::mode`] hands
+/// them back to the materializer.
+fn file_modes() -> &'static HashMap<&'static str, u32> {
+    static MODES: OnceLock<HashMap<&'static str, u32>> = OnceLock::new();
+    MODES.get_or_init(|| {
+        include_str!(concat!(env!("OUT_DIR"), "/file-modes.txt"))
+            .lines()
+            .filter_map(|line| {
+                let (mode, path) = line.split_once(' ')?;
+                Some((path, u32::from_str_radix(mode, 8).ok()?))
+            })
+            .collect()
+    })
+}
 
 /// Exercise source backed by the compiled-in bundle.
 #[derive(Debug, Default)]
@@ -80,6 +100,11 @@ impl ExerciseSource for EmbeddedSource {
         let key = format!("{}{}", exercise_prefix(language, exercise), relative);
         Exercises::get(&key).map(|file| file.data.into_owned())
     }
+
+    fn mode(&self, language: &str, exercise: &str, relative: &str) -> Option<u32> {
+        let key = format!("{}{}", exercise_prefix(language, exercise), relative);
+        file_modes().get(key.as_str()).copied()
+    }
 }
 
 #[cfg(test)]
@@ -114,6 +139,17 @@ mod tests {
             .expect("Cargo.toml is embedded");
         assert!(String::from_utf8_lossy(&bytes).contains("edition = \"2021\""));
         assert!(source.read("rust", "alphametics", "does-not-exist").is_none());
+    }
+
+    #[test]
+    fn reports_modes_for_executable_files() {
+        // `rust-embed` carries no permissions, so this exercises the out-of-band
+        // manifest written by build.rs (`write_mode_manifest`) — the thing that keeps
+        // the Java track's `./gradlew` runnable once materialized.
+        let source = EmbeddedSource::new();
+        assert_eq!(source.mode("java", "series", "gradlew"), Some(0o755));
+        assert_eq!(source.mode("java", "series", "build.gradle"), None);
+        assert_eq!(source.mode("rust", "alphametics", "Cargo.toml"), None);
     }
 
     #[test]
