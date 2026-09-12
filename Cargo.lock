@@ -233,6 +233,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "benchmark-exercises-build"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "globset",
+ "serde",
+ "serde_yaml",
+ "sha2",
+ "tempfile",
+ "walkdir",
+]
+
+[[package]]
 name = "benchmark-reporter"
 version = "0.1.0"
 dependencies = [

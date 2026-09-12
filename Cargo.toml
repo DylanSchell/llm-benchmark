@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "crates/benchmark-types",
     "crates/benchmark-core",
+    "crates/benchmark-exercises-build",
     "benchmark-web",
     "benchmark-token-report",
     "benchmark-reporter",
@@ -99,6 +100,11 @@ reqwest = { version = "0.12", features = ["json"] }
 
 # File system
 walkdir = "2.5"
+tempfile = "3"
+
+# Exercise bundle assembler (build-time)
+globset = "0.4"
+sha2 = "0.10"
 
 # Miscellaneous
 regex = "1.10"
