@@ -29,8 +29,9 @@ build/
 Thumbs.db
 
 # Rust
+# Cargo.lock is committed on purpose — this repo ships binaries, so the lock is what makes a
+# build reproducible. Only the build output is ignored here.
 target/
-Cargo.lock
 
 # Config (local overrides, keep example in repo)
 config.yaml

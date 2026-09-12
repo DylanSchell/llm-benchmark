@@ -1,0 +1,7 @@
+# Single source of truth for the Rust compiler, so a local build and a CI build agree. Without this
+# CI would silently float to whatever `stable` happens to be that week.
+#
+# Keep in sync with RUST_VERSION in docker/pins.env, which pins the compiler inside the runner
+# image.
+[toolchain]
+channel = "1.98.1"
