@@ -160,8 +160,9 @@ jobs:
                             "${2}/benchmark-reporter" \
                             "${2}/benchmark-token-report" \
                             "dist/${name}/"
-            # The binary embeds third-party Exercism content, so the notices ship beside it.
-            install -m 644 THIRD_PARTY_NOTICES README.md "dist/${name}/"
+            # The binary embeds third-party Exercism content, so the notices ship beside it;
+            # LICENSE ships too, because MIT requires the notice to accompany distributions.
+            install -m 644 THIRD_PARTY_NOTICES LICENSE README.md "dist/${name}/"
             # COPYFILE_DISABLE stops bsdtar writing AppleDouble ._* entries for the extended
             # attributes macOS attaches to these files.
             COPYFILE_DISABLE=1 tar -czf "dist/${name}.tar.gz" -C dist "${name}"

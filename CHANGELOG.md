@@ -1,3 +1,20 @@
+# Changelog — repository licensing
+
+- **The repository now has an explicit MIT `LICENSE`.** The README had claimed MIT for some time, but
+  no `LICENSE` file existed and no crate declared a licence, so there was no actual grant. The file is
+  added, and GitHub now detects the repository as MIT.
+- **`license = "MIT"` is declared once in `[workspace.package]`** and inherited by all nine packages
+  through `license.workspace = true`, so the declaration cannot drift between crates.
+- **`LICENSE` now ships inside the release archives**, beside `THIRD_PARTY_NOTICES` and `README.md`,
+  because MIT requires the notice to accompany distributions. This takes effect on the next tagged
+  release.
+- **No version bump and no image rebuild.** `docker_input_hash` covers only files under `docker/`, so
+  `Cargo.toml` and `LICENSE` sit outside it and `docker-verify` still reports `54f3fa3c8a27…`.
+  `Cargo.lock` is unchanged, as licence metadata is not recorded there.
+- **Third-party licensing is unaffected.** The embedded Exercism exercises are MIT (see
+  `THIRD_PARTY_NOTICES`), and Claude Code remains excluded from the published image because Anthropic
+  licenses it "all rights reserved".
+
 # Changelog — v1.3.1: the first release with macOS binaries
 
 - **`v1.3.1` is the first tagged release that ships macOS binaries** — `macos/arm64` and

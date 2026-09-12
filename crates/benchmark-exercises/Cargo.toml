@@ -3,6 +3,7 @@ name = "benchmark-exercises"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
+license.workspace = true
 description = "Embedded exercise bundle, assembled at build time from pinned Exercism sources"
 publish = false
 

@@ -3,6 +3,7 @@ name = "benchmark-reporter"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
+license.workspace = true
 
 [lib]
 name = "benchmark_reporter"
