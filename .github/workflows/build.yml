@@ -44,13 +44,9 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
-      - name: Install system dependencies
-        # reqwest keeps native-tls via hyper-tls, so openssl-sys compiles against the system
-        # OpenSSL on Linux. Without libssl-dev and pkg-config its build script fails.
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libssl-dev pkg-config
-
+      # No apt step on purpose. reqwest keeps native-tls via hyper-tls, so openssl-sys does compile
+      # against the system OpenSSL — but the GitHub Ubuntu images already ship libssl-dev and
+      # pkg-config, and the first CI run confirmed it: `libssl-dev is already the newest version`.
       - name: Install Rust toolchain
         # The version lives in rust-toolchain.toml so local and CI builds agree on the compiler.
         run: |
@@ -70,8 +66,20 @@ jobs:
 
       # After the tests, so the packaged binaries are definitely the real ones rather than a test
       # harness. Release dependencies are already compiled by then, so this is cheap.
+      #
+      # --workspace is load-bearing: `default-members = ["."]` means a bare `cargo build` produces
+      # only the root package's llm-benchmark, silently leaving the other three binaries unbuilt.
       - name: Build release binaries
-        run: cargo build --release --locked
+        run: cargo build --release --workspace --locked
+
+      - name: Smoke-test the binaries
+        # Guards exactly that: a missing binary previously surfaced as `install: cannot stat` during
+        # packaging, and a file existing is not the same thing as it running.
+        run: |
+          for bin in llm-benchmark benchmark-cli benchmark-reporter benchmark-token-report; do
+            "target/release/${bin}" --help >/dev/null
+          done
+          target/release/llm-benchmark --version
 
       - name: Check the exercise lock is current
         # build.rs rewrites exercises.lock.yaml when the pinned upstreams drift, so a diff here
