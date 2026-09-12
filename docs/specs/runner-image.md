@@ -153,6 +153,15 @@ Dropping it loses nothing automated. The dead `collect_claude_trace` path goes w
     the image config and all 19 layers stayed identical — so re-pushing a versioned tag silently
     changed it. This is a build-tooling change that does not alter image content, so it needs no
     `RUNNER_VERSION` bump under the policy above.
+14. **Both architectures come from one pin, and publishing is unchanged.** `--arch` takes a
+    comma-separated platform list, so `linux/amd64,linux/arm64` produces an OCI index that a plain
+    `docker push` publishes — no per-arch staging tags and no `buildx --push` path. That works only
+    because Docker Desktop uses the containerd image store (driver `overlayfs`); with the classic
+    store a multi-platform image cannot be loaded locally. The base image is pinned by
+    manifest-list digest, so one pin serves both arches, and `JAVA_HOME`/`PATH` come from that
+    image instead of being hardcoded per arch. amd64 is built under QEMU on an arm64 host, which is
+    where the second architecture's cost lives. `docker-push` reports the platform set and warns
+    when a push would narrow an already multi-platform tag.
 
 ## Design
 
@@ -474,3 +483,13 @@ Steps 1–2 are independent; 3 depends on 2; 4 depends on 3; 5 depends on 4; 6 i
   - Files: `build.sh`, `crates/benchmark-types/src/config/mod.rs`,
     `crates/benchmark-core/src/agent/pi.rs`, `config.yaml`, `config.example.yaml`,
     `docker/README.md`.
+
+- [x] **T14 — Build and publish linux/amd64 and linux/arm64 from one pin**
+  - Acceptance: `--arch` accepts a comma-separated platform list and rejects anything the
+    Dockerfile cannot serve; the Go and fd steps select their arch from `TARGETARCH` and fail
+    loudly rather than falling back silently; `docker-push` reports the platform set and warns
+    before narrowing a multi-platform tag; `runner.lock` records the platforms last built.
+  - Verify: a two-platform build yields an OCI index locally, and after `docker-push` an anonymous
+    fetch of the registry manifest reports both platforms with `mediaType` an OCI index.
+  - Files: `build.sh`, `docker/Dockerfile.runner.debian`, `docker/README.md`,
+    `docker/RUNNER_VERSION` (1.2.0 → 1.3.0).

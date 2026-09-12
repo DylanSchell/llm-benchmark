@@ -26,9 +26,10 @@ The image is a separate artifact from the binary and is versioned separately —
 ## Building
 
 ```bash
-./build.sh docker-build                        # host arch
-./build.sh docker-build --arch linux/amd64     # explicit platform
-./build.sh docker-build --tag my/runner:test   # primary tag override
+./build.sh docker-build                            # host platform
+./build.sh docker-build --arch linux/arm64         # explicit platform
+./build.sh docker-build --arch linux/amd64,linux/arm64   # both, as an OCI index
+./build.sh docker-build --tag my/runner:test       # primary tag override
 ./build.sh docker-build --image ghcr.io/you/fork   # different repository
 ```
 
@@ -47,6 +48,32 @@ so a bare `docker build` fails loudly instead of quietly producing an unpinned i
 
 A build is slow by design — it downloads the JDK, Go, Node, Rust, Gradle and the agent CLIs.
 The result is cached by layer, so a re-pin usually only rebuilds the layers below it.
+
+### Multi-platform images
+
+`--arch` takes a comma-separated list, so one build can cover both architectures:
+
+```bash
+./build.sh docker-build --arch linux/amd64,linux/arm64
+```
+
+The result is an OCI **index** in the local image store, and a plain `docker push` publishes every
+platform in it — no per-arch staging tags, no separate `buildx --push` path. `docker-push` reports
+the platform set it is publishing, and warns when a push would narrow an already multi-platform tag
+back to a single platform.
+
+This works only because Docker Desktop stores images with the **containerd** snapshotter — `docker
+info` reports driver `overlayfs`, not `overlay2`. With the classic image store a multi-platform
+build cannot be loaded locally at all.
+
+Two consequences worth knowing:
+
+- **amd64 layers are built under QEMU emulation** on an arm64 host. The Java- and Node-heavy steps
+  — Gradle dependency priming, `npm install` — are far slower than the native build, so building
+  both platforms costs considerably more than either alone.
+- The base image is pinned by **manifest-list** digest, so that single pin serves both
+  architectures, and `JAVA_HOME`/`PATH` come from that image rather than being hardcoded to a
+  per-arch path.
 
 ## Publishing
 
