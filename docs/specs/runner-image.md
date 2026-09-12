@@ -420,7 +420,7 @@ Steps 1–2 are independent; 3 depends on 2; 4 depends on 3; 5 depends on 4; 6 i
   - Verify: read-through; links resolve.
   - Files: `docker/README.md` (new), `ROADMAP.md` (§6.3/§6.4 resolved).
 
-- [ ] **T10 — Remove the dead Claude HTML-trace path**
+- [x] **T10 — Remove the dead Claude HTML-trace path**
   - Acceptance: `collect_claude_trace` and its discarded call are gone; no `claude-archive` reference remains.
   - Verify: `rg -n 'claude-archive|collect_claude_trace' crates/` empty; `cargo test --workspace --lib --bins` green.
   - Files: `crates/benchmark-core/src/agent/claude.rs`.

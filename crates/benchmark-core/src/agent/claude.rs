@@ -2,14 +2,13 @@ use std::fs;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 use tokio::time::Instant;
-use tracing::{error, info, warn};
+use tracing::{error, info};
 use benchmark_types::agent::{Agent, AgentResult};
 use benchmark_types::cancellation::CancellationToken;
 use benchmark_types::exercise::Exercise;
 use benchmark_types::ExerciseSource;
 use crate::docker::DockerClient;
 use crate::agent::{reference::ReferenceAgent, ClaudeMessageProcessor};
-use walkdir::WalkDir;
 use benchmark_types::util::recover_poisoned;
 
 
@@ -82,36 +81,6 @@ impl ClaudeAgent {
 
         Ok(prompt)
     }
-
-    /// Collect Claude execution trace from HTML files.
-    fn collect_claude_trace(temp_dir: &Path) -> Result<Option<String>, std::io::Error> {
-        let claude_archive = temp_dir.join("claude-archive/workspace");
-
-        if !claude_archive.exists() {
-            return Ok(None);
-        }
-
-        let mut html_traces = Vec::new();
-
-        for entry in WalkDir::new(&claude_archive) {
-            match entry {
-                Ok(entry) => {
-                    let path = entry.path();
-                    if path.extension().map(|e| e == "html").unwrap_or(false)
-                        && path.to_string_lossy().contains("page")
-                    {
-                        if let Ok(content) = fs::read_to_string(path) {
-                            html_traces.push(content);
-                        }
-                    }
-                }
-                Err(e) => warn!("Error reading trace file: {}", e),
-            }
-        }
-
-        Ok(html_traces.first().cloned())
-    }
-
 }
 
 #[async_trait::async_trait]
@@ -244,9 +213,6 @@ impl ClaudeAgent {
                 exercise.name, duration_ms
             );
         }
-
-        // Collect trace files
-        let _trace = Self::collect_claude_trace(temp_work_dir)?;
 
         // Run tests in Docker to verify the agent's solution.
         // This mirrors the Java flow where runReferenceSolution() calls
