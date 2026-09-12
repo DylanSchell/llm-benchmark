@@ -112,6 +112,13 @@ docker_verify() {
         rc=1
     fi
 
+    # Also lint the pins, so an unpinned install cannot slip in unnoticed.
+    if [[ -x "${SCRIPT_DIR}/docker/pin-agents.sh" ]]; then
+        if ! "${SCRIPT_DIR}/docker/pin-agents.sh" --check; then
+            rc=1
+        fi
+    fi
+
     if (( rc == 0 )); then
         echo "ok: runner image v${version} matches docker/ inputs (${hash:0:12}…)"
     fi
