@@ -1,20 +1,32 @@
-# Base image for running the benchmark runner (Debian-based with glibc)
-FROM bellsoft/liberica-openjdk-debian:17
+# Runner image: the language toolchains and agent CLIs used by exercise containers.
+#
+# Every external version this image pulls in is defined in docker/pins.env and passed as a
+# build arg by ./build.sh docker-build. The ARGs below deliberately have no defaults, so a bare
+# `docker build` fails loudly instead of silently producing an unpinned image.
+#
+# Changing this file is a runner-image change: bump docker/RUNNER_VERSION.
+# See docs/specs/runner-image.md and docker/README.md.
 
-# Install Go 1.21+ (needed for slices package used by newer Exercism exercises)
-# Detect architecture for the correct Go binary
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# Go 1.21+ is needed for the slices package used by newer Exercism exercises.
+# TARGETARCH is supplied automatically by buildx.
+ARG GO_VERSION
 ARG TARGETARCH
 RUN case "${TARGETARCH}" in \
       amd64) GO_ARCH=amd64 ;; \
       arm64) GO_ARCH=arm64 ;; \
       *)    GO_ARCH=amd64 ;; \
     esac && \
-    curl -fsSL "https://go.dev/dl/go1.21.13.linux-${GO_ARCH}.tar.gz" -o /tmp/go.tar.gz \
+    curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz" -o /tmp/go.tar.gz \
     && tar -C /usr/local -xzf /tmp/go.tar.gz \
     && rm /tmp/go.tar.gz
 ENV PATH="/usr/local/go/bin:$PATH"
 
-# Install essential build tools (Go excluded — installed above)
+# Essential build tools (Go is installed above). fd also exists as the Debian `fd-find`
+# package, but that ships the binary as `fdfind`, so the real `fd` comes from GitHub.
+ARG FD_VERSION
 RUN apt-get update && apt-get install -y \
     bash \
     fd-find \
@@ -34,40 +46,60 @@ RUN apt-get update && apt-get install -y \
     libboost-date-time-dev \
     && ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') \
     && if [ "$ARCH" = "arm64" ]; then FD_ARCH=aarch64; else FD_ARCH=x86_64; fi \
-    && curl -fsSL "https://github.com/sharkdp/fd/releases/download/v10.4.2/fd-v10.4.2-${FD_ARCH}-unknown-linux-gnu.tar.gz" -o /tmp/fd.tar.gz \
+    && curl -fsSL "https://github.com/sharkdp/fd/releases/download/v${FD_VERSION}/fd-v${FD_VERSION}-${FD_ARCH}-unknown-linux-gnu.tar.gz" -o /tmp/fd.tar.gz \
     && tar -xzf /tmp/fd.tar.gz -C /tmp \
-    && mv /tmp/fd-v10.4.2-${FD_ARCH}-unknown-linux-gnu/fd /usr/local/bin/fd \
+    && mv "/tmp/fd-v${FD_VERSION}-${FD_ARCH}-unknown-linux-gnu/fd" /usr/local/bin/fd \
     && chmod +x /usr/local/bin/fd \
-    && rm -rf /tmp/fd.tar.gz /tmp/fd-v10.4.2-${FD_ARCH}-unknown-linux-gnu \
+    && rm -rf /tmp/fd.tar.gz "/tmp/fd-v${FD_VERSION}-${FD_ARCH}-unknown-linux-gnu" \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js 20.x from NodeSource
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+# Node.js from NodeSource.
+ARG NODE_MAJOR
+RUN curl -fsSL "https://deb.nodesource.com/setup_${NODE_MAJOR}.x" | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Claude Code CLI
-RUN npm install -g @anthropic-ai/claude-code
-# Pi coding agent (now published as @earendil-works/pi-coding-agent)
-RUN npm install -g @earendil-works/pi-coding-agent
+# Agent CLIs — what the benchmark actually measures, so they are pinned.
+ARG CLAUDE_CODE_VERSION
+ARG PI_CODING_AGENT_VERSION
+ARG PI_CAVEMAN_VERSION
+ARG SUPI_BASH_TIMEOUT_VERSION
+RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+RUN npm install -g "@earendil-works/pi-coding-agent@${PI_CODING_AGENT_VERSION}"
 
-# Install pi extensions (loaded via --extension / --skill CLI flags at runtime)
-RUN npm install -g pi-caveman @mrclrchtr/supi-bash-timeout
+# pi extensions, loaded by the binary via --extension flags. crates/benchmark-core/src/agent/pi.rs
+# hardcodes /usr/lib/node_modules (Debian's npm global root) and paths inside these packages
+# (extensions/caveman.ts, src/extension.ts), so the npm root and their internal layout are part
+# of the binary-image contract.
+RUN npm install -g \
+    "pi-caveman@${PI_CAVEMAN_VERSION}" \
+    "@mrclrchtr/supi-bash-timeout@${SUPI_BASH_TIMEOUT_VERSION}"
 
 # Install pytest for Python testing
 #RUN pip3 install --no-cache-dir pytest
 
-# Install Jest and related packages for JavaScript testing
-RUN npm install -g jest \
-    @babel/core@7.25.2 \
-    @babel/preset-env@7.25.2 \
-    @exercism/babel-preset-javascript@0.2.1 \
-    @exercism/eslint-config-javascript@0.6.0 \
-    @types/jest@29.5.12 \
-    @types/node@20.12.12 \
-    babel-jest@29.6.4 \
-    core-js@3.37.1 \
-    eslint@8.49.0
+# JavaScript test dependencies expected by the Exercism JS track.
+ARG JEST_VERSION
+ARG BABEL_CORE_VERSION
+ARG BABEL_PRESET_ENV_VERSION
+ARG EXERCISM_BABEL_PRESET_VERSION
+ARG EXERCISM_ESLINT_CONFIG_VERSION
+ARG TYPES_JEST_VERSION
+ARG TYPES_NODE_VERSION
+ARG BABEL_JEST_VERSION
+ARG CORE_JS_VERSION
+ARG ESLINT_VERSION
+RUN npm install -g \
+    "jest@${JEST_VERSION}" \
+    "@babel/core@${BABEL_CORE_VERSION}" \
+    "@babel/preset-env@${BABEL_PRESET_ENV_VERSION}" \
+    "@exercism/babel-preset-javascript@${EXERCISM_BABEL_PRESET_VERSION}" \
+    "@exercism/eslint-config-javascript@${EXERCISM_ESLINT_CONFIG_VERSION}" \
+    "@types/jest@${TYPES_JEST_VERSION}" \
+    "@types/node@${TYPES_NODE_VERSION}" \
+    "babel-jest@${BABEL_JEST_VERSION}" \
+    "core-js@${CORE_JS_VERSION}" \
+    "eslint@${ESLINT_VERSION}"
 
 # Create non-privileged user
 RUN useradd -m -s /bin/bash -u 1000 runner && \
@@ -82,12 +114,14 @@ WORKDIR /workspace
 # Switch to non-root user
 USER runner
 
-# Install rust toolchain
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# Rust toolchain, pinned.
+ARG RUST_VERSION
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain "${RUST_VERSION}"
 ENV PATH="/home/runner/.cargo/bin:$PATH"
 
-# Install uv for Python package management
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+# uv for Python package management, pinned.
+ARG UV_VERSION
+RUN curl -LsSf "https://astral.sh/uv/${UV_VERSION}/install.sh" | sh
 ENV PATH="/home/runner/.local/bin:$PATH"
 
 # Pre-install Gradle so the wrapper finds it already extracted at the cache location it
@@ -95,8 +129,8 @@ ENV PATH="/home/runner/.local/bin:$PATH"
 # docker/gradle-dist-hash.py rather than hardcoding a value that would silently go stale if
 # the Exercism Java track bumps its wrapper (which would make gradlew download at test time).
 # The .ok marker tells the wrapper the extraction completed.
-ARG GRADLE_VERSION=8.7
-ARG GRADLE_SHA256=544c35d6bd849ae8a5ed0bcea39ba677dc40f49df7d1835561582da2009b961d
+ARG GRADLE_VERSION
+ARG GRADLE_SHA256
 COPY gradle-dist-hash.py /usr/local/lib/llm-benchmark/gradle-dist-hash.py
 RUN set -eux; \
     dist_url="https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"; \

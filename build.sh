@@ -23,6 +23,34 @@ EOF
     exit 1
 }
 
+# External version pins live in docker/pins.env. The Dockerfile's ARGs deliberately have no
+# defaults, so every one of them has to be supplied here — a bare `docker build` fails loudly
+# rather than silently producing an unpinned image.
+load_pins() {
+    local pins="${SCRIPT_DIR}/docker/pins.env"
+    if [[ ! -f "$pins" ]]; then
+        echo "error: ${pins} not found" >&2
+        exit 1
+    fi
+    # shellcheck disable=SC1090
+    set -a
+    . "$pins"
+    set +a
+}
+
+# Build args are derived from this name list, so adding a pin to pins.env plus the Dockerfile
+# is enough — this script needs no edit.
+PIN_NAMES=(
+    BASE_IMAGE
+    GO_VERSION FD_VERSION NODE_MAJOR RUST_VERSION UV_VERSION
+    GRADLE_VERSION GRADLE_SHA256
+    CLAUDE_CODE_VERSION PI_CODING_AGENT_VERSION PI_CAVEMAN_VERSION SUPI_BASH_TIMEOUT_VERSION
+    JEST_VERSION BABEL_CORE_VERSION BABEL_PRESET_ENV_VERSION
+    EXERCISM_BABEL_PRESET_VERSION EXERCISM_ESLINT_CONFIG_VERSION
+    TYPES_JEST_VERSION TYPES_NODE_VERSION BABEL_JEST_VERSION
+    CORE_JS_VERSION ESLINT_VERSION
+)
+
 docker_build() {
     local tag="${TAG:-llm-benchmark/runner:latest}"
     local arch="${ARCH:-}"
@@ -33,8 +61,21 @@ docker_build() {
     else
         echo "Building Docker image ${tag} (host arch)..." >&2
     fi
+
+    load_pins
+
+    local -a build_args=()
+    local name
+    for name in "${PIN_NAMES[@]}"; do
+        build_args+=(--build-arg "${name}=${!name}")
+    done
+
+    echo "Pinned: go=${GO_VERSION} rust=${RUST_VERSION} uv=${UV_VERSION} gradle=${GRADLE_VERSION}" >&2
+    echo "        claude-code=${CLAUDE_CODE_VERSION} pi=${PI_CODING_AGENT_VERSION}" >&2
+
     docker buildx build \
         "${platform_args[@]}" \
+        "${build_args[@]}" \
         --tag "${tag}" \
         -f docker/Dockerfile.runner.debian \
         "${SCRIPT_DIR}/docker"
