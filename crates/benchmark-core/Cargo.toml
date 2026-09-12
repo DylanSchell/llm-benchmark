@@ -6,6 +6,7 @@ authors.workspace = true
 
 [dependencies]
 benchmark-types = { path = "../benchmark-types" }
+benchmark-exercises = { path = "../benchmark-exercises" }
 tokio = { workspace = true }
 tokio-util = { workspace = true }
 tracing = { workspace = true }
@@ -24,3 +25,6 @@ clap = { workspace = true }
 home = { workspace = true }
 regex = { workspace = true }
 reqwest = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

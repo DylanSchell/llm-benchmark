@@ -1,5 +1,4 @@
 use serde::{Deserialize, Deserializer, Serialize};
-use std::path::PathBuf;
 
 // Custom deserializers for backward compatibility
 fn deserialize_duration_ms<'de, D>(deserializer: D) -> Result<u64, D::Error>
@@ -55,27 +54,31 @@ where
 pub struct Exercise {
     pub name: String,
     pub language: String,
+    /// Java main source file, relative to the exercise root (e.g. `src/main/java/Series.java`).
     #[serde(default)]
-    pub source_path: Option<PathBuf>,
+    pub source_file: Option<String>,
+    /// Java test file, relative to the exercise root (e.g. `src/test/java/SeriesTest.java`).
     #[serde(default)]
-    pub test_path: Option<PathBuf>,
+    pub test_file: Option<String>,
+    /// Reference implementation directory, relative to the exercise root.
+    /// Used only as a fallback when metadata has no `files.example`.
     #[serde(default)]
-    pub reference_path: Option<PathBuf>,
-    /// Exercise root directory (for resolving metadata paths)
-    #[serde(default)]
-    pub exercise_dir: Option<PathBuf>,
+    pub reference_dir: Option<String>,
     /// Metadata from .meta/config.json
     #[serde(default)]
     pub metadata: Option<ExerciseMetadata>,
-    /// Example/reference file paths resolved from metadata (config.json → files.example)
+    /// Reference/example files resolved from metadata (config.json → files.example),
+    /// relative to the exercise root.
     #[serde(default)]
-    pub example_paths: Vec<PathBuf>,
-    /// Solution file paths resolved from metadata (config.json → files.solution)
+    pub example_files: Vec<String>,
+    /// Solution file paths resolved from metadata (config.json → files.solution),
+    /// relative to the exercise root.
     #[serde(default)]
-    pub solution_paths: Vec<PathBuf>,
-    /// Test file paths resolved from metadata (config.json → files.test)
+    pub solution_files: Vec<String>,
+    /// Test file paths resolved from metadata (config.json → files.test),
+    /// relative to the exercise root.
     #[serde(default)]
-    pub test_paths: Vec<PathBuf>,
+    pub test_files: Vec<String>,
 }
 
 /// Metadata for an exercise parsed from .meta/config.json

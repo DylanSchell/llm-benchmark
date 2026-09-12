@@ -1,11 +1,12 @@
 use std::collections::HashMap;
-use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use tracing::{debug, error, info, warn};
 use benchmark_types::agent::{Agent, AgentResult};
 use benchmark_types::config::Config;
-use benchmark_types::exercise::Exercise;
+use benchmark_types::exercise::{Exercise, ExerciseMetadata};
+use benchmark_types::ExerciseSource;
+use benchmark_exercises::EmbeddedSource;
 use crate::docker::DockerClient;
 use benchmark_types::util::recover_poisoned;
 
@@ -17,7 +18,8 @@ const DEPRECATED_EXERCISES: &[&str] = &["counter"];
 #[derive(Clone)]
 pub struct ExerciseRunner {
     config: Arc<Config>,
-    benchmark_path: PathBuf,
+    /// The exercise suite. Exercises are read from here — no host checkout involved.
+    source: Arc<dyn ExerciseSource>,
     docker_client: Option<Arc<DockerClient>>,
     // Run-time parameters for result directory computation
     run_agent_name: Option<String>,
@@ -30,11 +32,23 @@ pub struct ExerciseRunner {
 }
 
 impl ExerciseRunner {
+    /// Creates a runner backed by the compiled-in exercise bundle.
     pub fn new(config: Arc<Config>) -> Self {
-        let benchmark_path = config.benchmark_path.clone();
+        Self::with_source(config, Arc::new(EmbeddedSource::new()))
+    }
+
+    /// Create with a DockerClient reference for setRunParams.
+    pub fn new_with_docker(config: Arc<Config>, docker_client: Arc<DockerClient>) -> Self {
+        let mut runner = Self::with_source(config, Arc::new(EmbeddedSource::new()));
+        runner.docker_client = Some(docker_client);
+        runner
+    }
+
+    /// Creates a runner over an explicit exercise source (used by tests).
+    pub fn with_source(config: Arc<Config>, source: Arc<dyn ExerciseSource>) -> Self {
         Self {
             config,
-            benchmark_path,
+            source,
             docker_client: None,
             run_agent_name: None,
             run_model: None,
@@ -44,19 +58,9 @@ impl ExerciseRunner {
         }
     }
 
-    /// Create with a DockerClient reference for setRunParams.
-    pub fn new_with_docker(config: Arc<Config>, docker_client: Arc<DockerClient>) -> Self {
-        let benchmark_path = config.benchmark_path.clone();
-        Self {
-            config,
-            benchmark_path,
-            docker_client: Some(docker_client),
-            run_agent_name: None,
-            run_model: None,
-            run_languages: None,
-            exercises_cache: Arc::new(RwLock::new(HashMap::new())),
-            languages_cache: Arc::new(RwLock::new(None)),
-        }
+    /// The exercise source backing this runner.
+    pub fn source(&self) -> &Arc<dyn ExerciseSource> {
+        &self.source
     }
 
     /// Sets run parameters for result directory computation.
@@ -96,31 +100,12 @@ impl ExerciseRunner {
             }
         }
 
-        let exercises_path = self
-            .benchmark_path
-            .join(language)
-            .join("exercises")
-            .join("practice");
-
-        if !exercises_path.exists() {
-            warn!("Exercises path not found: {:?}", exercises_path);
-            // Cache empty result
-            let mut cache = recover_poisoned(self.exercises_cache.write());
-            cache.insert(language.to_string(), Vec::new());
-            return Vec::new();
-        }
-
-        let mut exercises = Vec::new();
-
-        if let Ok(entries) = fs::read_dir(&exercises_path) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if self.is_exercise_directory(&path) {
-                    let exercise_name = path.file_name().unwrap().to_string_lossy().to_string();
-                    exercises.push(exercise_name);
-                }
-            }
-        }
+        let mut exercises: Vec<String> = self
+            .source
+            .exercise_names(language)
+            .into_iter()
+            .filter(|name| !DEPRECATED_EXERCISES.contains(&name.as_str()))
+            .collect();
 
         // Sort exercises (skip 'pov' at the end)
         exercises.sort_by(|a, b| {
@@ -149,28 +134,7 @@ impl ExerciseRunner {
             return languages.clone();
         }
 
-        let mut languages = Vec::new();
-        let benchmark_dir = &self.benchmark_path;
-
-        if !benchmark_dir.exists() {
-            warn!("Benchmark path does not exist: {:?}", benchmark_dir);
-            // Cache empty result
-            *recover_poisoned(self.languages_cache.write()) = Some(Vec::new());
-            return languages;
-        }
-
-        if let Ok(entries) = fs::read_dir(benchmark_dir) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if path.is_dir() {
-                    let name = entry.file_name().to_string_lossy().to_string();
-                    if !name.starts_with('.') {
-                        languages.push(name);
-                    }
-                }
-            }
-        }
-
+        let mut languages = self.source.languages();
         languages.sort_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
 
         // Cache the result
@@ -224,22 +188,16 @@ impl ExerciseRunner {
             }
         };
 
-        let exercise_host_dir = match self.find_exercise_host_dir(language, exercise_name) {
-            Some(dir) if dir.exists() => dir,
-            _ => {
-                return Ok(AgentResult::builder()
-                    .exercise_name(exercise_name.to_string())
-                    .language(language.to_string())
-                    .success(false)
-                    .error_message(Some(format!(
-                        "Exercise directory not found: {}",
-                        exercise_name
-                    )))
-                    .build());
-            }
-        };
-
-        agent.run_exercise_with_timeout(&exercise, &exercise_host_dir, model, thinking_level.as_deref(), results_dir, timeout_override_secs).await
+        agent
+            .run_exercise_with_timeout(
+                &exercise,
+                self.source.as_ref(),
+                model,
+                thinking_level.as_deref(),
+                results_dir,
+                timeout_override_secs,
+            )
+            .await
     }
 
     /// Run all exercises for a given language using the specified agent with parallelism.
@@ -329,22 +287,10 @@ impl ExerciseRunner {
                 } else {
                     true
                 };
-                // Also filter exercises with no host dir
-                let has_dir = self
-                    .find_exercise_host_dir(language, &exercise.name)
-                    .map(|d| d.exists())
-                    .unwrap_or(false);
-                if keep && !has_dir {
-                    warn!(
-                        "Exercise host directory not found for {}/{}, skipping",
-                        language, exercise.name
-                    );
-                }
-                async move { keep && has_dir }
+                async move { keep }
             })
             .map(|exercise| {
-                let exercise_host_dir =
-                    self.find_exercise_host_dir(language, &exercise.name).unwrap();
+                let source = Arc::clone(&self.source);
                 let agent = Arc::clone(&agent);
                 let language = language.to_string();
                 let agent_name = agent_name_string.clone();
@@ -361,7 +307,7 @@ impl ExerciseRunner {
                     let result = agent
                         .run_exercise(
                             &exercise,
-                            &exercise_host_dir,
+                            source.as_ref(),
                             &model,
                             thinking_level.as_deref(),
                             &results_dir,
@@ -401,43 +347,33 @@ impl ExerciseRunner {
         results
     }
 
-    /// Builds an Exercise from a directory, parsing .meta/config.json for metadata.
-    fn build_exercise(&self, name: &str, language: &str, exercise_dir: &Path) -> Exercise {
-        let metadata = self.parse_metadata(exercise_dir);
-        let (solution_paths, example_paths, test_paths) =
-            Self::resolve_metadata_paths(exercise_dir, &metadata);
+    /// Builds an Exercise from the bundled files, parsing .meta/config.json for metadata.
+    fn build_exercise(&self, name: &str, language: &str) -> Exercise {
+        let files = self.source.list_files(language, name);
+        let metadata = self.parse_metadata(language, name);
+        let (solution_files, example_files, test_files) = Self::resolve_metadata_paths(&metadata);
 
         Exercise {
             name: name.to_string(),
             language: language.to_string(),
-            source_path: self.find_source_file(exercise_dir, language),
-            test_path: self.find_test_file(exercise_dir, language),
-            reference_path: self.find_reference_dir(exercise_dir, language),
-            exercise_dir: Some(exercise_dir.to_path_buf()),
+            source_file: Self::find_source_file(&files, language),
+            test_file: Self::find_test_file(&files, language),
+            reference_dir: Self::find_reference_dir(&files, language),
             metadata,
-            example_paths,
-            solution_paths,
-            test_paths,
+            example_files,
+            solution_files,
+            test_files,
         }
     }
 
-    /// Resolves file paths from metadata (config.json) relative to exercise_dir.
-    fn resolve_metadata_paths(
-        exercise_dir: &Path,
-        metadata: &Option<benchmark_types::exercise::ExerciseMetadata>,
-    ) -> (Vec<PathBuf>, Vec<PathBuf>, Vec<PathBuf>) {
-        let resolve = |paths: &Option<Vec<String>>| -> Vec<PathBuf> {
-            paths
-                .as_ref()
-                .map(|v| v.iter().map(|p| exercise_dir.join(p)).collect())
-                .unwrap_or_default()
-        };
+    /// Extracts the relative file lists from metadata (config.json → files.*).
+    fn resolve_metadata_paths(metadata: &Option<ExerciseMetadata>) -> (Vec<String>, Vec<String>, Vec<String>) {
         if let Some(meta) = metadata {
             if let Some(ref files) = meta.files {
                 return (
-                    resolve(&files.solution),
-                    resolve(&files.example),
-                    resolve(&files.test),
+                    files.solution.clone().unwrap_or_default(),
+                    files.example.clone().unwrap_or_default(),
+                    files.test.clone().unwrap_or_default(),
                 );
             }
         }
@@ -446,44 +382,29 @@ impl ExerciseRunner {
 
     /// Finds a specific exercise by language and name.
     fn find_exercise(&self, language: &str, exercise_name: &str) -> Option<Exercise> {
-        let exercise_dir = self
-            .benchmark_path
-            .join(language)
-            .join("exercises")
-            .join("practice")
-            .join(exercise_name);
-
-        if !exercise_dir.exists() {
+        if DEPRECATED_EXERCISES.contains(&exercise_name) {
+            debug!("Skipping deprecated exercise: {}/{}", language, exercise_name);
+            return None;
+        }
+        if !self.source.has_exercise(language, exercise_name) {
             return None;
         }
 
-        Some(self.build_exercise(exercise_name, language, &exercise_dir))
+        Some(self.build_exercise(exercise_name, language))
     }
 
     /// Finds all exercises for a given language.
     fn find_all_exercises(&self, language: &str) -> Vec<Exercise> {
-        let exercises_path = self
-            .benchmark_path
-            .join(language)
-            .join("exercises")
-            .join("practice");
-
-        if !exercises_path.exists() {
-            warn!("Exercises path not found: {:?}", exercises_path);
-            return Vec::new();
-        }
-
-        let mut exercises = Vec::new();
-
-        if let Ok(entries) = fs::read_dir(&exercises_path) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if self.is_exercise_directory(&path) {
-                    let exercise_name = path.file_name().unwrap().to_string_lossy().to_string();
-                    exercises.push(self.build_exercise(&exercise_name, language, &path));
-                }
-            }
-        }
+        let mut exercises: Vec<Exercise> = self
+            .source
+            .exercise_names(language)
+            .into_iter()
+            .filter(|name| !DEPRECATED_EXERCISES.contains(&name.as_str()))
+            .map(|name| {
+                debug!("Found exercise {}/{}", language, name);
+                self.build_exercise(&name, language)
+            })
+            .collect();
 
         // Sort exercises (skip 'pov' at the end)
         exercises.sort_by(|a, b| {
@@ -496,25 +417,75 @@ impl ExerciseRunner {
             }
         });
 
-        for exercise in &exercises {
-            debug!("Found exercise {}/{}", language, exercise.name);
-        }
-
         exercises
     }
 
-    /// Checks if a directory is an exercise directory (contains .meta subdirectory).
-    fn is_exercise_directory(&self, dir: &Path) -> bool {
-        if !dir.join(".meta").is_dir() {
-            return false;
+    /// Finds the Java main source file, relative to the exercise root.
+    fn find_source_file(files: &[String], language: &str) -> Option<String> {
+        if language != "java" {
+            return None;
         }
-        if let Some(name) = dir.file_name().and_then(|n| n.to_str()) {
-            if DEPRECATED_EXERCISES.contains(&name) {
-                debug!("Skipping deprecated exercise directory: {:?}", dir);
-                return false;
+        files
+            .iter()
+            .find(|f| {
+                f.strip_prefix("src/main/java/")
+                    .map(|rest| !rest.contains('/') && rest.ends_with(".java"))
+                    .unwrap_or(false)
+            })
+            .cloned()
+    }
+
+    /// Finds the Java test file, relative to the exercise root.
+    fn find_test_file(files: &[String], language: &str) -> Option<String> {
+        if language != "java" {
+            return None;
+        }
+        files
+            .iter()
+            .find(|f| {
+                f.strip_prefix("src/test/java/")
+                    .map(|rest| !rest.contains('/') && rest.ends_with("Test.java"))
+                    .unwrap_or(false)
+            })
+            .cloned()
+    }
+
+    /// Finds the reference implementation directory, relative to the exercise root.
+    /// Java keeps reference sources under `.meta/src/reference/java`; all other
+    /// languages keep them directly in `.meta/`.
+    fn find_reference_dir(files: &[String], language: &str) -> Option<String> {
+        let dir = if language == "java" {
+            ".meta/src/reference/java"
+        } else {
+            ".meta"
+        };
+        let prefix = format!("{dir}/");
+        files
+            .iter()
+            .any(|f| f.starts_with(&prefix))
+            .then(|| dir.to_string())
+    }
+
+    /// Gets the result file path for an exercise.
+    fn get_result_path(&self, exercise_name: &str, agent_name: &str, language: &str, model: &str) -> PathBuf {
+        let results_dir = &self.config.output.results_dir;
+        let subdir = format!("{}-{}", agent_name, model);
+        results_dir.join(&subdir).join(format!(
+            "result_{}_{}_{}.json",
+            agent_name, language, exercise_name
+        ))
+    }
+
+    /// Parses the metadata from .meta/config.json for an exercise.
+    pub fn parse_metadata(&self, language: &str, exercise: &str) -> Option<ExerciseMetadata> {
+        let bytes = self.source.read(language, exercise, ".meta/config.json")?;
+        match serde_json::from_slice::<ExerciseMetadata>(&bytes) {
+            Ok(metadata) => Some(metadata),
+            Err(e) => {
+                warn!("Failed to parse metadata for {}/{}: {}", language, exercise, e);
+                None
             }
         }
-        true
     }
 
     /// Load the duration (in milliseconds) from a previous result file.
@@ -549,133 +520,6 @@ impl ExerciseRunner {
                 }
             }
             Err(_) => 0,
-        }
-    }
-
-    /// Finds the main source file for an exercise.
-    fn find_source_file(&self, exercise_dir: &Path, language: &str) -> Option<PathBuf> {
-        if language == "java" {
-            let source_path = exercise_dir.join("src/main/java");
-            if source_path.exists() {
-                if let Ok(entries) = fs::read_dir(&source_path) {
-                    for entry in entries.flatten() {
-                        let path = entry.path();
-                        if path.is_file()
-                            && path
-                                .extension()
-                                .map(|e| e == "java")
-                                .unwrap_or(false)
-                        {
-                            return Some(path);
-                        }
-                    }
-                }
-            }
-        }
-        None
-    }
-
-    /// Finds the test file for an exercise.
-    fn find_test_file(&self, exercise_dir: &Path, language: &str) -> Option<PathBuf> {
-        if language == "java" {
-            let test_path = exercise_dir.join("src/test/java");
-            if test_path.exists() {
-                if let Ok(entries) = fs::read_dir(&test_path) {
-                    for entry in entries.flatten() {
-                        let path = entry.path();
-                        if path.is_file()
-                            && path.to_string_lossy().ends_with("Test.java")
-                        {
-                            return Some(path);
-                        }
-                    }
-                }
-            }
-        }
-        None
-    }
-
-    /// Finds the reference implementation directory for an exercise.
-    /// Returns the directory containing reference files (used as a fallback
-    /// when metadata is unavailable; the primary paths come from config.json).
-    fn find_reference_dir(
-        &self,
-        exercise_dir: &Path,
-        language: &str,
-    ) -> Option<PathBuf> {
-        if language == "java" {
-            let ref_path = exercise_dir.join(".meta/src/reference/java");
-            if ref_path.exists() && ref_path.is_dir() {
-                // Return the directory so all reference files are copied.
-                // Previously returned only the first .java file, which caused
-                // exercises with multiple reference files (e.g. Alphametics +
-                // UnsolvablePuzzleException) to only copy one file.
-                return Some(ref_path);
-            }
-        } else if language == "go" {
-            let ref_path = exercise_dir.join(".meta");
-            if ref_path.exists() {
-                return Some(ref_path);
-            }
-        } else {
-            // For JavaScript, Python, Rust, C++: reference files live in .meta/
-            // (proof.ci.js, example.py, example.rs, example.cpp/example.h).
-            // The copy_reference_impl renames them to match the stub file names.
-            let ref_path = exercise_dir.join(".meta");
-            if ref_path.exists() {
-                return Some(ref_path);
-            }
-        }
-        None
-    }
-
-    /// Finds the host directory for an exercise.
-    fn find_exercise_host_dir(&self, language: &str, exercise_name: &str) -> Option<PathBuf> {
-        let exercise_dir = self
-            .benchmark_path
-            .join(language)
-            .join("exercises")
-            .join("practice")
-            .join(exercise_name);
-
-        if exercise_dir.exists() {
-            return Some(exercise_dir);
-        }
-
-        None
-    }
-
-    /// Gets the result file path for an exercise.
-    fn get_result_path(&self, exercise_name: &str, agent_name: &str, language: &str, model: &str) -> PathBuf {
-        let results_dir = &self.config.output.results_dir;
-        let subdir = format!("{}-{}", agent_name, model);
-        results_dir.join(&subdir).join(format!(
-            "result_{}_{}_{}.json",
-            agent_name, language, exercise_name
-        ))
-    }
-
-    /// Parses the metadata from .meta/config.json for an exercise.
-    pub fn parse_metadata(&self, exercise_dir: &Path) -> Option<benchmark_types::exercise::ExerciseMetadata> {
-        let meta_config_path = exercise_dir.join(".meta").join("config.json");
-        if !meta_config_path.exists() {
-            tracing::debug!("No metadata file found at {:?}", meta_config_path);
-            return None;
-        }
-        match std::fs::read_to_string(&meta_config_path) {
-            Ok(content) => {
-                match serde_json::from_str::<benchmark_types::exercise::ExerciseMetadata>(&content) {
-                    Ok(metadata) => Some(metadata),
-                    Err(e) => {
-                        warn!("Failed to parse metadata at {}: {}", meta_config_path.display(), e);
-                        None
-                    }
-                }
-            }
-            Err(e) => {
-                warn!("Failed to read metadata file {}: {}", meta_config_path.display(), e);
-                None
-            }
         }
     }
 
@@ -727,5 +571,71 @@ impl ExerciseRunner {
                 Ok(vec!["sonnet".to_string(), "qwen3-coder-next".to_string()])
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn runner() -> ExerciseRunner {
+        ExerciseRunner::new(Arc::new(Config::default()))
+    }
+
+    #[test]
+    fn languages_come_from_the_bundle() {
+        assert_eq!(
+            runner().get_available_languages(),
+            vec!["cpp", "go", "java", "javascript", "python", "rust"]
+        );
+    }
+
+    #[test]
+    fn exercises_are_discovered_per_language() {
+        let exercises = runner().get_exercises_for_language("rust");
+        assert_eq!(exercises.len(), 30);
+        assert!(exercises.contains(&"alphametics".to_string()));
+    }
+
+    #[test]
+    fn java_exercise_carries_relative_paths_only() {
+        let exercise = runner().find_exercise("java", "series").expect("series exists");
+
+        assert_eq!(exercise.source_file.as_deref(), Some("src/main/java/Series.java"));
+        assert_eq!(exercise.test_file.as_deref(), Some("src/test/java/SeriesTest.java"));
+        assert_eq!(exercise.reference_dir.as_deref(), Some(".meta/src/reference/java"));
+        assert_eq!(exercise.solution_files, vec!["src/main/java/Series.java"]);
+        assert_eq!(exercise.test_files, vec!["src/test/java/SeriesTest.java"]);
+        assert_eq!(exercise.example_files, vec![".meta/src/reference/java/Series.java"]);
+
+        // The model must never contain absolute host paths.
+        for path in exercise
+            .example_files
+            .iter()
+            .chain(&exercise.solution_files)
+            .chain(&exercise.test_files)
+        {
+            assert!(!path.starts_with('/'), "absolute path leaked into Exercise: {path}");
+        }
+    }
+
+    #[test]
+    fn rust_exercise_resolves_metadata_and_reference_dir() {
+        let exercise = runner().find_exercise("rust", "alphametics").expect("alphametics exists");
+
+        assert!(exercise.test_files.contains(&"tests/alphametics.rs".to_string()));
+        assert!(exercise.example_files.contains(&".meta/example.rs".to_string()));
+        assert!(exercise.solution_files.contains(&"src/lib.rs".to_string()));
+        assert_eq!(exercise.reference_dir.as_deref(), Some(".meta"));
+        // Java-only fields stay empty for other languages.
+        assert!(exercise.source_file.is_none());
+        assert!(exercise.test_file.is_none());
+    }
+
+    #[test]
+    fn deprecated_and_unknown_exercises_are_not_found() {
+        let runner = runner();
+        assert!(runner.find_exercise("go", "counter").is_none());
+        assert!(runner.find_exercise("rust", "not-a-real-exercise").is_none());
     }
 }

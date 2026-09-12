@@ -12,7 +12,7 @@ pub use claude::ClaudeAgent;
 pub use pi::PiAgent;
 pub use claude_message_processor::ClaudeMessageProcessor;
 pub use pi_message_processor::PiMessageProcessor;
-pub use exercise_files::{copy_exercise_files, create_temp_work_dir};
+pub use exercise_files::{materialize_exercise, create_temp_work_dir};
 
 // =============================================================================
 // Tests

@@ -1,93 +1,96 @@
-//! Shared exercise file-copy logic used by all agents.
+//! Shared exercise materialization used by all agents.
 //!
-//! Extracted from ReferenceAgent, ClaudeAgent, and PiAgent to eliminate
-//! duplicated copy-and-patch boilerplate.
+//! Exercises live in the compiled-in [`ExerciseSource`]; this module writes the
+//! files an exercise needs into a per-run temporary work directory that is then
+//! bind-mounted into Docker at `/workspace`. No host exercise tree is required.
 
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use tracing::{debug, info};
 use benchmark_types::exercise::Exercise;
-use walkdir::WalkDir;
+use benchmark_types::ExerciseSource;
 
-/// Copies exercise files from `source_dir` to `dest_dir`, skipping reference
-/// implementations and patching Gradle wrapper properties.
-///
-/// For C++ exercises, files go into a `<exercise_name>` subdirectory inside
-/// `dest_dir` so the build system finds them at the expected path.
-pub fn copy_exercise_files(
+/// True when a relative exercise path lives under the `.meta/` tree, which is
+/// never written into the container (it holds metadata and reference solutions).
+fn is_meta_path(relative: &str) -> bool {
+    relative == ".meta" || relative.starts_with(".meta/")
+}
+
+/// Writes one exercise-relative file from `source` into `dest`.
+fn write_file(
+    source: &dyn ExerciseSource,
     exercise: &Exercise,
-    source_dir: &Path,
-    dest_dir: &Path,
+    relative: &str,
+    dest: &Path,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let Some(bytes) = source.read(&exercise.language, &exercise.name, relative) else {
+        debug!(
+            "Skipping missing exercise file {}/{}/{}",
+            exercise.language, exercise.name, relative
+        );
+        return Ok(());
+    };
+    if let Some(parent) = dest.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    fs::write(dest, bytes)?;
+    Ok(())
+}
+
+/// Materializes an exercise into `dest_dir` from `source`.
+///
+/// `.meta/` is never written into the container. C++ files go into a
+/// `<exercise_name>/` subdirectory (the layout its build system expects). For
+/// Rust, `.meta/Cargo-example.toml` replaces the stub `Cargo.toml`.
+///
+/// Returns the directory holding the exercise files (the C++ subdirectory, or
+/// `dest_dir` itself).
+pub fn materialize_exercise(
+    source: &dyn ExerciseSource,
+    exercise: &Exercise,
+    dest_dir: &Path,
+) -> Result<PathBuf, Box<dyn std::error::Error + Send + Sync>> {
     let exercise_dest = if exercise.language == "cpp" {
         let dest = dest_dir.join(&exercise.name);
         fs::create_dir_all(&dest)?;
-        info!("C++ exercise: copying files to {}", dest.display());
+        info!("C++ exercise: materializing files to {}", dest.display());
         dest
     } else {
         dest_dir.to_path_buf()
     };
 
+    let files = source.list_files(&exercise.language, &exercise.name);
     info!(
-        "Copying exercise files from {:?} to {:?}",
-        source_dir, exercise_dest
+        "Materializing {}/{} ({} files) into {}",
+        exercise.language,
+        exercise.name,
+        files.len(),
+        exercise_dest.display()
     );
 
-    let walker = WalkDir::new(source_dir).into_iter();
-    for entry in walker {
-        let entry = entry?;
-        let source_path = entry.path();
-
-        if source_path.is_dir() {
-            let relative = source_path.strip_prefix(source_dir).unwrap_or(source_path);
-
-            // Skip .meta directory tree
-            if relative.to_string_lossy().contains(".meta") {
-                continue;
-            }
-
-            let dest = exercise_dest.join(relative);
-            fs::create_dir_all(&dest)?;
-        } else {
-            let relative = source_path.strip_prefix(source_dir).unwrap_or(source_path);
-
-            // Skip .meta directory tree entirely (example solutions, configs, etc.)
-            // Must come before the dest computation so these files never reach the container
-            if relative.to_string_lossy().contains(".meta") {
-                debug!("Skipping .meta file: {:?}", source_path);
-                continue;
-            }
-            let dest = exercise_dest.join(relative);
-            if let Some(parent) = dest.parent() {
-                fs::create_dir_all(parent)?;
-            }
-            fs::copy(source_path, &dest)?;
-
-            // Note: Gradle 8.7 is pre-installed in the Docker image at
-            // ~/.gradle/wrapper/dists/gradle-8.7-bin/bhs2wmbdwecv87pi65oeuq5iu/.
-            // The wrapper finds it by hash with no network access needed.
-            // No URL patching required.
+    for relative in files {
+        if is_meta_path(&relative) {
+            continue;
         }
+        write_file(source, exercise, &relative, &exercise_dest.join(&relative))?;
     }
 
-    // For Rust exercises, copy Cargo-example.toml to Cargo.toml if it exists.
-    // This replaces the stub Cargo.toml with the one that has all dependency
-    // declarations needed for the exercise. The example.rs source code itself
-    // is NOT copied — only the build configuration.
+    // Rust exercises need the dependency-complete Cargo.toml instead of the stub.
     if exercise.language == "rust" {
-        let cargo_example = source_dir.join(".meta").join("Cargo-example.toml");
-        if cargo_example.exists() {
-            let dest = dest_dir.join("Cargo.toml");
-            fs::copy(&cargo_example, &dest)?;
-            info!("Copied Cargo-example.toml to Cargo.toml");
-        }
+        write_file(
+            source,
+            exercise,
+            ".meta/Cargo-example.toml",
+            &exercise_dest.join("Cargo.toml"),
+        )?;
+        info!("Materialized Cargo-example.toml as Cargo.toml");
     }
 
-    Ok(())
+    Ok(exercise_dest)
 }
 
 /// Creates a temporary working directory for an exercise under `.benchmark-temp/`.
-pub fn create_temp_work_dir(exercise: &Exercise) -> Result<std::path::PathBuf, std::io::Error> {
+pub fn create_temp_work_dir(exercise: &Exercise) -> Result<PathBuf, std::io::Error> {
     let base_dir = std::env::current_dir()?;
     let base_temp_dir = base_dir.join(".benchmark-temp");
     fs::create_dir_all(&base_temp_dir)?;
@@ -101,4 +104,55 @@ pub fn create_temp_work_dir(exercise: &Exercise) -> Result<std::path::PathBuf, s
 
     tracing::info!("Created temporary work directory: {:?}", exercise_temp_dir);
     Ok(exercise_temp_dir)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use benchmark_exercises::EmbeddedSource;
+
+    fn exercise(name: &str, language: &str) -> Exercise {
+        Exercise {
+            name: name.to_string(),
+            language: language.to_string(),
+            source_file: None,
+            test_file: None,
+            reference_dir: None,
+            metadata: None,
+            example_files: Vec::new(),
+            solution_files: Vec::new(),
+            test_files: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn rust_materialization_uses_dependency_cargo_toml_and_skips_meta() {
+        let source = EmbeddedSource::new();
+        let dir = tempfile::tempdir().unwrap();
+
+        materialize_exercise(&source, &exercise("alphametics", "rust"), dir.path()).unwrap();
+
+        // .meta/Cargo-example.toml replaces the dependency-less stub Cargo.toml.
+        let cargo = fs::read_to_string(dir.path().join("Cargo.toml")).unwrap();
+        assert!(cargo.contains("[dependencies]"), "Cargo.toml was not replaced: {cargo}");
+        assert!(cargo.contains("permutohedron"));
+
+        // Real tests are materialized, and .meta is never copied into the container.
+        assert!(dir.path().join("tests/alphametics.rs").exists());
+        assert!(!dir.path().join(".meta").exists());
+    }
+
+    #[test]
+    fn cpp_materialization_nests_under_the_exercise_name() {
+        let source = EmbeddedSource::new();
+        let dir = tempfile::tempdir().unwrap();
+
+        let dest = materialize_exercise(&source, &exercise("allergies", "cpp"), dir.path()).unwrap();
+
+        assert_eq!(dest, dir.path().join("allergies"));
+        assert!(dest.join("CMakeLists.txt").exists());
+        assert!(dest.join("allergies.cpp").exists());
+        // Nothing spills into the temp root.
+        assert!(!dir.path().join("CMakeLists.txt").exists());
+    }
 }

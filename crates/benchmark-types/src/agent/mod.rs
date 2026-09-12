@@ -206,13 +206,14 @@ where
 }
 
 use crate::cancellation::CancellationToken;
+use crate::exercise_source::ExerciseSource;
 
 #[async_trait::async_trait]
 pub trait Agent: Send + Sync {
     async fn run_exercise(
         &self,
         exercise: &crate::exercise::Exercise,
-        host_exercise_dir: &Path,
+        source: &dyn ExerciseSource,
         model: &str,
         thinking_level: Option<&str>,
         results_dir: &Path,
@@ -224,7 +225,7 @@ pub trait Agent: Send + Sync {
     async fn run_exercise_with_timeout(
         &self,
         exercise: &crate::exercise::Exercise,
-        host_exercise_dir: &Path,
+        source: &dyn ExerciseSource,
         model: &str,
         thinking_level: Option<&str>,
         results_dir: &Path,

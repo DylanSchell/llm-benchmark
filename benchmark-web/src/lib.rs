@@ -55,9 +55,7 @@ pub async fn run_web_server() -> anyhow::Result<()> {
 
     // BenchmarkExecutor handles actual execution
     let config_path_str = std::env::var("CONFIG_PATH")
-        .ok()
-        .or(app_config.config.as_ref().map(|c| c.benchmark_path.to_string_lossy().to_string()))
-        .unwrap_or_else(|| "config.yaml".to_string());
+        .unwrap_or_else(|_| "config.yaml".to_string());
     let executor_config = services::benchmark_executor::ExecutorConfig {
         config_path: config_path_str,
         results_dir_override: if std::env::var("RESULTS_DIR").is_ok() {

@@ -1,8 +1,7 @@
 # LLM Benchmark Configuration
 # Copy to config.yaml and customize for your setup.
 
-# Path to the polyglot-benchmark repository
-benchmark_path: "../polyglot-benchmark"
+# Exercises are embedded in the binary; no external checkout is required.
 parallelism: 1
 
 # Inference endpoint configuration (OpenAI-compatible API)

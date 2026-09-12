@@ -36,11 +36,10 @@ impl AppConfig {
 
         if let Some(c) = &config {
             tracing::info!(
-                "Loaded config from {}: parallelism={}, server_port={}, benchmark_path={}",
+                "Loaded config from {}: parallelism={}, server_port={}",
                 config_path,
                 c.parallelism,
                 c.server.port,
-                c.benchmark_path.display()
             );
         } else {
             tracing::warn!("Could not load config from {}: using defaults", config_path);

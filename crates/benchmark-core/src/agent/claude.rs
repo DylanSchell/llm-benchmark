@@ -6,6 +6,7 @@ use tracing::{error, info, warn};
 use benchmark_types::agent::{Agent, AgentResult};
 use benchmark_types::cancellation::CancellationToken;
 use benchmark_types::exercise::Exercise;
+use benchmark_types::ExerciseSource;
 use crate::docker::DockerClient;
 use crate::agent::{reference::ReferenceAgent, ClaudeMessageProcessor};
 use walkdir::WalkDir;
@@ -62,21 +63,9 @@ impl ClaudeAgent {
             );
         }
 
-        if let Some(ref test_path) = exercise.test_path {
-            if test_path.exists() {
-                // Translate host path to container path using exercise_dir prefix.
-                // The container mounts the exercise dir at /workspace.
-                let container_path = if let Some(ref exercise_dir) = exercise.exercise_dir {
-                    if let Ok(relative) = test_path.strip_prefix(exercise_dir) {
-                        format!("/workspace/{}", relative.display())
-                    } else {
-                        test_path.to_string_lossy().to_string()
-                    }
-                } else {
-                    test_path.to_string_lossy().to_string()
-                };
-                prompt.push_str(&format!("Test file location: {}\n", container_path));
-            }
+        // The materialized exercise is mounted at /workspace in the container.
+        if let Some(ref test_file) = exercise.test_file {
+            prompt.push_str(&format!("Test file location: /workspace/{}\n", test_file));
         }
 
         prompt.push_str("\nImplement the solution directly, do not ask me to review.\n");
@@ -134,19 +123,19 @@ impl Agent for ClaudeAgent {
     async fn run_exercise(
         &self,
         exercise: &Exercise,
-        host_exercise_dir: &Path,
+        source: &dyn ExerciseSource,
         model: &str,
         thinking_level: Option<&str>,
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
-        self.run_exercise_with_timeout(exercise, host_exercise_dir, model, thinking_level, results_dir, None).await
+        self.run_exercise_with_timeout(exercise, source, model, thinking_level, results_dir, None).await
     }
 
-    #[tracing::instrument(skip(self), fields(exercise = %exercise.name, language = %exercise.language))]
+    #[tracing::instrument(skip(self, source), fields(exercise = %exercise.name, language = %exercise.language))]
     async fn run_exercise_with_timeout(
         &self,
         exercise: &Exercise,
-        host_exercise_dir: &Path,
+        source: &dyn ExerciseSource,
         _model: &str,
         _thinking_level: Option<&str>,
         _results_dir: &Path,
@@ -159,7 +148,7 @@ impl Agent for ClaudeAgent {
 
         let temp_work_dir = super::exercise_files::create_temp_work_dir(exercise)?;
 
-        super::exercise_files::copy_exercise_files(exercise, host_exercise_dir, &temp_work_dir)?;
+        super::exercise_files::materialize_exercise(source, exercise, &temp_work_dir)?;
 
         let prompt = Self::create_exercise_prompt(exercise, &temp_work_dir)?;
 

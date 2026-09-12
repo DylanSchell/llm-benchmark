@@ -18,9 +18,6 @@ pub struct Config {
     #[serde(default = "default_parallelism")]
     pub parallelism: u32,
 
-    #[serde(default = "default_benchmark_path")]
-    pub benchmark_path: PathBuf,
-
     #[serde(default)]
     pub docker: DockerConfig,
 
@@ -51,10 +48,6 @@ fn default_parallelism() -> u32 {
     1
 }
 
-fn default_benchmark_path() -> PathBuf {
-    PathBuf::from("../polyglot-benchmark")
-}
-
 fn default_inference_endpoint() -> String {
     "http://localhost:8000/v1".to_string()
 }
@@ -62,15 +55,7 @@ fn default_inference_endpoint() -> String {
 impl Config {
     pub fn load(path: &str) -> Result<Self, anyhow::Error> {
         let content = std::fs::read_to_string(path)?;
-        let mut config: Config = serde_yaml::from_str(&content)?;
-        
-        // Resolve relative benchmark_path relative to config file directory
-        if !config.benchmark_path.is_absolute() {
-            if let Some(parent) = std::path::Path::new(path).parent() {
-                config.benchmark_path = parent.join(&config.benchmark_path);
-            }
-        }
-        
+        let config: Config = serde_yaml::from_str(&content)?;
         Ok(config)
     }
 
@@ -80,11 +65,6 @@ impl Config {
         // Validate parallelism
         if self.parallelism < 1 {
             return Err(format!("parallelism must be at least 1, got: {}", self.parallelism));
-        }
-
-        // Validate benchmark path exists
-        if !self.benchmark_path.exists() {
-            return Err(format!("benchmark_path does not exist: {:?}", self.benchmark_path));
         }
 
         // Validate docker configuration
@@ -618,12 +598,10 @@ mod tests {
     fn test_config_default_values() {
         // Defaults are applied during deserialization, not via Default trait
         let config = Config {
-            benchmark_path: PathBuf::from("../polyglot-benchmark"),
             parallelism: 1,
             inference_endpoint: "http://localhost:8000/v1".to_string(),
             ..Default::default()
         };
-        assert_eq!(config.benchmark_path, PathBuf::from("../polyglot-benchmark"));
         assert_eq!(config.parallelism, 1);
         assert_eq!(config.inference_endpoint, "http://localhost:8000/v1");
     }
