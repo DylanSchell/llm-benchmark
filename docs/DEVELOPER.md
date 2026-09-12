@@ -592,9 +592,9 @@ and it lives in `Cargo.toml`. Cutting one:
    git push github main --follow-tags
    ```
 
-   The tag starts `.github/workflows/build.yml`, which builds both architectures, runs the tests, and
-   attaches the tarballs plus `SHA256SUMS` to a GitHub Release. It refuses to publish if the tag
-   disagrees with `Cargo.toml`.
+   The tag starts `.github/workflows/build.yml`, which builds and tests every platform
+   (`linux/{x64,arm64}` and `macos/{arm64,x64}`) and attaches the tarballs plus `SHA256SUMS` to a
+   GitHub Release. It refuses to publish if the tag disagrees with `Cargo.toml`.
 
 There is no release branch and no manual build — the workflow is the build.
 

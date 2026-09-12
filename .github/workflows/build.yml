@@ -1,9 +1,11 @@
 name: build
 
 # Standard GitHub-hosted runners are free and unmetered for public repositories, so this workflow
-# costs nothing to run here. Two changes would break that, so avoid both: larger runners
-# (`-large`, GPU) are billed regardless of visibility, and self-hosted runners have been billed on
-# the Actions cloud platform since 1 March 2026.
+# costs nothing to run here. That includes the macOS job: a macOS standard runner bills under the
+# same `actions_macos` SKU as any other, not as a larger runner. Two changes would break this, so
+# avoid both — larger runners (`-large`, GPU) are billed even for public repositories, and making
+# this repository private would start billing every job, macOS at $0.062/min against Linux's
+# $0.006 (roughly 10x) for the same wall-clock.
 
 on:
   push:
@@ -31,15 +33,28 @@ jobs:
         run: ./build.sh docker-verify
 
   build:
-    name: build linux/${{ matrix.arch }}
+    name: build ${{ matrix.os }}/${{ matrix.arch }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - runner: ubuntu-24.04      # x86_64
+            os: linux
             arch: x64
+            cross: ""
           - runner: ubuntu-24.04-arm  # aarch64 — free for public repositories
+            os: linux
             arch: arm64
+            cross: ""
+          # One macOS runner covers both Apple slices. The Intel one is genuinely cross-compiled
+          # rather than given its own macos-15-intel job: the macOS SDK is universal, so this costs
+          # no extra runner-minutes, and Apple is retiring Intel anyway (macOS 26 is the last
+          # release for it), so a second runner to build it natively would not be worth the minutes.
+          - runner: macos-15
+            os: macos
+            arch: arm64
+            cross: x86_64-apple-darwin
+            cross_arch: x64
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -66,6 +81,12 @@ jobs:
           toolchain="$(awk -F'"' '/^channel = /{print $2; exit}' rust-toolchain.toml)"
           rustup toolchain install "${toolchain}" --profile minimal --no-self-update
           rustup default "${toolchain}"
+          # A cross target needs its std, which the minimal profile does not include. It is added
+          # here rather than listed in rust-toolchain.toml so the Apple targets stay off the Linux
+          # runners, where they would be downloaded and never used.
+          if [ -n "${{ matrix.cross }}" ]; then
+            rustup target add "${{ matrix.cross }}"
+          fi
 
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
         with:
@@ -83,7 +104,14 @@ jobs:
       # --workspace is load-bearing: `default-members = ["."]` means a bare `cargo build` produces
       # only the root package's llm-benchmark, silently leaving the other three binaries unbuilt.
       - name: Build release binaries
-        run: cargo build --release --workspace --locked
+        run: |
+          set -euo pipefail
+          cargo build --release --workspace --locked
+          # Bare, so the host target reuses what the test step already compiled; only a genuine
+          # cross target pays for a second set of artifacts.
+          if [ -n "${{ matrix.cross }}" ]; then
+            cargo build --release --workspace --locked --target "${{ matrix.cross }}"
+          fi
 
       - name: Smoke-test the binaries
         # Guards exactly that: a missing binary previously surfaced as `install: cannot stat` during
@@ -93,6 +121,13 @@ jobs:
             "target/release/${bin}" --help >/dev/null
           done
           target/release/llm-benchmark --version
+          # The cross-built slice cannot be run here — that would need Rosetta 2 on an arm64 runner —
+          # so its architecture is asserted by inspection rather than pretended to be executed.
+          if [ -n "${{ matrix.cross }}" ]; then
+            arch="$(lipo -archs "target/${{ matrix.cross }}/release/llm-benchmark")"
+            echo "cross slice ${{ matrix.cross }}: ${arch}"
+            [ "${arch}" = "x86_64" ] || { echo "FAIL: expected x86_64, got ${arch}" >&2; exit 1; }
+          fi
 
       - name: Check the exercise lock is current
         # build.rs rewrites exercises.lock.yaml when the pinned upstreams drift, so a diff here
@@ -108,21 +143,40 @@ jobs:
             # The same reader the version check uses, so there is exactly one parser to get right.
             version="$(bash -c '. ./build.sh >/dev/null 2>&1; runner_version')+${GITHUB_SHA:0:7}"
           fi
-          name="llm-benchmark-${version}-linux-${{ matrix.arch }}"
-          mkdir -p "dist/${name}"
-          install -m 755 target/release/llm-benchmark \
-                          target/release/benchmark-cli \
-                          target/release/benchmark-reporter \
-                          target/release/benchmark-token-report \
-                          "dist/${name}/"
-          # The binary embeds third-party Exercism content, so the notices ship beside it.
-          install -m 644 THIRD_PARTY_NOTICES README.md "dist/${name}/"
-          tar -czf "dist/${name}.tar.gz" -C dist "${name}"
-          ( cd dist && sha256sum "${name}.tar.gz" > "${name}.tar.gz.sha256" )
+
+          # macOS ships shasum, not sha256sum. Both print "<hash>  <name>", so the .sha256 files are
+          # interchangeable and the release job can rebuild SHA256SUMS with whichever it has.
+          if command -v sha256sum >/dev/null 2>&1; then
+            sha256() { sha256sum "$@"; }
+          else
+            sha256() { shasum -a 256 "$@"; }
+          fi
+
+          package() {   # <arch label> <directory holding the built binaries>
+            local name="llm-benchmark-${version}-${{ matrix.os }}-${1}"
+            mkdir -p "dist/${name}"
+            install -m 755 "${2}/llm-benchmark" \
+                            "${2}/benchmark-cli" \
+                            "${2}/benchmark-reporter" \
+                            "${2}/benchmark-token-report" \
+                            "dist/${name}/"
+            # The binary embeds third-party Exercism content, so the notices ship beside it.
+            install -m 644 THIRD_PARTY_NOTICES README.md "dist/${name}/"
+            # COPYFILE_DISABLE stops bsdtar writing AppleDouble ._* entries for the extended
+            # attributes macOS attaches to these files.
+            COPYFILE_DISABLE=1 tar -czf "dist/${name}.tar.gz" -C dist "${name}"
+            ( cd dist && sha256 "${name}.tar.gz" > "${name}.tar.gz.sha256" )
+          }
+
+          package "${{ matrix.arch }}" target/release
+          if [ -n "${{ matrix.cross }}" ]; then
+            package "${{ matrix.cross_arch }}" "target/${{ matrix.cross }}/release"
+          fi
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: llm-benchmark-linux-${{ matrix.arch }}
+          # The macOS artifact carries both slices, since the Intel build rides on the arm64 runner.
+          name: llm-benchmark-${{ matrix.os }}-${{ matrix.arch }}
           path: |
             dist/*.tar.gz
             dist/*.sha256

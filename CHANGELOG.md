@@ -17,11 +17,18 @@
 ## GitHub Actions
 
 - **`.github/workflows/build.yml`** builds and tests all four binaries (`llm-benchmark`,
-  `benchmark-cli`, `benchmark-reporter`, `benchmark-token-report`) on `ubuntu-24.04` and
-  `ubuntu-24.04-arm`, and uploads them as tarballs with `README.md` and `THIRD_PARTY_NOTICES`. Free
-  and unmetered, because standard GitHub-hosted runners are free for public repositories.
-- **Tagging `v<version>` publishes a release** with both tarballs and `SHA256SUMS`. The workflow
-  refuses to publish if the tag disagrees with `Cargo.toml`.
+  `benchmark-cli`, `benchmark-reporter`, `benchmark-token-report`) on `ubuntu-24.04`,
+  `ubuntu-24.04-arm` and `macos-15`, and uploads them as tarballs with `README.md` and
+  `THIRD_PARTY_NOTICES`. Free and unmetered, because standard GitHub-hosted runners are free for
+  public repositories — macOS included, since it bills under that same standard SKU.
+- **macOS ships both slices from one runner.** `macos-15` is Apple silicon, so the Intel slice is
+  cross-compiled there (`x86_64-apple-darwin`) rather than given its own `macos-15-intel` job: the
+  macOS SDK is universal, so it costs no extra runner-minutes, and Apple is retiring Intel anyway.
+  That slice cannot be *executed* on an arm64 runner without Rosetta, so its architecture is
+  asserted with `lipo -archs` instead of by running it. Building on macOS 15 does not raise the
+  floor either: the arm64 slice declares `minos=11.0` and the Intel one `10.12`.
+- **Tagging `v<version>` publishes a release** with every platform's tarball and `SHA256SUMS`. The
+  workflow refuses to publish if the tag disagrees with `Cargo.toml`.
 - **A `docker-inputs` job** runs `./build.sh docker-verify` on every push, so a `docker/` edit that
   forgot a version bump fails on the PR. It needs neither Docker nor the Rust toolchain.
 - Also gated: the exercise lock (`git diff --exit-code exercises.lock.yaml`) proves the committed lock
