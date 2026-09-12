@@ -19,7 +19,7 @@ Exercism tracks (see `exercises.manifest.yaml`) and caches it under `target/`.
 The runner container needs Java, Maven, Gradle, Node.js, Go, Rust, and Claude Code CLI pre-installed:
 
 ```bash
-docker build -f docker/Dockerfile.runner -t llm-benchmark/runner:latest .
+./build.sh docker-build
 ```
 
 ### 2. Configure
@@ -125,7 +125,7 @@ benchmark-web/              # Axum web server with REST API + SSE streaming
 benchmark-token-report/     # Token statistics report tool
 benchmark-reporter/         # Full markdown report generator
 docker/
-  Dockerfile.runner         # Container image with build tools
+  Dockerfile.runner.debian  # Container image with build tools
 config.yaml                 # Configuration file
 ```
 

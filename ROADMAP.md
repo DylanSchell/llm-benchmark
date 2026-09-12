@@ -337,19 +337,19 @@ developers can't run the project without reverse-engineering the config schema.
 **Suggestion:** Add `config.example.yaml` with all fields documented, and
 add `config.yaml` to `.gitignore`.
 
-### 6.3 No `Dockerfile` documentation
-`docker/Dockerfile.runner` and `docker/Dockerfile.runner.debian` exist but
-there's no README explaining how to build them or what dependencies they need.
-The `gradle-8.7-bin.zip` is a 140MB binary in the repo.
+### 6.3 No `Dockerfile` documentation — *in progress*
+The legacy Alpine `docker/Dockerfile.runner` and the 140 MB `docker/gradle-8.7-bin.zip` it
+required have been removed; `docker/Dockerfile.runner.debian` is now the single runner image,
+built via `./build.sh docker-build`. Build instructions and the image-version policy are being
+added as `docker/README.md`.
 
-**Suggestion:** Add a `docker/README.md` with build instructions. Move the
-Gradle zip to a `.gitignore`-protected download script (e.g., `docker/fetch-deps.sh`).
+**Tracking:** `docs/specs/runner-image.md` (T9).
 
-### 6.4 Missing `Dockerfile.runner` inspection needed
-The Runner Dockerfile should be reviewed to ensure:
-- It installs `pi`, `claude`, and language toolchains correctly
-- The base image is pinned to a SHA256 digest for reproducibility
-- `COPY` commands are ordered for layer caching efficiency
+### 6.4 Runner Dockerfile inspection — *in progress*
+Base-image digest pinning, agent/toolchain pinning, and layer ordering are covered by
+`docs/specs/runner-image.md`.
+
+**Tracking:** `docs/specs/runner-image.md` (T3, T8).
 
 ---
 

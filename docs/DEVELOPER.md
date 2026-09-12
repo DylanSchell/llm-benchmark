@@ -54,9 +54,7 @@ output:
 3. Build the Docker runner image:
 
 ```bash
-cd docker
-docker build -t llm-benchmark/runner:latest -f Dockerfile.runner .
-cd ..
+./build.sh docker-build
 ```
 
 ---
@@ -74,7 +72,7 @@ This creates the `llm-benchmark` launcher binary.
 ### Build Docker Image
 
 ```bash
-docker build -t llm-benchmark/runner:latest -f docker/Dockerfile.runner .
+./build.sh docker-build
 ```
 
 ---
@@ -228,7 +226,7 @@ impl LanguageHandlerRegistry {
 
 ### Step 3: Update Docker Image
 
-Add language runtime to `docker/Dockerfile.runner`:
+Add language runtime to `docker/Dockerfile.runner.debian`:
 
 ```dockerfile
 # Install Ruby
@@ -238,7 +236,7 @@ RUN apt-get update && apt-get install -y ruby-full bundler && rm -rf /var/lib/ap
 Rebuild the Docker image:
 
 ```bash
-docker build -t llm-benchmark/runner:latest -f docker/Dockerfile.runner .
+./build.sh docker-build
 ```
 
 ### Step 4: Test Your Handler
@@ -410,7 +408,7 @@ benchmark-web/              # Axum web server with REST API + SSE streaming
 benchmark-token-report/     # Token statistics report tool
 benchmark-reporter/         # Full markdown report generator
 docker/
-  Dockerfile.runner         # Container image with build tools
+  Dockerfile.runner.debian  # Container image with build tools
 config.yaml                 # Configuration file
 ```
 
