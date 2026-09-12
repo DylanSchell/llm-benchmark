@@ -406,5 +406,6 @@ All open questions are resolved; the spec is approved for implementation.
 - [x] Drop `host_exercise_dir` from `Agent` trait + claude/pi/reference; relative container paths.
 - [x] Remove `benchmark_path` from config/validate/web; fix `lib.rs:59`.
 - [ ] Offline integration verification (4 languages, no external checkout) — needs Docker.
-- [ ] Reproducibility check (two clean builds, identical staging hashes).
+- [x] Reproducibility check: two offline clean assembles produce an identical staged tree
+      (2048 files, tree hash `e6df1f3d…`) and no `exercises.lock.yaml` drift.
 - [x] Docs + `THIRD_PARTY_NOTICES`.
