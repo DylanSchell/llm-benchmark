@@ -44,7 +44,7 @@ cp config.example.yaml config.yaml
 
 ```yaml
 docker:
-  image: llm-benchmark/runner:latest
+  image: ghcr.io/dylanschell/llm-benchmark-runner:latest
   memory: 2g
 
 output:

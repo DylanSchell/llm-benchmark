@@ -36,7 +36,7 @@ benchmark:
 # Docker container settings
 docker:
   # Docker image for running exercises
-  image: llm-benchmark/runner:latest
+  image: ghcr.io/dylanschell/llm-benchmark-runner:latest
   
   # Container memory limit (e.g., "2g", "512m")
   memory: 2g
@@ -99,7 +99,7 @@ benchmark:
 
 | Property | Type | Default                       | Description |
 |----------|------|-------------------------------|-------------|
-| `docker.image` | string | `llm-benchmark/runner:latest` | Docker image for execution containers |
+| `docker.image` | string | `ghcr.io/dylanschell/llm-benchmark-runner:latest` | Docker image for execution containers |
 | `docker.memory` | string | `2g`                          | Container memory limit |
 | `docker.timeout` | int | `300`                         | Execution timeout in seconds |
 | `docker.environment` | string[] | `[]`                          | Additional environment variables |
@@ -118,7 +118,7 @@ benchmark:
 **Example:**
 ```yaml
 docker:
-  image: llm-benchmark/runner:v1.2.0
+  image: ghcr.io/dylanschell/llm-benchmark-runner:1.2.0
   memory: 4g
   timeout: 600
   environment:
@@ -283,7 +283,7 @@ public record OutputConfig(
 parallelism: 4
 
 docker:
-  image: llm-benchmark/runner:latest
+  image: ghcr.io/dylanschell/llm-benchmark-runner:latest
 
 output:
   results_dir: ./results
@@ -296,7 +296,7 @@ benchmark:
   parallelism: 8
 
 docker:
-  image: llm-benchmark/runner:v1.2.0
+  image: ghcr.io/dylanschell/llm-benchmark-runner:1.2.0
   memory: 4g
   timeout: 600
   environment:
@@ -327,7 +327,7 @@ benchmark:
   parallelism: 2
 
 docker:
-  image: llm-benchmark/runner:latest
+  image: ghcr.io/dylanschell/llm-benchmark-runner:latest
   memory: 2g
   timeout: 300
 

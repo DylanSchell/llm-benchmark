@@ -33,7 +33,7 @@ Create a `config.yaml` in the project root (copy from `config.yaml.example` if a
 parallelism: 4
 
 docker:
-  image: llm-benchmark/runner:latest
+  image: ghcr.io/dylanschell/llm-benchmark-runner:latest
   memory: 2g
   timeout: 300
 
@@ -190,7 +190,7 @@ All configuration lives in `config.yaml`:
 | Key | Type | Default                             | Description |
 |-----|------|-------------------------------------|-------------|
 | `parallelism` | int | 1                                   | Number of concurrent exercises |
-| `docker.image` | string | `llm-benchmark/runner:latest` | Docker image for exercise containers |
+| `docker.image` | string | `ghcr.io/dylanschell/llm-benchmark-runner:latest` | Docker image for exercise containers |
 | `docker.memory` | string | `2g`                                | Container memory limit |
 | `docker.timeout` | int | 300                                 | Container execution timeout (seconds) |
 | `output.results_dir` | string | `./benchmark-results`               | Directory for result files |

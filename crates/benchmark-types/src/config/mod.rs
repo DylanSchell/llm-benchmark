@@ -112,7 +112,7 @@ pub struct DockerConfig {
 }
 
 fn default_image() -> String {
-    "llm-benchmark/runner:latest".to_string()
+    "ghcr.io/dylanschell/llm-benchmark-runner:latest".to_string()
 }
 
 fn default_work_dir() -> String {

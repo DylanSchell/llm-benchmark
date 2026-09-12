@@ -319,7 +319,7 @@ impl BenchmarkRunner {
 parallelism: 4                    # Concurrent executions
 
 docker:
-  image: llm-benchmark/runner:latest
+  image: ghcr.io/dylanschell/llm-benchmark-runner:latest
   memory: 2g                      # Container memory limit
   timeout: 300                    # Execution timeout (seconds)
 

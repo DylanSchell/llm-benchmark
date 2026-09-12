@@ -1,3 +1,18 @@
+# Changelog — runner image packaging & publishing
+
+## Publishing
+
+- **The image is built under its published name.** `build.sh` now tags
+  `ghcr.io/dylanschell/llm-benchmark-runner:{<version>,latest}` by default, overridable with
+  `--image`. `config.yaml`, `config.example.yaml` and `DockerConfig::default_image()` default to
+  that same name, so the image you run and the image you publish are the same string.
+- **`./build.sh docker-push`** — publishing is an explicit verb instead of a side effect of a
+  build. It re-runs `docker-verify` before pushing, refuses when the image is absent locally, and
+  refuses to publish an image containing Claude Code.
+- **Claude Code is no longer packaged by default** (`docker/agents.env`, `INSTALL_CLAUDE=0`),
+  which is what makes the image publishable at all. See `docker/README.md` for the licensing
+  position and for how to build a local-only image that includes it.
+
 # Changelog — feature/embedded-exercises
 
 ## Embedded exercise suite

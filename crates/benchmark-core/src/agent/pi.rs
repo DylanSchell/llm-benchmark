@@ -734,7 +734,7 @@ mod models_json_tests {
         env.insert("OPENAI_BASE_URL".to_string(), "http://host.docker.internal:8080/v1".to_string());
         env.insert("OPENAI_API_KEY".to_string(), "api-key".to_string());
         DockerClient::new(DockerConfig {
-            image: "llm-benchmark/runner:latest".to_string(),
+            image: "ghcr.io/dylanschell/llm-benchmark-runner:latest".to_string(),
             memory: "2g".to_string(),
             timeout: 3600,
             work_dir: "/workspace".to_string(),

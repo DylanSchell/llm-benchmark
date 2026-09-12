@@ -28,18 +28,58 @@ The image is a separate artifact from the binary and is versioned separately —
 ```bash
 ./build.sh docker-build                        # host arch
 ./build.sh docker-build --arch linux/amd64     # explicit platform
-./build.sh docker-build --tag my/runner:test   # extra tag
+./build.sh docker-build --tag my/runner:test   # primary tag override
+./build.sh docker-build --image ghcr.io/you/fork   # different repository
 ```
 
-Every build tags the image twice: `llm-benchmark/runner:${RUNNER_VERSION}` and
-`llm-benchmark/runner:latest`. `:latest` is the development convenience that `config.yaml`
-expects; use the version tag when you need to record exactly which image produced a result.
+Every build tags the image twice: `<image>:${RUNNER_VERSION}` and `<image>:latest`, where `<image>`
+defaults to `ghcr.io/dylanschell/llm-benchmark-runner`. `:latest` is the development convenience
+that `config.yaml` expects; use the version tag when you need to record exactly which image
+produced a result.
+
+The default name is the *published* name, and `config.yaml`,
+`config.example.yaml` and `DockerConfig::default_image()` all default to it, so the image you run
+and the image you publish are the same string. Under a local-only name the two could silently
+diverge.
 
 Always build through `build.sh`. The Dockerfile's build args deliberately have **no defaults**,
 so a bare `docker build` fails loudly instead of quietly producing an unpinned image.
 
 A build is slow by design — it downloads the JDK, Go, Node, Rust, Gradle and the agent CLIs.
 The result is cached by layer, so a re-pin usually only rebuilds the layers below it.
+
+## Publishing
+
+**Building never contacts a registry.** Publishing is the separate `docker-push` verb, because
+sending several GB to a registry — or publishing an image we have no right to distribute — is not
+a build's decision to make:
+
+```bash
+./build.sh docker-push
+```
+
+It pushes `<image>:${RUNNER_VERSION}` and then `<image>:latest`, and refuses to run unless:
+
+- `docker-verify` passes, so the tag cannot describe inputs that have since changed;
+- the image is present locally, so it can never push a stale or unintended one;
+- `INSTALL_CLAUDE=0`. Claude Code carries no redistribution right, so an image containing it must
+  not be published anywhere — see [Licensing](#licensing). Override deliberately with
+  `PUSH_UNLICENSED=1`.
+
+Authenticate first:
+
+```bash
+docker login ghcr.io
+```
+
+What it publishes is **single-platform**: whichever architecture you built. Shipping both
+`linux/amd64` and `linux/arm64` means building and pushing each, or moving to a
+`buildx --platform linux/amd64,linux/arm64 --push` build — which cannot also load into the local
+image store, so it is a different workflow.
+
+A published package is **private by default**. Container registry storage and bandwidth are
+currently free, so visibility is a sharing decision rather than a cost one; change it under
+*Package settings → Change visibility* if you want anonymous pulls.
 
 ## Versioning
 
@@ -62,6 +102,20 @@ which fails when either:
 
 - a `docker/` input changed without `RUNNER_VERSION` being bumped, or
 - `RUNNER_VERSION` was bumped without a rebuild to refresh `runner.lock`.
+
+### Image digest reproducibility
+
+The same `docker/` inputs produce the same image digest on every build, so a published tag can be
+re-created byte-for-byte. This is why the build passes `--provenance=false`.
+
+By default buildx wraps the image in an OCI *index* carrying a provenance attestation whose payload
+embeds the build timestamp. That left the image config and all 19 layers identical between rebuilds
+while the index digest changed every time — so re-pushing a versioned tag silently rewrote it to a
+new digest, breaking anyone pinning by digest. With provenance off the build emits a plain OCI
+manifest, and two consecutive builds give the same digest (verified).
+
+The trade-off is the loss of provenance attestations. For a runner image that is rebuilt from
+pinned inputs and recorded in `runner.lock`, reproducibility is worth more than an attestation.
 
 ### Bump policy
 
@@ -172,7 +226,7 @@ The choice is recorded twice in the built image — the `com.llm-benchmark.agent
 history:
 
 ```bash
-docker image inspect llm-benchmark/runner:1.2.0 \
+docker image inspect ghcr.io/dylanschell/llm-benchmark-runner:1.2.0 \
   --format '{{index .Config.Labels "com.llm-benchmark.agents"}}'
 ```
 
@@ -239,8 +293,8 @@ and needs a version bump:
 A running container reports its version:
 
 ```bash
-docker run --rm llm-benchmark/runner:latest cat /etc/llm-benchmark/runner-version
-docker image inspect llm-benchmark/runner:latest \
+docker run --rm ghcr.io/dylanschell/llm-benchmark-runner:latest cat /etc/llm-benchmark/runner-version
+docker image inspect ghcr.io/dylanschell/llm-benchmark-runner:latest \
   --format '{{ index .Config.Labels "org.opencontainers.image.version" }}'
 ```
 
@@ -269,3 +323,12 @@ release's `SHA256SUMS`.
 **`claude` is not found inside a container.** The default image is pi-only. Set
 `INSTALL_CLAUDE=1` in `docker/agents.env`, rebuild, and use the result locally — it is not
 redistributable (see [Licensing](#licensing)).
+
+**`docker-push` fails with `permission_denied` or "token provided does not match expected
+scopes".** The registry rejected the credential, not the image. Run `docker login ghcr.io`. Note
+that GitHub Packages requires a **classic** personal access token with `write:packages`; a
+fine-grained token is refused at the token exchange, before any layer is sent.
+
+**`docker-push` fails with "is not present locally".** The image has not been built under the
+current `<image>` name — for example after `--image` was passed to the push but not the build.
+Run `./build.sh docker-build` first.

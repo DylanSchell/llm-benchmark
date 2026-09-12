@@ -45,7 +45,7 @@ mounts a workspace; the image provides the language toolchain **and** the agent 
       `RUNNER_VERSION` bump, and **zero** when inputs and version are in sync.
 - [x] `docker/pin-agents.sh` re-resolves every pin in one command, prints a diff, and bumps
       the runner patch version.
-- [ ] `docker run --rm llm-benchmark/runner:<VERSION> cat /etc/llm-benchmark/runner-version`
+- [ ] `docker run --rm ghcr.io/dylanschell/llm-benchmark-runner:<VERSION> cat /etc/llm-benchmark/runner-version`
       prints `<VERSION>`.
 - [x] `docker/README.md` documents the bump policy table.
 - [x] No doc references the Alpine `Dockerfile.runner`, and no doc shows a build context that
@@ -140,6 +140,19 @@ Dropping it loses nothing automated. The dead `collect_claude_trace` path goes w
     switch lives in `docker/agents.env` rather than in a `--build-arg` so that
     `docker_input_hash` covers it — two images built from the same inputs must contain the same
     agents, so flipping the variant requires a version bump like any other image change.
+12. **The image is built under its published name, and publishing is a separate verb.** The build
+    tags `ghcr.io/dylanschell/llm-benchmark-runner:${RUNNER_VERSION}` and `:latest`, and
+    `config.yaml` plus `DockerConfig::default_image()` default to that same name — so the artifact
+    you run and the artifact you publish are the same string, which a local-only name could not
+    guarantee. `docker-push` is deliberately not folded into the build: it re-runs `docker-verify`
+    first, and refuses to publish an image containing Claude Code, because Anthropic grants no
+    redistribution right.
+13. **Builds disable buildx provenance, so a published tag is reproducible.** `--provenance=false`
+    makes the build emit a plain OCI manifest instead of an index wrapping a provenance attestation
+    whose payload embeds the build time. Without it, every rebuild produced a new index digest while
+    the image config and all 19 layers stayed identical — so re-pushing a versioned tag silently
+    changed it. This is a build-tooling change that does not alter image content, so it needs no
+    `RUNNER_VERSION` bump under the policy above.
 
 ## Design
 
@@ -295,7 +308,7 @@ Two easy-to-miss entries: **adding a language is both a binary and an image chan
 ```bash
 # Build the runner image (only supported path; passes pin build-args)
 ./build.sh docker-build
-./build.sh docker-build --arch linux/arm64 --tag llm-benchmark/runner:1.0.0
+./build.sh docker-build --arch linux/arm64 --tag ghcr.io/dylanschell/llm-benchmark-runner:1.0.0
 
 # Policy guard — fails if docker/ inputs changed without a version bump
 ./build.sh docker-verify
@@ -305,7 +318,7 @@ Two easy-to-miss entries: **adding a language is both a binary and an image chan
 ./build.sh docker-repin --minor --dry-run
 
 # Introspect a built image
-docker run --rm llm-benchmark/runner:1.0.0 cat /etc/llm-benchmark/runner-version
+docker run --rm ghcr.io/dylanschell/llm-benchmark-runner:1.0.0 cat /etc/llm-benchmark/runner-version
 
 # Unchanged
 cargo build --release
@@ -418,7 +431,7 @@ Steps 1–2 are independent; 3 depends on 2; 4 depends on 3; 5 depends on 4; 6 i
 
 - [x] **T8 — Bake the version into the image** (landed with T7 — the Dockerfile `ARG` and the `build.sh` that supplies it have to move together)
   - Acceptance: label + `/etc/llm-benchmark/runner-version` present.
-  - Verify: `docker run --rm llm-benchmark/runner:<VERSION> cat /etc/llm-benchmark/runner-version`.
+  - Verify: `docker run --rm ghcr.io/dylanschell/llm-benchmark-runner:<VERSION> cat /etc/llm-benchmark/runner-version`.
   - Files: `docker/Dockerfile.runner.debian`.
 
 - [x] **T9 — Write `docker/README.md`**
@@ -448,3 +461,16 @@ Steps 1–2 are independent; 3 depends on 2; 4 depends on 3; 5 depends on 4; 6 i
     pi extensions; `docker-verify` reports `v1.2.0 [pi]`.
   - Files: `docker/agents.env` (new), `docker/Dockerfile.runner.debian`, `build.sh`,
     `docker/pin-agents.sh`, `docker/README.md`.
+
+- [x] **T13 — Build under the published image name; make pushing an explicit verb**
+  - Acceptance: a default build tags `ghcr.io/dylanschell/llm-benchmark-runner:{<version>,latest}`;
+    `config.yaml`, `config.example.yaml` and `DockerConfig::default_image()` agree with it; the
+    repository is overridable with `--image`; `docker-push` is opt-in, verifies the inputs first,
+    and refuses to publish an image containing Claude Code.
+  - Verify: `./build.sh docker-verify` is unaffected (`build.sh` is not a hashed input, so no
+    `RUNNER_VERSION` bump is required); `docker-push` exits 1 with a licensing explanation when
+    `INSTALL_CLAUDE=1`, and with "not present locally" for a repository that has no image;
+    two consecutive `docker-build` runs from unchanged inputs report the same image digest.
+  - Files: `build.sh`, `crates/benchmark-types/src/config/mod.rs`,
+    `crates/benchmark-core/src/agent/pi.rs`, `config.yaml`, `config.example.yaml`,
+    `docker/README.md`.

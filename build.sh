@@ -5,12 +5,22 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Canonical image name. Build, run and push all derive from this, so there is exactly one name for
+# the artifact and no way to publish an image under a name you never run. Override with --image
+# (or IMAGE_REPO=…) when building a fork.
+DEFAULT_IMAGE_REPO="ghcr.io/dylanschell/llm-benchmark-runner"
+
+image_repo() {
+    printf '%s' "${IMAGE_REPO:-$DEFAULT_IMAGE_REPO}"
+}
+
 usage() {
     cat >&2 <<EOF
 Usage: $(basename "$0") <command> [options]
 
 Commands:
   docker-build   Build the runner Docker image (default)
+  docker-push    Publish the built image to its registry (never automatic)
   docker-run     Run a command inside the runner container
   docker-verify  Check docker/ inputs against docker/runner.lock
   cargo          Pass-through to cargo
@@ -19,9 +29,11 @@ Commands:
 
 Options:
   --arch         Target architecture for Docker build (linux/amd64 or linux/arm64)
-  --tag          Image tag (default: llm-benchmark/runner:latest)
+  --tag          Image tag (default: <image>:latest)
+  --image        Image repository (default: ${DEFAULT_IMAGE_REPO})
 
-The image is always tagged a second time as llm-benchmark/runner:\$(cat docker/RUNNER_VERSION).
+Every build tags the image twice: <image>:latest and <image>:\$(cat docker/RUNNER_VERSION).
+Building never contacts a registry; publishing is the separate, explicit docker-push verb.
 EOF
     exit 1
 }
@@ -185,7 +197,9 @@ PIN_NAMES=(
 )
 
 docker_build() {
-    local tag="${TAG:-llm-benchmark/runner:latest}"
+    local repo
+    repo="$(image_repo)"
+    local tag="${TAG:-${repo}:latest}"
     local arch="${ARCH:-}"
     local platform_args=()
     if [[ -n "$arch" ]]; then
@@ -200,7 +214,7 @@ docker_build() {
     local version agents
     version="$(runner_version)"
     agents="$(agents_list)"
-    local version_tag="llm-benchmark/runner:${version}"
+    local version_tag="${repo}:${version}"
 
     local -a build_args=()
     local name
@@ -219,9 +233,15 @@ docker_build() {
     fi
     echo "Version: ${version} (also tagged ${version_tag})" >&2
 
+    # --provenance=false: buildx otherwise attaches a provenance attestation whose payload embeds
+    # the build timestamp, so the published OCI *index* digest changes on every rebuild even when
+    # every layer and the image config are identical. The image content is reproducible either way,
+    # but without this a re-push rewrites a versioned tag to a new digest, which breaks anyone
+    # pinning by digest and makes :<VERSION> mutable. See docker/README.md.
     docker buildx build \
         "${platform_args[@]}" \
         "${build_args[@]}" \
+        --provenance=false \
         --tag "${tag}" \
         --tag "${version_tag}" \
         -f docker/Dockerfile.runner.debian \
@@ -232,8 +252,48 @@ docker_build() {
     echo "Recorded ${version} in docker/runner.lock" >&2
 }
 
+# Publishing is a separate verb on purpose: building an image and shipping gigabytes to a registry
+# are different decisions, and neither an accidental push nor a published image we have no right to
+# distribute is recoverable. So this never runs as part of a build.
+docker_push() {
+    local repo version host
+    repo="$(image_repo)"
+    version="$(runner_version)"
+
+    load_agents
+    # Claude Code carries no redistribution right (see docker/README.md), so an image containing it
+    # must not be published anywhere, private or public.
+    if [[ "${INSTALL_CLAUDE}" == "1" && "${PUSH_UNLICENSED:-0}" != "1" ]]; then
+        echo "FAIL: this image packages Claude Code, which Anthropic licenses \"all rights reserved\"" >&2
+        echo "      with no redistribution grant, so it must not be pushed to a registry." >&2
+        echo "      Set INSTALL_CLAUDE=0 in docker/agents.env and rebuild, or set PUSH_UNLICENSED=1" >&2
+        echo "      to override deliberately." >&2
+        return 1
+    fi
+
+    # The tag has to describe an image we can reproduce, so check the inputs before they leave.
+    docker_verify || return 1
+
+    if ! docker image inspect "${repo}:${version}" >/dev/null 2>&1; then
+        echo "FAIL: ${repo}:${version} is not present locally — build it first:" >&2
+        echo "      ./build.sh docker-build" >&2
+        return 1
+    fi
+
+    host="${repo%%/*}"
+    echo "Pushing ${repo}:${version} then ${repo}:latest ..." >&2
+    if ! docker push "${repo}:${version}" || ! docker push "${repo}:latest"; then
+        echo "Push failed. If the registry rejected the credentials, authenticate first:" >&2
+        echo "    docker login ${host}" >&2
+        return 1
+    fi
+    echo "Published ${repo}:${version} and ${repo}:latest" >&2
+}
+
 docker_run() {
-    local tag="${TAG:-llm-benchmark/runner:latest}"
+    local repo
+    repo="$(image_repo)"
+    local tag="${TAG:-${repo}:latest}"
     docker run --rm -it "${tag}" "$@"
 }
 
@@ -255,12 +315,14 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     # Parse options (can appear before or after the command)
     ARCH=""
     TAG=""
+    IMAGE_REPO=""
     COMMAND=""
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --arch) ARCH="$2"; shift 2 ;;
-            --tag)  TAG="$2";   shift 2 ;;
-            docker-build|build|docker-run|run|docker-verify|verify|cargo|test|clean)
+            --arch)  ARCH="$2";       shift 2 ;;
+            --tag)   TAG="$2";        shift 2 ;;
+            --image) IMAGE_REPO="$2";  shift 2 ;;
+            docker-build|build|docker-push|push|docker-run|run|docker-verify|verify|cargo|test|clean)
                 COMMAND="$1"
                 shift
                 ;;
@@ -270,6 +332,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 
     case "$COMMAND" in
         docker-build|build)   docker_build ;;
+        docker-push|push)     docker_push ;;
         docker-run|run)       docker_run "$@" ;;
         docker-verify|verify) docker_verify ;;
         cargo)                cargo_cmd "$@" ;;
