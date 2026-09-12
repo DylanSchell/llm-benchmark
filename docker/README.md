@@ -104,6 +104,9 @@ That guard exists because those are the changes that silently alter benchmark re
 than failing: `@babel/core` 7→8, `babel-jest`/`@types/jest` 29→30, `eslint` 8→10 and
 `@types/node` 20→22 are all currently held back for this reason.
 
+pi is handled alongside the npm pins: bumping its version also refreshes `PI_SHA256_X64` and
+`PI_SHA256_ARM64` from the release's `SHA256SUMS`.
+
 Toolchain pins (Go, Rust, uv, fd, Gradle, base image) are **not** re-pinned automatically —
 bump those by hand, and refresh `GRADLE_SHA256` alongside `GRADLE_VERSION`:
 
@@ -121,6 +124,30 @@ Offline. Asserts that every `npm install -g` in the Dockerfile is pinned to a va
 both declared as a build `ARG` and defined in `pins.env`, and that no pin is unused. It
 tokenises the install blocks rather than matching quoted strings, so an unquoted package is
 caught too. `docker-verify` runs this as well.
+
+## Agents
+
+The agents are what the benchmark measures, so their versions are the most consequential pins.
+They are delivered differently, and the difference matters:
+
+**pi — standalone binary.** Installed from the official bun-compiled release asset
+(`pi-linux-x64.tar.gz` / `pi-linux-arm64.tar.gz`, selected with buildx's `TARGETARCH` and verified
+against the release's `SHA256SUMS`), then extracted to `/opt/pi`, which is on `PATH`.
+
+The pi *npm* package requires Node ≥22.19.0 and calls `fs.globSync`, while this image pins Node 20
+for the Exercism JS track. Installing the standalone binary decouples the two: the bun runtime is
+embedded, so pi runs with no Node present at all (verified). Do **not** move pi back to the npm
+package without also moving Node to 22.
+
+The archive vendors `photon_rs_bg.wasm`, `assets/`, `theme/`, `export-html/` and `node_modules/`
+alongside the executable. That is why it is extracted with `--strip-components=1` into `/opt/pi`
+rather than flattened into `/usr/local/bin` — flattening breaks asset resolution.
+
+**claude — native binary via npm.** `npm install -g @anthropic-ai/claude-code` pulls a platform
+package from `optionalDependencies` (`claude-code-linux-arm64`, `…-linux-x64`, the musl variants,
+and so on) whose payload is a pre-compiled ELF; npm selects the one matching the container's
+architecture. Its `engines` field asks for Node ≥22, but that governs the install-time wrapper
+scripts rather than the runtime — the binary itself runs without Node.
 
 ## Gradle
 
@@ -143,9 +170,10 @@ and needs a version bump:
 - the npm global root is `/usr/lib/node_modules` (hardcoded in `crates/benchmark-core/src/agent/pi.rs`);
 - the pi extensions `pi-caveman` (`extensions/caveman.ts`) and `@mrclrchtr/supi-bash-timeout`
   (`src/extension.ts`) exist at those paths within their packages;
-- `claude`, `pi`, `go`, `cargo`, `node`, `python3` and `mvn` are on `PATH`. `gradle` is
-  deliberately *not* installed — Java test runs use `mvn` or the exercise's own `./gradlew`,
-  and only the wrapper's distribution cache is pre-seeded (see [Gradle](#gradle)).
+- `claude`, `pi`, `go`, `cargo`, `node`, `python3` and `mvn` are on `PATH`. `pi` is `/opt/pi/pi`
+  and resolves its vendored assets relative to `/opt/pi`, so that directory has to stay on `PATH`.
+  `gradle` is deliberately *not* installed — Java test runs use `mvn` or the exercise's own
+  `./gradlew`, and only the wrapper's distribution cache is pre-seeded (see [Gradle](#gradle)).
 
 A running container reports its version:
 
@@ -170,4 +198,9 @@ Run `./build.sh docker-build`.
 what the image seeded. Check `GRADLE_VERSION`, and let the image rebuild the cache.
 
 **pi extensions fail to load.** The npm global root or a package's internal layout moved. See
-[Binary ↔ image contract](#binary--image-contract).
+[Binary ↔ image contract](#binary--image-contract). The extensions are still npm-installed even
+though pi itself is not — they are plain TypeScript packages that the binary loads by path.
+
+**The build fails with `computed checksum did NOT match` for `pi.tar.gz`.** `PI_CODING_AGENT_VERSION`
+was changed without updating the checksums. Run `docker/pin-agents.sh` to refresh both from the
+release's `SHA256SUMS`.

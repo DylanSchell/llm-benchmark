@@ -128,6 +128,12 @@ Dropping it loses nothing automated. The dead `collect_claude_trace` path goes w
    to avoid conflicts in the five overlapping files (`README.md`, `ROADMAP.md`, `CHANGELOG.md`,
    `docs/DEVELOPER.md`, `crates/benchmark-core/src/agent/claude.rs`). `main` has no commits
    absent from the base branch, so the base is a clean fast-forward and stacking costs nothing.
+10. **Install pi from its standalone bun binary rather than npm.** The pi npm package requires
+    Node ≥22.19.0 and calls `fs.globSync`, but the image pins Node 20 for the Exercism JS track,
+    so a plain re-pin broke `pi --version` outright. Freezing pi at 0.74.2 (the last Node-20
+    release) would only defer the problem. The standalone binary embeds its runtime and is
+    published for both linux architectures, so the agent's runtime stops dictating the Node
+    version the *exercises* are tested against — which is the more important pin of the two.
 
 ## Design
 
@@ -418,3 +424,12 @@ Steps 1–2 are independent; 3 depends on 2; 4 depends on 3; 5 depends on 4; 6 i
   - Acceptance: `collect_claude_trace` and its discarded call are gone; no `claude-archive` reference remains.
   - Verify: `rg -n 'claude-archive|collect_claude_trace' crates/` empty; `cargo test --workspace --lib --bins` green.
   - Files: `crates/benchmark-core/src/agent/claude.rs`.
+
+- [x] **T11 — Install pi from its standalone binary** (not in the original plan; surfaced while
+  verifying T9, when the re-pinned pi 0.85.1 crashed on Node 20)
+  - Acceptance: pi runs in the image while Node stays at 20; the linux asset is chosen from
+    `TARGETARCH` and checksum-verified before extraction; `pin-agents.sh` tracks and refreshes
+    both checksums so re-pinning stays a single command.
+  - Verify: in the built image with `node` absent, `pi --version` prints the pinned version and
+    both `--extension` paths load (`extension_load_errors=0`, versus `1` for a bogus path).
+  - Files: `docker/Dockerfile.runner.debian`, `docker/pins.env`, `docker/pin-agents.sh`, `build.sh`.
