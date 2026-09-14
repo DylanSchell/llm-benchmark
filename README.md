@@ -329,7 +329,7 @@ Result files are named `result_{agent}_{language}_{exercise}.json` and traces `t
 
 Command-line flags override the file: `--config`, `--model`, `--results-dir`, `--language`, `--exercise`, `--agent`, `--verbose`, `--retry`. Recognised environment overrides: `CONFIG_PATH`, `SERVER_PORT`, `PARALLELISM`, `RESULTS_DIR` (the last two apply to `llm-benchmark web`).
 
-> `docs/CONFIGURATION.md` predates the Rust rewrite and still documents the original Java configuration classes; treat the table above as authoritative.
+The table above is the summary; [docs/CONFIGURATION.md](docs/CONFIGURATION.md) is the full reference, including the keys that are accepted but have no effect.
 
 ---
 

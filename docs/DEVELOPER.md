@@ -129,105 +129,68 @@ cargo test --package benchmark-core exercise_runner::tests::test_find_exercise
 
 ## Adding New Languages
 
-The benchmark supports multiple languages through the **Strategy Pattern** with `LanguageHandler` implementations.
+A language is not a plugin class. It is three things: a track in the manifest, a test command
+the runner recognises, and a toolchain in the runner image.
 
-### Step 1: Create Language Handler
+### Step 1: Add the track to the manifest
 
-Create a new handler in `src/main/java/com/benchmark/agent/handlers/`:
+Edit `exercises.manifest.yaml`: add the track to `sources`, pinned to a reviewed upstream
+commit, and list the exercises to include under `exercises.<language>`.
 
-```java
-package io.schell.llm.benchmark.agent.handlers;
+```yaml
+sources:
+  ruby: { repo: "https://github.com/exercism/ruby", ref: "<upstream-commit>" }
 
-import io.schell.llm.benchmark.agent.LanguageHandler;
-import io.schell.llm.benchmark.exercise.Exercise;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
-
-public class RubyHandler implements LanguageHandler {
-    private static final Logger logger = LoggerFactory.getLogger(RubyHandler.class);
-
-    @Override
-    public String getLanguage() {
-        return "ruby";
-    }
-
-    @Override
-    public void copyReference(Exercise exercise, Path tempDir) throws IOException {
-        // Copy reference implementation files
-        for (Path refPath : exercise.getReferencePath()) {
-            if (refPath == null || !Files.exists(refPath)) continue;
-            
-            String fileName = refPath.getFileName().toString();
-            Path destFile = tempDir.resolve(fileName);
-            Files.copy(refPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-            logger.info("Copied Ruby reference file: {}", fileName);
-        }
-    }
-
-    @Override
-    public void copyTests(Exercise exercise, Path sourceDir, Path destDir) throws IOException {
-        // Copy test files
-        for (Path testPath : exercise.getTestPath()) {
-            String fileName = testPath.getFileName().toString();
-            Path destFile = destDir.resolve(fileName);
-            Files.copy(testPath, destFile, StandardCopyOption.REPLACE_EXISTING);
-            logger.info("Copied Ruby test file: {}", fileName);
-        }
-    }
-
-    @Override
-    public List<String> getTestCommand(Exercise exercise) {
-        // Return command to run tests
-        return List.of("bundle", "exec", "rspec");
-    }
-
-    @Override
-    public void patchTests(Path tempWorkDir) throws IOException {
-        // Remove skip/ignore annotations if needed
-        logger.debug("No test patching needed for Ruby");
-    }
-}
+exercises:
+  ruby:
+    include:
+      - acronym
+      - binary-search
 ```
 
-### Step 2: Register Handler
+Third-party exercise content is never committed. `crates/benchmark-exercises/build.rs`
+declares the manifest as a `rerun-if-changed` input, so the next build of that crate fetches,
+prunes, re-stages `target/exercises-bundle` and refreshes `exercises.lock.yaml`:
 
-Update `LanguageHandlerRegistry` in `benchmark-core`:
+```bash
+cargo build -p benchmark-exercises     # network required for a track not already cached
+```
+
+Commit the regenerated `exercises.lock.yaml`. Setting `LLM_BENCHMARK_EXERCISES_OFFLINE=1`
+forbids network access, so it will fail rather than silently fetch. Selection and pruning
+rules are documented in `docs/EXERCISE_SELECTION.md`.
+
+### Step 2: Teach the runner the test command
+
+`ReferenceAgent::get_test_command` (`crates/benchmark-core/src/agent/reference.rs`) picks the
+command from the build files present, so a track using `pom.xml`, `build.gradle`/`build.gradle.kts`,
+`go.mod`, `package.json`, `CMakeLists.txt`, `Cargo.toml`, `Gemfile` or a `.csproj`/`.sln` needs
+no change. Anything else needs a branch:
 
 ```rust
-// In benchmark-core/src/handlers/registry.rs
-pub struct LanguageHandlerRegistry {
-    handlers: HashMap<String, Box<dyn LanguageHandler>>,
-}
-
-impl LanguageHandlerRegistry {
-    pub fn new() -> Self {
-        let mut registry = Self { handlers: HashMap::new() };
-        
-        // Register all built-in handlers
-        registry.register(Box::new(JavaHandler));
-        registry.register(Box::new(GoHandler));
-        registry.register(Box::new(JavaScriptHandler));
-        registry.register(Box::new(PythonHandler));
-        registry.register(Box::new(RustHandler));
-        registry.register(Box::new(CppHandler));
-        registry.register(Box::new(RubyHandler));  // Add new handler
-        
-        info!("Registered {} language handlers", registry.handlers.len());
-        registry
-    }
-    
-    pub fn register(&mut self, handler: Box<dyn LanguageHandler>) {
-        let language = handler.get_language().to_string();
-        self.handlers.insert(language, handler);
+fn get_test_command<'a>(exercise: &'a Exercise, work_dir: &Path) -> Vec<&'a str> {
+    if work_dir.join("pom.xml").exists() {
+        vec!["mvn", "test", "-q"]
+    // … existing branches …
+    } else if work_dir.join("Gemfile").exists() {
+        vec!["bundle", "exec", "rake", "test"]
+    } else {
+        // Add the new language here; keep the error!() for genuinely unknown cases.
     }
 }
 ```
+
+If the track ships skipped tests that must run, add an arm to `run_patch_tests` in
+`crates/benchmark-core/src/agent/test_patches.rs`. The existing arms strips `#[ignore]`
+(Rust), `@Disabled` (Java) and `xtest(` (JavaScript/TypeScript).
+
+Three places, one per agent surface:
+
+| File | What it decides |
+|---|---|
+| `crates/benchmark-core/src/agent/reference.rs` | How the reference agent runs the tests |
+| `crates/benchmark-core/src/agent/test_patches.rs` | Which skip annotations are stripped |
+| `crates/benchmark-core/src/agent/pi.rs` | The per-language "run tests with …" prompt hint |
 
 ### Step 3: Update Docker Image
 
@@ -252,43 +215,46 @@ Adding a runtime changes the binary↔image contract, so it needs a version bump
 
 See `docker/README.md` for the full bump policy.
 
-### Step 4: Test Your Handler
+### Step 4: Test
 
 ```bash
-cargo test --package benchmark-core ruby_handler
+cargo test -p benchmark-exercises-build   # selection, pruning, lock generation
+./build.sh docker-build                   # image now carries the runtime
+./build.sh test                           # end to end
 ```
 
 ---
 
 ## Adding New Agents
 
-Agents implement the `Agent` trait and are created via a factory function.
+An agent is an implementation of the `Agent` trait
+(`crates/benchmark-types/src/agent/mod.rs`) plus a variant of the `AgentKind` enum, which is
+what the CLI and the dashboard parse `--agent` into.
 
 ### Step 1: Create Agent Implementation
 
 ```rust
-// In benchmark-core/src/agents/gemini_agent.rs
-use crate::agents::Agent;
-use crate::config::Config;
-use crate::exercise::Exercise;
-use crate::result::AgentResult;
-use tracing::info;
+// crates/benchmark-core/src/agent/gemini.rs
+use async_trait::async_trait;
+use benchmark_types::agent::AgentResult;
+use benchmark_types::exercise::Exercise;
+use benchmark_types::exercise_source::ExerciseSource;
+use std::path::Path;
+
+use crate::docker::DockerClient;
 
 pub struct GeminiAgent {
-    config: Config,
-    model: String,
+    docker: DockerClient,
 }
 
 impl GeminiAgent {
-    pub fn new(config: &Config, model: &str) -> Self {
-        Self {
-            config: config.clone(),
-            model: model.to_string(),
-        }
+    pub fn new(docker: DockerClient) -> Self {
+        Self { docker }
     }
 }
 
-impl Agent for GeminiAgent {
+#[async_trait]
+impl benchmark_types::agent::Agent for GeminiAgent {
     async fn run_exercise(
         &self,
         exercise: &Exercise,
@@ -297,41 +263,68 @@ impl Agent for GeminiAgent {
         thinking_level: Option<&str>,
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
-        info!("Running Gemini agent for {} in {}", exercise.name, exercise.language);
-        
-        // Implement agent logic here
-        // 1. Prepare prompt with exercise description
-        // 2. Call Gemini API
-        // 3. Write solution to exercise directory
-        // 4. Return result
-        
-        Ok(AgentResult {
-            exercise_name: exercise.name.clone(),
-            success: true,
-            // ... other fields
-        })
+        self.run_exercise_with_timeout(exercise, source, model, thinking_level, results_dir, None).await
     }
 
-    fn agent_type(&self) -> &str {
+    async fn run_exercise_with_timeout(
+        &self,
+        exercise: &Exercise,
+        source: &dyn ExerciseSource,
+        model: &str,
+        _thinking_level: Option<&str>,
+        results_dir: &Path,
+        timeout_override_secs: Option<u64>,
+    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+        // 1. Materialise the exercise into a temp dir (exercise_files::materialize_exercise)
+        // 2. Build the container command and run it through self.docker
+        // 3. Save the result under results_dir and return it
+        todo!()
+    }
+
+    fn get_name(&self) -> &str {
         "gemini"
     }
 }
 ```
 
-### Step 2: Register Agent
+Agents reach the container through `DockerClient`, not the whole `Config`; they take
+`&dyn ExerciseSource` so exercise content stays embedded in the binary. Add the module to
+`crates/benchmark-core/src/agent/mod.rs` and re-export it there.
 
-Add the agent to the factory function in `benchmark-core/src/agents/mod.rs`:
+### Step 2: Register the agent
+
+Add a variant to `AgentKind` and arms to its `FromStr` and `Display` implementations
+(`crates/benchmark-types/src/agent/mod.rs`):
 
 ```rust
-pub fn create_agent(agent_type: &str, config: &Config) -> Result<Box<dyn Agent>> {
-    match agent_type {
-        "reference" => Ok(Box::new(ReferenceAgent::new(config))),
-        "claude" => Ok(Box::new(ClaudeAgent::new(config))),
-        "gemini" => Ok(Box::new(GeminiAgent::new(config, "gemini-pro"))),  // Add new agent
-        _ => Err(BenchmarkError::UnknownAgent(agent_type.to_string())),
-    }
+pub enum AgentKind {
+    Reference,
+    Claude,
+    Pi,
+    Gemini,
+}
+
+impl AgentKind {
+    pub const ALL: &[AgentKind] = &[AgentKind::Reference, AgentKind::Claude, AgentKind::Pi, AgentKind::Gemini];
 }
 ```
+
+Then add a match arm at **each** construction site — there are three, and a missed one is a
+runtime panic or an unsupported-agent error on that surface:
+
+| Site | Surface |
+|---|---|
+| `benchmark-cli/src/runner.rs` (`create_agent`) | `llm-benchmark run` |
+| `benchmark-web/src/services/benchmark_executor.rs` | benchmark runs scheduled from the dashboard |
+| `crates/benchmark-core/src/lib.rs` | the library entry point |
+
+```rust
+// benchmark-cli/src/runner.rs
+AgentKind::Gemini => Arc::new(GeminiAgent::new(docker_client)),
+```
+
+Finally, a new agent needs its CLI inside the runner image, which means the agent-set decision
+in `docker/agents.env` and a version bump — see `docker/README.md`.
 
 ---
 
@@ -413,16 +406,21 @@ chore: Update dependencies
 ## Project Structure
 
 ```
+src/                        # llm-benchmark launcher binary (run / web / report / token-report)
 crates/
-  benchmark-types/          # Shared types: Config, ExerciseResult, Agent traits
-  benchmark-core/           # Core logic: DockerClient, ExerciseRunner, Agents
+  benchmark-types/          # Shared types: Config, Exercise, Agent trait, AgentResult
+  benchmark-core/           # Core logic: DockerClient, ExerciseRunner, agents
+  benchmark-exercises/      # rust-embed over the staged exercise bundle
+  benchmark-exercises-build/ # Build support: fetch, prune, lock, verify
 benchmark-cli/              # CLI benchmark runner
 benchmark-web/              # Axum web server with REST API + SSE streaming
 benchmark-token-report/     # Token statistics report tool
 benchmark-reporter/         # Full markdown report generator
 docker/
   Dockerfile.runner.debian  # Container image with build tools
+  pins.env                  # Pinned tool and agent versions
 config.yaml                 # Configuration file
+exercises.manifest.yaml     # Exercise inclusion control
 ```
 
 ---
@@ -446,13 +444,32 @@ Or via CLI:
 
 ### Debug Docker Containers
 
-Enable verbose Docker output:
+There is no client library to instrument: the runner shells out to the `docker` CLI, and
+`crates/benchmark-core/src/docker/client.rs` logs the exact command line it builds.
 
-```java
-// In DockerClient.java
-ProcessBuilder pb = new ProcessBuilder("docker", "run", "--rm", "-it", ...);
-pb.redirectErrorStream(true);
+```bash
+# Full `docker run` invocation, container ids, and liveness decisions
+./target/release/llm-benchmark run --language java --verbose
+
+# Or raise just the Docker layer's verbosity
+RUST_LOG=benchmark_core=debug ./target/release/llm-benchmark run --language java
 ```
+
+Look for `Executing with memory limit … and volume … : docker run …`, which prints the command
+verbatim.
+
+Containers are **not** started with `--rm`, so a run leaves its container behind as
+`bench-<random>` until the client cleans it up. That makes the usual tools usable while it is
+alive:
+
+```bash
+docker ps -a --filter name=bench-      # containers the benchmark created
+docker logs <container-id>             # everything the agent saw
+docker exec -it <container-id> bash    # inspect the filesystem
+```
+
+The materialised exercise is also on the host: each run gets a temporary directory mounted at
+`/workspace`, and the agent's traces are written to the results directory.
 
 ### IDE Setup
 

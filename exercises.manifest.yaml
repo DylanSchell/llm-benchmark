@@ -6,7 +6,8 @@
 #
 # Refresh flow:
 #   1. Bump a `ref` below to a reviewed upstream commit.
-#   2. `cargo xtask exercises update` re-resolves and rewrites exercises.lock.yaml.
+#   2. Rebuild the crate: `cargo build -p benchmark-exercises`. Its build script re-fetches,
+#      re-prunes and rewrites exercises.lock.yaml, which is committed.
 
 version: 1
 

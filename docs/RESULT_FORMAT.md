@@ -10,247 +10,207 @@ Results are stored in a hierarchical directory structure:
 
 ```
 results/
-└── {model}-{sequence}/
-    ├── trace_{language}_{exercise}.jsonl      # Agent interaction trace
-    ├── result_{language}_{exercise}.json      # Exercise result
-    └── ...
+└── {agent}-{model}/
+    ├── result_{agent}_{language}_{exercise}.json   # Exercise result
+    ├── trace_{language}_{exercise}.jsonl           # Agent trace (pi session log)
+    ├── trace_{language}_{exercise}.html            # The same trace, rendered (pi only)
+    └── log_pi_{language}_{exercise}.jsonl          # pi's own log files (pi only)
 ```
 
 ### Example
 
 ```
-results/sonnet-1/
-├── trace_java_two-fer.jsonl
-├── result_java_two-fer.json
-├── trace_python_hello-world.jsonl
-├── result_python_hello-world.json
-├── trace_javascriptexercism.jsonl
-└── result_javascript_exercism.json
+results/pi-claude-sonnet-5/
+├── result_pi_java_series.json
+├── result_pi_python_hello-world.json
+├── trace_java_series.jsonl
+└── trace_java_series.html
 ```
 
 ---
 
 ## Result Directory Naming
 
-Result directories follow the pattern: `{model}-{sequence}`
+Result directories are named `{agent}-{model}`:
 
-- **model**: The AI model used (e.g., `sonnet`, `haiku`, `opus`)
-- **sequence**: Incrementing run number for that model
+- **agent**: `reference`, `pi` or `claude`
+- **model**: the model label from `--model` or `model` in `config.yaml`. The reference agent always
+  records `reference` here, because it does not call a model at all
 
-### Example Sequences
+### Examples
 
 ```
-sonnet-1/     # First run with Sonnet model
-sonnet-2/     # Second run with Sonnet model
-haiku-1/      # First run with Haiku model
-opus-1/       # First run with Opus model
+pi-claude-sonnet-5/       # pi against a Claude model
+pi-qwen36-35b-a3b/        # pi against a local model
+reference-reference/      # the reference baseline
 ```
 
-The sequence number is determined by scanning existing result directories and incrementing the highest sequence for that model.
+There is no sequence number. Runs of the same agent-model pair share one directory and
+accumulate results in it, which is why `attempts` exists and why `--retry` is a separate flag.
 
 ---
 
 ## Exercise Result JSON
 
-Each exercise execution produces a `result_{language}_{exercise}.json` file.
+Each exercise execution produces a `result_{agent}_{language}_{exercise}.json` file.
 
 ### Schema
 
+Serialized from `AgentResult` (`crates/benchmark-types/src/agent/mod.rs`). A current record,
+verbatim from a real run:
+
 ```json
 {
-  "type": "ExerciseResult",
-  "exerciseName": "two-fer",
-  "language": "java",
-  "agent": "claude",
-  "model": "sonnet",
-  "success": true,
+  "attempts": 1,
+  "cachedInputTokens": 0,
+  "containerId": "bench-55b9aff1be2e",
+  "duration": 4.915,
+  "endTime": "2026-09-14T11:36:55.752601+00:00",
+  "exerciseName": "series",
   "exitCode": 0,
-  "duration": 45.234,
-  "startTime": "2026-02-28T10:30:00Z",
-  "endTime": "2026-02-28T10:30:45Z",
-  "output": "...",
-  "errorMessage": null,
-  "traceFile": "results/sonnet-1/trace_java_two-fer.jsonl"
+  "input_tokens": 0,
+  "language": "java",
+  "model": "reference",
+  "output": "\n",
+  "output_tokens": 0,
+  "startTime": "2026-09-14T11:36:50.836231+00:00",
+  "success": true,
+  "trace": null,
+  "uncachedInputTokens": 0
 }
 ```
 
 ### Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `type` | string | Always `"ExerciseResult"` |
-| `exerciseName` | string | Name of the exercise (e.g., "two-fer") |
-| `language` | string | Programming language (e.g., "java", "python") |
-| `agent` | string | Agent type used ("reference" or "claude") |
-| `model` | string | Model name (null for reference agent) |
-| `success` | boolean | Whether tests passed |
-| `exitCode` | integer | Test command exit code (0 = success) |
-| `duration` | number | Execution time in seconds (double) |
-| `startTime` | number | Start timestamp as epoch seconds with nanoseconds (e.g., 1772279722.696278) |
-| `endTime` | number | End timestamp as epoch seconds with nanoseconds (e.g., 1772279722.696946) |
-| `output` | string | Combined stdout/stderr output |
-| `errorMessage` | string or null | Error message if failed |
-| `traceFile` | string | Path to trace file |
+| Field | Type | Notes |
+|---|---|---|
+| `exerciseName` | string | Exercise name, e.g. `series` |
+| `language` | string | `java`, `python`, `go`, … |
+| `success` | bool | Whether the test command exited 0 |
+| `exitCode` | int | Exit code of the test command |
+| `output` | string | Combined stdout/stderr |
+| `duration` | float | Seconds. Stored internally as milliseconds, serialized as seconds |
+| `startTime` / `endTime` | string | ISO 8601, e.g. `2026-09-14T11:36:50.836231+00:00` |
+| `errorMessage` | string | **Absent entirely** when there is no error — not `null` |
+| `containerId` | string | Container that ran it, e.g. `bench-55b9aff1be2e` |
+| `attempts` | int | `1` on a first run; incremented by `--retry` |
+| `model` | string | Model label, or `reference` for the reference agent |
+| `trace` | string or null | Path to the trace file, when one was written |
+| `input_tokens` | int | Prompt tokens consumed |
+| `output_tokens` | int | Completion tokens produced |
+| `cachedInputTokens` | int | Input tokens served from the provider's cache |
+| `uncachedInputTokens` | int | Input tokens that were not cached |
 
-**Note on Timestamps:**  
-The `startTime` and `endTime` fields are stored as epoch seconds with fractional nanoseconds (e.g., `1772279722.696278000`). In the web UI, these are automatically converted to ISO 8601 format for display (e.g., "2026-03-01T12:45:30.696Z").
+Things that have caught people out:
 
-### Success Examples
+- **There is no `type` field and no `agent` field.** An earlier revision of this document
+  claimed both. The agent is encoded in the directory (`pi-qwen3-coder/`) and the file name
+  (`result_pi_java_series.json`).
+- **The trace field is `trace`, not `traceFile`.**
+- **Only `errorMessage` is omitted when empty.** `trace` is written as `null`; an older record
+  may carry `""`.
+- **The token fields mix naming conventions** — `input_tokens` and `output_tokens` but
+  `cachedInputTokens` and `uncachedInputTokens` — because that is literally what the serde
+  attributes say. Both spellings are accepted when reading.
+- **Two generations of records exist on disk.** Current ones carry `containerId` and the token
+  fields and use ISO 8601 timestamps; files written before those fields were added carry epoch
+  seconds as numbers and omit them. `AgentResult` reads both: every field beyond the original
+  set has a `default`, and `deserialize_timestamp` converts a number to RFC 3339 (treating a
+  value over `1e12` as milliseconds). Anything you write yourself should do the same.
+
+### Success Example
+
+The record above is a success. The reference agent's `output` is often just a newline and its
+token counts are zero, because it copies the reference solution rather than calling a model.
+
+### Failure Example
+
+An older-generation failure, verbatim — note the epoch timestamps and the absent
+`containerId`/token fields:
 
 ```json
 {
-  "type": "ExerciseResult",
-  "exerciseName": "two-fer",
-  "language": "java",
-  "agent": "reference",
-  "model": null,
-  "success": true,
-  "exitCode": 0,
-  "duration": 12.5,
-  "startTime": 1772279400.123456,
-  "endTime": 1772279412.654321,
-  "output": "\n[INFO] BUILD SUCCESS\n[INFO] Tests run: 5, Failures: 0\n",
-  "errorMessage": null,
-  "traceFile": "results/sonnet-1/trace_java_two-fer.jsonl"
-}
-```
-
-**Note:** Timestamps are epoch seconds with nanoseconds. In the web UI, `1772279400.123456` displays as "2026-03-01T12:43:20.123Z".
-
-### Failure Examples
-
-```json
-{
-  "type": "ExerciseResult",
-  "exerciseName": "hello-world",
-  "language": "python",
-  "agent": "claude",
-  "model": "sonnet",
+  "exerciseName": "matrix",
+  "language": "go",
   "success": false,
-  "exitCode": 1,
-  "duration": 30.2,
-  "startTime": 1772279700.987654,
-  "endTime": 1772279730.123456,
-  "output": "...\nAssertionError: Expected 'Hello, World!' but got 'Hello'\n...",
-  "errorMessage": "Test failed: test_hello_world",
-  "traceFile": "results/sonnet-1/trace_python_hello-world.jsonl"
+  "exitCode": 2,
+  "output": "\n# matrix [matrix.test]\n./matrix_test.go:280:17: cannot use New(\"1 2 3 10 11\\n4 5 6 11 12\") (value of type *Matrix) as type Matrix in assignment\nFAIL\tmatrix [build failed]\n",
+  "duration": 95.093747,
+  "startTime": 1777200670.546966,
+  "endTime": 1777200765.640713,
+  "errorMessage": "# matrix [matrix.test]\n./matrix_test.go:280:17: cannot use New(…) as type Matrix in assignment\nFAIL\tmatrix [build failed]\n",
+  "trace": "",
+  "model": "qwen36-35b-a3b-q4-q4kv-no-thinking",
+  "attempts": 1
 }
 ```
 
----
+On a failure, `errorMessage` usually repeats the tail of `output` — the reporter prefers
+`errorMessage` when present.
 
 ## Trace File Format (JSONL)
 
-Trace files use JSON Lines format (one JSON object per line). Each line represents an event in the agent's interaction.
+Written by agent runs. The file is the container's pi session log, copied out verbatim, so it is
+**pi's own format**, not a benchmark invention. It is JSON Lines — one JSON object per line — and
+it is a **tree, not a transcript**: every entry carries `id` and `parentId`, so a revised message
+appends a new node instead of rewriting an old one. Version 3 is what the current runner writes.
 
-### Schema
-
-```json
-{"role": "user", "content": "...", "timestamp": "2026-02-28T10:30:00Z"}
-{"role": "assistant", "content": "...", "timestamp": "2026-02-28T10:30:05Z"}
-{"role": "tool_use", "name": "bash", "input": "...", "timestamp": "2026-02-28T10:30:10Z"}
-{"role": "tool_result", "name": "bash", "output": "...", "timestamp": "2026-02-28T10:30:15Z"}
-```
-
-### Event Types
-
-#### User Message
+The first line is always `session`:
 
 ```json
-{
-  "role": "user",
-  "content": "Implement the two-fer exercise. The function should return 'One for {name}, one for me.' where {name} is the input parameter.",
-  "timestamp": 1772279400.123456
-}
+{"type":"session","version":3,"id":"019e2605-726e-70fb-9365-4d885efb33b5","timestamp":"2026-05-14T10:25:51.726Z","cwd":"/workspace"}
 ```
 
-#### Assistant Message
+### Event types
+
+| `type` | Fields | Meaning |
+|---|---|---|
+| `session` | `version`, `id`, `timestamp`, `cwd` | Once, first. `version` is the session-format version (currently `3`) |
+| `model_change` | `id`, `parentId`, `timestamp`, `provider`, `modelId` | The model the session runs against |
+| `thinking_level_change` | `id`, `parentId`, `timestamp`, `thinkingLevel` | pi's thinking level: `off`, `minimal`, `low`, `medium`, `high`, `xhigh` |
+| `message` | `id`, `parentId`, `timestamp`, `message` | A user, assistant or tool-result turn |
+| `custom` / `custom_message` | `id`, `parentId`, `timestamp`, … | Agent-specific extras |
+
+Everything except `session` carries `id` and `parentId`; `parentId` is `null` only at the root of
+a chain. Timestamps are **ISO 8601 strings** (`2026-05-14T10:25:51.765Z`), not epoch numbers.
+
+### The `message` entry
+
+It wraps a `{role, content}` object. `role` is one of `user`, `assistant` or `toolResult`, and
+`content` is an array of typed parts:
 
 ```json
-{
-  "role": "assistant",
-  "content": "I'll implement the two-fer function in Python. Let me start by reading the test file to understand the expected interface.",
-  "timestamp": 1772279405.654321
-}
+{"type":"message","id":"2cd3b56a","parentId":"07ef48a3","timestamp":"2026-05-14T10:25:51.765Z",
+ "message":{"role":"assistant","content":[
+   {"type":"text","text":"Let me list the files."},
+   {"type":"toolCall","id":"XubtUWl2H9gqFKCZA1uVrMRWVzGkFdBY","name":"ls","arguments":{}}]}}
 ```
 
-#### Tool Use (Bash Command)
+| Part `type` | Meaning |
+|---|---|
+| `text` | Natural language, from the user or the model |
+| `toolCall` | A tool invocation: `id`, `name` (`ls`, `Read`, `Write`, …) and `arguments` |
 
-```json
-{
-  "role": "tool_use",
-  "name": "bash",
-  "input": "cat two_fer.py",
-  "timestamp": 1772279410.987654
-}
+### Reading a trace
+
+```bash
+# Every tool call, compact
+jq -c 'select(.type=="message") | .message.content[]? | select(.type=="toolCall")' trace_java_series.jsonl
+
+# Only the assistant's prose
+jq -r 'select(.type=="message" and .message.role=="assistant")
+       | .message.content[]? | select(.type=="text") | .text' trace_java_series.jsonl
+
+# How many turns before the model stopped
+jq -s '[.[] | select(.type=="message")] | length' trace_java_series.jsonl
 ```
 
-#### Tool Result (Command Output)
+To follow one branch, start at any entry and walk `parentId` back to the `session` line. Because
+the log is append-only, two runs of the same exercise can be compared line by line — that is what
+`compare` in the dashboard does.
 
-```json
-{
-  "role": "tool_result",
-  "name": "bash",
-  "output": "def two_fer(name: str | None = None) -> str:\n    # TODO: implement\n    pass",
-  "timestamp": 1772279415.123456
-}
-```
-
-#### Tool Use (File Write)
-
-```json
-{
-  "role": "tool_use",
-  "name": "write_file",
-  "input": {
-    "path": "two_fer.py",
-    "content": "def two_fer(name: str | None = None) -> str:\n    if name is None or name == '':\n        return 'One for me, one for me'\n    return f'One for {name}, one for me'"
-  },
-  "timestamp": 1772279420.654321
-}
-```
-
-#### Tool Result (File Write)
-
-```json
-{
-  "role": "tool_result",
-  "name": "write_file",
-  "output": "File written successfully",
-  "timestamp": 1772279425.987654
-}
-```
-
-#### Thinking Block
-
-```json
-{
-  "role": "assistant",
-  "thinking": "I need to handle the case where name is null or empty, returning 'One for me, one for me' in that case.",
-  "timestamp": 1772279403.123456
-}
-```
-
-### Complete Trace Example
-
-```jsonl
-{"role": "user", "content": "Implement the two-fer exercise...", "timestamp": 1772279400.123456}
-{"role": "assistant", "thinking": "Let me understand the requirements first...", "timestamp": 1772279401.234567}
-{"role": "assistant", "content": "I'll start by reading the test file...", "timestamp": 1772279402.345678}
-{"role": "tool_use", "name": "bash", "input": "cat test_two_fer.py", "timestamp": 1772279403.456789}
-{"role": "tool_result", "name": "bash", "output": "def test_two_fer_with_name():\n    assert two_fer('Sarah') == 'One for Sarah, one for me'", "timestamp": 1772279404.567890}
-{"role": "assistant", "content": "Now I understand the expected behavior. Let me implement it...", "timestamp": 1772279405.678901}
-{"role": "tool_use", "name": "write_file", "input": {"path": "two_fer.py", "content": "..."}, "timestamp": 1772279410.789012}
-{"role": "tool_result", "name": "write_file", "output": "File written successfully", "timestamp": 1772279411.890123}
-{"role": "assistant", "content": "Let me run the tests to verify...", "timestamp": 1772279412.901234}
-{"role": "tool_use", "name": "bash", "input": "pytest -q", "timestamp": 1772279413.012345}
-{"role": "tool_result", "name": "bash", "output": "===== 5 passed in 0.02s =====", "timestamp": 1772279445.123456}
-```
-
-**Note on Trace Timestamps:**  
-All `timestamp` fields in trace files are epoch seconds with nanoseconds (e.g., `1772279400.123456`). These represent the exact moment each event occurred during the agent's execution.
-
----
+**Note:** the reference agent writes no trace, so its `trace` field is `null` and the file is
+absent. A trace exists only for agent runs.
 
 ## Aggregated Results
 
@@ -297,33 +257,48 @@ The `BenchmarkResultAnalyzer` generates a summary report from all result files.
 
 | Pattern | Example | Description |
 |---------|---------|-------------|
-| `trace_{language}_{exercise}.jsonl` | `trace_java_two-fer.jsonl` | Agent interaction trace |
-| `result_{language}_{exercise}.json` | `result_java_two-fer.json` | Exercise execution result |
+| `result_{agent}_{language}_{exercise}.json` | `result_pi_java_series.json` | Exercise execution result |
+| `trace_{language}_{exercise}.jsonl` | `trace_java_series.jsonl` | Agent trace (pi session log) |
+| `trace_{language}_{exercise}.html` | `trace_java_series.html` | The same trace, rendered |
+| `log_pi_{language}_{exercise}.jsonl` | `log_pi_java_series.jsonl` | pi's own logs |
 
 **Rules:**
-- Language: lowercase (java, python, javascript)
-- Exercise: original exercise name from repo (two-fer, hello-world)
-- Extensions: `.jsonl` for traces, `.json` for results
+- Agent: `reference`, `pi` or `claude` — in the result file name only, not the trace name
+- Language: lowercase (`java`, `python`, `javascript`)
+- Exercise: the upstream exercise name (`two-fer`, `hello-world`)
+- Extensions: `.json` for results, `.jsonl` for traces and pi logs, `.html` for rendered traces
 
 ---
 
 ## Parsing Results
 
-### Java Example
+### jq Example
 
-```java
-Path resultDir = Paths.get("results/sonnet-1");
+```bash
+# One line per result
+jq -r '"\\(.exerciseName)\\t\\(.language)\\t\\(.success)\\t\\(.duration)s"' results/*/result_*.json
 
-// Read exercise result
-String json = Files.readString(resultDir.resolve("result_java_two-fer.json"));
-ExerciseResult result = objectMapper.readValue(json, ExerciseResult.class);
+# Everything that failed, with the reason
+jq -r 'select(.success|not) | "\\(.exerciseName): \\(.errorMessage // "(no message)")"' results/*/result_*.json
 
-if (result.success()) {
-    System.out.println("✓ " + result.exerciseName() + " passed!");
-} else {
-    System.err.println("✗ " + result.exerciseName() + " failed: " + result.errorMessage());
+# Token totals per model
+jq -s 'group_by(.model) | map({model: .[0].model,
+         input:  (map(.input_tokens)  | add),
+         output: (map(.output_tokens) | add)})' results/*/result_*.json
+```
+
+The same thing in Rust, using the type from `benchmark-types`:
+
+```rust
+let text = std::fs::read_to_string(path)?;
+let result: benchmark_types::agent::AgentResult = serde_json::from_str(&text)?;
+if result.success {
+    println!("{} passed in {:.1}s", result.exercise_name, result.duration_seconds());
+} else if let Some(err) = &result.error_message {
+    eprintln!("{} failed: {}", result.exercise_name, err);
 }
 ```
+
 
 ### Python Example
 
@@ -347,45 +322,33 @@ else:
 
 ```python
 import json
-from pathlib import Path
-from datetime import datetime
 
-trace_file = Path("results/sonnet-1/trace_java_two-fer.jsonl")
-
-with open(trace_file) as f:
+with open("results/pi-claude-sonnet-5/trace_java_series.jsonl") as f:
     for line in f:
         event = json.loads(line)
-        if event["role"] == "tool_result":
-            # Convert epoch timestamp to readable format
-            ts = datetime.fromtimestamp(event['timestamp'])
-            print(f"[{ts}] Tool output: {event['output'][:100]}...")
+        if event["type"] != "message":
+            continue
+        msg = event["message"]
+        for part in msg["content"]:
+            if part["type"] == "toolCall":
+                print(f"{msg['role']} called {part['name']} at {event['timestamp']}")
 ```
 
-### Converting Epoch Timestamps
+### Timestamps
 
-Timestamps in result files are stored as epoch seconds with nanoseconds. To convert them:
+Result records come in two generations, and both are read into the same struct:
 
-**Python:**
-```python
-from datetime import datetime
+| Generation | `startTime` / `endTime` on disk | After parsing |
+|---|---|---|
+| Current | ISO 8601 string: `"2026-09-14T11:36:50.836231+00:00"` | Unchanged |
+| Older records | Epoch seconds as a number: `1777200670.546966` | Converted to RFC 3339 by `deserialize_timestamp` |
 
-epoch_seconds = 1772279400.123456
-dt = datetime.fromtimestamp(epoch_seconds)
-print(dt.isoformat())  # "2026-03-01T12:43:20.123456"
-```
-
-**Java:**
-```java
-import java.time.Instant;
-
-double epochSeconds = 1772279400.123456;
-long seconds = (long) epochSeconds;
-int nanos = (int) ((epochSeconds - seconds) * 1_000_000_000);
-Instant instant = Instant.ofEpochSecond(seconds, nanos);
-System.out.println(instant.toString());  // "2026-03-01T12:43:20.123456Z"
-```
+A number above `1e12` is treated as milliseconds. Anything reading these files directly should
+handle both shapes rather than assuming one.
 
 ---
+
+
 
 ## Result Validation
 
@@ -428,29 +391,14 @@ echo "Validation complete!"
 
 ---
 
-## Migration Guide
+## Migrating older result files
 
-### From Old Format to New Format
-
-Old format used flat directory structure. Migrate with:
-
-```bash
-#!/bin/bash
-# migrate_results.sh
-
-OLD_DIR="old-results"
-NEW_DIR="results/sonnet-1"
-mkdir -p "$NEW_DIR"
-
-for file in "$OLD_DIR"/*.json; do
-    if [ -f "$file" ]; then
-        filename=$(basename "$file")
-        # Extract language and exercise from filename
-        # Example: java_two-fer_result.json -> result_java_two-fer.json
-        mv "$file" "$NEW_DIR/result_$filename"
-    fi
-done
-```
+There is no directory migration to perform: older and newer records sit side by side in the same
+directories and are read by the same struct. What differs is the record shape, described under
+[Fields](#fields) and [Timestamps](#timestamps): newer files add `containerId`, `attempts` and the
+token fields, and write ISO 8601 timestamps where the older ones wrote epoch seconds.
+`AgentResult` gives every added field a default and normalizes numeric timestamps, so a directory
+holding both generations needs no special handling.
 
 ---
 
@@ -460,8 +408,3 @@ done
 - [API Documentation](API.md)
 - [Configuration Reference](CONFIGURATION.md)
 - [Developer Guide](DEVELOPER.md)
-
----
-
-**Version:** 1.0  
-**Last Updated:** 2026-02-28

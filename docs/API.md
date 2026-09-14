@@ -1,605 +1,227 @@
-# API Documentation
+# Web API
 
-This document describes the REST API endpoints provided by the LLM Benchmark Runner web interface.
+The HTTP surface of `llm-benchmark web`. Everything here is derived from the router in
+`benchmark-web/src/routes/` — the `.route(…)` calls are the source of truth, and the route
+index below is a 1:1 mirror of them. If the two ever disagree, the code wins and this file
+is the bug.
 
----
+## Running the server
 
-## Base URL
-
-```
-http://localhost:8080
-```
-
----
-
-## Authentication
-
-Currently, no authentication is required for local development. For production deployments, consider adding:
-- Basic Auth
-- API Key authentication
-- OAuth2 integration
-
----
-
-## Endpoints Overview
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/results` | List all benchmark results |
-| GET | `/api/results/{sessionId}` | Get specific session results |
-| POST | `/api/benchmark/run` | Start a new benchmark run |
-| GET | `/api/exercises` | List available exercises |
-| GET | `/api/queue` | Get queue status |
-| POST | `/api/queue/pause` | Pause queue processing |
-| POST | `/api/queue/resume` | Resume queue processing |
-| DELETE | `/api/sessions/{sessionId}` | Cancel a session |
-
----
-
-## Results API
-
-### List All Results
-
-**GET** `/api/results`
-
-Returns a list of all benchmark sessions with summary information.
-
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `status` | string | Filter by status (RUNNING, COMPLETED, FAILED) |
-| `limit` | int | Maximum results to return (default: 50) |
-| `offset` | int | Pagination offset (default: 0) |
-
-**Response:**
-```json
-{
-  "sessions": [
-    {
-      "sessionId": "sess_abc123",
-      "agent": "claude",
-      "model": "sonnet",
-      "languages": ["java", "python"],
-      "status": "COMPLETED",
-      "startTime": "2026-02-28T10:00:00Z",
-      "endTime": "2026-02-28T10:45:00Z",
-      "totalExercises": 20,
-      "completedExercises": 20,
-      "successRate": 0.95
-    }
-  ],
-  "pagination": {
-    "total": 100,
-    "limit": 50,
-    "offset": 0
-  }
-}
-```
-
-**Status Codes:**
-- `200 OK` - Success
-- `400 Bad Request` - Invalid query parameters
-
----
-
-### Get Session Results
-
-**GET** `/api/results/{sessionId}`
-
-Returns detailed results for a specific benchmark session.
-
-**Path Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `sessionId` | string | The session ID |
-
-**Response:**
-```json
-{
-  "sessionId": "sess_abc123",
-  "agent": "claude",
-  "model": "sonnet",
-  "languages": ["java"],
-  "status": "COMPLETED",
-  "startTime": "2026-02-28T10:00:00Z",
-  "endTime": "2026-02-28T10:45:00Z",
-  "exercises": [
-    {
-      "name": "two-fer",
-      "language": "java",
-      "status": "SUCCESS",
-      "duration": 45.2,
-      "exitCode": 0,
-      "output": "...\nBUILD SUCCESS\n...",
-      "traceFile": "results/sess_abc123/trace_java_two-fer.jsonl"
-    },
-    {
-      "name": "hello-world",
-      "language": "java",
-      "status": "FAILED",
-      "duration": 30.1,
-      "exitCode": 1,
-      "errorMessage": "Test compilation failed",
-      "output": "...",
-      "traceFile": "results/sess_abc123/trace_java_hello-world.jsonl"
-    }
-  ],
-  "summary": {
-    "totalExercises": 20,
-    "successfulExercises": 19,
-    "failedExercises": 1,
-    "successRate": 0.95,
-    "averageDuration": 38.5
-  }
-}
-```
-
-**Status Codes:**
-- `200 OK` - Success
-- `404 Not Found` - Session not found
-
----
-
-## Benchmark API
-
-### Start Benchmark Run
-
-**POST** `/api/benchmark/run`
-
-Starts a new benchmark run with the specified configuration.
-
-**Form Parameters:**
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `agent` | string | Yes | Agent type: "reference" or "claude" |
-| `language` | string[] | Yes | Languages to benchmark (e.g., java, python) |
-| `model` | string | No | Model name (for Claude agent) |
-| `exercise` | string | No | Specific exercise name (omit for all) |
-
-**Request Example:**
 ```bash
-curl -X POST http://localhost:8080/api/benchmark/run \
-  -F "agent=claude" \
-  -F "language=java" \
-  -F "language=python" \
-  -F "model=sonnet"
+llm-benchmark web                      # 0.0.0.0:8081
+llm-benchmark web --port 8088          # explicit port
 ```
 
-**Response:**
+Port precedence: `--port` → `SERVER_PORT` → `server.port` in `config.yaml` → `8081`. The
+server binds `0.0.0.0` and there is **no authentication**: anyone who can reach the port can
+schedule runs and read results. Bind it to a trusted network, or put it behind a proxy that
+authenticates.
+
+## Two kinds of route
+
+| Kind | Path shape | Returns |
+|---|---|---|
+| Pages | `/`, `/run`, `/results`, `/scoring`, `/compare`, `/benchmark/{id}` | Server-rendered HTML (`templates/*.tera`, embedded in the binary) |
+| JSON APIs | `/api/…`, plus `/results/api/…` | `application/json` |
+| HTML fragments | `/recent-results-fragment`, `/results/table-fragment` | JSON bodies rendered into the page by HTMX |
+
+The dashboard is HTMX-driven: the fragments above return JSON that the page inserts, so they
+are documented here alongside the `/api/` routes rather than being treated as private.
+
+## Route index
+
+Every route, in router order.
+
+### Pages
+
+| Method | Path | Handler | Purpose |
+|---|---|---|---|
+| GET | `/` | `dashboard` | Dashboard: recent results, active runs |
+| GET | `/run` | `run_form` | Form to schedule benchmark runs |
+| GET | `/benchmark/{id}` | `view_benchmark` | Live view of one session, including its SSE stream |
+| GET | `/test` | `test_page` | Test/scratch page |
+| GET | `/results` | `results_page` | Results browser |
+| GET | `/scoring` | `scoring_dashboard` | Model scoring dashboard |
+| GET | `/compare` | `compare_page` | Compare two agent–model combinations (`?a=&b=&metric=`) |
+| GET | `/exercise-detail` | `exercise_detail` | Exercise detail (legacy) |
+| GET | `/results/{agent}/{dir}/{lang}/{ex}` | `result_detail_page` | One result, full detail |
+| GET | `/results/{agent}/{dir}/{lang}/{ex}/trace` | `result_detail_trace` | The agent trace for one result |
+
+`{dir}` is the result directory (`{agent}-{model}`, e.g. `pi-qwen3-coder`), kept as a separate
+path segment from `{agent}` so the URL stays RESTful while the on-disk layout stays flat.
+
+### Benchmark sessions
+
+| Method | Path | Handler | Returns |
+|---|---|---|---|
+| GET | `/api/benchmark/{id}/status` | `get_status` | `StatusResponse` |
+| GET | `/api/benchmark/{id}/stream` | `stream_output` | Server-sent events (below) |
+| POST | `/api/benchmark/{id}/cancel` | `cancel_benchmark` | `CancelResponse` |
+| GET | `/api/active-runs` | `get_active_runs` | `{"count": 2}` |
+| GET | `/api/active-sessions` | `get_active_sessions` | `{"sessions": […]}` |
+| GET | `/api/models` | `fetch_models_endpoint` | `["gpt-oss-20b", …]` |
+| GET | `/api/dashboard/completeness` | `get_completeness` | `{"total_exercises": 225, "complete_keys": […]}` |
+
+### Queue
+
+| Method | Path | Handler | Purpose |
+|---|---|---|---|
+| GET | `/api/benchmark/queue` | `get_queue` | `QueueResponse`: items plus pending/running/completed/failed/cancelled counts, `active_workers`, `parallelism_limit` |
+| POST | `/api/benchmark/queue/schedule` | `schedule_batch` | Schedule a batch; body is a form **or** JSON (below) |
+| POST | `/api/benchmark/queue/cancel/{id}` | `cancel_queue_item` | Cancel one pending/running item |
+| POST | `/api/benchmark/queue/clear` | `clear_pending_queue` | Drop pending items |
+| POST | `/api/benchmark/queue/clear-terminal` | `clear_completed_and_cancelled` | Drop finished items |
+| POST | `/api/benchmark/queue/retry/{id}` | `retry_queue_item` | Re-queue a failed item |
+
+### Exercises
+
+| Method | Path | Handler | Returns |
+|---|---|---|---|
+| GET | `/api/exercises` | `get_exercises` | `{"java": ["series", …], "python": […], …}` |
+| GET | `/api/languages` | `get_languages` | `["cpp", "go", "java", …]` |
+| GET | `/api/exercises/{language}` | `get_exercises_for_language` | `["series", …]` |
+
+These read the exercise set embedded in the binary, not the filesystem.
+
+### Results
+
+| Method | Path | Handler | Returns |
+|---|---|---|---|
+| POST | `/api/results/refresh` | `refresh` | `{"message": …, "loaded": 13721}` — re-scans the results directory |
+| GET | `/api/results/loading-status` | `get_loading_status` | `{"loaded": true, "result_count": 13721}` |
+| GET | `/api/individual-results` | `get_individual_results` | `{"results": […], "total": N}` |
+| GET | `/recent-results-fragment` | `recent_results_fragment` | `{"results": […]}` |
+| GET | `/results/api/results` | `get_results_api` | `ResultsTable`: `{"results": […], "total": N}` |
+| GET | `/results/table-fragment` | `table_fragment` | Same shape, for HTMX |
+| GET | `/results/api/stats` | `get_stats` | `Statistics` (below) |
+| GET | `/results/api/{agent}/{lang}/{ex}` | `get_results_api_agent_lang_ex` | `[{…}]` |
+| GET | `/results/{lang}/{ex}` | `get_results_by_lang_ex` | `[{…}]` |
+
+`/results/api/results`, `/results/table-fragment` and `/api/individual-results` accept
+`language`, `agent`, `model` and `exercise` filters; the table endpoints also accept
+`quick_only`.
+
+### Scoring
+
+| Method | Path | Handler | Returns |
+|---|---|---|---|
+| GET | `/api/scored-results` | `get_scored_results` | `{"results": […], "total": N, "filters": {…}}` |
+| GET | `/api/model-scores` | `get_model_scores` | `{"scores": […], "filters": {…}}` |
+
+Both accept `language`, `agent` and `quick` filters.
+
+### Metrics
+
+| Method | Path | Handler | Returns |
+|---|---|---|---|
+| GET | `/metrics` | inline closure | Prometheus text format (`MetricsEngine::render()`) |
+
+## `GET /api/benchmark/{id}/status`
+
 ```json
 {
-  "sessionId": "sess_abc123",
-  "status": "started",
-  "redirectUrl": "/benchmark/sess_abc123"
-}
-```
-
-**Status Codes:**
-- `200 OK` - Benchmark started successfully
-- `400 Bad Request` - Invalid parameters (e.g., no language selected)
-- `500 Internal Server Error` - Server error
-
----
-
-### Start Multiple Benchmarks (Batch)
-
-**POST** `/api/benchmark/run/batch`
-
-Starts multiple benchmark runs in sequence.
-
-**Request Body:**
-```json
-{
-  "benchmarks": [
-    {
-      "agent": "claude",
-      "languages": ["java"],
-      "model": "sonnet"
-    },
-    {
-      "agent": "reference",
-      "languages": ["java"]
-    }
-  ]
-}
-```
-
-**Response:**
-```json
-{
-  "queueId": "queue_xyz789",
-  "sessions": [
-    {"sessionId": "sess_abc123", "position": 1},
-    {"sessionId": "sess_def456", "position": 2}
-  ]
-}
-```
-
----
-
-## Exercises API
-
-### List Available Exercises
-
-**GET** `/api/exercises`
-
-Returns all available exercises from the embedded exercise bundle.
-
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `language` | string | Filter by language |
-| `name` | string | Filter by exercise name (partial match) |
-
-**Response:**
-```json
-{
-  "exercises": [
-    {
-      "name": "two-fer",
-      "languages": ["java", "python", "javascript", "go", "rust"],
-      "category": "beginner",
-      "difficulty": "easy"
-    },
-    {
-      "name": "hello-world",
-      "languages": ["java", "python", "javascript", "go", "rust", "cpp"],
-      "category": "beginner",
-      "difficulty": "easy"
-    }
-  ],
-  "totalCount": 50
-}
-```
-
-**Status Codes:**
-- `200 OK` - Success
-- `500 Internal Server Error` - Could not load exercises
-
----
-
-## Queue API
-
-### Get Queue Status
-
-**GET** `/api/queue`
-
-Returns the current state of the benchmark queue.
-
-**Response:**
-```json
-{
-  "status": "PROCESSING",
-  "currentSession": {
-    "sessionId": "sess_abc123",
-    "agent": "claude",
-    "progress": {
-      "currentExercise": "two-fer",
-      "totalExercises": 20,
-      "completedExercises": 15
-    }
-  },
-  "queue": [
-    {
-      "sessionId": "sess_def456",
-      "agent": "reference",
-      "position": 1,
-      "estimatedWaitSeconds": 300
-    },
-    {
-      "sessionId": "sess_ghi789",
-      "agent": "claude",
-      "position": 2,
-      "estimatedWaitSeconds": 600
-    }
-  ],
-  "statistics": {
-    "totalQueued": 2,
-    "processingTimeSeconds": 1800,
-    "averageExerciseTimeSeconds": 45
-  }
-}
-```
-
-**Status Codes:**
-- `200 OK` - Success
-
----
-
-### Pause Queue Processing
-
-**POST** `/api/queue/pause`
-
-Pauses processing of the benchmark queue.
-
-**Request Body (optional):**
-```json
-{
-  "reason": "Maintenance window"
-}
-```
-
-**Response:**
-```json
-{
-  "status": "PAUSED",
-  "message": "Queue processing paused"
-}
-```
-
-**Status Codes:**
-- `200 OK` - Successfully paused
-- `409 Conflict` - Queue already paused
-
----
-
-### Resume Queue Processing
-
-**POST** `/api/queue/resume`
-
-Resumes processing of the benchmark queue.
-
-**Response:**
-```json
-{
-  "status": "PROCESSING",
-  "message": "Queue processing resumed"
-}
-```
-
-**Status Codes:**
-- `200 OK` - Successfully resumed
-- `409 Conflict` - Queue not paused
-
----
-
-## Sessions API
-
-### Cancel Session
-
-**DELETE** `/api/sessions/{sessionId}`
-
-Cancels a running benchmark session.
-
-**Path Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `sessionId` | string | The session ID to cancel |
-
-**Response:**
-```json
-{
-  "sessionId": "sess_abc123",
-  "status": "CANCELLED",
-  "message": "Session cancelled successfully"
-}
-```
-
-**Status Codes:**
-- `200 OK` - Successfully cancelled
-- `404 Not Found` - Session not found
-- `409 Conflict` - Session already completed or failed
-
----
-
-### Get Session Status
-
-**GET** `/api/sessions/{sessionId}/status`
-
-Returns the current status of a session.
-
-**Response:**
-```json
-{
-  "sessionId": "sess_abc123",
+  "id": "1f0c…",
   "status": "RUNNING",
-  "progress": {
-    "currentExercise": "two-fer",
-    "totalExercises": 20,
-    "completedExercises": 15,
-    "percentage": 75
-  },
-  "startTime": "2026-02-28T10:00:00Z",
-  "elapsedSeconds": 1800
-}
-```
-
----
-
-## Server-Sent Events (SSE)
-
-### Session Progress Stream
-
-**GET** `/api/sse/{sessionId}`
-
-Opens a server-sent event stream for real-time progress updates.
-
-**Event Types:**
-
-| Event | Data Format | Description |
-|-------|-------------|-------------|
-| `session_started` | See below | Session initialized |
-| `exercise_started` | See below | Starting an exercise |
-| `exercise_progress` | See below | Progress update during execution |
-| `exercise_completed` | See below | Exercise finished |
-| `session_completed` | See below | All exercises done |
-| `error` | See below | Error occurred |
-
-**Event Data Examples:**
-
-```javascript
-// session_started
-{
-  "sessionId": "sess_abc123",
-  "agent": "claude",
-  "model": "sonnet",
-  "languages": ["java"],
-  "totalExercises": 20
-}
-
-// exercise_started
-{
-  "exerciseName": "two-fer",
-  "language": "java"
-}
-
-// exercise_progress
-{
-  "exerciseName": "two-fer",
+  "agent": "pi",
   "language": "java",
-  "output": "Running tests...\n",
-  "timestamp": "2026-02-28T10:30:00Z"
-}
-
-// exercise_completed
-{
-  "exerciseName": "two-fer",
-  "language": "java",
-  "status": "SUCCESS",
-  "duration": 45.2,
-  "exitCode": 0
-}
-
-// session_completed
-{
-  "sessionId": "sess_abc123",
-  "status": "COMPLETED",
-  "successRate": 0.95,
-  "totalDuration": 1800
-}
-
-// error
-{
-  "error": "Docker container failed to start",
-  "sessionId": "sess_abc123"
+  "exercise": "series",
+  "progress": 12.5,
+  "completed_exercises": 3,
+  "total_exercises": 24,
+  "error_message": "…"
 }
 ```
 
-**Usage Example:**
-```javascript
-const eventSource = new EventSource('/api/sse/sess_abc123');
+Both optional fields behave differently, and only `error_message` uses `skip_serializing_if`:
+it is **absent** from the JSON unless the run failed, while `exercise` is always present and is
+`null` when the session has no single exercise (an all-exercises run). `progress` is
+`completed_exercises` as a percentage of `total_exercises`.
 
-eventSource.addEventListener('exercise_progress', (event) => {
-  const data = JSON.parse(event.data);
-  console.log(`[${data.language}] ${data.exerciseName}: ${data.output}`);
-});
+An unknown `{id}` returns **HTTP 200** with `{"error": "Session not found"}` — `get_status`
+does not set a status code. Check for the `error` key rather than the HTTP status.
 
-eventSource.addEventListener('session_completed', (event) => {
-  const data = JSON.parse(event.data);
-  console.log(`Session complete! Success rate: ${data.successRate}`);
-  eventSource.close();
-});
+## `GET /api/benchmark/{id}/stream` — server-sent events
+
+One stream per session, `data:` payloads are JSON. Events:
+
+| `event:` | When | Payload |
+|---|---|---|
+| `session` | Once, immediately | Session metadata, so the page can render before the first output |
+| `message` | Per line of agent output | The output line |
+| `complete` | Once, at the end | Final session state |
+| `error` | Instead of the above, when the session is unknown | `{"message": "Session not found"}` |
+
+Each request takes a fresh subscriber from the session's broadcast channel, so several
+browsers can watch the same run.
+
+## `POST /api/benchmark/queue/schedule`
+
+The body may be an HTML form (`application/x-www-form-urlencoded`) or JSON — the handler uses
+a form extractor that accepts both, including a repeated `languages` field.
+
+| Field | Type | Notes |
+|---|---|---|
+| `agent` | string | `reference`, `pi` or `claude` |
+| `languages` | string or array | Repeated in a form, an array in JSON. Empty means every language |
+| `model` | string | Ignored for `reference`, which always records itself as `reference` |
+| `thinking_level` | string, optional | pi only: `off`, `minimal`, `low`, `medium`, `high`, `xhigh` |
+| `exercise` | string, optional | Which exercise; meaning depends on `mode` |
+| `mode` | string, optional | `single` (default), `all`, or `quick` |
+| `retry` | bool, optional | Re-run exercises that already have a result |
+
+```json
+{"status": "scheduled", "count": 3, "items": [{"id": "…", "status": "PENDING", …}]}
 ```
 
----
+## `POST /api/benchmark/{id}/cancel`
 
-## Error Responses
+```json
+{"status": "cancelled", "message": "Benchmark cancelled"}
+```
 
-### Standard Error Format
-
-All error responses follow this format:
+## `/results/api/stats`
 
 ```json
 {
-  "error": "Error message",
-  "code": "ERROR_CODE",
-  "details": {
-    "field": "Additional context"
-  },
-  "timestamp": "2026-02-28T10:30:00Z"
+  "total_runs": 12,
+  "total_exercises": 2400,
+  "successful_exercises": 2380,
+  "success_rate": 99.17,
+  "success_rate_formatted": "99.2%",
+  "total_duration": 43200.0,
+  "total_duration_formatted": "12h 0m 0s",
+  "wall_clock_duration": 40000.0,
+  "wall_clock_duration_formatted": "11h 6m 40s",
+  "total_results": 2400,
+  "successful_results": 2380,
+  "language_stats": [{"…": "StatItem"}],
+  "agent_stats": [{"…": "StatItem"}],
+  "model_stats": [{"…": "StatItem"}]
 }
 ```
 
-### Error Codes
+## Conventions
 
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `INVALID_REQUEST` | 400 | Invalid request parameters |
-| `SESSION_NOT_FOUND` | 404 | Session does not exist |
-| `EXERCISE_NOT_FOUND` | 404 | Exercise not found |
-| `CONFLICT` | 409 | Operation conflicts with current state |
-| `TIMEOUT` | 504 | Request timed out |
-| `INTERNAL_ERROR` | 500 | Internal server error |
+- **No authentication, no CORS layer, no rate limiting, no API versioning.** The routes are
+  exactly as listed; there is no `/api/v1`. This is a single-user dashboard, and the docs
+  should not imply otherwise.
+- **Errors are usually HTTP 200 with an error object in the body** (`{"error": …}`), because
+  most handlers return `Json(…)` without setting a status. The exceptions are
+  `result.rs`, which uses `404 NOT_FOUND`, and `queue.rs`, which uses `400 BAD_REQUEST`.
+- **Unknown routes** fall through to the static-asset handler, so a typo returns the embedded
+  stylesheet's `404`, not JSON.
+- **Result payloads are `HashMap<String, String>`-shaped** in several endpoints (the columns
+  the results table needs) rather than typed structs, so field sets follow the table's
+  columns rather than a schema. `docs/RESULT_FORMAT.md` covers the underlying result files.
 
----
+## Keeping this current
 
-## Rate Limiting
+The route index is a mirror of these calls:
 
-For production deployments, consider implementing rate limiting:
-
-```
-100 requests per minute per IP address
-```
-
-Headers included in responses:
-```
-X-RateLimit-Limit: 100
-X-RateLimit-Remaining: 95
-X-RateLimit-Reset: 1677583200
+```bash
+grep -n '\.route(\|\.nest(' benchmark-web/src/routes/*.rs
 ```
 
----
-
-## Versioning
-
-API version is included in the URL path:
-
-```
-/api/v1/results
-/api/v1/benchmark/run
-```
-
-Current version: `v1`
-
----
-
-## SDK Clients
-
-### Java Client Example
-
-```java
-BenchmarkClient client = new BenchmarkClient("http://localhost:8080");
-
-// Start a benchmark
-String sessionId = client.startBenchmark(
-    "claude",
-    new String[]{"java", "python"},
-    "sonnet"
-);
-
-// Get results
-BenchmarkResult result = client.getResult(sessionId);
-System.out.println("Success rate: " + result.getSummary().getSuccessRate());
-```
-
-### Python Client Example
-
-```python
-from benchmark_client import BenchmarkClient
-
-client = BenchmarkClient("http://localhost:8080")
-
-# Start a benchmark
-session_id = client.start_benchmark(
-    agent="claude",
-    languages=["java", "python"],
-    model="sonnet"
-)
-
-# Get results
-result = client.get_result(session_id)
-print(f"Success rate: {result.summary.success_rate}")
-```
-
----
-
-## Related Documentation
-
-- [Architecture Overview](ARCHITECTURE.md)
-- [Configuration Reference](CONFIGURATION.md)
-- [Developer Guide](DEVELOPER.md)
-
----
-
-**Version:** 1.0  
-**Last Updated:** 2026-02-28
+Response shapes are defined by the `Serialize` structs next to each handler in
+`benchmark-web/src/routes/`, and by `benchmark-web/src/services/result_service.rs` for the
+result-derived ones. The `docs/` set is checked by hand, not by CI.

@@ -262,7 +262,7 @@ inputs, not the binary.**
 |---|---|
 | `build.sh docker-build [--tag T] [--arch A]` | Sources `pins.env`, passes build args, builds, tags `:<version>` **and** `:latest`, rewrites `runner.lock`. |
 | `build.sh docker-verify` | Recomputes `inputHash`. Fails if inputs changed without a rebuild to refresh `runner.lock`; fails if the lock's version ≠ `Cargo.toml`. Also runs the pin lint. |
-| `build.sh docker-repin [--minor\|--major]` | Convenience wrapper for `docker/pin-agents.sh`. |
+| `docker/pin-agents.sh [--patch\|--minor\|--major]` | Re-pins every agent/tool to its latest release, bumps `Cargo.toml` (patch by default), and refreshes `Cargo.lock` and `runner.lock`. `--dry-run` prints without writing, `--allow-major` accepts a major-version jump, and `--check` is the offline lint `docker-verify` runs. |
 
 `inputHash` uses `shasum -a 256` with a `sha256sum` fallback (the script runs on the host,
 i.e. macOS today).
@@ -329,17 +329,18 @@ Two easy-to-miss entries: **adding a language is both a binary and an image chan
 ```bash
 # Build the runner image (only supported path; passes pin build-args)
 ./build.sh docker-build
-./build.sh docker-build --arch linux/arm64 --tag ghcr.io/dylanschell/llm-benchmark-runner:1.0.0
+./build.sh docker-build --arch linux/arm64 --tag ghcr.io/dylanschell/llm-benchmark-runner:<version>
 
 # Policy guard — fails if docker/ inputs changed without a version bump
 ./build.sh docker-verify
 
 # Re-pin every agent/tool to latest, bump patch, refresh lock
-./build.sh docker-repin
-./build.sh docker-repin --minor --dry-run
+./docker/pin-agents.sh
+./docker/pin-agents.sh --minor --dry-run
+./docker/pin-agents.sh --check        # the lint docker-verify runs
 
 # Introspect a built image
-docker run --rm ghcr.io/dylanschell/llm-benchmark-runner:1.0.0 cat /etc/llm-benchmark/runner-version
+docker run --rm ghcr.io/dylanschell/llm-benchmark-runner:<version> cat /etc/llm-benchmark/runner-version
 
 # Unchanged
 cargo build --release

@@ -324,7 +324,6 @@ crates/benchmark-types/src/exercise_source.rs
 crates/benchmark-types/src/exercise/mod.rs
 crates/benchmark-core/src/exercise_runner/mod.rs
 crates/benchmark-core/src/agent/exercise_files.rs
-xtask/                                  # `cargo xtask exercises …`
 THIRD_PARTY_NOTICES                     # Exercism attribution per track
 ```
 
