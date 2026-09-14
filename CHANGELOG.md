@@ -1,3 +1,52 @@
+# Changelog — a first run against a local model server
+
+Four defects compounded so that the documented path — point the tool at a local model
+server on 8080 and run an exercise — failed on a machine that had never run it before.
+They are fixed together because they share one user story: run the binary, run a
+benchmark, talk to a model you are serving yourself.
+
+- **A container that has not been created yet is no longer treated as a dead one.** The
+  liveness monitor asked `docker inspect … {{.State.Running}}` every 5 s and read *any*
+  failure as "the container died", including the "no such object" it gets while the image
+  is still being pulled. So the first run on a machine without the runner image was aborted
+  and its container force-removed about five seconds in, before the download had finished.
+  `container_is_running` is now `container_state`, backed by `docker ps -a --filter
+  name=^<id>$ --format {{.State}}` (existence is reported through stdout, so this no longer
+  depends on the wording or locale of the CLI's errors), and a unit-testable
+  `classify_container_state` maps the output to `Running` / `Stopped` / `Pending`.
+  `Pending` covers both the empty result for a name Docker does not know yet and the brief
+  `created` window; it is no longer an abort, and `ContainerState::is_fatal()` — pinned by
+  a test — says only `Stopped` is.
+
+- **Pulling the image has its own timeout instead of the run's.** `docker run` pulls a
+  missing image as part of the command, so the download was charged against
+  `docker.timeout` (default 300 s), and a slow link could time out a run that had not
+  started benchmarking. The image is now acquired before the timed run by
+  `ensure_image_present`, with its own `docker.pull_timeout` (default 1800 s). An image that
+  is already local costs one `docker image inspect`. The pull inherits stdio, because the
+  default log filter is `benchmark_core=warn` and this module's INFO lines only appear with
+  `--verbose` — without inheriting, a first run would sit behind a silent multi-minute
+  wait. It also avoids buffering `docker pull`'s progress output in memory.
+
+- **The host-side default endpoint is port 8080, not 8000.** `default_inference_endpoint()`
+  returned `http://localhost:8000/v1`, which is not where the local servers people actually
+  run (Ollama, LM Studio, llama.cpp, vLLM) listen. The default, the tests that pin it,
+  `config.example.yaml` and every README table now say 8080.
+
+- **`OPENAI_BASE_URL` is defaulted for the container.** `pi` runs *inside* the container and
+  reads `OPENAI_BASE_URL` from `docker.environment`; with no entry it had no endpoint at
+  all, which is why it had to be set by hand. `DockerConfig::environment_with_defaults()`
+  now fills in `http://host.docker.internal:8080/v1` for any variable the user has not set,
+  and the single conversion point in `benchmark-core` uses it, so `pi` and the `docker run
+  -e` arguments can no longer disagree. An explicit value always wins. `ANTHROPIC_BASE_URL`
+  is deliberately *not* defaulted: doing so would silently redirect a `claude` run that
+  means to reach Anthropic's real API to a local server.
+
+Verified by removing the runner image and running an exercise end to end: the pull was
+logged, took 22.4 s, and the run then proceeded — where the old code would have aborted it
+at 5 s. Unit tests pin the state mapping, the fatality policy, the default endpoint, and the
+container environment that reaches `docker run -e` (179 total, up from 174).
+
 # Changelog — running the released binary from an empty directory
 
 Two bugs made the documented "download a release and run it" path unusable. Both only

@@ -75,7 +75,7 @@ The archive contains four binaries — `llm-benchmark` (the unified launcher use
 docker pull ghcr.io/dylanschell/llm-benchmark-runner:latest
 ```
 
-This is the image `config.yaml` points at by default. Pulling it is not strictly required — `docker run` fetches a missing image automatically — but doing it up front keeps the first benchmark's duration about the benchmark rather than a multi-minute download.
+This is the image `config.yaml` points at by default. Pulling it is not strictly required — the image is fetched automatically before a run starts — but doing it up front keeps the first benchmark's duration about the benchmark rather than a multi-minute download. The automatic path has its own budget (`docker.pull_timeout`, default 1800 s) and logs what it is doing, so a download no longer competes with the run's own `docker.timeout`.
 
 ### 4. Create `config.yaml`
 
@@ -208,12 +208,14 @@ Two different processes call the model, and they are configured separately:
 
 | Setting | Read by | Runs | Reachable default |
 |---|---|---|---|
-| `inference_endpoint` + `api_key` | the benchmark app | on the **host** | `http://localhost:8000/v1` |
-| `docker.environment` → `ANTHROPIC_BASE_URL` / `OPENAI_BASE_URL` | the agent CLI (`pi`, `claude`) | **inside the container** | none |
+| `inference_endpoint` + `api_key` | the benchmark app | on the **host** | `http://localhost:8080/v1` |
+| `docker.environment` → `ANTHROPIC_BASE_URL` / `OPENAI_BASE_URL` | the agent CLI (`pi`, `claude`) | **inside the container** | `OPENAI_BASE_URL` → `http://host.docker.internal:8080/v1`; `ANTHROPIC_BASE_URL` unset |
 
 **`inference_endpoint`** is used for exactly one thing: `GET {inference_endpoint}/models`, which populates the model list in the web dashboard. It is OpenAI-style and must include the `/v1` suffix. If it is unreachable the app logs a warning and falls back to a built-in list, so it is never fatal.
 
 **`docker.environment`** is what actually lets an agent reach your model. Since the agent runs *inside a container*, `localhost` there refers to the container itself, not your machine. Use `host.docker.internal` to reach the host.
+
+Both defaults assume a model server on port **8080** of the same machine, which is what the examples below use. `OPENAI_BASE_URL` is pre-filled for you; `ANTHROPIC_BASE_URL` deliberately is not, so that a `claude` run meaning to reach Anthropic's real API is never silently redirected to a local server. Set either explicitly to override the default.
 
 ### Worked example — local model server
 
@@ -230,7 +232,7 @@ docker:
     - OPENAI_API_KEY: "not-needed"
 ```
 
-The `*_AUTH_TOKEN` / `*_API_KEY` values only need to be non-empty for a local server that does not check them.
+The `*_AUTH_TOKEN` / `*_API_KEY` values only need to be non-empty for a local server that does not check them. The `OPENAI_BASE_URL` line is optional — it is the built-in default — so a `docker.environment` block that sets only the key, or is left out altogether, still points `pi` at port 8080 on the host.
 
 ### Worked example — a hosted provider
 
@@ -312,14 +314,15 @@ Result files are named `result_{agent}_{language}_{exercise}.json` and traces `t
 |---|---|---|---|
 | `parallelism` | int | `1` | Number of concurrent exercises |
 | `model` | string | — | Label used in result directory names; overridden by `--model` |
-| `inference_endpoint` | string | `http://localhost:8000/v1` | Host-side OpenAI-compatible base URL, used for `GET /models` |
+| `inference_endpoint` | string | `http://localhost:8080/v1` | Host-side OpenAI-compatible base URL, used for `GET /models` |
 | `api_key` | string | — | Bearer token sent to `inference_endpoint` |
 | `docker.image` | string | `ghcr.io/dylanschell/llm-benchmark-runner:latest` | Runner image |
 | `docker.work_dir` | string | `/workspace` | Working directory inside the container |
-| `docker.timeout` | int | `300` | Per-exercise container timeout in seconds (minimum 10) |
+| `docker.timeout` | int | `300` | Per-exercise container timeout in seconds (minimum 10). Does **not** include pulling the image |
+| `docker.pull_timeout` | int | `1800` | Timeout in seconds for pulling the runner image when it is not present locally |
 | `docker.per_command_timeout` | int | `600` | Timeout for any single Bash tool call inside the container |
 | `docker.memory` | string | `2g` | Container memory limit |
-| `docker.environment` | list of maps | `[]` | Environment variables injected into the container — this is where the agent's endpoint goes |
+| `docker.environment` | list of maps | `OPENAI_BASE_URL` pre-filled | Environment variables injected into the container — this is where the agent's endpoint goes. Defaults to `http://host.docker.internal:8080/v1` |
 | `output.results_dir` | path | `../benchmark-results` | Where results are written. **Set this explicitly.** |
 | `output.log_level` | string | `INFO` | Log level |
 | `server.port` | int | `8081` | Dashboard port |
