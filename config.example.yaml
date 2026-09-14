@@ -1,11 +1,19 @@
 # LLM Benchmark Configuration
 # Copy to config.yaml and customize for your setup.
+#
+# Every setting is optional: with no config.yaml at all the defaults are used, and a model
+# server on this machine is found automatically (the local ports 8000, 8080 and 9931 are
+# probed at startup). This file is a starting point, not a requirement.
 
 # Exercises are embedded in the binary; no external checkout is required.
 parallelism: 1
 
-# Inference endpoint configuration (OpenAI-compatible API)
-inference_endpoint: "http://localhost:8080/v1"
+# Inference endpoint configuration (OpenAI-compatible API), used for the dashboard's model
+# list (GET {inference_endpoint}/models).
+# Leave inference_endpoint commented out to probe http://localhost:{8000,8080,9931}/v1 and
+# adopt the first that returns a model list. Setting it disables probing entirely.
+# inference_endpoint: "http://localhost:8080/v1"
+# Bearer token sent to inference_endpoint, if your server checks it.
 api_key: ""
 
 # Docker configuration
@@ -16,16 +24,24 @@ docker:
   work_dir: "/workspace"
   # Timeout for exercise execution in seconds
   timeout: 3600
+  # Timeout for pulling the runner image when it is not present locally (seconds).
+  # Deliberately separate from `timeout`: acquiring the image is setup, not benchmark work.
+  pull_timeout: 1800
   # Maximum time allowed for any single Bash tool call inside the container (seconds).
   per_command_timeout: 120
   # Memory limit for container (e.g., "2g")
   memory: "2g"
-  # Environment variables passed into the runner container
-  environment:
-    - ANTHROPIC_AUTH_TOKEN: ""
-    - ANTHROPIC_BASE_URL: "http://host.docker.internal:8080"
-    - OPENAI_BASE_URL: "http://host.docker.internal:8080/v1"
-    - OPENAI_API_KEY: ""
+  # Environment variables passed into the runner container — this is what the agent CLI
+  # INSIDE the container uses. A local model server normally needs none of them: when
+  # inference_endpoint points at localhost, OPENAI_BASE_URL is derived from it (same port on
+  # host.docker.internal); otherwise it defaults to http://host.docker.internal:8080/v1.
+  # Uncomment to override, e.g. for a hosted provider.
+  # environment:
+  #   - ANTHROPIC_AUTH_TOKEN: ""
+  #   - ANTHROPIC_BASE_URL: "http://host.docker.internal:8080"
+  #   - OPENAI_BASE_URL: "http://host.docker.internal:8080/v1"
+  #   - OPENAI_API_KEY: ""
+  environment: []
 
 # Exercise configuration
 exercise:

@@ -1,3 +1,43 @@
+# Changelog — finding a local model server without configuring it
+
+Running against a model server on this machine required spelling out its port twice, once for
+the dashboard and once for the agent inside the container — and getting either wrong was
+silent. The endpoint is now discovered, and the two layers agree by construction.
+
+- **`inference_endpoint` is optional.** When it is absent, startup probes
+  `http://localhost:{8000,8080,9931}/v1` for `GET /models` — all three at once, in that
+  priority order, each with a 750 ms budget — and adopts the first that answers. Setting the
+  field explicitly disables probing entirely, so a configured endpoint is never second-guessed.
+  `Config::default()` now reports `None` ("not configured") rather than guessing a port, which
+  is what makes "unset" distinguishable from "set to the default".
+
+- **A plain `200` is not taken as proof.** The response has to contain a `data` array, the
+  same thing `fetch_models` consumes. Port 8000 in particular is full of FastAPI apps that
+  answer *something*, and a squatter must neither be adopted as a model server nor hide a real
+  one further down the list.
+
+- **The container's endpoint is derived from the host's.** When the adopted endpoint is on
+  this machine, `OPENAI_BASE_URL` for the container becomes the same port and path on
+  `host.docker.internal`, so a server on 9931 is reached on 9931 inside the container and no
+  `docker.environment` block is needed. A **remote** endpoint is deliberately never rewritten:
+  the host-side endpoint may point at a hosted API purely to populate the dashboard's model
+  list, and silently redirecting the agent there with its own credentials would be worse than
+  defaulting to localhost. An `OPENAI_BASE_URL` the user set is never touched.
+
+- **Finding nothing is not an error.** The endpoint stays unset and the dashboard keeps its
+  built-in model list, while the container keeps the `http://host.docker.internal:8080/v1`
+  default, so an agent always has an endpoint to try.
+
+`ExerciseRunner::fetch_models` handles the unset case explicitly, and its three copies of the
+built-in model list are now one function.
+
+Verified by execution in four configurations: a stub model server on 8000 was found and its
+port reached the real `docker run` command line; with no stub, the machine's own server on
+8080 was found and the dashboard listed **23 models** through `GET /api/models`; an explicit
+`inference_endpoint` was used unchanged (and moved the container's port to match); and a stub
+answering `{"status":"ok"}` was correctly rejected. `config.example.yaml` and the README's
+step-4 block were both run verbatim afterwards (190 tests, up from 179).
+
 # Changelog — a first run against a local model server
 
 Four defects compounded so that the documented path — point the tool at a local model

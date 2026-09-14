@@ -79,31 +79,21 @@ This is the image `config.yaml` points at by default. Pulling it is not strictly
 
 ### 4. Create `config.yaml`
 
-`llm-benchmark run` reads `config.yaml` from the **current working directory** and aborts with `Failed to load config file: config.yaml` if it is absent. A minimal file:
+`llm-benchmark run` reads `config.yaml` from the **current working directory**. It does not have to exist: with no file every setting falls back to its default and a warning is logged, which is enough to run a model server on this machine. A small file that sets the knobs worth setting explicitly:
 
 ```yaml
-# Host-side endpoint, used for the dashboard's model list (GET {inference_endpoint}/models).
-inference_endpoint: "http://localhost:8080/v1"
-api_key: "not-needed-for-local-endpoints"
-
+# No endpoint appears here on purpose — see "Configuring the LLM endpoint".
 docker:
   image: "ghcr.io/dylanschell/llm-benchmark-runner:latest"
   memory: "2g"
   timeout: 3600
-  # In-container endpoint. The agent CLI runs INSIDE the container, so this must be
-  # reachable from there — see "Configuring the LLM endpoint".
-  environment:
-    - ANTHROPIC_AUTH_TOKEN: "not-needed-for-local-endpoints"
-    - ANTHROPIC_BASE_URL: "http://host.docker.internal:8080"
-    - OPENAI_BASE_URL: "http://host.docker.internal:8080/v1"
-    - OPENAI_API_KEY: "not-needed-for-local-endpoints"
 
 output:
   results_dir: "./benchmark-results"   # set explicitly — the code default is ../benchmark-results
   log_level: "INFO"
 ```
 
-Note the endpoint appears in **two** places, and they are not interchangeable. Read [Configuring the LLM endpoint](#configuring-the-llm-endpoint) before assuming a model is unreachable.
+If your model is on this machine, that is the whole configuration: the endpoint is detected and handed to the container. A remote or hosted model needs one more block — read [Configuring the LLM endpoint](#configuring-the-llm-endpoint), where the two places an endpoint can be set are explained and why they are not interchangeable.
 
 A fully commented template ships with the source tree as [`config.example.yaml`](config.example.yaml).
 
@@ -208,14 +198,24 @@ Two different processes call the model, and they are configured separately:
 
 | Setting | Read by | Runs | Reachable default |
 |---|---|---|---|
-| `inference_endpoint` + `api_key` | the benchmark app | on the **host** | `http://localhost:8080/v1` |
-| `docker.environment` → `ANTHROPIC_BASE_URL` / `OPENAI_BASE_URL` | the agent CLI (`pi`, `claude`) | **inside the container** | `OPENAI_BASE_URL` → `http://host.docker.internal:8080/v1`; `ANTHROPIC_BASE_URL` unset |
+| `inference_endpoint` + `api_key` | the benchmark app | on the **host** | auto-detected: the local ports are probed at startup |
+| `docker.environment` → `ANTHROPIC_BASE_URL` / `OPENAI_BASE_URL` | the agent CLI (`pi`, `claude`) | **inside the container** | derived from the endpoint above when it is local; otherwise `OPENAI_BASE_URL` → `http://host.docker.internal:8080/v1`; `ANTHROPIC_BASE_URL` unset |
 
 **`inference_endpoint`** is used for exactly one thing: `GET {inference_endpoint}/models`, which populates the model list in the web dashboard. It is OpenAI-style and must include the `/v1` suffix. If it is unreachable the app logs a warning and falls back to a built-in list, so it is never fatal.
 
 **`docker.environment`** is what actually lets an agent reach your model. Since the agent runs *inside a container*, `localhost` there refers to the container itself, not your machine. Use `host.docker.internal` to reach the host.
 
 Both defaults assume a model server on port **8080** of the same machine, which is what the examples below use. `OPENAI_BASE_URL` is pre-filled for you; `ANTHROPIC_BASE_URL` deliberately is not, so that a `claude` run meaning to reach Anthropic's real API is never silently redirected to a local server. Set either explicitly to override the default.
+
+### If the model runs on this machine
+
+The only setup actually required is starting your model server — no endpoint configuration at all:
+
+1. **Nothing configured** ⇒ at startup the tool asks `http://localhost:{8000, 8080, 9931}/v1/models`, in that order, and adopts the first one that returns a model list. (A plain `200` is not enough: the response has to contain a `data` array, so an unrelated app squatting on port 8000 is skipped rather than mistaken for a model server.)
+2. Whatever it adopts is **also used for the container**: a `localhost` endpoint becomes `http://host.docker.internal:<same port>/v1`, so `pi` talks to the same server on the same port with no `docker.environment` block. The startup log says which endpoint was chosen, and `--verbose` (or `RUST_LOG=info`) shows the resolution.
+3. If nothing answers, the dashboard falls back to its built-in model list, and the container keeps the default `http://host.docker.internal:8080/v1`. Neither is fatal.
+
+An explicit `inference_endpoint` always wins and disables probing. It is still only rewritten for the container when it points at `localhost` (or `127.0.0.1`, `0.0.0.0`, `::1`) — a remote endpoint is left alone, so a hosted `inference_endpoint` cannot silently become the agent's endpoint.
 
 ### Worked example — local model server
 
@@ -314,7 +314,7 @@ Result files are named `result_{agent}_{language}_{exercise}.json` and traces `t
 |---|---|---|---|
 | `parallelism` | int | `1` | Number of concurrent exercises |
 | `model` | string | — | Label used in result directory names; overridden by `--model` |
-| `inference_endpoint` | string | `http://localhost:8080/v1` | Host-side OpenAI-compatible base URL, used for `GET /models` |
+| `inference_endpoint` | string | auto-detected | Host-side OpenAI-compatible base URL, used for `GET /models`. Omit it and the local ports `8000`, `8080`, `9931` are probed at startup |
 | `api_key` | string | — | Bearer token sent to `inference_endpoint` |
 | `docker.image` | string | `ghcr.io/dylanschell/llm-benchmark-runner:latest` | Runner image |
 | `docker.work_dir` | string | `/workspace` | Working directory inside the container |
@@ -322,7 +322,7 @@ Result files are named `result_{agent}_{language}_{exercise}.json` and traces `t
 | `docker.pull_timeout` | int | `1800` | Timeout in seconds for pulling the runner image when it is not present locally |
 | `docker.per_command_timeout` | int | `600` | Timeout for any single Bash tool call inside the container |
 | `docker.memory` | string | `2g` | Container memory limit |
-| `docker.environment` | list of maps | `OPENAI_BASE_URL` pre-filled | Environment variables injected into the container — this is where the agent's endpoint goes. Defaults to `http://host.docker.internal:8080/v1` |
+| `docker.environment` | list of maps | derived from `inference_endpoint` | Environment variables injected into the container — this is where the agent's endpoint goes. A local `inference_endpoint` sets `OPENAI_BASE_URL` to the same port on `host.docker.internal`; otherwise it defaults to `http://host.docker.internal:8080/v1` |
 | `output.results_dir` | path | `../benchmark-results` | Where results are written. **Set this explicitly.** |
 | `output.log_level` | string | `INFO` | Log level |
 | `server.port` | int | `8081` | Dashboard port |
