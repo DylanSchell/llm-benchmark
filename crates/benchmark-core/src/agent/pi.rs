@@ -82,7 +82,7 @@ impl PiAgent {
             let base_url = env_vars
                 .get("ANTHROPIC_BASE_URL")
                 .map(|s| s.as_str())
-                .unwrap_or("http://host.docker.internal:8000");
+                .unwrap_or("http://host.docker.internal:8080");
             let api_key = env_vars
                 .get("ANTHROPIC_AUTH_TOKEN")
                 .map(|s| s.as_str())
@@ -94,7 +94,7 @@ impl PiAgent {
             let base_url = env_vars
                 .get("OPENAI_BASE_URL")
                 .map(|s| s.as_str())
-                .unwrap_or("http://host.docker.internal:8000/v1");
+                .unwrap_or("http://host.docker.internal:8080/v1");
             let api_key = env_vars
                 .get("OPENAI_API_KEY")
                 .map(|s| s.as_str())
@@ -737,6 +737,7 @@ mod models_json_tests {
             image: "ghcr.io/dylanschell/llm-benchmark-runner:latest".to_string(),
             memory: "2g".to_string(),
             timeout: 3600,
+            pull_timeout: 1800,
             work_dir: "/workspace".to_string(),
             environment: env,
             per_command_timeout: 120,

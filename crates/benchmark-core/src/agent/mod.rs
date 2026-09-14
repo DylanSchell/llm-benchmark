@@ -31,6 +31,7 @@ mod tests {
             image: "test-image:latest".to_string(),
             memory: "1g".to_string(),
             timeout: 300,
+            pull_timeout: 1800,
             work_dir: "/workspace".to_string(),
             environment: HashMap::new(),
             per_command_timeout: 600,

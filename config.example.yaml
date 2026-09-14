@@ -5,7 +5,7 @@
 parallelism: 1
 
 # Inference endpoint configuration (OpenAI-compatible API)
-inference_endpoint: "http://localhost:8000/v1"
+inference_endpoint: "http://localhost:8080/v1"
 api_key: ""
 
 # Docker configuration
@@ -23,8 +23,8 @@ docker:
   # Environment variables passed into the runner container
   environment:
     - ANTHROPIC_AUTH_TOKEN: ""
-    - ANTHROPIC_BASE_URL: "http://host.docker.internal:8000"
-    - OPENAI_BASE_URL: "http://host.docker.internal:8000/v1"
+    - ANTHROPIC_BASE_URL: "http://host.docker.internal:8080"
+    - OPENAI_BASE_URL: "http://host.docker.internal:8080/v1"
     - OPENAI_API_KEY: ""
 
 # Exercise configuration

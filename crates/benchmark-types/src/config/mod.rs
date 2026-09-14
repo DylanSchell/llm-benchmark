@@ -62,7 +62,7 @@ fn default_parallelism() -> u32 {
 }
 
 fn default_inference_endpoint() -> String {
-    "http://localhost:8000/v1".to_string()
+    "http://localhost:8080/v1".to_string()
 }
 
 impl Default for Config {
@@ -156,6 +156,12 @@ pub struct DockerConfig {
     #[serde(default = "default_timeout")]
     pub timeout: u32,
 
+    /// Seconds allowed for pulling the runner image when it is not present locally.
+    /// Deliberately separate from `timeout`: acquiring a 1.4 GB image is setup, not
+    /// benchmark work, and a first run must not spend its run budget on a download.
+    #[serde(default = "default_pull_timeout")]
+    pub pull_timeout: u32,
+
     #[serde(default = "default_memory")]
     pub memory: String,
 
@@ -178,6 +184,23 @@ fn default_timeout() -> u32 {
     300
 }
 
+fn default_pull_timeout() -> u32 {
+    1800
+}
+
+/// Environment variables every run needs, applied only where the user has set none.
+///
+/// The agent runs *inside* the container, so the host is `host.docker.internal` rather
+/// than `localhost`, and the default local model-server port is 8080. Without this, `pi`
+/// has no endpoint to talk to a local server at all.
+///
+/// Only `OPENAI_BASE_URL` is defaulted. `ANTHROPIC_BASE_URL` is deliberately left unset,
+/// because defaulting it would silently redirect a `claude` run that means to reach
+/// Anthropic's real API.
+fn default_environment() -> [(&'static str, &'static str); 1] {
+    [("OPENAI_BASE_URL", "http://host.docker.internal:8080/v1")]
+}
+
 fn default_memory() -> String {
     "2g".to_string()
 }
@@ -192,6 +215,7 @@ impl Default for DockerConfig {
             image: default_image(),
             work_dir: default_work_dir(),
             timeout: default_timeout(),
+            pull_timeout: default_pull_timeout(),
             memory: default_memory(),
             per_command_timeout: default_per_command_timeout(),
             environment: Vec::new(),
@@ -206,6 +230,18 @@ impl DockerConfig {
             result.extend(entry.clone());
         }
         result
+    }
+
+    /// The environment the container actually receives: [`Self::environment_map`] with the
+    /// built-in defaults ([`default_environment`]) filled in for any variable the user
+    /// has not set. A variable the user did set always wins.
+    pub fn environment_with_defaults(&self) -> HashMap<String, String> {
+        let mut env = self.environment_map();
+        for (key, value) in default_environment() {
+            env.entry(key.to_string())
+                .or_insert_with(|| value.to_string());
+        }
+        env
     }
 
     /// Updates environment variables with the model name.
@@ -699,11 +735,11 @@ mod tests {
         // built-in defaults themselves.
         let config = Config {
             parallelism: 1,
-            inference_endpoint: "http://localhost:8000/v1".to_string(),
+            inference_endpoint: "http://localhost:8080/v1".to_string(),
             ..Default::default()
         };
         assert_eq!(config.parallelism, 1);
-        assert_eq!(config.inference_endpoint, "http://localhost:8000/v1");
+        assert_eq!(config.inference_endpoint, "http://localhost:8080/v1");
     }
 
     #[test]
@@ -718,13 +754,50 @@ mod tests {
     /// Pins the built-in defaults. These are what a machine with no `config.yaml` runs
     /// with, so they are a user-visible contract rather than an implementation detail —
     /// and they must stay in step with the `#[serde(default = "...")]` attributes.
+    /// The container must get an OpenAI endpoint even when the user configures no
+    /// `docker.environment` at all — otherwise `pi` cannot see a local model server.
+    #[test]
+    fn the_container_environment_defaults_the_openai_endpoint_only_when_absent() {
+        // Absent: the local-server default is applied.
+        let env = DockerConfig::default().environment_with_defaults();
+        assert_eq!(
+            env.get("OPENAI_BASE_URL").map(String::as_str),
+            Some("http://host.docker.internal:8080/v1")
+        );
+        // Deliberately not defaulted: a `claude` run meaning to reach Anthropic's real
+        // API must not be silently redirected to a local server.
+        assert_eq!(env.get("ANTHROPIC_BASE_URL"), None);
+
+        // Present: the user's value wins, and the rest of their environment survives.
+        let config = DockerConfig {
+            environment: vec![
+                HashMap::from([(
+                    "OPENAI_BASE_URL".to_string(),
+                    "http://host.docker.internal:9999/v1".to_string(),
+                )]),
+                HashMap::from([("OPENAI_API_KEY".to_string(), "secret".to_string())]),
+            ],
+            ..Default::default()
+        };
+        let env = config.environment_with_defaults();
+        assert_eq!(
+            env.get("OPENAI_BASE_URL").map(String::as_str),
+            Some("http://host.docker.internal:9999/v1"),
+            "an explicit endpoint must never be overridden"
+        );
+        assert_eq!(
+            env.get("OPENAI_API_KEY").map(String::as_str),
+            Some("secret")
+        );
+    }
+
     #[test]
     fn the_built_in_defaults_are_the_documented_ones() {
         let config = Config::default();
 
         assert_eq!(config.parallelism, 1);
         assert_eq!(config.server.port, 8081);
-        assert_eq!(config.inference_endpoint, "http://localhost:8000/v1");
+        assert_eq!(config.inference_endpoint, "http://localhost:8080/v1");
 
         assert_eq!(
             config.docker.image,
@@ -732,6 +805,7 @@ mod tests {
         );
         assert_eq!(config.docker.work_dir, "/workspace");
         assert_eq!(config.docker.timeout, 300);
+        assert_eq!(config.docker.pull_timeout, 1800);
         assert_eq!(config.docker.memory, "2g");
         assert_eq!(config.docker.per_command_timeout, 600);
         assert!(config.docker.environment.is_empty());

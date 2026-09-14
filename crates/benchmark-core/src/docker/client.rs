@@ -14,6 +14,7 @@ pub struct DockerConfig {
     pub image: String,
     pub memory: String,
     pub timeout: u64,
+    pub pull_timeout: u64,
     pub work_dir: String,
     pub environment: HashMap<String, String>,
     pub per_command_timeout: u32,
@@ -25,8 +26,12 @@ impl From<&benchmark_types::config::DockerConfig> for DockerConfig {
             image: cfg.image.clone(),
             memory: cfg.memory.clone(),
             timeout: cfg.timeout as u64,
+            pull_timeout: cfg.pull_timeout as u64,
             work_dir: cfg.work_dir.clone(),
-            environment: cfg.environment_map(),
+            // Not `environment_map()`: the container also needs the built-in defaults,
+            // such as OPENAI_BASE_URL, so that a run with no `docker.environment` at all
+            // can still reach a model server on the host.
+            environment: cfg.environment_with_defaults(),
             per_command_timeout: cfg.per_command_timeout,
         }
     }
@@ -46,6 +51,11 @@ impl DockerConfig {
     /// Global timeout in seconds.
     pub fn timeout(&self) -> u64 {
         self.timeout
+    }
+
+    /// Seconds allowed for pulling an image that is not present locally.
+    pub fn pull_timeout(&self) -> u64 {
+        self.pull_timeout
     }
 
     /// Working directory inside the container.
@@ -141,6 +151,75 @@ impl DockerClient {
         }
     }
 
+    /// Ensure `image` is present locally, pulling it if it is not.
+    ///
+    /// `docker run` would pull it too, but then the download is charged against the
+    /// run's own timeout — and pulling a 1.4 GB image on a slow link can outlast a whole
+    /// benchmark run, so the first run on a new machine failed with a bare timeout.
+    /// Pulling here gives the download its own budget (`docker.pull_timeout`) and a log
+    /// line that says what is happening.
+    ///
+    /// An image that is already local costs one `docker image inspect`.
+    async fn ensure_image_present(&self, image: &str) -> Result<(), anyhow::Error> {
+        let present = Command::new("docker")
+            .args(["image", "inspect", "--format", "{{.Id}}", image])
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+            .await
+            .map(|status| status.success())
+            .unwrap_or(false);
+        if present {
+            return Ok(());
+        }
+
+        info!(
+            "Image {} is not present locally — pulling it (up to {}s, once per machine)",
+            image,
+            self.config.pull_timeout
+        );
+        let started = std::time::Instant::now();
+
+        // Inherit stdio rather than capturing it: `docker pull` emits megabytes of progress
+        // updates, and capturing them would both buffer all of that in memory and hide it
+        // from the user, who would otherwise be watching a silent multi-minute wait. The
+        // default log filter is `benchmark_core=warn`, so Docker's own progress output is
+        // the visible signal at default verbosity; the INFO lines above and below appear
+        // with `--verbose`.
+        let status = timeout(
+            Duration::from_secs(self.config.pull_timeout),
+            Command::new("docker").args(["pull", image]).status(),
+        )
+        .await
+        .map_err(|_| {
+            anyhow!(
+                "Timed out after {}s pulling {}. Pull it manually with `docker pull {}`, \
+                 or raise docker.pull_timeout.",
+                self.config.pull_timeout,
+                image,
+                image
+            )
+        })?
+        .with_context(|| format!("Failed to run `docker pull {}`", image))?;
+
+        if !status.success() {
+            return Err(anyhow!(
+                "Failed to pull {} (exit {}). Pull it manually with `docker pull {}` to see \
+                 the reason.",
+                image,
+                status.code().unwrap_or(-1),
+                image
+            ));
+        }
+
+        info!(
+            "Pulled {} in {:.1}s",
+            image,
+            started.elapsed().as_secs_f64()
+        );
+        Ok(())
+    }
+
     /// Run a command in a Docker container with resource limits, volume mounts,
     /// and streaming output callback.
     ///
@@ -226,6 +305,10 @@ impl DockerClient {
             let pi_dir = std::path::Path::new(&host_dir).join(".pi");
             let _ = std::fs::create_dir_all(&pi_dir);
         }
+
+        // Acquire the image before the timed run starts: a pull inside `docker run`
+        // would be charged against the run's own timeout.
+        self.ensure_image_present(image).await?;
 
         // Build the command list: base command + optional prompt appended
         let mut exec_args = command.to_vec();
@@ -403,9 +486,10 @@ fn build_docker_run_command(
 /// Execute a docker command using tokio::process::Command with async streaming.
 /// This version collects output via a channel.
 ///
-/// Includes a container liveness monitor that polls `docker inspect` every 5s.
-/// If the container dies but the docker CLI process hangs (known Docker issue),
-/// the liveness monitor signals an abort so the function doesn't stall.
+/// Includes a container liveness monitor that checks the container every 5s. If the
+/// container dies while the docker CLI process hangs (a known Docker issue), the monitor
+/// signals an abort so the function doesn't stall. A container that has not started is
+/// *not* a death: see [`ContainerState::Pending`].
 async fn execute_docker_command_v2(
     full_command: &[String],
     container_id: &str,
@@ -472,8 +556,8 @@ async fn execute_docker_command_v2(
         }
     });
 
-    // Container liveness monitor: polls `docker inspect` every 5s in parallel
-    // with process.wait(). If the container dies but the docker CLI process
+    // Container liveness monitor: polls `docker ps` every 5s in parallel with
+    // process.wait(). If the container dies but the docker CLI process
     // is stuck (e.g. pipe deadlock), this signals an abort instead of hanging.
     let cid_for_liveness = container_id.to_string();
     let liveness_dead = std::sync::Arc::new(tokio::sync::Notify::new());
@@ -481,14 +565,28 @@ async fn execute_docker_command_v2(
     let liveness_task = tokio::spawn(async move {
         loop {
             tokio::time::sleep(Duration::from_secs(5)).await;
-            match container_is_running(&cid_for_liveness).await {
-                Ok(true) => continue, // alive
-                Ok(false) => {
-                    warn!("Liveness: container {} no longer running — signalling abort", cid_for_liveness);
+            match container_state(&cid_for_liveness).await {
+                Ok(state) if state.is_fatal() => {
+                    warn!(
+                        "Liveness: container {} has exited — signalling abort",
+                        cid_for_liveness
+                    );
                     liveness_dead_clone.notify_one();
                     return;
                 }
-                Err(_) => continue, // transient error, retry
+                // Alive, or not started yet. `docker run` creates the container only once
+                // it has the image, so while a pull is in flight there is no container at
+                // all, and a first run on a new machine can spend minutes in that state.
+                // Reading that as a death is what used to fail such a run after five
+                // seconds; the absolute deadline below is what bounds the wait instead.
+                Ok(_) => continue,
+                Err(e) => {
+                    debug!(
+                        "Liveness: could not query container {}: {}",
+                        cid_for_liveness, e
+                    );
+                    continue;
+                }
             }
         }
     });
@@ -614,19 +712,77 @@ async fn drain_output(rx: &mut tokio::sync::mpsc::UnboundedReceiver<String>) -> 
     output
 }
 
-/// Check if a Docker container is currently running via `docker inspect`.
-async fn container_is_running(container_id: &str) -> Result<bool, anyhow::Error> {
-    let output = tokio::process::Command::new("docker")
-        .args(&["inspect", "--format={{.State.Running}}", container_id])
+/// The existence and running state of a container, as far as the liveness monitor cares.
+///
+/// `Stopped` and `Pending` must not be conflated. `docker run` creates the container only
+/// after it has the image, so while the image is being pulled there is no container at
+/// all — and a first run on a new machine can spend minutes in that state.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ContainerState {
+    /// The container exists and is alive. `paused` counts: it is still running, just
+    /// frozen, and killing it would be wrong.
+    Running,
+    /// The container exists but is not running, so it has genuinely exited or died.
+    Stopped,
+    /// The container has not started: either it does not exist yet (`docker run` is still
+    /// pulling the image) or it has just been created and is about to start. Neither is a
+    /// death, so the monitor keeps waiting until the deadline.
+    Pending,
+}
+
+impl ContainerState {
+    /// Whether this state means the container will never produce a result, so the run
+    /// should be aborted rather than waited out. Only `Stopped` qualifies — `Pending` is
+    /// "not started yet", which a first run can be in for minutes while the image
+    /// downloads. Pinned by a test so the monitor cannot quietly lose its reason to exist.
+    fn is_fatal(self) -> bool {
+        matches!(self, Self::Stopped)
+    }
+}
+
+/// Classify the `{{.State}}` output of `docker ps`. Split out from the command so the
+/// mapping is unit-testable without a Docker daemon.
+fn classify_container_state(state: &str) -> ContainerState {
+    match state.trim() {
+        "running" | "paused" => ContainerState::Running,
+        // `created` is the brief window between create and start; treating it as a death
+        // would abort a run that is about to begin.
+        "" | "created" => ContainerState::Pending,
+        _ => ContainerState::Stopped,
+    }
+}
+
+/// Query whether a container is running, stopped, or has not started yet.
+///
+/// Uses `docker ps` rather than `docker inspect` because existence is then reported
+/// through stdout instead of an error message, so this does not depend on the wording (or
+/// the locale) of the CLI's errors.
+async fn container_state(container_id: &str) -> Result<ContainerState, anyhow::Error> {
+    let output = Command::new("docker")
+        .args([
+            "ps",
+            "-a",
+            "--filter",
+            // Anchored so a longer name that merely starts with this one can't match.
+            &format!("name=^{}$", container_id),
+            "--format",
+            "{{.State}}",
+        ])
         .stdout(std::process::Stdio::piped())
-        .stderr(std::process::Stdio::null())
+        .stderr(std::process::Stdio::piped())
         .output()
         .await?;
-    if output.status.success() {
-        Ok(String::from_utf8_lossy(&output.stdout).trim() == "true")
-    } else {
-        Ok(false) // container doesn't exist
+
+    if !output.status.success() {
+        return Err(anyhow!(
+            "docker ps failed: {}",
+            String::from_utf8_lossy(&output.stderr).trim()
+        ));
     }
+
+    Ok(classify_container_state(&String::from_utf8_lossy(
+        &output.stdout,
+    )))
 }
 
 /// Force-kill a Docker container by name using `docker rm -f`.
@@ -680,6 +836,106 @@ async fn cleanup_container(container_name: &str) {
 mod tests {
     use super::*;
     use benchmark_types::cancellation::CancellationToken;
+
+    /// Regression: a missing container is not a dead container.
+    ///
+    /// `docker run` creates the container only after it has the image, so while the image
+    /// is being pulled there is no container at all — for minutes, on a 1.4 GB image. The
+    /// liveness monitor used to read "no such container" as a death and abort at its
+    /// first poll (5s), so the first run on a machine without the image failed almost
+    /// immediately.
+    ///
+    /// The command here outlives that first poll, which is the point of the test: before
+    /// the fix this came back with exit code 137 (killed) instead of 0.
+    #[tokio::test]
+    async fn a_container_that_has_not_started_does_not_abort_the_run() {
+        let token = CancellationToken::new(); // never cancelled
+        let callback: std::sync::Arc<OutputCallback> = std::sync::Arc::new(|_| {});
+
+        let result = tokio::time::timeout(
+            Duration::from_secs(30),
+            execute_docker_command_v2(
+                // Outlives one 5s liveness poll, so the poll definitely runs.
+                &["sleep".to_string(), "6".to_string()],
+                "bench-liveness-no-such-container",
+                20,
+                &callback,
+                Some(token),
+            ),
+        )
+        .await
+        .expect("the run must not hang")
+        .expect("the kill path must not return Err");
+
+        assert!(
+            result.completed,
+            "a container that has not started yet must not be treated as dead"
+        );
+        assert_eq!(result.exit_code, 0, "sleep 6 should exit cleanly");
+    }
+
+    /// The container environment that `pi` and `claude` read must come from
+    /// `environment_with_defaults()`, or a run with no `docker.environment` would have no
+    /// endpoint at all. This guards the wiring at the single conversion point.
+    #[test]
+    fn converting_the_config_applies_the_container_environment_defaults() {
+        let types_config = benchmark_types::config::DockerConfig::default();
+        let config = DockerConfig::from(&types_config);
+
+        assert_eq!(
+            config.environment().get("OPENAI_BASE_URL").map(String::as_str),
+            Some("http://host.docker.internal:8080/v1")
+        );
+    }
+
+    /// The environment that reaches `docker run -e` is the one with the defaults filled in,
+    /// so `OPENAI_BASE_URL` is present even when the user configured no environment.
+    #[test]
+    fn the_run_command_carries_the_default_container_environment() {
+        let types_config = benchmark_types::config::DockerConfig::default();
+        let config = DockerConfig::from(&types_config);
+
+        let args = build_docker_run_command(
+            "bench-abc123",
+            &config.image,
+            &config.work_dir,
+            &config.memory,
+            &config.environment,
+            "/tmp/host",
+            false,
+            &["cargo", "test"],
+        );
+
+        assert!(
+            args.windows(2).any(|pair| pair[0] == "-e"
+                && pair[1] == "OPENAI_BASE_URL=http://host.docker.internal:8080/v1"),
+            "docker run must carry the default endpoint, got: {args:?}"
+        );
+    }
+
+    #[test]
+    fn container_state_classification_covers_the_docker_states() {
+        // Not yet started. `docker ps` prints nothing for a name it does not know, and
+        // `created` is the brief window before the container is started.
+        assert_eq!(classify_container_state(""), ContainerState::Pending);
+        assert_eq!(classify_container_state("  \n"), ContainerState::Pending);
+        assert_eq!(classify_container_state("created"), ContainerState::Pending);
+
+        // Alive. `paused` is still alive — killing it as if it had exited would be wrong.
+        assert_eq!(classify_container_state("running"), ContainerState::Running);
+        assert_eq!(classify_container_state("paused"), ContainerState::Running);
+
+        // Exists but not running: a real death.
+        assert_eq!(classify_container_state("exited"), ContainerState::Stopped);
+        assert_eq!(classify_container_state("dead"), ContainerState::Stopped);
+        assert_eq!(classify_container_state("removing"), ContainerState::Stopped);
+
+        // The policy the liveness monitor acts on, pinned independently of the mapping:
+        // only a container that has genuinely stopped ends the run early.
+        assert!(ContainerState::Stopped.is_fatal());
+        assert!(!ContainerState::Running.is_fatal());
+        assert!(!ContainerState::Pending.is_fatal());
+    }
 
     /// Regression: a cancelled session must abort an in-flight Docker run
     /// promptly instead of waiting out the (default 3600s) container timeout.
