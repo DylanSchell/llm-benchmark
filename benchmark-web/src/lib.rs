@@ -7,6 +7,7 @@ mod models;
 pub mod routes;
 pub mod services;
 
+use anyhow::Context;
 use config::AppConfig;
 use services::{
     BenchmarkExecutor, BenchmarkService, QueueProcessor, QueueConfig, ResultService, SessionManager,
@@ -64,7 +65,10 @@ pub async fn run_web_server() -> anyhow::Result<()> {
             None
         },
     };
-    let mut benchmark_executor = BenchmarkExecutor::new(executor_config).expect("Failed to create BenchmarkExecutor");
+    // Propagate rather than panic: a bad executor configuration is a startup error the
+    // caller should report cleanly, not an abort that bypasses logging and cleanup.
+    let mut benchmark_executor = BenchmarkExecutor::new(executor_config)
+        .context("Failed to create BenchmarkExecutor")?;
     // Wire up result service so saved results are immediately visible in the in-memory cache
     benchmark_executor.set_result_service(std::sync::Arc::new(result_service.clone()));
     let benchmark_executor = std::sync::Arc::new(benchmark_executor);

@@ -16,7 +16,16 @@ impl AppConfig {
     /// Load configuration from config.yaml with environment variable overrides.
     pub fn load() -> Self {
         let config_path = std::env::var("CONFIG_PATH").unwrap_or_else(|_| "config.yaml".to_string());
-        let config = Config::load(&config_path).ok();
+        // Keep `None` for "no usable config file" so the defaults below stay in force: a
+        // missing file is expected (defaults are fine), while a file that exists but
+        // cannot be parsed is reported instead of passing silently.
+        let config = match Config::load_or_default(&config_path) {
+            Ok((config, from_file)) => from_file.then_some(config),
+            Err(e) => {
+                tracing::warn!("Could not parse config {}: {}", config_path, e);
+                None
+            }
+        };
 
         // SERVER_PORT env var overrides config.yaml; falls back to config value or 8081
         let server_port = std::env::var("SERVER_PORT")

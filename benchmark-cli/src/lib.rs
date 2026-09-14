@@ -8,7 +8,7 @@ use anyhow::Context;
 use benchmark_types::config::Config;
 use clap::Parser;
 use std::path::PathBuf;
-use tracing::{error, info};
+use tracing::{error, info, warn};
 use tracing_subscriber::EnvFilter;
 
 /// CLI arguments for running benchmarks.
@@ -74,9 +74,17 @@ pub fn run_benchmark(args: RunArgs) -> anyhow::Result<()> {
 /// Execute benchmarks with the given arguments.
 pub fn execute(args: &RunArgs) -> anyhow::Result<()> {
     info!("Loading config from: {}", args.config);
-    let mut config = Config::load(&args.config).with_context(|| {
+    // A missing config file is not fatal — every field has a default, so this is the
+    // documented fresh-install path. An unreadable or malformed one still is.
+    let (mut config, from_file) = Config::load_or_default(&args.config).with_context(|| {
         format!("Failed to load config file: {}", args.config)
     })?;
+    if !from_file {
+        warn!(
+            "Config file {} not found — using built-in defaults",
+            args.config
+        );
+    }
 
     // Apply command-line overrides
     if let Some(model) = &args.model {

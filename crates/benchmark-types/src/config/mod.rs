@@ -2,14 +2,27 @@ use serde::Deserialize;
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-#[derive(Debug, Default, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct ServerConfig {
     #[serde(default = "default_server_port")]
     pub port: u16,
 }
 
-#[derive(Debug, Default, Clone, Deserialize)]
+// `Default` is implemented by hand for every config struct below so that
+// `Config::default()` agrees with the `#[serde(default = "...")]` attributes.
+// `#[derive(Default)]` ignores those attributes, which silently produced an empty
+// docker image, a zero timeout and an empty results directory — a config that
+// `validate()` rejects, and which used to be reachable via a missing config.yaml.
+impl Default for ServerConfig {
+    fn default() -> Self {
+        Self {
+            port: default_server_port(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct Config {
     #[serde(default)]
@@ -52,11 +65,53 @@ fn default_inference_endpoint() -> String {
     "http://localhost:8000/v1".to_string()
 }
 
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            server: ServerConfig::default(),
+            parallelism: default_parallelism(),
+            docker: DockerConfig::default(),
+            exercise: ExerciseConfig::default(),
+            claude: ClaudeConfig::default(),
+            output: OutputConfig::default(),
+            model: None,
+            inference_endpoint: default_inference_endpoint(),
+            api_key: None,
+        }
+    }
+}
+
 impl Config {
     pub fn load(path: &str) -> Result<Self, anyhow::Error> {
         let content = std::fs::read_to_string(path)?;
         let config: Config = serde_yaml::from_str(&content)?;
         Ok(config)
+    }
+
+    /// Load configuration, treating an absent file as "use the built-in defaults".
+    ///
+    /// Every field has a default, so the application must start with no `config.yaml`
+    /// at all — that is the documented fresh-install path. A *missing* file is
+    /// therefore not an error. A file that exists but cannot be read or parsed *is*, so
+    /// a typo is reported rather than silently replaced by defaults.
+    ///
+    /// Returns `(config, loaded_from_file)` so callers can warn when defaults are in
+    /// use. Prefer this over [`Config::load`] wherever a user can point at the path.
+    pub fn load_or_default(path: &str) -> Result<(Self, bool), anyhow::Error> {
+        match std::fs::read_to_string(path) {
+            Ok(content) => {
+                let config: Config = serde_yaml::from_str(&content)
+                    .map_err(|e| anyhow::anyhow!("failed to parse {}: {}", path, e))?;
+                Ok((config, true))
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                // `Config::default()` is kept in sync with the `#[serde(default = "...")]`
+                // attributes by the hand-written `Default` impls below, so this returns the
+                // same config a partial `config.yaml` would produce.
+                Ok((Self::default(), false))
+            }
+            Err(e) => Err(anyhow::anyhow!("failed to read {}: {}", path, e)),
+        }
     }
 
     /// Validates the configuration.
@@ -89,7 +144,7 @@ impl Config {
     }
 }
 
-#[derive(Debug, Default, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct DockerConfig {
     #[serde(default = "default_image")]
@@ -131,6 +186,19 @@ fn default_per_command_timeout() -> u32 {
     600
 }
 
+impl Default for DockerConfig {
+    fn default() -> Self {
+        Self {
+            image: default_image(),
+            work_dir: default_work_dir(),
+            timeout: default_timeout(),
+            memory: default_memory(),
+            per_command_timeout: default_per_command_timeout(),
+            environment: Vec::new(),
+        }
+    }
+}
+
 impl DockerConfig {
     pub fn environment_map(&self) -> HashMap<String, String> {
         let mut result = HashMap::new();
@@ -160,7 +228,7 @@ impl DockerConfig {
     }
 }
 
-#[derive(Debug, Default, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct ExerciseConfig {
     #[serde(default = "default_language")]
@@ -174,7 +242,17 @@ fn default_language() -> String {
     "java".to_string()
 }
 
-#[derive(Debug, Default, Clone, Deserialize)]
+impl Default for ExerciseConfig {
+    fn default() -> Self {
+        Self {
+            language: default_language(),
+            name: None,
+            path: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct ClaudeConfig {
     #[serde(default = "default_cli_path")]
@@ -194,7 +272,17 @@ fn default_model() -> String {
     "sonnet".to_string()
 }
 
-#[derive(Debug, Default, Clone, Deserialize)]
+impl Default for ClaudeConfig {
+    fn default() -> Self {
+        Self {
+            cli_path: default_cli_path(),
+            model: default_model(),
+            extra_args: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct OutputConfig {
     #[serde(default = "default_results_dir")]
@@ -269,6 +357,15 @@ fn default_results_dir() -> PathBuf {
 
 fn default_log_level() -> String {
     "INFO".to_string()
+}
+
+impl Default for OutputConfig {
+    fn default() -> Self {
+        Self {
+            results_dir: default_results_dir(),
+            log_level: default_log_level(),
+        }
+    }
 }
 
 /// Quick-bench configuration: curated fast exercises per language (< 60s each).
@@ -484,7 +581,9 @@ mod tests {
 
     #[test]
     fn test_docker_config_default_values() {
-        // Defaults are applied during deserialization, not via Default trait
+        // Explicit fields on purpose: this covers a partially-written config, not the
+        // built-in defaults themselves — those are pinned by
+        // `the_built_in_defaults_are_the_documented_ones`.
         let config = DockerConfig {
             image: "llm-benchmark-runner:latest".to_string(),
             work_dir: "/workspace".to_string(),
@@ -596,7 +695,8 @@ mod tests {
 
     #[test]
     fn test_config_default_values() {
-        // Defaults are applied during deserialization, not via Default trait
+        // Explicit fields on purpose: this covers a partially-written config, not the
+        // built-in defaults themselves.
         let config = Config {
             parallelism: 1,
             inference_endpoint: "http://localhost:8000/v1".to_string(),
@@ -608,10 +708,86 @@ mod tests {
 
     #[test]
     fn test_config_validate_valid() {
+        // `Config::default()` is what a missing config.yaml falls back to, so an invalid
+        // default would make the documented fresh-install path fail part-way through.
+        Config::default()
+            .validate()
+            .expect("the built-in defaults must be valid");
+    }
+
+    /// Pins the built-in defaults. These are what a machine with no `config.yaml` runs
+    /// with, so they are a user-visible contract rather than an implementation detail —
+    /// and they must stay in step with the `#[serde(default = "...")]` attributes.
+    #[test]
+    fn the_built_in_defaults_are_the_documented_ones() {
         let config = Config::default();
-        // Should not panic - validation checks path existence which may fail
-        // but that's expected in test environment
-        let _ = config.validate();
+
+        assert_eq!(config.parallelism, 1);
+        assert_eq!(config.server.port, 8081);
+        assert_eq!(config.inference_endpoint, "http://localhost:8000/v1");
+
+        assert_eq!(
+            config.docker.image,
+            "ghcr.io/dylanschell/llm-benchmark-runner:latest"
+        );
+        assert_eq!(config.docker.work_dir, "/workspace");
+        assert_eq!(config.docker.timeout, 300);
+        assert_eq!(config.docker.memory, "2g");
+        assert_eq!(config.docker.per_command_timeout, 600);
+        assert!(config.docker.environment.is_empty());
+
+        assert_eq!(
+            config.output.results_dir,
+            PathBuf::from("../benchmark-results")
+        );
+        assert_eq!(config.output.log_level, "INFO");
+
+        assert_eq!(config.exercise.language, "java");
+        assert_eq!(config.claude.cli_path, "/usr/local/bin/claude");
+        assert_eq!(config.claude.model, "sonnet");
+        assert!(config.model.is_none());
+        assert!(config.api_key.is_none());
+    }
+
+    /// Regression: running with no `config.yaml` is the documented fresh-install path,
+    /// so an absent file must produce a *usable* config rather than an error.
+    #[test]
+    fn a_missing_config_file_falls_back_to_the_serde_defaults() {
+        let path = std::env::temp_dir().join("llm-benchmark-missing-config/config.yaml");
+        assert!(!path.exists(), "test precondition: the path must not exist");
+
+        let (config, loaded_from_file) = Config::load_or_default(path.to_str().unwrap())
+            .expect("a missing config file must not be an error");
+
+        assert!(!loaded_from_file, "must report that defaults were used");
+        // The point of the fallback is a usable config, not merely a config: the serde
+        // defaults are what fill it in, and `Config::default()` would not do this.
+        config
+            .validate()
+            .expect("the fallback config must satisfy validate()");
+        assert_eq!(config.docker.image, default_image());
+        assert_eq!(config.docker.timeout, default_timeout());
+        assert_eq!(config.output.results_dir, default_results_dir());
+    }
+
+    /// Regression: a file that exists but cannot be parsed must be reported. Silently
+    /// substituting defaults would make a typo in `config.yaml` look like it worked.
+    #[test]
+    fn an_unparseable_config_file_is_an_error() {
+        let path = std::env::temp_dir().join(format!(
+            "llm-benchmark-bad-config-{}.yaml",
+            std::process::id()
+        ));
+        std::fs::write(&path, "parallelism: [not, a, number\n").unwrap();
+
+        let err = Config::load_or_default(path.to_str().unwrap())
+            .expect_err("a malformed config must be an error");
+        assert!(
+            err.to_string().contains("failed to parse"),
+            "unexpected error: {err}"
+        );
+
+        std::fs::remove_file(&path).ok();
     }
 
     #[test]

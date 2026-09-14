@@ -52,7 +52,16 @@ pub struct BenchmarkExecutor {
 impl BenchmarkExecutor {
     /// Create a new BenchmarkExecutor.
     pub fn new(config: ExecutorConfig) -> Result<Self> {
-        let config_ref = Arc::new(Config::load(&config.config_path)?);
+        // A missing config file must not be fatal here: the dashboard has to start on a
+        // machine where only the binary was installed. Defaults are valid by construction.
+        let (loaded, from_file) = Config::load_or_default(&config.config_path)?;
+        if !from_file {
+            tracing::warn!(
+                "Config file {} not found — using built-in defaults",
+                config.config_path
+            );
+        }
+        let config_ref = Arc::new(loaded);
 
         let docker_config = benchmark_core::docker::DockerConfig::from(&config_ref.docker);
         let docker_client = Arc::new(DockerClient::new(docker_config));
@@ -478,6 +487,19 @@ fn save_with_reporting(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Regression: the dashboard used to panic at startup on a machine with no
+    /// `config.yaml`, because this constructor hard-failed and the caller
+    /// `.expect()`-ed the result. A missing config must not be fatal.
+    #[test]
+    fn new_tolerates_a_missing_config_file() {
+        let config = ExecutorConfig {
+            config_path: "/nonexistent/llm-benchmark/config.yaml".to_string(),
+            results_dir_override: None,
+        };
+
+        BenchmarkExecutor::new(config).expect("a missing config file must not be fatal");
+    }
 
     fn test_result(exercise_name: &str) -> AgentResult {
         AgentResult::builder()
