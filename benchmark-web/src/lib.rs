@@ -1,6 +1,7 @@
 //! benchmark-web - Rust port of the Java benchmark web application.
 //! Axum-based web server with REST API and SSE streaming.
 
+mod assets;
 mod config;
 mod metrics;
 mod models;
@@ -109,8 +110,8 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     // during shutdown, even if broadcast channel senders are still alive.
     let shutdown_flag = Arc::new(AtomicBool::new(false));
 
-    // Initialize template engine
-    let templates = TemplateEngine::new();
+    // Templates are compiled into the binary; TEMPLATES_DIR overrides with a directory.
+    let templates = TemplateEngine::new().context("Failed to load templates")?;
 
     let state = routes::AppState {
         service: benchmark_service.clone(),
@@ -131,21 +132,13 @@ pub async fn run_web_server() -> anyhow::Result<()> {
         .await
         .expect("Failed to bind to address");
 
-    // Add static file serving — resolve relative to the crate root
-    let static_dir = std::env::var("STATIC_DIR")
-        .unwrap_or_else(|_| {
-            // Try multiple paths: env var, current dir, then crate-relative
-            if std::path::Path::new("static/css/style.css").exists() {
-                "static".to_string()
-            } else if std::path::Path::new("benchmark-web/static/css/style.css").exists() {
-                "benchmark-web/static".to_string()
-            } else if std::path::Path::new("../benchmark-web/static/css/style.css").exists() {
-                "../benchmark-web/static".to_string()
-            } else {
-                "benchmark-web/static".to_string()
-            }
-        });
-    let app = app.fallback_service(ServeDir::new(&static_dir));
+    // Static files are embedded too; STATIC_DIR points at an on-disk directory instead,
+    // for development. There is no filesystem probing to do: nothing is read from disk
+    // on the default path.
+    let app = match std::env::var("STATIC_DIR") {
+        Ok(dir) => app.fallback_service(ServeDir::new(dir)),
+        Err(_) => app.fallback(assets::serve_static),
+    };
 
     // Start the server using axum's serve with a timeout so we don't hang forever
     let service_clone = benchmark_service.clone();

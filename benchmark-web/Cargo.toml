@@ -28,6 +28,11 @@ reqwest = { workspace = true }
 rayon = { workspace = true }
 benchmark-core = { path = "../crates/benchmark-core" }
 benchmark-types = { path = "../crates/benchmark-types" }
+rust-embed = { workspace = true, features = [
+    "debug-embed",
+    "deterministic-timestamps",
+    "mime-guess",
+] }
 
 [dev-dependencies]
 tokio = { workspace = true }

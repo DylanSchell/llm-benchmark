@@ -9,6 +9,7 @@ pub mod result;
 pub mod results;
 pub mod scoring;
 
+use crate::assets::Templates;
 use axum::{Router, Extension};
 use axum::routing::get;
 use benchmark::register as register_benchmark;
@@ -38,31 +39,49 @@ pub struct TemplateEngine {
 }
 
 impl TemplateEngine {
-    pub fn new() -> Self {
-        // Templates are in benchmark-web/templates/ relative to workspace root
-        // Try multiple paths: env var, current dir, then workspace-relative
-        let templates_path = std::env::var("TEMPLATES_DIR")
-            .or_else(|_| {
-                // Check if templates exist in current directory
-                if std::path::Path::new("templates/dashboard.tera").exists() {
-                    Ok("templates".to_string())
-                } else if std::path::Path::new("benchmark-web/templates/dashboard.tera").exists() {
-                    Ok("benchmark-web/templates".to_string())
-                } else if std::path::Path::new("../benchmark-web/templates/dashboard.tera").exists() {
-                    Ok("../benchmark-web/templates".to_string())
-                } else {
-                    Err(std::env::VarError::NotPresent)
-                }
-            })
-            .unwrap_or_else(|_| "templates".to_string());
-        let mut tera = match Tera::new(&format!("{}/**/*.tera", templates_path)) {
-            Ok(t) => t,
-            Err(e) => {
-                eprintln!("Parsing error(s): {e}");
-                std::process::exit(1);
-            }
-        };
-        
+    /// Build the shared template engine.
+    ///
+    /// Templates are compiled into the binary. Setting `TEMPLATES_DIR` loads them from a
+    /// directory instead, which is what makes template edits visible without a rebuild.
+    pub fn new() -> Result<Self, tera::Error> {
+        match std::env::var("TEMPLATES_DIR") {
+            Ok(dir) => Self::from_dir(&dir),
+            Err(_) => Self::from_embedded(),
+        }
+    }
+
+    /// Build from the templates embedded in the binary — the production path.
+    pub fn from_embedded() -> Result<Self, tera::Error> {
+        let mut sources: Vec<(String, String)> = Vec::new();
+        for name in Templates::iter() {
+            let file = Templates::get(name.as_ref()).expect("iter() yields only embedded entries");
+            let source = std::str::from_utf8(&file.data)
+                .map_err(|e| tera::Error::msg(format!("template {name} is not valid UTF-8: {e}")))?
+                .to_owned();
+            sources.push((name.into_owned(), source));
+        }
+
+        // Register every name before any template is compiled. `add_raw_template`
+        // resolves `{% extends %}` immediately, so adding `compare.tera` before
+        // `layout.tera` would fail on the inheritance; this bulk form defers it.
+        let templates: Vec<(&str, &str)> = sources
+            .iter()
+            .map(|(name, source)| (name.as_str(), source.as_str()))
+            .collect();
+        let mut tera = Tera::default();
+        tera.add_raw_templates(templates)?;
+
+        Ok(Self::finish(tera))
+    }
+
+    /// Build from a directory on disk (`TEMPLATES_DIR`), for development.
+    pub fn from_dir(dir: &str) -> Result<Self, tera::Error> {
+        let tera = Tera::new(&format!("{dir}/**/*.tera"))?;
+        Ok(Self::finish(tera))
+    }
+
+    /// Register the custom filters and wrap the engine for sharing.
+    fn finish(mut tera: Tera) -> Self {
         // Add custom filter for formatting large numbers with K/M/G suffixes
         tera.register_filter("format_number", |value: &tera::Value, _args: &std::collections::HashMap<String, tera::Value>| -> tera::Result<tera::Value> {
             let num = match value {
