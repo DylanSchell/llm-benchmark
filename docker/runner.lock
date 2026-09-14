@@ -2,6 +2,6 @@
 # inputHash covers every build input under docker/, excluding this file and *.md.
 # platforms is not a build input — it records what the last build targeted, so docker-push can
 # report (and check) the platform set it is about to publish.
-version=1.3.1
+version=1.3.2
 inputHash=54f3fa3c8a27ee735562950857f0f701699b16371f833d6b6da48ceb39fad5a8
 platforms=linux/amd64,linux/arm64
