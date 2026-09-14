@@ -1,3 +1,22 @@
+# Changelog — correcting the runner image reproducibility claim
+
+`docker/README.md` claimed "the same `docker/` inputs produce the same image digest on every build,
+so a published tag can be re-created byte-for-byte". The v1.4.0 release produced a counterexample,
+and the claim is corrected rather than left standing.
+
+The release bumped only the version, so `docker/runner.lock` kept `inputHash 54f3fa3c8a27…` — the
+pins, the toolchain, the packaged agent set and even the per-platform self-reports are identical to
+1.3.2. Comparing the two published arm64 manifests from the registry showed **5 shared layers out of
+19**: the rebuild re-executed its install steps, and apt/npm/curl do not produce reproducible bytes.
+
+So the guarantee `--provenance=false` actually buys is narrower than the doc said: with the same layer
+bytes the index is deterministic (and the *index* was the thing that used to change on every rebuild,
+because the provenance attestation embedded the build timestamp). It does not make a rebuild
+byte-identical, and therefore does not make a versioned tag immutable. `inputHash` remains the signal
+for whether the inputs changed; digest-pinning an image across a rebuild is not safe.
+
+No version bump: `docker_input_hash` excludes `*.md`.
+
 # Changelog — finding a local model server without configuring it
 
 Running against a model server on this machine required spelling out its port twice, once for

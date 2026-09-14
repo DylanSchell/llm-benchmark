@@ -144,17 +144,26 @@ which fails when either:
 
 ### Image digest reproducibility
 
-The same `docker/` inputs produce the same image digest on every build, so a published tag can be
-re-created byte-for-byte. This is why the build passes `--provenance=false`.
+`--provenance=false` keeps the *index* deterministic: given the same layer bytes, the same `docker/`
+inputs produce the same manifest and therefore the same digest on every build. This is why the build
+passes it.
 
-By default buildx wraps the image in an OCI *index* carrying a provenance attestation whose payload
-embeds the build timestamp. That left the image config and all 19 layers identical between rebuilds
-while the index digest changed every time — so re-pushing a versioned tag silently rewrote it to a
-new digest, breaking anyone pinning by digest. With provenance off the build emits a plain OCI
-manifest, and two consecutive builds give the same digest (verified).
+It does **not** make the layers themselves reproducible, so it does not make a versioned tag immutable.
+A rebuild that re-executes an install step (apt, npm, curl) produces different layer bytes — those
+tools are not deterministic — and the digest changes with them. Layers are byte-identical only when
+BuildKit serves them from its cache. Two rebuilds back to back on a warm cache do come out identical
+(verified), but a rebuild after other work may not: the 1.3.2 → 1.4.0 rebuild, with `inputHash`
+unchanged, shared only 5 of its 19 layers with the image it replaced.
 
-The trade-off is the loss of provenance attestations. For a runner image that is rebuilt from
-pinned inputs and recorded in `runner.lock`, reproducibility is worth more than an attestation.
+What `--provenance=false` fixes is a different failure. By default buildx wraps the image in an OCI
+*index* carrying a provenance attestation whose payload embeds the build timestamp. That left the image
+config and all 19 layers identical between rebuilds while the index digest changed every time — so
+re-pushing a versioned tag silently rewrote it to a new digest, breaking anyone pinning by digest.
+
+So: a published tag is stable as long as it is not rebuilt, and `runner.lock`'s `inputHash` is what
+tells you whether the inputs actually changed. Digest-pinning an image across a rebuild is not safe.
+
+---
 
 ### Bump policy
 
