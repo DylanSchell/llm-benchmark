@@ -1,4 +1,5 @@
 pub mod docker;
+pub mod endpoint;
 pub mod exercise_runner;
 pub mod parallel;
 pub mod persistence;

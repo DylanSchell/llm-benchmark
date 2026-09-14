@@ -532,7 +532,17 @@ impl ExerciseRunner {
 
     /// Fetch available models from the inference endpoint.
     pub async fn fetch_models(&self) -> anyhow::Result<Vec<String>> {
-        let endpoint = &self.config.inference_endpoint;
+        // `None` means no endpoint was configured *and* the startup probe found nothing
+        // listening, so there is nothing to ask. The built-in list keeps the dashboard
+        // usable rather than empty.
+        let Some(endpoint) = self.config.inference_endpoint.as_deref() else {
+            warn!(
+                "No inference endpoint configured and none detected on the well-known local \
+                 ports; set `inference_endpoint` in config.yaml to list the models your server \
+                 offers"
+            );
+            return Ok(builtin_model_list());
+        };
         let url = format!("{}/models", endpoint);
         let mut builder = reqwest::Client::new().get(&url);
 
@@ -546,7 +556,7 @@ impl ExerciseRunner {
 
         if response.status() != 200 {
             warn!("Failed to fetch models from {}, status code: {}", endpoint, response.status());
-            return Ok(vec!["sonnet".to_string(), "qwen3-coder-next".to_string()]);
+            return Ok(builtin_model_list());
         }
 
         let body: serde_json::Value = response.json().await?;
@@ -561,17 +571,23 @@ impl ExerciseRunner {
                     .collect();
                 info!("Found {} models from {}: {:?}", model_ids.len(), endpoint, model_ids);
                 if model_ids.is_empty() {
-                    Ok(vec!["sonnet".to_string(), "qwen3-coder-next".to_string()])
+                    Ok(builtin_model_list())
                 } else {
                     Ok(model_ids)
                 }
             }
             _ => {
                 warn!("'data' field not found or not an array in models response from {}", endpoint);
-                Ok(vec!["sonnet".to_string(), "qwen3-coder-next".to_string()])
+                Ok(builtin_model_list())
             }
         }
     }
+}
+
+/// The model list shown when the endpoint cannot be reached, so the dashboard still has
+/// something to offer on a machine with no model server running.
+fn builtin_model_list() -> Vec<String> {
+    vec!["sonnet".to_string(), "qwen3-coder-next".to_string()]
 }
 
 #[cfg(test)]

@@ -69,6 +69,7 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     // Propagate rather than panic: a bad executor configuration is a startup error the
     // caller should report cleanly, not an abort that bypasses logging and cleanup.
     let mut benchmark_executor = BenchmarkExecutor::new(executor_config)
+        .await
         .context("Failed to create BenchmarkExecutor")?;
     // Wire up result service so saved results are immediately visible in the in-memory cache
     benchmark_executor.set_result_service(std::sync::Arc::new(result_service.clone()));

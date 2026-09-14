@@ -46,8 +46,13 @@ pub struct Config {
     #[serde(default)]
     pub model: Option<String>,
 
-    #[serde(default = "default_inference_endpoint")]
-    pub inference_endpoint: String,
+    /// Host-side OpenAI-compatible base URL, used to populate the dashboard's model list.
+    ///
+    /// `None` means "not configured": at startup the tool probes the well-known local
+    /// ports (`benchmark_core::endpoint::LOCAL_ENDPOINT_CANDIDATES`) and adopts the first
+    /// one that answers, so a local model server needs no configuration at all.
+    #[serde(default)]
+    pub inference_endpoint: Option<String>,
 
     #[serde(default)]
     pub api_key: Option<String>,
@@ -61,7 +66,9 @@ fn default_parallelism() -> u32 {
     1
 }
 
-fn default_inference_endpoint() -> String {
+/// The endpoint used when nothing is configured and no local server answers the probe.
+/// Also the first port the probe tries after 8000.
+pub fn default_inference_endpoint() -> String {
     "http://localhost:8080/v1".to_string()
 }
 
@@ -75,7 +82,7 @@ impl Default for Config {
             claude: ClaudeConfig::default(),
             output: OutputConfig::default(),
             model: None,
-            inference_endpoint: default_inference_endpoint(),
+            inference_endpoint: None,
             api_key: None,
         }
     }
@@ -735,11 +742,21 @@ mod tests {
         // built-in defaults themselves.
         let config = Config {
             parallelism: 1,
-            inference_endpoint: "http://localhost:8080/v1".to_string(),
+            inference_endpoint: Some("http://localhost:8080/v1".to_string()),
             ..Default::default()
         };
         assert_eq!(config.parallelism, 1);
-        assert_eq!(config.inference_endpoint, "http://localhost:8080/v1");
+        assert_eq!(config.inference_endpoint.as_deref(), Some("http://localhost:8080/v1"));
+    }
+
+    /// An endpoint that is absent is not a misconfiguration: it means "probe the local
+    /// ports at startup". Pinned because the probe only runs in that case.
+    #[test]
+    fn an_unconfigured_inference_endpoint_is_none_rather_than_a_guess() {
+        assert_eq!(Config::default().inference_endpoint, None);
+
+        let parsed: Config = serde_yaml::from_str("parallelism: 1").unwrap();
+        assert_eq!(parsed.inference_endpoint, None);
     }
 
     #[test]
@@ -797,7 +814,11 @@ mod tests {
 
         assert_eq!(config.parallelism, 1);
         assert_eq!(config.server.port, 8081);
-        assert_eq!(config.inference_endpoint, "http://localhost:8080/v1");
+        assert_eq!(
+            config.inference_endpoint, None,
+            "an absent endpoint means the local ports are probed at startup"
+        );
+        assert_eq!(default_inference_endpoint(), "http://localhost:8080/v1");
 
         assert_eq!(
             config.docker.image,

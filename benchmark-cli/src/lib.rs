@@ -107,5 +107,10 @@ pub fn execute(args: &RunArgs) -> anyhow::Result<()> {
     // Create the runner and execute
     let result = tokio::runtime::Runtime::new()?;
     let retry = args.retry;
-    result.block_on(runner::run(args, &config, &model, retry))
+    result.block_on(async {
+        // Decide the inference endpoint before the runner is built: the container's
+        // environment is derived from whichever endpoint is adopted.
+        benchmark_core::endpoint::resolve_endpoints(&mut config).await;
+        runner::run(args, &config, &model, retry).await
+    })
 }
