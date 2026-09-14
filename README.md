@@ -37,13 +37,13 @@ Pick the archive for your platform from the [Releases page](https://github.com/D
 
 | Platform | Asset |
 |---|---|
-| macOS, Apple silicon | `llm-benchmark-1.3.1-macos-arm64.tar.gz` |
-| macOS, Intel | `llm-benchmark-1.3.1-macos-x64.tar.gz` |
-| Linux, x86-64 | `llm-benchmark-1.3.1-linux-x64.tar.gz` |
-| Linux, arm64 | `llm-benchmark-1.3.1-linux-arm64.tar.gz` |
+| macOS, Apple silicon | `llm-benchmark-1.4.0-macos-arm64.tar.gz` |
+| macOS, Intel | `llm-benchmark-1.4.0-macos-x64.tar.gz` |
+| Linux, x86-64 | `llm-benchmark-1.4.0-linux-x64.tar.gz` |
+| Linux, arm64 | `llm-benchmark-1.4.0-linux-arm64.tar.gz` |
 
 ```bash
-VERSION=1.3.1
+VERSION=1.4.0
 OS=macos        # macos | linux
 ARCH=arm64      # arm64 | x64
 
@@ -366,5 +366,5 @@ MIT — see [`LICENSE`](LICENSE). Third-party components and the embedded Exerci
 
 ---
 
-**Version:** 1.3.1
+**Version:** 1.4.0
 **Last Updated:** 2026-09-12

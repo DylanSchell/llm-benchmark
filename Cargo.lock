@@ -208,7 +208,7 @@ checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
 name = "benchmark-cli"
-version = "1.3.2"
+version = "1.4.0"
 dependencies = [
  "anyhow",
  "benchmark-core",
@@ -221,7 +221,7 @@ dependencies = [
 
 [[package]]
 name = "benchmark-core"
-version = "1.3.2"
+version = "1.4.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -248,7 +248,7 @@ dependencies = [
 
 [[package]]
 name = "benchmark-exercises"
-version = "1.3.2"
+version = "1.4.0"
 dependencies = [
  "benchmark-exercises-build",
  "benchmark-types",
@@ -257,7 +257,7 @@ dependencies = [
 
 [[package]]
 name = "benchmark-exercises-build"
-version = "1.3.2"
+version = "1.4.0"
 dependencies = [
  "anyhow",
  "globset",
@@ -270,7 +270,7 @@ dependencies = [
 
 [[package]]
 name = "benchmark-reporter"
-version = "1.3.2"
+version = "1.4.0"
 dependencies = [
  "anyhow",
  "benchmark-types",
@@ -283,7 +283,7 @@ dependencies = [
 
 [[package]]
 name = "benchmark-token-report"
-version = "1.3.2"
+version = "1.4.0"
 dependencies = [
  "anyhow",
  "benchmark-types",
@@ -293,7 +293,7 @@ dependencies = [
 
 [[package]]
 name = "benchmark-types"
-version = "1.3.2"
+version = "1.4.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -307,7 +307,7 @@ dependencies = [
 
 [[package]]
 name = "benchmark-web"
-version = "1.3.2"
+version = "1.4.0"
 dependencies = [
  "anyhow",
  "async-stream",
@@ -1402,7 +1402,7 @@ checksum = "92daf443525c4cce67b150400bc2316076100ce0b3686209eb8cf3c31612e6f0"
 
 [[package]]
 name = "llm-benchmark"
-version = "1.3.2"
+version = "1.4.0"
 dependencies = [
  "anyhow",
  "async-stream",
