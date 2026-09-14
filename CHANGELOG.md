@@ -1,3 +1,43 @@
+# Changelog — running the released binary from an empty directory
+
+Two bugs made the documented "download a release and run it" path unusable. Both only
+appeared outside the source tree, which is why the suite never caught them: the tests ran
+from `benchmark-web/`, where `templates/` and `config.yaml` were on disk.
+
+- **A missing `config.yaml` no longer aborts the server.** `AppConfig::load` already
+  tolerated an absent file and logged "using defaults", but `BenchmarkExecutor::new`
+  hard-failed on the same path and `benchmark-web/src/lib.rs` `.expect()`-ed the result,
+  so the process panicked one line after reporting that it was falling back. The
+  `.expect()` is now a propagated error, and config absence is handled in one place,
+  `Config::load_or_default`, which returns the defaults for a missing file but still
+  reports a file that exists and cannot be parsed — a silently ignored typo is worse than
+  a loud failure.
+- **The built-in defaults were wrong.** Fixing the above exposed it: `#[derive(Default)]`
+  ignores `#[serde(default = "...")]`, and each nested section was reached through
+  `#[serde(default)]` on the *parent* field, which falls back to the derived `Default`.
+  `Config::default()` therefore yielded an empty docker image, a zero timeout, an empty
+  results directory and zero parallelism — a config `validate()` rejects. Falling back to
+  "defaults" would have swapped a panic for a confusing failure at `docker run`.
+  `Default` is now implemented by hand for all six config structs so that it agrees with
+  the serde attributes, and a test pins the values.
+- **Templates and static assets are embedded in the binary.** They were read from disk via
+  `Tera::new("templates/**/*.tera")` and `ServeDir`, neither of which ships in the
+  archives, so every page rendered a "Template Rendering Error" — and because `Tera::new`
+  returns `Ok` for a missing directory, the server still started without complaint.
+  `benchmark-web/src/assets.rs` now embeds both trees with `rust-embed`; `TEMPLATES_DIR`
+  and `STATIC_DIR` remain as development overrides. `debug-embed` is required, without
+  which debug and test builds keep reading the filesystem. The README had claimed these
+  assets were embedded; it is now true.
+- **Verified by execution, not by reading.** The release binary was run in an empty
+  directory: `/` returned 37 KB of real dashboard, `/css/style.css` returned 6869 bytes as
+  `text/css`, and `llm-benchmark run --agent reference` finished with "All exercises
+  passed!" — which also proves the corrected defaults resolve to a real runner image.
+- **A test for each bug.** A missing config file yields defaults that pass `validate()`, an
+  unparseable file is an error, `Config::default()` satisfies `validate()`, the defaults
+  match their documented values, `BenchmarkExecutor::new` tolerates a missing path, the
+  embedded template set is complete and compiles, and the embedded stylesheet is served as
+  CSS. 174 unit tests pass (was 166).
+
 # Changelog — repository licensing
 
 - **The repository now has an explicit MIT `LICENSE`.** The README had claimed MIT for some time, but
