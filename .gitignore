@@ -43,6 +43,7 @@ logs/
 
 # Results
 results/
+results.md
 .gitignore
 .benchmark-temp/
 .run/
