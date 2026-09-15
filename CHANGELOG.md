@@ -1,3 +1,40 @@
+# Changelog — removing the configuration keys that did nothing
+
+`config.example.yaml` shipped three sections no code ever read: `exercise:` (`language`, `name`,
+`path`), `claude:` (`cli_path`, `model`, `extra_args`) and `output.log_level`. Setting any of them
+changed no behaviour — the CLI takes `--language`, `--exercise` and `--model`, the agent runs
+`claude` from `PATH` inside the container, and log filtering comes from `RUST_LOG` or `--verbose`.
+The docs described them, accurately, as "accepted but have no effect".
+
+A key that is accepted and ignored is worse than a key that does not exist, because it looks like it
+works. They are now gone from the schema — `Config::exercise`, `Config::claude` and
+`OutputConfig::log_level`, plus the `ExerciseConfig` and `ClaudeConfig` types, which had no other
+user. `config.example.yaml`, the tables in `docs/CONFIGURATION.md` and the README table were updated
+to match, and `CONFIGURATION.md` now says where those settings actually live.
+
+An existing `config.yaml` keeps working: unknown keys are ignored by design (there is no
+`deny_unknown_fields`), so the obsolete sections are no longer meaningful — exactly as before, but
+now honestly rather than by accident.
+
+Two problems found while doing it:
+
+- **`docs/DEVELOPER.md` documented a broken instruction.** Its "Enable Debug Logging" section said
+to add `output.log_level: DEBUG` to `config.yaml` — a key nothing read, so following the docs
+produced no debug output at all. It now documents `--verbose` and `RUST_LOG`, both verified against
+`benchmark-cli/src/lib.rs` and `benchmark-web/src/lib.rs`.
+- **Nothing checked that the shipped example parses.** `config.example.yaml` is copied by every new
+  user and quoted verbatim in the docs, but no test touched it — which is how it kept three dead
+  keys without complaint. There is now a test that parses and validates it, proven to fail on both
+  malformed YAML and a value `validate()` rejects. It cannot catch an unknown key (being silently
+  ignored is the point), so the verbatim quote in `CONFIGURATION.md`, checked byte-for-byte, remains
+  the other guard.
+
+Also removed: `AppConfig::config`, a stored-but-never-read copy of the parsed `Config`, which was the
+last compiler warning in the workspace.
+
+No version bump and no image rebuild: nothing under `docker/` changed, so `inputHash` is untouched
+and `docker-verify` still passes.
+
 # Changelog — correcting the runner image reproducibility claim
 
 `docker/README.md` claimed "the same `docker/` inputs produce the same image digest on every build,

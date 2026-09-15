@@ -44,20 +44,13 @@ docker:
   environment: []
 
 # Exercise configuration
-exercise:
-  language: "java"
-  name: ""  # leave empty to run all
-
-# Claude Code CLI configuration
-claude:
-  cli_path: "/usr/local/bin/claude"
-  model: "sonnet"
-  extra_args: []
+# There is none: exercises are embedded in the binary, and the language and exercise to run are
+# chosen with the `--language` / `--exercise` flags (or the dashboard).
 
 # Output configuration
 output:
   results_dir: "../benchmark-results"
-  log_level: "INFO"
+  # Log level is not configured here. Use RUST_LOG (any command) or `--verbose` (the CLI).
 
 server:
   port: 8081

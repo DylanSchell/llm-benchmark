@@ -98,20 +98,13 @@ docker:
   environment: []
 
 # Exercise configuration
-exercise:
-  language: "java"
-  name: ""  # leave empty to run all
-
-# Claude Code CLI configuration
-claude:
-  cli_path: "/usr/local/bin/claude"
-  model: "sonnet"
-  extra_args: []
+# There is none: exercises are embedded in the binary, and the language and exercise to run are
+# chosen with the `--language` / `--exercise` flags (or the dashboard).
 
 # Output configuration
 output:
   results_dir: "../benchmark-results"
-  log_level: "INFO"
+  # Log level is not configured here. Use RUST_LOG (any command) or `--verbose` (the CLI).
 
 server:
   port: 8081
@@ -168,7 +161,6 @@ with the host-side `inference_endpoint`. See
 | Key | Type | Default | Meaning |
 |---|---|---|---|
 | `results_dir` | path | `../benchmark-results` | Where result files are written. Must not be empty |
-| `log_level` | string | `INFO` | **Accepted but not read** — see below |
 
 `results_dir` deserves care, because the writer and the reader resolve it differently:
 
@@ -200,24 +192,23 @@ path on `host.docker.internal`, unless you have set `OPENAI_BASE_URL` yourself. 
 nothing is not an error: the dashboard falls back to a built-in model list and the container
 keeps `http://host.docker.internal:8080/v1`.
 
-### Fields that are accepted but have no effect
+### Where things that used to be configured here now live
 
-These are read by nothing. They are kept because the schema is shared with the dashboard's
-config type and removing them is a separate change, but setting them today changes no
-behaviour:
+An earlier version of the schema accepted an `exercise:` section, a `claude:` section and
+`output.log_level`. None of them were ever read — setting them changed no behaviour — so they
+have been **removed from the schema** rather than left in place looking functional. Their
+equivalents:
 
-| Key | Default | Status |
-|---|---|---|
-| `exercise.language` | `java` | **Not read.** Use `--language` |
-| `exercise.name` | *(none)* | **Not read.** Use `--exercise` |
-| `exercise.path` | *(none)* | **Not read** (exercises are embedded in the binary) |
-| `claude.cli_path` | `/usr/local/bin/claude` | **Not read.** `claude` is invoked from `PATH` inside the container |
-| `claude.model` | `sonnet` | **Not read.** Use `--model`, or the top-level `model` |
-| `claude.extra_args` | *(none)* | **Not read** |
-| `output.log_level` | `INFO` | **Not read.** Use `RUST_LOG` |
+| Want to change | Where it is set now |
+|---|---|
+| Which language / exercise to run | `--language` / `--exercise`, or the dashboard |
+| Model name | `--model`, or the top-level `model` key |
+| Which `claude` binary is used | Not configurable — the agent runs `claude` from `PATH` inside the container |
+| Extra arguments to the agent CLI | Not configurable |
+| Log verbosity | `RUST_LOG`, or `--verbose` on the CLI |
 
-The `exercise:` and `claude:` sections in `config.example.yaml` are therefore inert; the CLI
-flags named in the table are what control those behaviours.
+An obsolete key left in an existing `config.yaml` is not an error: unknown keys are ignored, so
+the old file keeps working — it simply has no effect, exactly as before.
 
 ## Environment variables
 
@@ -275,7 +266,9 @@ reachability.
 ## Troubleshooting
 
 **A setting has no effect.** Check the spelling — unknown keys are silently ignored, and
-`exercise.*`, `claude.*` and `output.log_level` are inert regardless.
+nothing warns. If it is `exercise.*`, `claude.*` or `output.log_level`, the key no longer
+exists at all; see
+[Where things that used to be configured here now live](#where-things-that-used-to-be-configured-here-now-live).
 
 **`Failed to load config file`.** `llm-benchmark run` could not read the path. It defaults to
 `config.yaml` in the *current directory*; pass `--config` or set `CONFIG_PATH`. A missing file

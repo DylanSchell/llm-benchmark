@@ -90,7 +90,6 @@ docker:
 
 output:
   results_dir: "./benchmark-results"   # set explicitly — the code default is ../benchmark-results
-  log_level: "INFO"
 ```
 
 If your model is on this machine, that is the whole configuration: the endpoint is detected and handed to the container. A remote or hosted model needs one more block — read [Configuring the LLM endpoint](#configuring-the-llm-endpoint), where the two places an endpoint can be set are explained and why they are not interchangeable.
@@ -324,12 +323,11 @@ Result files are named `result_{agent}_{language}_{exercise}.json` and traces `t
 | `docker.memory` | string | `2g` | Container memory limit |
 | `docker.environment` | list of maps | derived from `inference_endpoint` | Environment variables injected into the container — this is where the agent's endpoint goes. A local `inference_endpoint` sets `OPENAI_BASE_URL` to the same port on `host.docker.internal`; otherwise it defaults to `http://host.docker.internal:8080/v1` |
 | `output.results_dir` | path | `../benchmark-results` | Where results are written. **Set this explicitly.** |
-| `output.log_level` | string | `INFO` | Log level |
 | `server.port` | int | `8081` | Dashboard port |
 
 Command-line flags override the file: `--config`, `--model`, `--results-dir`, `--language`, `--exercise`, `--agent`, `--verbose`, `--retry`. Recognised environment overrides: `CONFIG_PATH`, `SERVER_PORT`, `PARALLELISM`, `RESULTS_DIR` (the last two apply to `llm-benchmark web`).
 
-The table above is the summary; [docs/CONFIGURATION.md](docs/CONFIGURATION.md) is the full reference, including the keys that are accepted but have no effect.
+The table above is the summary; [docs/CONFIGURATION.md](docs/CONFIGURATION.md) is the full reference.
 
 ---
 

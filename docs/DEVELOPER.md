@@ -429,18 +429,17 @@ exercises.manifest.yaml     # Exercise inclusion control
 
 ### Enable Debug Logging
 
-Add to `config.yaml`:
-
-```yaml
-output:
-  log_level: DEBUG
-```
-
-Or via CLI:
+Use `--verbose`, or set `RUST_LOG`:
 
 ```bash
 ./target/release/llm-benchmark run --language java --verbose
+RUST_LOG=debug ./target/release/llm-benchmark run --language java
 ```
+
+`RUST_LOG` takes precedence when it is set; otherwise `--verbose` selects
+`benchmark_cli=debug,benchmark_core=debug,info`, and the default is
+`benchmark_cli=info,benchmark_core=warn,info`. The web server reads `RUST_LOG` the same way.
+There is no `output.log_level` config key — it was removed because nothing read it.
 
 ### Debug Docker Containers
 

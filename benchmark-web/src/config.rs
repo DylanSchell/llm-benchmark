@@ -9,7 +9,6 @@ pub struct AppConfig {
     pub server_port: u16,
     pub parallelism: usize,
     pub results_dir: PathBuf,
-    pub config: Option<Config>,
 }
 
 impl AppConfig {
@@ -70,7 +69,6 @@ impl AppConfig {
             server_port,
             parallelism,
             results_dir: results_path,
-            config,
         }
     }
 

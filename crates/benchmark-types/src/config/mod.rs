@@ -35,12 +35,6 @@ pub struct Config {
     pub docker: DockerConfig,
 
     #[serde(default)]
-    pub exercise: ExerciseConfig,
-
-    #[serde(default)]
-    pub claude: ClaudeConfig,
-
-    #[serde(default)]
     pub output: OutputConfig,
 
     #[serde(default)]
@@ -78,8 +72,6 @@ impl Default for Config {
             server: ServerConfig::default(),
             parallelism: default_parallelism(),
             docker: DockerConfig::default(),
-            exercise: ExerciseConfig::default(),
-            claude: ClaudeConfig::default(),
             output: OutputConfig::default(),
             model: None,
             inference_endpoint: None,
@@ -273,66 +265,9 @@ impl DockerConfig {
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub struct ExerciseConfig {
-    #[serde(default = "default_language")]
-    pub language: String,
-
-    pub name: Option<String>,
-    pub path: Option<PathBuf>,
-}
-
-fn default_language() -> String {
-    "java".to_string()
-}
-
-impl Default for ExerciseConfig {
-    fn default() -> Self {
-        Self {
-            language: default_language(),
-            name: None,
-            path: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub struct ClaudeConfig {
-    #[serde(default = "default_cli_path")]
-    pub cli_path: String,
-
-    #[serde(default = "default_model")]
-    pub model: String,
-
-    pub extra_args: Option<Vec<String>>,
-}
-
-fn default_cli_path() -> String {
-    "/usr/local/bin/claude".to_string()
-}
-
-fn default_model() -> String {
-    "sonnet".to_string()
-}
-
-impl Default for ClaudeConfig {
-    fn default() -> Self {
-        Self {
-            cli_path: default_cli_path(),
-            model: default_model(),
-            extra_args: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "snake_case")]
 pub struct OutputConfig {
     #[serde(default = "default_results_dir")]
     pub results_dir: PathBuf,
-
-    #[serde(default = "default_log_level")]
-    pub log_level: String,
 }
 
 impl OutputConfig {
@@ -398,15 +333,10 @@ fn default_results_dir() -> PathBuf {
     PathBuf::from("../benchmark-results")
 }
 
-fn default_log_level() -> String {
-    "INFO".to_string()
-}
-
 impl Default for OutputConfig {
     fn default() -> Self {
         Self {
             results_dir: default_results_dir(),
-            log_level: default_log_level(),
         }
     }
 }
@@ -691,10 +621,8 @@ mod tests {
     fn test_output_config_default_values() {
         let config = OutputConfig {
             results_dir: PathBuf::from("../benchmark-results"),
-            log_level: "INFO".to_string(),
         };
         assert_eq!(config.results_dir, PathBuf::from("../benchmark-results"));
-        assert_eq!(config.log_level, "INFO");
     }
 
     #[test]
@@ -835,11 +763,7 @@ mod tests {
             config.output.results_dir,
             PathBuf::from("../benchmark-results")
         );
-        assert_eq!(config.output.log_level, "INFO");
 
-        assert_eq!(config.exercise.language, "java");
-        assert_eq!(config.claude.cli_path, "/usr/local/bin/claude");
-        assert_eq!(config.claude.model, "sonnet");
         assert!(config.model.is_none());
         assert!(config.api_key.is_none());
     }
@@ -863,6 +787,26 @@ mod tests {
         assert_eq!(config.docker.image, default_image());
         assert_eq!(config.docker.timeout, default_timeout());
         assert_eq!(config.output.results_dir, default_results_dir());
+    }
+
+    /// The shipped `config.example.yaml` is copied by every new user, so it must parse and
+    /// validate. Nothing checked this before, which is how it carried three keys that the
+    /// schema had stopped reading without anyone noticing.
+    ///
+    /// This catches malformed YAML and values `validate()` rejects. It does *not* catch a
+    /// key the schema no longer knows about: unknown keys are dropped silently by design
+    /// (there is no `deny_unknown_fields`), so an obsolete section would still pass here.
+    #[test]
+    fn the_shipped_example_config_parses_and_is_valid() {
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../config.example.yaml");
+        let content = std::fs::read_to_string(&path)
+            .unwrap_or_else(|e| panic!("cannot read {}: {e}", path.display()));
+        let config: Config = serde_yaml::from_str(&content)
+            .expect("config.example.yaml must parse as Config");
+        config
+            .validate()
+            .expect("config.example.yaml must satisfy validate()");
     }
 
     /// Regression: a file that exists but cannot be parsed must be reported. Silently
