@@ -47,6 +47,7 @@ results/
 .benchmark-temp/
 .run/
 CLAUDE.md
+.dirge/
 /polyglot-benchmark/
 
 # Node
