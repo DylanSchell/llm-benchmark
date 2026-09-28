@@ -303,6 +303,28 @@ benchmark-results/
 
 Result files are named `result_{agent}_{language}_{exercise}.json` and traces `trace_{language}_{exercise}.jsonl`. Each result records exercise name, language, success status, exit code, output, duration, timestamps and any error message; traces are JSONL with structured agent events (messages, usage, and so on). See [docs/RESULT_FORMAT.md](docs/RESULT_FORMAT.md) for the schema.
 
+### Advent of Code 2015
+
+A separate **AoC 2015** category runs the Advent of Code 2015 puzzles. Each day is a puzzle
+with a deterministic input generator and a known answer (part 1 and part 2), rather than an
+Exercism exercise with a test suite. The agent is given the puzzle description (both parts) and
+a generated input, solves it in any language available in the container, and validates its
+answer against a validator endpoint.
+
+- **Run it:** `llm-benchmark web` → **Run AoC 2015** form (or `GET /run-aoc`). Select days
+  (1–25), an agent, a model, and a seed `user` (default `benchmark`). One queue item is created
+  per selected day, run sequentially.
+- **Results are isolated:** AoC results live under `results/{agent}-{model}/aoc2015/` and carry
+  `category = "aoc2015"`, so they never mix with the Exercism set.
+- **The agent never sees the generator/validator.** It gets only the input, the description,
+  and the validator URL (`AOC_VALIDATOR_URL`); it POSTs its answer to
+  `POST /api/aoc/validate` to check progress, and writes its final answers to
+  `/workspace/answer.txt`.
+- **Stats:** the dashboard/report aggregate AoC results (puzzles solved, tokens, duration) under
+  the `{agent}-{model}` benchmark name.
+
+See [docs/specs/aoc2015-benchmark.md](docs/specs/aoc2015-benchmark.md) for the full design.
+
 ---
 
 ## Configuration Reference

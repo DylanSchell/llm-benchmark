@@ -1,5 +1,10 @@
 # Exercise Selection
 
+> **Note:** this document describes the Exercism exercise set (the default `polyglot` category).
+> The benchmark also ships a **separate Advent of Code 2015 category** (`aoc2015`) — 25 puzzle
+> days with a vendored generator/validator, not Exercism exercises. See
+> [`docs/specs/aoc2015-benchmark.md`](specs/aoc2015-benchmark.md).
+
 The benchmark embeds a curated subset of [Exercism](https://exercism.org) practice exercises.
 What ships is declared in `exercises.manifest.yaml`: each track lists the exercises to
 **include**, and every other exercise under that track's `exercises/practice/` directory is

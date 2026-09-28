@@ -21,7 +21,7 @@ authenticates.
 
 | Kind | Path shape | Returns |
 |---|---|---|
-| Pages | `/`, `/run`, `/results`, `/scoring`, `/compare`, `/benchmark/{id}` | Server-rendered HTML (`templates/*.tera`, embedded in the binary) |
+| Pages | `/`, `/run`, `/run-aoc`, `/results`, `/scoring`, `/compare`, `/benchmark/{id}` | Server-rendered HTML (`templates/*.tera`, embedded in the binary) |
 | JSON APIs | `/api/…`, plus `/results/api/…` | `application/json` |
 | HTML fragments | `/recent-results-fragment`, `/results/table-fragment` | JSON bodies rendered into the page by HTMX |
 
@@ -38,6 +38,7 @@ Every route, in router order.
 |---|---|---|---|
 | GET | `/` | `dashboard` | Dashboard: recent results, active runs |
 | GET | `/run` | `run_form` | Form to schedule benchmark runs |
+| GET | `/run-aoc` | `run_aoc_form` | Form to schedule Advent of Code 2015 runs |
 | GET | `/benchmark/{id}` | `view_benchmark` | Live view of one session, including its SSE stream |
 | GET | `/test` | `test_page` | Test/scratch page |
 | GET | `/results` | `results_page` | Results browser |
@@ -82,6 +83,24 @@ path segment from `{agent}` so the URL stays RESTful while the on-disk layout st
 | GET | `/api/exercises/{language}` | `get_exercises_for_language` | `["series", …]` |
 
 These read the exercise set embedded in the binary, not the filesystem.
+
+### Advent of Code 2015
+
+| Method | Path | Handler | Returns |
+|---|---|---|---|
+| GET | `/run-aoc` | `run_aoc_form` | AoC run form (page) |
+| GET | `/api/aoc/days` | `get_aoc_days` | `[1,2,…,25]` |
+| POST | `/api/aoc/validate` | `validate_answer` | `{correct, matched_part, message}` |
+| POST | `/api/aoc/queue/schedule` | `schedule_aoc` | `{status, count, items}` |
+
+`/api/aoc/validate` regenerates the exact input the agent was given (deterministic
+from `(user, year, day)`), solves it with the vendored solver, and reports whether
+the submitted answer matches part 1 or part 2. It is the only surface the agent
+has for checking its progress — it never sees the generator or the solver.
+
+`/api/aoc/queue/schedule` accepts a form with `agent`, `model`, `thinking_level`,
+`days` (repeated, or empty for all), `user` (seed, default `benchmark`) and
+`retry`. One queue item is created per selected day.
 
 ### Results
 

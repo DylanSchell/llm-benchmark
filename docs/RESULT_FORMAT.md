@@ -17,6 +17,20 @@ results/
     └── log_pi_{language}_{exercise}.jsonl          # pi's own log files (pi only)
 ```
 
+### Categories
+
+Results belong to a **category** (`category` field on the result, default `polyglot`).
+Non-default categories are namespaced under a subdirectory so they never collide with the
+Exercism set:
+
+```
+results/{agent}-{model}/aoc2015/result_{agent}_aoc2015_day01.json
+```
+
+The AoC 2015 category stores one result per puzzle day (`day01` … `day25`), with
+`language = "aoc2015"` and `exerciseName = "dayNN"`. The loader and reporter walk the
+category subdirectory automatically.
+
 ### Example
 
 ```

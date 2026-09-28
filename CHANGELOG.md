@@ -1,3 +1,29 @@
+# Changelog — Advent of Code 2015 benchmark category
+
+Adds a **new, separate benchmark category** for the Advent of Code 2015 puzzles,
+built around a vendored copy of the `aoc2015` generator/validator.
+
+- **`benchmark-aoc2015` crate** — the pure-`std` aoc2015 generator/validator is vendored
+  as a library (`generate`, `solve`, `description`, `days`), with the 25 puzzle descriptions
+  (both parts) embedded via `rust-embed`. No external checkout is required at build or runtime.
+- **A `category` concept** — `benchmark_types::Category` (`Polyglot` default / `Aoc2015`),
+  threaded through `AgentResult`, sessions and queue items. AoC results are namespaced under
+  `results/{agent}-{model}/aoc2015/` so they never mix with the Exercism set.
+- **A separate AoC runner** — `AocRunner` materializes `problem.md` + a generated `input.txt`
+  into the container, builds an AoC prompt, runs the agent in the same runner image, reads the
+  agent's `/workspace/answer.txt`, and validates against the vendored solver. Day 25 (single
+  part) is handled specially.
+- **A validator endpoint** — `POST /api/aoc/validate`, reachable from inside the container at
+  `host.docker.internal:<port>/api/aoc/validate`. The agent is given only the endpoint URL (via
+  `AOC_VALIDATOR_URL` and the prompt), never the generator or solver.
+- **Web UI** — a `/run-aoc` form, `/api/aoc/days`, and `/api/aoc/queue/schedule` (one queue
+  item per day, sequential). The nav links to the new form.
+- **Stats/reporting** — the result loader and reporter walk category subdirectories, so AoC
+  results aggregate (puzzles solved, tokens, duration) under the `{agent}-{model}` benchmark.
+
+Execution model: for now the agent is driven through puzzles **one day at a time** (sequential
+queue items). A future iteration may test subagent orchestration across the full 25-day set.
+
 # Changelog — removing the configuration keys that did nothing
 
 `config.example.yaml` shipped three sections no code ever read: `exercise:` (`language`, `name`,
