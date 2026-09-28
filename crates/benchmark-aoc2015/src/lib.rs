@@ -11,7 +11,6 @@
 
 mod days;
 mod json;
-mod md5;
 mod rng;
 
 use rust_embed::Embed;
@@ -81,6 +80,38 @@ mod tests {
         for day in days() {
             let (p1, _p2) = solve("benchmark", 2015, day);
             assert!(!p1.is_empty(), "day {day} produced an empty part 1");
+        }
+    }
+
+    /// The solver must never emit a sentinel value indicating "no solution found".
+    /// Some generators produce inputs a search cannot solve (e.g. day 22 with high
+    /// boss damage), and the solver returns i64::MAX/i64::MIN/usize::MAX in that
+    /// case — a value an agent can never match, making the day unsolvable. This
+    /// samples many seeds and asserts no sentinel leaks for any day.
+    #[test]
+    #[ignore] // thorough sweep; slow in debug (day 4/22). Run in release/CI.
+    fn solver_never_emits_no_solution_sentinels() {
+        // Only the extreme "no solution found" sentinels. `-1` is a legitimate
+        // answer for several days (e.g. day 1 floor), so it is not included.
+        const SENTINELS: [&str; 3] = [
+            "9223372036854775807",  // i64::MAX
+            "-9223372036854775808", // i64::MIN
+            "18446744073709551615", // u64::MAX
+        ];
+        for day in days() {
+            for i in 0..10u64 {
+                let user = format!("probe{i}");
+                let (p1, p2) = solve(&user, 2015, day);
+                for v in [p1.as_str(), p2.as_str()] {
+                    if v.is_empty() {
+                        continue; // day 25 has no part 2
+                    }
+                    assert!(
+                        !SENTINELS.contains(&v),
+                        "day {day} seed {user} emitted sentinel {v}"
+                    );
+                }
+            }
         }
     }
 

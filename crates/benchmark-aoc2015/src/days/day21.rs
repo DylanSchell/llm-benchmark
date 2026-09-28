@@ -108,8 +108,38 @@ fn each_loadout(f: &mut dyn FnMut(i64, i64, i64)) {
 }
 
 pub fn generate(rng: &mut Rng) -> String {
-    let hp = rng.range(50, 150);
-    let dmg = rng.range(5, 15);
-    let armor = rng.range(0, 8);
-    format!("Hit Points: {}\nDamage: {}\nArmor: {}\n", hp, dmg, armor)
+    // Some (hp, dmg, armor) combos cannot be beaten by any equipment loadout, for
+    // which `solve` returns i64::MAX ("no winning loadout") and the puzzle is
+    // genuinely unsolvable. Sample and validate: resample until a winnable boss
+    // is produced.
+    for _ in 0..64 {
+        let hp = rng.range(50, 150);
+        let dmg = rng.range(5, 15);
+        let armor = rng.range(0, 8);
+        let input = format!("Hit Points: {hp}\nDamage: {dmg}\nArmor: {armor}\n");
+        let (p1, _p2) = solve(&input);
+        if p1 != i64::MAX.to_string() {
+            return input;
+        }
+    }
+    // Fallback: a known-winnable boss (real AoC 2015 day 21 input).
+    "Hit Points: 100\nDamage: 8\nArmor: 2\n".to_string()
+}
+
+#[cfg(test)]
+mod gen_tests {
+    use super::*;
+    use crate::rng::Rng;
+
+    // The generator must never emit a boss no loadout can beat (i64::MAX sentinel).
+    #[test]
+    fn generator_never_emits_unsolvable_boss() {
+        const MAX: &str = "9223372036854775807";
+        for i in 0..200u64 {
+            let mut rng = Rng::new(i.wrapping_mul(0x9E3779B97F4A7C15).wrapping_add(0x1234567));
+            let input = generate(&mut rng);
+            let (p1, _p2) = solve(&input);
+            assert_ne!(p1, MAX, "generated unsolvable boss: {input}");
+        }
+    }
 }
