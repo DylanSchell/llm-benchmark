@@ -17,6 +17,8 @@ pub struct BenchmarkSession {
     pub agent_name: String,
     pub languages: Vec<String>,
     pub model: String,
+    /// Benchmark family (default `Polyglot`). AoC runs carry `Aoc2015`.
+    pub category: benchmark_types::Category,
     /// Pi thinking level: off, minimal, low, medium, high, xhigh (optional)
     pub thinking_level: Option<String>,
     pub exercise_name: Option<String>,
@@ -52,12 +54,27 @@ impl BenchmarkSession {
         retry: bool,
         timeout_ms: u64,
     ) -> Self {
+        Self::with_category(agent_name, languages, model, thinking_level, exercise_name, retry, timeout_ms, benchmark_types::Category::Polyglot)
+    }
+
+    /// Create a session with an explicit category.
+    pub fn with_category(
+        agent_name: String,
+        languages: Vec<String>,
+        model: String,
+        thinking_level: Option<String>,
+        exercise_name: Option<String>,
+        retry: bool,
+        timeout_ms: u64,
+        category: benchmark_types::Category,
+    ) -> Self {
         let (msg_tx, _rx) = broadcast::channel::<String>(1024);
         Self {
             id: Uuid::new_v4().to_string(),
             agent_name,
             languages,
             model,
+            category,
             thinking_level,
             exercise_name,
             retry,
@@ -82,6 +99,7 @@ impl Clone for BenchmarkSession {
             agent_name: self.agent_name.clone(),
             languages: self.languages.clone(),
             model: self.model.clone(),
+            category: self.category,
             thinking_level: self.thinking_level.clone(),
             exercise_name: self.exercise_name.clone(),
             retry: self.retry,

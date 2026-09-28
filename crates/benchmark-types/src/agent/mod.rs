@@ -251,6 +251,10 @@ pub trait Agent: Send + Sync {
 /// from earlier versions.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AgentResult {
+    /// Benchmark family this result belongs to. Defaults to `Polyglot` so
+    /// existing result files (which predate categories) still deserialize.
+    #[serde(default)]
+    pub category: crate::Category,
     #[serde(rename = "exerciseName", alias = "exercise_name")]
     pub exercise_name: String,
     pub language: String,
@@ -328,10 +332,16 @@ impl AgentResult {
     pub fn builder() -> AgentResultBuilder {
         AgentResultBuilder::new()
     }
+
+    /// A human-readable key uniquely identifying this result within its category.
+    pub fn key(&self) -> String {
+        format!("{}-{}-{}", self.language, self.exercise_name, self.category)
+    }
 }
 
 #[derive(Default)]
 pub struct AgentResultBuilder {
+    category: Option<crate::Category>,
     exercise_name: Option<String>,
     language: Option<String>,
     success: bool,
@@ -354,6 +364,11 @@ pub struct AgentResultBuilder {
 impl AgentResultBuilder {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn category(mut self, category: crate::Category) -> Self {
+        self.category = Some(category);
+        self
     }
 
     pub fn exercise_name(mut self, exercise_name: String) -> Self {
@@ -446,6 +461,7 @@ impl AgentResultBuilder {
     pub fn build(self) -> AgentResult {
         let now = chrono::Utc::now();
         AgentResult {
+            category: self.category.unwrap_or_default(),
             exercise_name: self.exercise_name.unwrap_or_default(),
             language: self.language.unwrap_or_default(),
             success: self.success,
@@ -501,6 +517,37 @@ mod tests {
         assert!(!result.start_time.is_empty());
         assert!(!result.end_time.is_empty());
         assert!(result.start_time.contains("2026")); // roughly correct year
+    }
+
+    /// Existing result files predate categories: an absent `category` must
+    /// deserialize to `Polyglot`, and a builder that doesn't set one must too.
+    #[test]
+    fn category_defaults_to_polyglot() {
+        let json = r#"{"exerciseName": "foo", "language": "java", "success": true, "exitCode": 0, "output": "", "duration": 0.5, "startTime": "", "endTime": ""}"#;
+        let result: AgentResult = serde_json::from_str(json).expect("should deserialize");
+        assert_eq!(result.category, crate::Category::Polyglot);
+
+        let built = AgentResult::builder()
+            .exercise_name("foo".to_string())
+            .language("java".to_string())
+            .success(true)
+            .build();
+        assert_eq!(built.category, crate::Category::Polyglot);
+    }
+
+    /// An AoC result round-trips its category.
+    #[test]
+    fn category_round_trips() {
+        let result = AgentResult::builder()
+            .category(crate::Category::Aoc2015)
+            .exercise_name("day07".to_string())
+            .language("aoc2015".to_string())
+            .success(true)
+            .build();
+        let json = serde_json::to_string(&result).unwrap();
+        assert!(json.contains("\"category\":\"aoc2015\""));
+        let back: AgentResult = serde_json::from_str(&json).unwrap();
+        assert_eq!(back.category, crate::Category::Aoc2015);
     }
 
     /// Older files may omit containerId, model, token counts.

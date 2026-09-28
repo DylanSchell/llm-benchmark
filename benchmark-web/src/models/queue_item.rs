@@ -58,6 +58,8 @@ pub struct BenchmarkQueueItem {
     pub thinking_level: Option<String>,
     pub language: String,
     pub exercise: String,
+    /// Benchmark family (default `Polyglot`). AoC runs carry `Aoc2015`.
+    pub category: benchmark_types::Category,
     pub retry: bool,
     pub status: QueueItemStatus,
     pub session_id: Option<String>,
@@ -76,6 +78,19 @@ impl BenchmarkQueueItem {
         exercise: String,
         retry: bool,
     ) -> Self {
+        Self::with_category(agent_name, model, thinking_level, language, exercise, retry, benchmark_types::Category::Polyglot)
+    }
+
+    /// Create a queue item with an explicit category.
+    pub fn with_category(
+        agent_name: String,
+        model: String,
+        thinking_level: Option<String>,
+        language: String,
+        exercise: String,
+        retry: bool,
+        category: benchmark_types::Category,
+    ) -> Self {
         Self {
             id: Uuid::new_v4().to_string(),
             agent_name,
@@ -83,6 +98,7 @@ impl BenchmarkQueueItem {
             thinking_level,
             language,
             exercise,
+            category,
             retry,
             status: QueueItemStatus::PENDING,
             session_id: None,
@@ -108,6 +124,11 @@ impl BenchmarkQueueItem {
         self.started_at = None;
         self.finished_at = None;
         cloned
+    }
+
+    /// The benchmark category as a lowercase string (for serialization/UI).
+    pub fn category_str(&self) -> String {
+        self.category.to_string()
     }
 
 
