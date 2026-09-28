@@ -17,7 +17,8 @@ use crate::models::queue_item::{BenchmarkQueueItem, QueueItemStatus};
 // Request/Response types
 // =============================================================================
 
-// Custom form extractor that handles repeated fields properly
+// Custom form extractor that handles repeated fields properly.
+// Shared across routes (AoC scheduling also relies on it for repeated `days`).
 pub struct FlexibleForm<T>(pub T);
 
 impl<T, S> FromRequest<S> for FlexibleForm<T>
@@ -91,51 +92,89 @@ pub struct ScheduleRequest {
 
 /// Deserialize a form field that may appear multiple times into a Vec<String>.
 /// Handles both single values, repeated fields from HTML forms, and JSON arrays.
-fn deserialize_vec_string<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
+pub(crate) fn deserialize_vec_string<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
 where
     D: serde::Deserializer<'de>,
+{
+    deserialize_vec(deserializer)
+}
+
+/// Deserialize a form field that may appear multiple times into a Vec<u32>.
+/// Used by the AoC scheduling form's repeated `days` field.
+pub(crate) fn deserialize_vec_u32<'de, D>(deserializer: D) -> Result<Vec<u32>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    deserialize_vec(deserializer)
+}
+
+/// Generic helper: deserialize a field that may be a single value, a JSON array
+/// string (from [`FlexibleForm`]), or a real sequence into a `Vec<T>`.
+///
+/// Form values arrive as strings, so string elements are parsed with `T::from_str`
+/// (which handles numeric types like `u32`) before falling back to `Deserialize`.
+fn deserialize_vec<'de, D, T>(deserializer: D) -> Result<Vec<T>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: serde::de::DeserializeOwned + std::str::FromStr,
+    T::Err: std::fmt::Display,
 {
     use serde::de::{self, Visitor};
     use std::fmt;
 
-    struct VecStringVisitor;
+    struct VecVisitor<T>(std::marker::PhantomData<T>);
 
-    impl<'de> Visitor<'de> for VecStringVisitor {
-        type Value = Vec<String>;
+    impl<'de, T> Visitor<'de> for VecVisitor<T>
+    where
+        T: serde::de::DeserializeOwned + std::str::FromStr,
+        T::Err: std::fmt::Display,
+    {
+        type Value = Vec<T>;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("a string, JSON array string, or sequence of strings")
+            formatter.write_str("a string, JSON array string, or sequence")
         }
 
-        fn visit_str<E>(self, v: &str) -> Result<Vec<String>, E>
+        fn visit_str<E>(self, v: &str) -> Result<Vec<T>, E>
         where
             E: de::Error,
         {
-            // Check if it's a JSON array string (from our custom extractor)
+            // Check if it's a JSON array string (from our custom extractor). The
+            // array holds raw string elements, so parse each one into `T`.
             if v.starts_with('[') && v.ends_with(']') {
-                match serde_json::from_str(v) {
-                    Ok(vec) => Ok(vec),
-                    Err(_) => Ok(vec![v.to_string()]),
-                }
+                let raw: Vec<String> = serde_json::from_str(v)
+                    .map_err(|e| de::Error::custom(format!("invalid JSON array: {e}")))?;
+                raw.into_iter()
+                    .map(|s| Self::parse_one(&s))
+                    .collect()
             } else {
-                // Single value
-                Ok(vec![v.to_string()])
+                Self::parse_one(v).map(|x| vec![x])
             }
         }
 
-        fn visit_seq<A>(self, mut seq: A) -> Result<Vec<String>, A::Error>
+        fn visit_seq<A>(self, mut seq: A) -> Result<Vec<T>, A::Error>
         where
             A: de::SeqAccess<'de>,
         {
             let mut vec = Vec::new();
-            while let Some(s) = seq.next_element::<String>()? {
+            while let Some(s) = seq.next_element::<T>()? {
                 vec.push(s);
             }
             Ok(vec)
         }
     }
 
-    deserializer.deserialize_any(VecStringVisitor)
+    impl<T> VecVisitor<T>
+    where
+        T: std::str::FromStr,
+        T::Err: std::fmt::Display,
+    {
+        fn parse_one<E: de::Error>(s: &str) -> Result<T, E> {
+            s.parse::<T>().map_err(|e| de::Error::custom(format!("invalid value '{s}': {e}")))
+        }
+    }
+
+    deserializer.deserialize_any(VecVisitor::<T>(std::marker::PhantomData))
 }
 
 fn default_mode() -> String {
@@ -321,4 +360,76 @@ pub fn register(app: Router<()>) -> Router<()> {
         .route("/api/benchmark/queue/clear", post(clear_pending_queue))
         .route("/api/benchmark/queue/clear-terminal", post(clear_completed_and_cancelled))
         .route("/api/benchmark/queue/retry/{id}", post(retry_queue_item))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[derive(Debug, Deserialize)]
+    struct DaysReq {
+        #[serde(default, deserialize_with = "deserialize_vec_u32")]
+        days: Vec<u32>,
+    }
+
+    #[derive(Debug, Deserialize)]
+    struct LangsReq {
+        #[serde(default, deserialize_with = "deserialize_vec_string")]
+        langs: Vec<String>,
+    }
+
+    fn parse_days(ser: &str) -> Vec<u32> {
+        // Mimic FlexibleForm: repeated keys -> JSON array string of raw values.
+        let mut pairs: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+        for pair in ser.split('&') {
+            if let Some((k, v)) = pair.split_once('=') {
+                pairs.entry(k.to_string()).or_default().push(v.to_string());
+            }
+        }
+        let mut flattened: Vec<(String, String)> = Vec::new();
+        for (k, vals) in pairs.into_iter() {
+            if vals.len() == 1 {
+                flattened.push((k, vals[0].clone()));
+            } else {
+                flattened.push((k, serde_json::to_string(&vals).unwrap()));
+            }
+        }
+        let ser = serde_urlencoded::to_string(&flattened).unwrap();
+        let req: DaysReq = serde_urlencoded::from_str(&ser).unwrap();
+        req.days
+    }
+
+    #[test]
+    fn repeated_days_parse_as_u32() {
+        assert_eq!(parse_days("days=1&days=2&days=3"), vec![1, 2, 3]);
+    }
+
+    #[test]
+    fn single_day_parses_as_one_element() {
+        assert_eq!(parse_days("days=7"), vec![7]);
+    }
+
+    #[test]
+    fn empty_days_is_empty_vec() {
+        assert_eq!(parse_days("agent=pi"), Vec::<u32>::new());
+    }
+
+    #[test]
+    fn string_elements_still_work_for_string_vectors() {
+        // The generic helper must remain compatible with Vec<String>.
+        let ser = "langs=java&langs=python";
+        let mut pairs: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+        for pair in ser.split('&') {
+            if let Some((k, v)) = pair.split_once('=') {
+                pairs.entry(k.to_string()).or_default().push(v.to_string());
+            }
+        }
+        let mut flattened: Vec<(String, String)> = Vec::new();
+        for (k, vals) in pairs.into_iter() {
+            flattened.push((k, serde_json::to_string(&vals).unwrap()));
+        }
+        let ser = serde_urlencoded::to_string(&flattened).unwrap();
+        let req: LangsReq = serde_urlencoded::from_str(&ser).unwrap();
+        assert_eq!(req.langs, vec!["java".to_string(), "python".to_string()]);
+    }
 }

@@ -427,3 +427,78 @@ tr:hover {
         opacity: 1;
     }
 }
+
+/* ============================================================================
+ * AoC 2015 day picker
+ * ========================================================================== */
+
+.aoc-days {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.aoc-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.25rem;
+    border: 1px solid #dde3ea;
+    border-radius: 6px;
+    background: #fbfcfd;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: #333;
+    user-select: none;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.aoc-day:hover {
+    background: #eef3f8;
+    border-color: #c3d3e3;
+}
+
+.aoc-day input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: #3498db;
+}
+
+.aoc-day.selected {
+    background: #eaf4fb;
+    border-color: #3498db;
+    color: #1a5a8a;
+}
+
+.aoc-day:not(.selected) {
+    opacity: 0.75;
+}
+
+.aoc-days-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.aoc-days-toolbar button {
+    background: #f1f5f9;
+    border: 1px solid #dde3ea;
+    border-radius: 4px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    color: #444;
+}
+
+.aoc-days-toolbar button:hover {
+    background: #e2eaf1;
+}
+
+.aoc-days-count {
+    font-size: 0.8125rem;
+    color: #888;
+}

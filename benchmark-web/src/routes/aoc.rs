@@ -4,6 +4,7 @@
 //! the run form, day listing, answer validation, and AoC scheduling.
 
 use super::AppState;
+use super::queue::{deserialize_vec_u32, FlexibleForm};
 use crate::services::aoc_validator::{validate, ValidateRequest};
 use axum::routing::{get, post};
 use axum::Router;
@@ -53,7 +54,7 @@ pub async fn validate_answer(
 /// validator URL.
 pub async fn schedule_aoc(
     Extension(state): Extension<AppState>,
-    axum::extract::Form(request): axum::extract::Form<ScheduleAocRequest>,
+    FlexibleForm(request): FlexibleForm<ScheduleAocRequest>,
 ) -> Json<serde_json::Value> {
     let model = if request.agent == "reference" {
         "reference".to_string()
@@ -108,8 +109,9 @@ pub struct ScheduleAocRequest {
     pub model: String,
     #[serde(default)]
     pub thinking_level: Option<String>,
-    /// Selected days (1..=25). Empty means all days.
-    #[serde(default)]
+    /// Selected days (1..=25). Empty means all days. Handles repeated form
+    /// fields, single values, and JSON array strings (via [`FlexibleForm`]).
+    #[serde(default, deserialize_with = "deserialize_vec_u32")]
     pub days: Vec<u32>,
     /// Seed user for input generation. Defaults to `benchmark`.
     #[serde(default)]

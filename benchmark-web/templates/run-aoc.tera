@@ -47,11 +47,16 @@
 
         <div class="form-group">
             <label>Days</label>
-            <div class="language-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.25rem;">
+            <div class="aoc-days-toolbar">
+                <button type="button" id="aoc-select-all">Select all</button>
+                <button type="button" id="aoc-select-none">Select none</button>
+                <span class="aoc-days-count" id="aoc-days-count">25 / 25 selected</span>
+            </div>
+            <div class="aoc-days" id="aoc-days-grid">
                 {% for day in days %}
-                <label style="font-weight: 400;">
+                <label class="aoc-day selected">
                     <input type="checkbox" name="days" value="{{ day }}" checked>
-                    <span>Day {{ day }}</span>
+                    <span>{{ day }}</span>
                 </label>
                 {% endfor %}
             </div>
@@ -99,6 +104,31 @@
         toggleModel();
     });
 
+    // Day picker: select-all / select-none, live count, and selected styling.
+    const dayGrid = document.getElementById('aoc-days-grid');
+    const dayCheckboxes = Array.from(dayGrid.querySelectorAll('input[name="days"]'));
+    const countEl = document.getElementById('aoc-days-count');
+
+    function refreshDayState() {
+        const checked = dayCheckboxes.filter(cb => cb.checked);
+        dayCheckboxes.forEach(cb => {
+            cb.closest('.aoc-day').classList.toggle('selected', cb.checked);
+        });
+        countEl.textContent = checked.length + ' / ' + dayCheckboxes.length + ' selected';
+    }
+
+    dayCheckboxes.forEach(cb => cb.addEventListener('change', refreshDayState));
+
+    document.getElementById('aoc-select-all').addEventListener('click', () => {
+        dayCheckboxes.forEach(cb => { cb.checked = true; });
+        refreshDayState();
+    });
+    document.getElementById('aoc-select-none').addEventListener('click', () => {
+        dayCheckboxes.forEach(cb => { cb.checked = false; });
+        refreshDayState();
+    });
+    refreshDayState();
+
     document.getElementById('aoc-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         const agent = document.getElementById('agent').value;
@@ -109,6 +139,7 @@
         const days = Array.from(document.querySelectorAll('input[name="days"]:checked')).map(cb => cb.value);
 
         if (agent !== 'reference' && !model) { alert('Please select a model'); return; }
+        if (days.length === 0) { alert('Please select at least one day'); return; }
 
         const params = new URLSearchParams();
         params.append('agent', agent);
@@ -118,7 +149,13 @@
         params.append('retry', retry.toString());
         days.forEach(d => params.append('days', d));
 
-        await fetch('/api/aoc/queue/schedule', { method: 'POST', body: params });
+        const resp = await fetch('/api/aoc/queue/schedule', { method: 'POST', body: params });
+        if (!resp.ok) {
+            const body = await resp.text();
+            alert('Failed to schedule AoC run: ' + body);
+            return;
+        }
+        const data = await resp.json();
         window.location.href = '/';
     });
 </script>
