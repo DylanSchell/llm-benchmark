@@ -555,6 +555,35 @@ impl Agent for ReferenceAgent {
         *recover_poisoned(self.cancellation_token.lock()) = token;
     }
 
+    async fn run_aoc(
+        &self,
+        day: &benchmark_types::aoc::AocDay,
+        work_dir: &Path,
+        _validator_url: &str,
+        _model: &str,
+        _thinking_level: Option<&str>,
+        _results_dir: &Path,
+    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+        // The reference agent is the ground truth: it solves the puzzle directly
+        // (no model call) and writes the correct answers to the answer file. It is
+        // the baseline / sanity check that the harness works end-to-end.
+        let start = Instant::now();
+        let (part1, part2) = benchmark_aoc2015::solve(&day.user, day.year, day.day);
+        fs::write(work_dir.join(crate::aoc_runner::ANSWER_FILE), format!("{part1}\n{part2}\n"))?;
+        let duration_ms = start.elapsed().as_millis() as u64;
+        info!("Reference agent solved AoC day {}: part1={} part2={}", day.day, part1, part2);
+        Ok(AgentResult::builder()
+            .category(benchmark_types::Category::Aoc2015)
+            .exercise_name(day.exercise_name())
+            .language(day.language().to_string())
+            .success(true)
+            .exit_code(0)
+            .duration_ms(duration_ms)
+            .start_time(chrono::Utc::now().to_rfc3339())
+            .end_time(chrono::Utc::now().to_rfc3339())
+            .build())
+    }
+
     async fn run_exercise(
         &self,
         exercise: &Exercise,

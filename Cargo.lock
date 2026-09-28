@@ -232,6 +232,7 @@ version = "1.4.0"
 dependencies = [
  "anyhow",
  "async-trait",
+ "benchmark-aoc2015",
  "benchmark-exercises",
  "benchmark-types",
  "chrono",

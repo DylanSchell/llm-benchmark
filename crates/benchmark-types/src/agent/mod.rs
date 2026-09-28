@@ -232,6 +232,26 @@ pub trait Agent: Send + Sync {
         timeout_override_secs: Option<u64>,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>>;
 
+    /// Run an Advent of Code 2015 puzzle day.
+    ///
+    /// Unlike `run_exercise`, there is no test suite: the agent is given a
+    /// description and a generated input, solves it in any language, and
+    /// validates its answer against a validator endpoint. Implementations
+    /// write the final answers to the work dir and validate against
+    /// `aoc2015::solve`.
+    async fn run_aoc(
+        &self,
+        day: &crate::aoc::AocDay,
+        work_dir: &Path,
+        validator_url: &str,
+        model: &str,
+        thinking_level: Option<&str>,
+        results_dir: &Path,
+    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+        let _ = (day, work_dir, validator_url, model, thinking_level, results_dir);
+        Err(format!("agent {} does not support AoC runs", self.get_name()).into())
+    }
+
     /// Returns the agent's name (e.g., "reference", "claude", "pi").
     fn get_name(&self) -> &str;
 

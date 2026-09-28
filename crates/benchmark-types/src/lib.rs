@@ -1,3 +1,4 @@
+pub mod aoc;
 pub mod category;
 pub mod config;
 pub mod exercise;

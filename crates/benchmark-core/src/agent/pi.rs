@@ -441,6 +441,113 @@ impl Agent for PiAgent {
         self.run_exercise_with_timeout(exercise, source, model, thinking_level, results_dir, None).await
     }
 
+    async fn run_aoc(
+        &self,
+        day: &benchmark_types::aoc::AocDay,
+        work_dir: &Path,
+        validator_url: &str,
+        model: &str,
+        thinking_level: Option<&str>,
+        results_dir: &Path,
+    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+        let start_time = Instant::now();
+        let start_dt = chrono::Utc::now();
+        info!("Running Pi agent for AoC day {}", day.day);
+
+        // Build the AoC prompt (the validator URL is embedded in the prompt).
+        let prompt = crate::aoc_runner::AocRunner::new(day.user.clone(), results_dir)
+            .build_prompt(day, validator_url);
+
+        // Create models.json with the correct model + thinking level.
+        self.create_models_json(work_dir, model, thinking_level)?;
+
+        // Build and run the pi command.
+        let command = self.build_pi_command(&prompt, model, thinking_level);
+        let prompt_arg = command.last().map(|s| s.as_str());
+        let command_refs: Vec<&str> = command[..command.len().saturating_sub(1)].iter().map(|s| s.as_str()).collect();
+
+        info!("Running Pi agent for AoC day {} (model: {})", day.day, model);
+        info!("Temp work dir: {:?}", work_dir);
+
+        let processor = Arc::clone(&self.message_processor);
+        let cancellation = recover_poisoned(self.cancellation_token.lock()).clone();
+
+        // Inject AOC_VALIDATOR_URL into the container so the agent can reach it.
+        let mut extra_env = std::collections::HashMap::new();
+        extra_env.insert("AOC_VALIDATOR_URL".to_string(), validator_url.to_string());
+
+        let result = self
+            .docker_client
+            .run_command_with_limits_and_volume_with_callback_and_env(
+                None,
+                Some("/workspace"),
+                &command_refs,
+                prompt_arg,
+                None,
+                None,
+                Some(&work_dir.to_string_lossy()),
+                Some(std::sync::Arc::new(move |line| {
+                    let proc = recover_poisoned(processor.lock());
+                    proc.process(line);
+                })),
+                true, // enable .pi volume mount for session data
+                cancellation,
+                Some(&extra_env),
+            )
+            .await?;
+
+        let end_dt = chrono::Utc::now();
+        let duration_ms = start_time.elapsed().as_millis() as u64;
+        let pi_success = result.completed && result.exit_code == 0;
+
+        if !pi_success {
+            let preview = crate::safe_truncate(&result.output, 1000);
+            error!(
+                "Pi agent AoC day {} FAILED: exit={}, completed={}, output(first 1000)={}",
+                day.day, result.exit_code, result.completed, preview
+            );
+        } else {
+            info!("Pi agent AoC day {} completed in {}ms", day.day, duration_ms);
+        }
+
+        // Collect the pi trace, as for Exercism runs.
+        let model_str = model.to_string();
+        let _trace = self
+            .collect_pi_trace(work_dir, results_dir, &Exercise {
+                name: day.exercise_name(),
+                language: day.language().to_string(),
+                source_file: None,
+                test_file: None,
+                reference_dir: None,
+                metadata: None,
+                example_files: Vec::new(),
+                solution_files: Vec::new(),
+                test_files: Vec::new(),
+            }, &model_str)
+            .await
+            .unwrap_or_default();
+
+        let error_message = if !pi_success {
+            Some(format!("Pi agent failed with exit code: {}", result.exit_code))
+        } else {
+            None
+        };
+
+        Ok(AgentResult::builder()
+            .category(benchmark_types::Category::Aoc2015)
+            .exercise_name(day.exercise_name())
+            .language(day.language().to_string())
+            .success(pi_success)
+            .exit_code(result.exit_code)
+            .output(String::new())
+            .duration_ms(duration_ms)
+            .start_time(start_dt.to_rfc3339())
+            .end_time(end_dt.to_rfc3339())
+            .error_message(error_message)
+            .container_id(result.container_id)
+            .build())
+    }
+
     #[tracing::instrument(skip(self, source), fields(exercise = %exercise.name, language = %exercise.language))]
     async fn run_exercise_with_timeout(
         &self,

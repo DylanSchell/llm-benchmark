@@ -1,3 +1,4 @@
+pub mod aoc_runner;
 pub mod docker;
 pub mod endpoint;
 pub mod exercise_runner;

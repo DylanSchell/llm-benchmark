@@ -140,6 +140,94 @@ impl Agent for ClaudeAgent {
             .build())
     }
 
+    async fn run_aoc(
+        &self,
+        day: &benchmark_types::aoc::AocDay,
+        work_dir: &Path,
+        validator_url: &str,
+        _model: &str,
+        _thinking_level: Option<&str>,
+        _results_dir: &Path,
+    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+        info!("Running Claude agent for AoC day {}", day.day);
+        let start_tokio = tokio::time::Instant::now();
+
+        let prompt = crate::aoc_runner::AocRunner::new(day.user.clone(), _results_dir)
+            .build_prompt(day, validator_url);
+
+        let command = vec![
+            "claude",
+            "--allow-dangerously-skip-permissions",
+            "--dangerously-skip-permissions",
+            "--print",
+            "--tools",
+            "Task,TaskOutput,Bash,Glob,Grep,Read,Edit,Write,NotebookEdit,WebFetch,TodoWrite,WebSearch,KillShell,ExitPlanMode",
+            "--permission-mode", "bypassPermissions",
+            "--verbose",
+            "--output-format", "stream-json",
+            "--include-partial-messages",
+        ];
+
+        let processor = Arc::clone(&self.message_processor);
+        let cancellation = recover_poisoned(self.cancellation_token.lock()).clone();
+
+        let mut extra_env = std::collections::HashMap::new();
+        extra_env.insert("AOC_VALIDATOR_URL".to_string(), validator_url.to_string());
+
+        let result = self
+            .docker_client
+            .run_command_with_limits_and_volume_with_callback_and_env(
+                None,
+                Some("/workspace"),
+                &command,
+                Some(&prompt),
+                None,
+                None,
+                Some(&work_dir.to_string_lossy()),
+                Some(std::sync::Arc::new(move |line| {
+                    let proc = recover_poisoned(processor.lock());
+                    proc.process(line);
+                })),
+                false, // no .pi volume mount for Claude agent
+                cancellation,
+                Some(&extra_env),
+            )
+            .await?;
+
+        let end_dt = chrono::Utc::now();
+        let duration_ms = start_tokio.elapsed().as_millis() as u64;
+        let claude_success = result.completed && result.exit_code == 0;
+
+        if !claude_success {
+            error!(
+                "Claude agent AoC day {} FAILED: exit={}, completed={}",
+                day.day, result.exit_code, result.completed
+            );
+        } else {
+            info!("Claude agent AoC day {} completed in {}ms", day.day, duration_ms);
+        }
+
+        let error_message = if claude_success {
+            None
+        } else {
+            Some(format!("Claude agent failed with exit code: {}", result.exit_code))
+        };
+
+        Ok(AgentResult::builder()
+            .category(benchmark_types::Category::Aoc2015)
+            .exercise_name(day.exercise_name())
+            .language(day.language().to_string())
+            .success(claude_success)
+            .exit_code(result.exit_code)
+            .output(String::new())
+            .duration_ms(duration_ms)
+            .start_time(chrono::Utc::now().to_rfc3339())
+            .end_time(end_dt.to_rfc3339())
+            .error_message(error_message)
+            .container_id(result.container_id)
+            .build())
+    }
+
     fn get_name(&self) -> &str {
         "claude"
     }

@@ -273,6 +273,43 @@ impl DockerClient {
         enable_pi_volume: bool,
         cancellation: Option<CancellationToken>,
     ) -> Result<ProcessResult, anyhow::Error> {
+        self.run_command_with_limits_and_volume_with_callback_and_env(
+            container_image,
+            work_dir,
+            command,
+            prompt,
+            timeout_seconds,
+            memory_limit,
+            volume_host_dir,
+            output_callback,
+            enable_pi_volume,
+            cancellation,
+            None,
+        )
+        .await
+    }
+
+    /// Like [`Self::run_command_with_limits_and_volume_with_callback`], but with
+    /// additional environment variables layered on top of the configured ones.
+    ///
+    /// Used by the AoC runner to inject `AOC_VALIDATOR_URL` into the container so
+    /// the agent can reach the validator endpoint. Extra vars are merged over the
+    /// configured environment (an extra var with a key the config also sets wins).
+    #[allow(clippy::too_many_arguments)]
+    pub async fn run_command_with_limits_and_volume_with_callback_and_env(
+        &self,
+        container_image: Option<&str>,
+        work_dir: Option<&str>,
+        command: &[&str],
+        prompt: Option<&str>,
+        timeout_seconds: Option<u64>,
+        memory_limit: Option<&str>,
+        volume_host_dir: Option<&str>,
+        output_callback: Option<std::sync::Arc<OutputCallback>>,
+        enable_pi_volume: bool,
+        cancellation: Option<CancellationToken>,
+        extra_env: Option<&HashMap<String, String>>,
+    ) -> Result<ProcessResult, anyhow::Error> {
         let image = container_image.unwrap_or(&self.config.image);
         let work = work_dir.unwrap_or(&self.config.work_dir);
         let timeout_secs = timeout_seconds.unwrap_or(self.config.timeout);
@@ -316,13 +353,21 @@ impl DockerClient {
             exec_args.push(p);
         }
 
+        // Merge any per-invocation env vars over the configured environment.
+        let mut merged_env = self.config.environment.clone();
+        if let Some(extra) = extra_env {
+            for (k, v) in extra {
+                merged_env.insert(k.clone(), v.clone());
+            }
+        }
+
         // Build docker command for execution
         let full_command = build_docker_run_command(
             &container_id,
             image,
             work,
             memory,
-            &self.config.environment,
+            &merged_env,
             &host_dir,
             enable_pi_volume,
             &exec_args,
@@ -334,7 +379,7 @@ impl DockerClient {
             image,
             work,
             memory,
-            &self.config.environment,
+            &merged_env,
             &host_dir,
             enable_pi_volume,
             command,
