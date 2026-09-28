@@ -307,6 +307,8 @@ pub struct CachedResult {
     pub timestamp: Option<String>,
     pub agent: String,
     pub language: String,
+    /// Benchmark category (e.g. `polyglot`, `aoc2015`). Defaults to `polyglot`.
+    pub category: String,
     pub model: String,
     pub total_exercises: i32,
     pub successful: i32,
@@ -350,6 +352,8 @@ pub struct IndividualResult {
     pub path: String,
     pub agent: String,
     pub language: String,
+    /// Benchmark category (e.g. `polyglot`, `aoc2015`).
+    pub category: String,
     pub model: String,
     pub exercise: String,
     pub success: bool,
@@ -448,6 +452,9 @@ pub struct Statistics {
     pub language_stats: Vec<StatItem>,
     pub agent_stats: Vec<StatItem>,
     pub model_stats: Vec<StatItem>,
+    // Per-category aggregation (e.g. polyglot, aoc2015)
+    #[serde(default)]
+    pub category_stats: Vec<StatItem>,
     // Token statistics
     #[serde(default)]
     pub total_input_tokens: u64,
@@ -786,23 +793,31 @@ impl ResultService {
             "0.0%".to_string()
         };
 
-        // Check for existing trace files on disk (embedded traces are legacy and ignored)
+        // Check for existing trace files on disk (embedded traces are legacy and ignored).
+        // For category-namespaced results ({agent}-{model}/{category}/) the trace is
+        // written into the run dir ({agent}-{model}/), so search both the result's
+        // directory and its parent.
         let trace_prefix = Self::derive_trace_prefix(&filename);
-        let trace_path = if let Some(parent) = file_path.parent() {
-            let jsonl_path = parent.join(format!("trace_{}.jsonl", trace_prefix));
+        let mut trace_dirs: Vec<&Path> = Vec::new();
+        if let Some(parent) = file_path.parent() {
+            trace_dirs.push(parent);
+            if let Some(grandparent) = parent.parent() {
+                trace_dirs.push(grandparent);
+            }
+        }
+        let trace_path = trace_dirs.into_iter().find_map(|dir| {
+            let jsonl_path = dir.join(format!("trace_{}.jsonl", trace_prefix));
             if jsonl_path.exists() {
                 Some(jsonl_path.to_string_lossy().to_string())
             } else {
-                let html_path = parent.join(format!("trace_{}.html", trace_prefix));
+                let html_path = dir.join(format!("trace_{}.html", trace_prefix));
                 if html_path.exists() {
                     Some(html_path.to_string_lossy().to_string())
                 } else {
                     None
                 }
             }
-        } else {
-            None
-        };
+        });
 
         // Use tokens from deserialized result if present, otherwise parse from trace file
         let (input_tokens, output_tokens, cached_input_tokens, uncached_input_tokens) =
@@ -851,6 +866,7 @@ impl ResultService {
             timestamp,
             agent,
             language,
+            category: agent_result.category.to_string(),
             model,
             total_exercises,
             successful,
@@ -985,6 +1001,29 @@ impl ResultService {
         unique
     }
 
+    /// All benchmark categories present in the results, as a map of id → label.
+    /// Categories are discovered from the cached results; unknown/empty values
+    /// map to `polyglot`. Returned as a map so Tera can iterate it by key/value.
+    pub fn get_categories(&self) -> std::collections::BTreeMap<String, String> {
+        let cached = recover_poisoned(self.cached_results.read());
+        let mut cats: Vec<String> = cached
+            .values()
+            .map(|c| if c.category.is_empty() { "polyglot".to_string() } else { c.category.clone() })
+            .collect();
+        cats.sort();
+        cats.dedup();
+        let mut map = std::collections::BTreeMap::new();
+        for c in cats {
+            let label = match c.as_str() {
+                "aoc2015" => "AoC 2015".to_string(),
+                "polyglot" => "Exercism / Polyglot".to_string(),
+                other => other.to_string(),
+            };
+            map.insert(c, label);
+        }
+        map
+    }
+
     /// Get all unique languages.
     pub fn get_languages(&self) -> Vec<String> {
         let cached = recover_poisoned(self.cached_results.read());
@@ -1029,11 +1068,18 @@ impl ResultService {
         model: Option<&str>,
         exercise: Option<&str>,
         quick_only: bool,
+        category: Option<&str>,
     ) -> Vec<IndividualResult> {
         let cached = recover_poisoned(self.cached_results.read());
         let mut results: Vec<IndividualResult> = Vec::new();
 
         for cached_result in cached.values() {
+            // Apply category filter (empty = all categories).
+            let cat = category.unwrap_or("");
+            if !cat.is_empty() && cached_result.category != cat {
+                continue;
+            }
+
             // Apply quick bench filter
             if quick_only {
                 let is_quick = Self::is_quick_bench_exercise(&cached_result.language, &cached_result.exercise);
@@ -1072,6 +1118,7 @@ impl ResultService {
                     path: cached_result.path.clone(),
                     agent: cached_result.agent.clone(),
                     language: cached_result.language.clone(),
+                    category: cached_result.category.clone(),
                     model: cached_result.model.clone(),
                     exercise: cached_result.exercise.clone(),
                     success: cached_result.successful > 0,
@@ -1111,12 +1158,10 @@ impl ResultService {
         for result in &mut results {
             // Look up the cached result to get duration
             // Cache key format: {directory}/{language}/{exercise}
-            // where directory = {agent}-{model} (internal implementation detail, NOT exposed in URLs)
-            let directory = std::path::Path::new(&result.path)
-                .parent()
-                .and_then(|p| p.file_name())
-                .map(|n| n.to_string_lossy().to_string())
-                .unwrap_or_default();
+            // where directory = {agent}-{model} (internal implementation detail, NOT exposed in URLs).
+            // For category-namespaced results (e.g. {agent}-{model}/aoc2015/) the run
+            // directory must be derived, not the immediate parent (which is the category).
+            let directory = Self::derive_run_directory(std::path::Path::new(&result.path));
             let cache_key = format!("{}/{}/{}", directory, result.language, result.exercise);
             if let Some(cached) = recover_poisoned(self.cached_results.read()).get(&cache_key) {
                 if let Some(single_result) = cached.results.first() {
@@ -1153,6 +1198,7 @@ impl ResultService {
         model: Option<&str>,
         exercise: Option<&str>,
         quick_only: bool,
+        category: Option<&str>,
     ) -> Statistics {
         let cached = recover_poisoned(self.cached_results.read());
         let mut total_runs: i32 = 0;
@@ -1166,12 +1212,20 @@ impl ResultService {
         let mut by_language: HashMap<String, (i32, i32, f64, u64, u64, u64, u64)> = HashMap::new();
         let mut by_agent: HashMap<String, (i32, i32, f64, u64, u64, u64, u64)> = HashMap::new();
         let mut by_model: HashMap<String, (i32, i32, f64, u64, u64, u64, u64)> = HashMap::new();
+        let mut by_category: HashMap<String, (i32, i32, f64, u64, u64, u64, u64)> = HashMap::new();
         // Wall-clock intervals per group
         let mut wall_by_language: HashMap<String, Vec<TimeInterval>> = HashMap::new();
         let mut wall_by_agent: HashMap<String, Vec<TimeInterval>> = HashMap::new();
         let mut wall_by_model: HashMap<String, Vec<TimeInterval>> = HashMap::new();
+        let mut wall_by_category: HashMap<String, Vec<TimeInterval>> = HashMap::new();
 
         for cached_result in cached.values() {
+            // Apply category filter (empty = all categories).
+            let cat = category.unwrap_or("");
+            if !cat.is_empty() && cached_result.category != cat {
+                continue;
+            }
+
             if !Self::matches_filter(
                 &cached_result.language,
                 language,
@@ -1268,6 +1322,30 @@ impl ResultService {
                 .or_insert((0, 0, 0.0, 0, 0, 0, 0)) = {
                 let (t, s, d, ti, to, tc, tu) = by_model
                     .get(&model_key)
+                    .copied()
+                    .unwrap_or((0, 0, 0.0, 0, 0, 0, 0));
+                (
+                    t + cached_result.total_exercises,
+                    s + cached_result.successful,
+                    d + entry_duration,
+                    ti + cached_result.input_tokens,
+                    to + cached_result.output_tokens,
+                    tc + cached_result.cached_input_tokens,
+                    tu + cached_result.uncached_input_tokens,
+                )
+            };
+
+            // By category - track (total, success, duration, tokens)
+            let cat_key = if cached_result.category.is_empty() { "polyglot".to_string() } else { cached_result.category.clone() };
+            let cat_intervals = wall_by_category.entry(cat_key.clone()).or_insert_with(Vec::new);
+            if let (Some(s), Some(e)) = (parse_rfc3339_ms(&cached_result.start_time), parse_rfc3339_ms(&cached_result.end_time)) {
+                if e >= s { cat_intervals.push(TimeInterval { start: s, end: e }); }
+            }
+            *by_category
+                .entry(cat_key.clone())
+                .or_insert((0, 0, 0.0, 0, 0, 0, 0)) = {
+                let (t, s, d, ti, to, tc, tu) = by_category
+                    .get(&cat_key)
                     .copied()
                     .unwrap_or((0, 0, 0.0, 0, 0, 0, 0));
                 (
@@ -1405,6 +1483,34 @@ impl ResultService {
             b.total.cmp(&a.total).then_with(|| a.name.cmp(&b.name))
         });
 
+        let mut category_stats: Vec<StatItem> = by_category
+            .iter()
+            .map(|(name, (total, success, duration, input_tokens, output_tokens, cached_tokens, uncached_tokens))| {
+                let rate = if *total > 0 { (*success as f64 / *total as f64) * 100.0 } else { 0.0 };
+                let avg_tps = if *duration > 0.0 { *output_tokens as f64 / *duration } else { 0.0 };
+                let wall_intervals = wall_by_category.get(name).map(|v| v.as_slice()).unwrap_or(&[]);
+                let wall_secs = merge_intervals_and_total_duration(wall_intervals) as f64 / 1000.0;
+                StatItem {
+                    name: name.clone(),
+                    total: *total,
+                    success: *success,
+                    success_rate_formatted: format!("{:.1}", rate),
+                    total_duration: *duration,
+                    total_duration_formatted: Self::format_duration(*duration),
+                    wall_clock_duration: wall_secs,
+                    wall_clock_duration_formatted: Self::format_duration(wall_secs),
+                    input_tokens: *input_tokens,
+                    output_tokens: *output_tokens,
+                    cached_tokens: *cached_tokens,
+                    uncached_tokens: *uncached_tokens,
+                    agent: None,
+                    model: None,
+                    avg_tokens_per_sec: if avg_tps > 0.0 { Some(avg_tps) } else { None },
+                }
+            })
+            .collect();
+        category_stats.sort_by(|a, b| b.total.cmp(&a.total));
+
         let token_display = Self::format_tokens(total_uncached_tokens, total_cached_tokens, total_output_tokens);
 
         Statistics {
@@ -1422,6 +1528,7 @@ impl ResultService {
             language_stats,
             agent_stats,
             model_stats,
+            category_stats,
             total_input_tokens,
             total_output_tokens,
             total_cached_tokens,
@@ -1596,21 +1703,38 @@ impl ResultService {
             .parent()
             .ok_or_else(|| anyhow::anyhow!("Cannot determine parent directory"))?;
 
+        // For category-namespaced results ({agent}-{model}/{category}/) the trace is
+        // written into the run dir ({agent}-{model}/), so search both the result's
+        // directory and its parent.
+        let trace_dirs: Vec<&Path> = {
+            let mut dirs = vec![result_dir];
+            if let Some(parent) = result_dir.parent() {
+                dirs.push(parent);
+            }
+            dirs
+        };
+
         // Derive the trace filename prefix from the result filename
         let trace_prefix = Self::derive_trace_prefix(&cached_result.filename);
-        info!("TRACE: resultDir='{}', tracePrefix='{}'", result_dir.display(), trace_prefix);
 
-        // Step 1: Check for existing HTML trace
-        let html_trace_path = result_dir.join(format!("trace_{}.html", trace_prefix));
-        info!("TRACE: checking HTML trace: {} (exists={})", html_trace_path.display(), html_trace_path.exists());
-        if html_trace_path.exists() {
-            info!("Loading existing HTML trace: {}", html_trace_path.display());
-            return Ok(Some(fs::read_to_string(&html_trace_path)?));
+        // Step 1: Check for existing HTML trace in any candidate dir
+        for dir in &trace_dirs {
+            let html_trace_path = dir.join(format!("trace_{}.html", trace_prefix));
+            info!("TRACE: checking HTML trace: {} (exists={})", html_trace_path.display(), html_trace_path.exists());
+            if html_trace_path.exists() {
+                info!("Loading existing HTML trace: {}", html_trace_path.display());
+                return Ok(Some(fs::read_to_string(&html_trace_path)?));
+            }
         }
 
-        // Step 2: Check for JSONL trace and try to generate HTML
-        let jsonl_trace_path = result_dir.join(format!("trace_{}.jsonl", trace_prefix));
-        if jsonl_trace_path.exists() {
+        // Step 2: Check for JSONL trace and try to generate HTML. The generated HTML
+        // lands next to the JSONL trace so future lookups find it.
+        let jsonl_trace_path = trace_dirs
+            .iter()
+            .map(|dir| dir.join(format!("trace_{}.jsonl", trace_prefix)))
+            .find(|p| p.exists());
+        if let Some(jsonl_trace_path) = jsonl_trace_path {
+            let html_trace_path = jsonl_trace_path.with_extension("html");
             info!("Generating HTML trace from JSONL: {}", jsonl_trace_path.display());
             let output = std::process::Command::new("pi")
                 .args(&["--export", jsonl_trace_path.to_str().unwrap(), html_trace_path.to_str().unwrap()])
@@ -1674,7 +1798,7 @@ impl ResultService {
         exercise: Option<&str>,
         quick_only: bool,
     ) -> Vec<ScoredResult> {
-        let results = self.list_individual_results(language, agent, model, exercise, quick_only);
+        let results = self.list_individual_results(language, agent, model, exercise, quick_only, None);
         
         if results.is_empty() {
             return vec![];

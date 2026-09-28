@@ -20,6 +20,8 @@ pub struct StatsQuery {
     pub agent: Option<String>,
     pub model: Option<String>,
     pub exercise: Option<String>,
+    /// Benchmark category (e.g. `aoc2015`). Empty = all categories.
+    pub category: Option<String>,
     #[serde(alias = "quick", default)]
     pub quick_only: bool,
 }
@@ -32,6 +34,7 @@ impl StatsQuery {
             agent: self.agent.as_ref().filter(|s| !s.is_empty()).cloned(),
             model: self.model.as_ref().filter(|s| !s.is_empty()).cloned(),
             exercise: self.exercise.as_ref().filter(|s| !s.is_empty()).cloned(),
+            category: self.category.as_ref().filter(|s| !s.is_empty()).cloned(),
             quick_only: self.quick_only,
         }
     }
@@ -43,6 +46,7 @@ pub struct TableFragmentQuery {
     pub agent: Option<String>,
     pub model: Option<String>,
     pub exercise: Option<String>,
+    pub category: Option<String>,
     #[serde(default)]
     pub quick_only: bool,
 }
@@ -73,6 +77,8 @@ fn result_to_map(r: &crate::services::result_service::IndividualResult) -> HashM
         r.timestamp_epoch.map(|e| e.to_string()).unwrap_or_default(),
     );
     map.insert("has_trace_file".to_string(), r.has_trace_file.to_string());
+    map.insert("category".to_string(), r.category.clone());
+    map.insert("duration".to_string(), r.duration.clone().unwrap_or_default());
     map
 }
 
@@ -87,14 +93,17 @@ pub async fn results_page(
     Query(params): Query<StatsQuery>,
 ) -> impl axum::response::IntoResponse {
     let q = params.cleaned();
-    let stats = state.service.get_statistics(
+    let category = q.category.as_deref();
+    let stats = state.service.get_statistics_by_category(
+        category,
         q.language.as_deref(),
         q.agent.as_deref(),
         q.model.as_deref(),
         q.exercise.as_deref(),
         q.quick_only,
     );
-    let results = state.service.list_individual_results(
+    let results = state.service.list_individual_results_by_category(
+        category,
         q.language.as_deref(), q.agent.as_deref(),
         q.model.as_deref(), q.exercise.as_deref(),
         q.quick_only,
@@ -102,6 +111,7 @@ pub async fn results_page(
     let models = state.service.get_models();
     let languages = state.service.get_languages();
     let exercises = state.service.get_exercises(q.language.as_deref());
+    let categories = state.service.get_categories();
 
     let mut ctx = tera::Context::new();
     ctx.insert("title", &"Results");
@@ -110,10 +120,12 @@ pub async fn results_page(
     ctx.insert("models", &models);
     ctx.insert("languages", &languages);
     ctx.insert("exercises", &exercises);
+    ctx.insert("categories", &categories);
     ctx.insert("filter_language", &q.language.as_deref().unwrap_or(""));
     ctx.insert("filter_agent", &q.agent.as_deref().unwrap_or(""));
     ctx.insert("filter_model", &q.model.as_deref().unwrap_or(""));
     ctx.insert("filter_exercise", &q.exercise.as_deref().unwrap_or(""));
+    ctx.insert("filter_category", category.unwrap_or(""));
     ctx.insert("filter_quick", &q.quick_only);
 
     axum::response::Html(templates.render("results.tera", &ctx))
@@ -125,7 +137,8 @@ pub async fn get_results_api(
     Query(params): Query<StatsQuery>,
 ) -> Json<ResultsTable> {
     let q = params.cleaned();
-    let results = state.service.list_individual_results(
+    let results = state.service.list_individual_results_by_category(
+        q.category.as_deref(),
         q.language.as_deref(), q.agent.as_deref(),
         q.model.as_deref(), q.exercise.as_deref(),
         q.quick_only,
@@ -181,7 +194,8 @@ pub async fn get_stats(
     Query(params): Query<StatsQuery>,
 ) -> Json<crate::services::result_service::Statistics> {
     let q = params.cleaned();
-    let stats = state.service.get_statistics(
+    let stats = state.service.get_statistics_by_category(
+        q.category.as_deref(),
         q.language.as_deref(),
         q.agent.as_deref(),
         q.model.as_deref(),
@@ -196,7 +210,8 @@ pub async fn table_fragment(
     Extension(state): Extension<AppState>,
     Query(params): Query<TableFragmentQuery>,
 ) -> Json<ResultsTable> {
-    let results = state.service.list_individual_results(
+    let results = state.service.list_individual_results_by_category(
+        params.category.as_deref(),
         params.language.as_deref(), params.agent.as_deref(),
         params.model.as_deref(), params.exercise.as_deref(),
         params.quick_only,

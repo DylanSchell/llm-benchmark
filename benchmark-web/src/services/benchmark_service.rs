@@ -189,7 +189,25 @@ impl BenchmarkService {
         exercise: Option<&str>,
         quick_only: bool,
     ) -> Vec<crate::services::result_service::IndividualResult> {
-        self.result_service.list_individual_results(language, agent, model, exercise, quick_only)
+        self.result_service.list_individual_results(language, agent, model, exercise, quick_only, None)
+    }
+
+    /// List individual results filtered by benchmark category.
+    pub fn list_individual_results_by_category(
+        &self,
+        category: Option<&str>,
+        language: Option<&str>,
+        agent: Option<&str>,
+        model: Option<&str>,
+        exercise: Option<&str>,
+        quick_only: bool,
+    ) -> Vec<crate::services::result_service::IndividualResult> {
+        self.result_service.list_individual_results(language, agent, model, exercise, quick_only, category)
+    }
+
+    /// All benchmark categories present in the results, as a map of id → label.
+    pub fn get_categories(&self) -> std::collections::BTreeMap<String, String> {
+        self.result_service.get_categories()
     }
 
     /// Get a result by its cache key.
@@ -206,7 +224,20 @@ impl BenchmarkService {
         exercise: Option<&str>,
         quick_only: bool,
     ) -> crate::services::result_service::Statistics {
-        self.result_service.get_statistics(language, agent, model, exercise, quick_only)
+        self.result_service.get_statistics(language, agent, model, exercise, quick_only, None)
+    }
+
+    /// Get aggregate statistics filtered by benchmark category.
+    pub fn get_statistics_by_category(
+        &self,
+        category: Option<&str>,
+        language: Option<&str>,
+        agent: Option<&str>,
+        model: Option<&str>,
+        exercise: Option<&str>,
+        quick_only: bool,
+    ) -> crate::services::result_service::Statistics {
+        self.result_service.get_statistics(language, agent, model, exercise, quick_only, category)
     }
 
     /// Get loading status of the result cache.

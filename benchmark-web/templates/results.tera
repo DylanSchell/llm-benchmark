@@ -41,6 +41,16 @@
     <div class="card" style="margin-bottom: 1rem;">
         <form method="get" action="/results" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
             <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+                <label for="filter-category">Category</label>
+                <select id="filter-category" name="category">
+                    <option value="">All Categories</option>
+                    {% for cat, cat_label in categories %}
+                    <option value="{{ cat }}" {% if filter_category == cat %}selected{% endif %}>{{ cat_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
                 <label for="filter-language">Language</label>
                 <select id="filter-language" name="language">
                     <option value="">All Languages</option>
@@ -97,6 +107,41 @@
         </form>
     </div>
 
+    <!-- Category Statistics -->
+    <div class="card" style="margin-bottom: 1rem;">
+        <h3 style="margin-bottom: 1rem;">By Category</h3>
+        <table class="stats-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Total</th>
+                    <th>Successful</th>
+                    <th>Success Rate</th>
+                    <th>Execution Time</th>
+                    <th>Wall-Clock Time</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in stats.category_stats %}
+                {% set cat_href = "/results?category=" ~ item.name %}
+                <tr>
+                    <td>
+                        {% if item.name == "aoc2015" %}AoC 2015{% else %}{{ item.name }}{% endif %}
+                    </td>
+                    <td>{{ item.total }}</td>
+                    <td>{{ item.success }}</td>
+                    <td>{{ item.success_rate_formatted }}%</td>
+                    <td>{{ item.total_duration_formatted }}</td>
+                    <td>{{ item.wall_clock_duration_formatted }}</td>
+                </tr>
+            {% endfor %}
+            {% if stats.category_stats | length == 0 %}
+                <tr><td colspan="6" style="text-align: center; color: #7f8c8d;">No category statistics available</td></tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+
     <!-- Language Statistics -->
     <div class="card" style="margin-bottom: 1rem;">
         <h3 style="margin-bottom: 1rem;">By Language</h3>
@@ -118,6 +163,7 @@
             </thead>
             <tbody>
             {% for item in stats.language_stats %}
+                {% if item.name == "aoc2015" %}{% continue %}{% endif %}
                 {% set lang_total = item.total %}
                 {% set lang_success = item.success %}
                 <tr>
@@ -168,6 +214,9 @@
                     {% if filter_model == "" %}
                     <th onclick="sortTable(this, false)" style="cursor: pointer;">Model &#x2195;</th>
                     {% endif %}
+                    {% if filter_category == "" %}
+                    <th onclick="sortTable(this, false)" style="cursor: pointer;">Category &#x2195;</th>
+                    {% endif %}
                     {% if filter_language == "" %}
                     <th onclick="sortTable(this, false)" style="cursor: pointer;">Language &#x2195;</th>
                     {% endif %}
@@ -194,11 +243,23 @@
                         {% if filter_agent != "" %}{% set href = href ~ "&agent=" ~ filter_agent %}{% endif %}
                         {% if filter_language != "" %}{% set href = href ~ "&language=" ~ filter_language %}{% endif %}
                         {% if filter_exercise != "" %}{% set href = href ~ "&exercise=" ~ filter_exercise %}{% endif %}
+                        {% if filter_category != "" %}{% set href = href ~ "&category=" ~ filter_category %}{% endif %}
                         <a href="{{ href }}" style="color: #3498db; text-decoration: underline;">{{ indResult.model }}</a>
                     </td>
                     {% endif %}
+                    {% if filter_category == "" %}
+                    <td>
+                        {% if indResult.category == "aoc2015" %}AoC 2015{% else %}{{ indResult.category | default(value='polyglot') }}{% endif %}
+                    </td>
+                    {% endif %}
                     {% if filter_language == "" %}
-                    <td>{{ indResult.language }}</td>
+                    <td>
+                        {% if indResult.category == "aoc2015" %}
+                            <span style="color: #7f8c8d;">&mdash;</span>
+                        {% else %}
+                            {{ indResult.language }}
+                        {% endif %}
+                    </td>
                     {% endif %}
                     {% if filter_exercise == "" %}
                     <td>
