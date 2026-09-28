@@ -1,0 +1,16 @@
+[package]
+name = "benchmark-aoc2015"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Advent of Code 2015 generator/validator, vendored as a library."
+
+[dependencies]
+# rust-embed bundles the 25 puzzle descriptions (public AoC text, both parts).
+# The folder is a relative path (rust-embed's `compression` feature rejects
+# absolute paths), so it resolves against this crate's directory.
+rust-embed = { workspace = true }
+
+[features]
+default = []

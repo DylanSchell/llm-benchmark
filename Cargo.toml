@@ -5,6 +5,7 @@ members = [
     "crates/benchmark-core",
     "crates/benchmark-exercises-build",
     "crates/benchmark-exercises",
+    "crates/benchmark-aoc2015",
     "benchmark-web",
     "benchmark-token-report",
     "benchmark-reporter",
