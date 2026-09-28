@@ -19,6 +19,9 @@ incorporating the generator/validator from the `aoc2015` project
 3. The **same Docker runner container** as the current exercises.
 4. The agent is provided with the **puzzle description (both parts)** and a **generated input**.
 5. The agent can call a **validator endpoint** to check its answer during the run.
+6. The agent is given **only instructions** (not the generator/validator binary) to call the endpoint.
+7. AoC runs are executed **one day at a time** for now; a future iteration may test subagent
+   orchestration.
 
 The AoC exercise is fundamentally different from an Exercism exercise: it has no
 language, no test suite, no `.meta` reference implementation, and no `config.json`.
@@ -107,22 +110,15 @@ The CLI is `aoc2015 generate <user> <year> <day>` and
 | Exercise model | New `AocExercise`/`AocDay` struct — **not** the Exercism `Exercise` | AoC has no language, test files, or `.meta`; shoehorning it into `Exercise` would be misleading |
 | Execution path | A separate `AocExerciseRunner`/`AocAgent` flow, reusing the existing `DockerClient` and `Agent` plumbing | AoC needs its own materialization (description + input), prompt, and validation; the `Agent` trait's `run_exercise` is Exercism-shaped |
 
-### Open Questions (for the author before coding)
+### Resolved decisions (confirmed by author, 2025-09-28)
 
-1. **Vendor vs. path-dependency** on the `aoc2015` crate. The spec assumes **vendoring** (copy
-   `src/` into `benchmark-aoc2015`). If you prefer a `path = "../aoc2015"` dependency, the
-   aoc2015 crate needs a `[lib]` target added and the benchmark build then depends on that
-   sibling checkout existing at build time. **Recommend vendoring** to keep the binary
-   self-contained.
-2. **Validator placement** — a standalone server in `benchmark-core` vs. a route on the existing
-   `benchmark-web` server. The spec assumes a route on the existing web server (simplest; the web
-   server is already running during a web-triggered run and already knows the model endpoint). If
-   you want CLI-only runs without the web server, a standalone validator binary is needed.
-3. **Which port** the validator binds to / how the agent discovers it. Spec assumes it is derived
-   from the web server's `server.port` and injected into the container env + prompt.
-4. **Category in the dashboard/report** — should AoC results appear in the main dashboard, a
-   separate AoC dashboard, or be filterable? Spec assumes **filterable by category** (a toggle),
-   keeping the existing dashboard defaulting to Polyglot.
+| # | Decision | Resolution |
+|---|---|---|
+| 1 | Vendoring | **Copy** the aoc2015 code into this project as a vendored library crate (`benchmark-aoc2015`). No path dependency. |
+| 2 | Validator placement | **Route on the existing `benchmark-web` server** (`POST /api/aoc/validate`). |
+| 3 | Agent access | The agent **never** gets the generation/validation binary or crate. It is given only the input, the description, and **instructions for how to call the validator endpoint** (`AOC_VALIDATOR_URL`). |
+| 4 | Results | AoC results are **completely separate** from other benchmarks (separate namespace/dir). The agent also sees **similar stats**: puzzles solved, tokens used, time used. |
+| 5 | Execution | For now the agent is driven through puzzles **one by one** (sequential). This is a deliberate, minimal first step; a future iteration may test **orchestration** — whether an agent can drive subagents to divide and conquer across a larger task. |
 
 ---
 
@@ -277,12 +273,15 @@ Add AoC-aware scheduling alongside the existing Exercism path. The queue/session
 
 ### New run form
 
-A new page `run-aoc.tera` at `/run-aoc` (or a category selector on the existing `/run`):
+A new page `run-aoc.tera` at `/run-aoc`:
 
 - Agent (reference / claude / pi), model, thinking level.
 - Day selection (1–25) or "all days".
 - Optional `user` seed (default `benchmark`).
 - Retry toggle.
+
+Runs are scheduled **one day per queue item** (sequential), matching the "one by one" execution
+model confirmed above.
 
 ### New endpoints
 
