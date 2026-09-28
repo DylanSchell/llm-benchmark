@@ -190,15 +190,32 @@ fn process_results_directory(
     results_by_benchmark: &mut HashMap<String, Vec<AgentResult>>,
     results_by_exercise: &mut HashMap<String, Vec<AgentResult>>,
 ) {
-    let mut result_files: Vec<PathTime> = match fs::read_dir(dir) {
-        Ok(entries) => entries.filter_map(|e| e.ok()).filter(|e| is_result_file(&e.file_name().to_string_lossy())).filter_map(|e| { let path = e.path(); let file_time = fs::metadata(&path).ok()?.modified().ok()?; Some(PathTime { path, file_time }) }).collect(),
-        Err(_) => return,
-    };
+    // Scan the directory recursively so category-namespaced results (e.g.
+    // `{agent}-{model}/aoc2015/`) are collected under the same benchmark name.
+    let mut result_files: Vec<PathTime> = Vec::new();
+    let mut trace_files: Vec<PathTime> = Vec::new();
+    let mut stack: Vec<PathBuf> = vec![dir.to_path_buf()];
+    while let Some(d) = stack.pop() {
+        let Ok(entries) = fs::read_dir(&d) else { continue };
+        for e in entries.flatten() {
+            let path = e.path();
+            if path.is_dir() {
+                stack.push(path);
+                continue;
+            }
+            let name = e.file_name().to_string_lossy().to_string();
+            if is_result_file(&name) {
+                if let Some(file_time) = fs::metadata(&path).ok().and_then(|m| m.modified().ok()) {
+                    result_files.push(PathTime { path, file_time });
+                }
+            } else if name.ends_with(".jsonl") {
+                if let Some(file_time) = fs::metadata(&path).ok().and_then(|m| m.modified().ok()) {
+                    trace_files.push(PathTime { path, file_time });
+                }
+            }
+        }
+    }
     result_files.sort();
-    let mut trace_files: Vec<PathTime> = match fs::read_dir(dir) {
-        Ok(entries) => entries.filter_map(|e| e.ok()).filter(|e| e.file_name().to_string_lossy().ends_with(".jsonl")).filter_map(|e| { let path = e.path(); let file_time = fs::metadata(&path).ok()?.modified().ok()?; Some(PathTime { path, file_time }) }).collect(),
-        Err(_) => Vec::new(),
-    };
     trace_files.sort();
     if result_files.is_empty() { return; }
 
@@ -278,6 +295,13 @@ pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
     for entry in walkdir::WalkDir::new(base_dir) {
         let entry = match entry { Ok(e) => e, Err(_) => continue };
         if entry.file_type().is_dir() {
+            // Category-namespace dirs (`{agent}-{model}/aoc2015/`) are processed
+            // by their parent run dir's recursive scan; skip them here to avoid
+            // double-counting.
+            let name = entry.file_name().to_string_lossy().to_string();
+            if matches!(name.as_str(), "aoc2015" | "polyglot") {
+                continue;
+            }
             process_results_directory(entry.path(), &mut all_results, &mut all_exercises, &mut stats_by_benchmark, &mut results_by_benchmark, &mut results_by_exercise);
         }
     }
@@ -383,4 +407,58 @@ pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
     println!();
     print!("{}", markdown);
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    fn write_result(dir: &Path, run_dir: &str, agent: &str, lang: &str, ex: &str, success: bool, category: Option<&str>) {
+        let base = if let Some(cat) = category {
+            dir.join(run_dir).join(cat)
+        } else {
+            dir.join(run_dir)
+        };
+        fs::create_dir_all(&base).unwrap();
+        let json = serde_json::json!({
+            "exerciseName": ex,
+            "language": lang,
+            "success": success,
+            "exitCode": if success { 0 } else { 1 },
+            "output": "",
+            "duration": 1.0,
+            "startTime": "2026-09-14T11:36:50.836231+00:00",
+            "endTime": "2026-09-14T11:36:55.752601+00:00",
+            "category": category.unwrap_or("polyglot"),
+            "model": run_dir,
+            "input_tokens": 100,
+            "output_tokens": 50,
+        });
+        fs::write(base.join(format!("result_{}_{}_{}.json", agent, lang, ex)), serde_json::to_string_pretty(&json).unwrap()).unwrap();
+    }
+
+    #[test]
+    fn category_nested_aoc_results_aggregate_under_run_dir() {
+        let base = std::env::temp_dir().join(format!("rep-aoc-test-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&base);
+        let run_dir = "pi-sonnet";
+        // Exercism result at top level of the run dir (agent prefix `pi`).
+        write_result(&base, run_dir, "pi", "java", "series", true, None);
+        // AoC results nested under the category subdir.
+        write_result(&base, run_dir, "pi", "aoc2015", "day01", true, Some("aoc2015"));
+        write_result(&base, run_dir, "pi", "aoc2015", "day02", false, Some("aoc2015"));
+
+        let out = base.join("results.md");
+        run_report(&base, out.to_str().unwrap()).unwrap();
+        let report = fs::read_to_string(&out).unwrap();
+        let _ = fs::remove_dir_all(&base);
+
+        // AoC results are aggregated under the run dir benchmark name (pi-sonnet),
+        // not under a separate "aoc2015" benchmark.
+        assert!(report.contains("pi-sonnet"), "benchmark name should be pi-sonnet");
+        assert!(!report.contains("# aoc2015"), "should not create a separate aoc2015 benchmark");
+        // Total 3 results (1 exercism + 2 aoc), 2 successful.
+        assert!(report.contains("| 3 | 2 | 1 |"), "expected 3 total / 2 success / 1 failed");
+    }
 }

@@ -536,33 +536,28 @@ impl ResultService {
             return;
         }
 
-        // Collect all result file paths first (this is fast, just directory traversal)
+        // Collect all result file paths first (this is fast, just directory traversal).
+        // Recursive so category-namespaced results (e.g. `{agent}-{model}/aoc2015/`)
+        // are discovered too.
         let mut result_paths: Vec<PathBuf> = Vec::new();
-
-        if let Ok(entries) = fs::read_dir(&self.results_dir) {
+        let mut stack: Vec<PathBuf> = vec![self.results_dir.clone()];
+        while let Some(dir) = stack.pop() {
+            let Ok(entries) = fs::read_dir(&dir) else {
+                continue;
+            };
             for entry in entries.flatten() {
                 let path = entry.path();
-                if !path.is_dir() {
+                if path.is_dir() {
+                    stack.push(path);
                     continue;
                 }
-
-                // Walk subdirectories for result files
-                if let Ok(sub_entries) = fs::read_dir(&path) {
-                    for sub_entry in sub_entries.flatten() {
-                        let file_path = sub_entry.path();
-                        if !file_path.is_file() {
-                            continue;
-                        }
-                        let filename = file_path
-                            .file_name()
-                            .unwrap_or_default()
-                            .to_string_lossy()
-                            .to_string();
-
-                        if filename.starts_with("result_") && filename.ends_with(".json") {
-                            result_paths.push(file_path);
-                        }
-                    }
+                let filename = path
+                    .file_name()
+                    .unwrap_or_default()
+                    .to_string_lossy()
+                    .to_string();
+                if filename.starts_with("result_") && filename.ends_with(".json") {
+                    result_paths.push(path);
                 }
             }
         }
@@ -725,12 +720,10 @@ impl ResultService {
             .unwrap_or_default()
             .to_string_lossy()
             .to_string();
-        let directory = file_path
-            .parent()
-            .and_then(|p| p.file_name())
-            .unwrap_or_default()
-            .to_string_lossy()
-            .to_string();
+        // `directory` is the `{agent}-{model}` run directory. Results may be
+        // nested under a category subdirectory (e.g. `{agent}-{model}/aoc2015/`),
+        // so walk up past any category-namespaced component to the run dir.
+        let directory = Self::derive_run_directory(file_path);
 
         // Use fields from the deserialized AgentResult
         let exercise = agent_result.exercise_name.clone();
@@ -877,6 +870,35 @@ impl ResultService {
             start_time,
             end_time,
         }))
+    }
+
+    /// Derive the `{agent}-{model}` run directory from a result file path.
+    ///
+    /// Results live at `{results_dir}/{agent}-{model}/result_*.json` or, for a
+    /// non-default category, `{results_dir}/{agent}-{model}/{category}/result_*.json`.
+    /// Returns the `{agent}-{model}` component (the first path segment under the
+    /// results dir), falling back to the immediate parent name.
+    fn derive_run_directory(file_path: &Path) -> String {
+        // Walk from the file's parent up to find a component that looks like a
+        // run dir (`{agent}-{model}`) — i.e. not a known category name.
+        let mut current = file_path.parent();
+        while let Some(dir) = current {
+            if let Some(name) = dir.file_name().and_then(|n| n.to_str()) {
+                // Category subdirs are single, non-dashed names like `aoc2015`;
+                // run dirs are `{agent}-{model}` (contain a hyphen). Prefer the
+                // first non-category ancestor.
+                if !matches!(name, "aoc2015" | "polyglot") {
+                    return name.to_string();
+                }
+            }
+            current = dir.parent();
+        }
+        file_path
+            .parent()
+            .and_then(|p| p.file_name())
+            .unwrap_or_default()
+            .to_string_lossy()
+            .to_string()
     }
 
     /// Derive trace prefix from result filename.
@@ -2074,5 +2096,46 @@ mod tests {
     #[test]
     fn missing_trace_returns_zero() {
         assert_eq!(parse_chars_from_trace(std::path::Path::new("/nonexistent/xyz.jsonl")), (0, 0));
+    }
+
+    #[test]
+    fn derive_run_directory_handles_category_nesting() {
+        let base = std::path::Path::new("/tmp/results");
+        // Top-level result: {agent}-{model}/result_*.json
+        let top = base.join("pi-sonnet").join("result_pi_java_series.json");
+        assert_eq!(ResultService::derive_run_directory(&top), "pi-sonnet");
+        // Category-namespaced result: {agent}-{model}/aoc2015/result_*.json
+        let nested = base.join("pi-sonnet").join("aoc2015").join("result_pi_aoc2015_day07.json");
+        assert_eq!(ResultService::derive_run_directory(&nested), "pi-sonnet");
+    }
+
+    #[tokio::test]
+    async fn recursive_loader_discovers_category_nested_results() {
+        let dir = std::env::temp_dir().join(format!("rs-cat-test-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let agent_dir = dir.join("pi-sonnet");
+        let category_dir = agent_dir.join("aoc2015");
+        std::fs::create_dir_all(&category_dir).unwrap();
+
+        // A valid AoC result JSON.
+        let json = r#"{
+            "exerciseName": "day07",
+            "language": "aoc2015",
+            "success": true,
+            "exitCode": 0,
+            "output": "",
+            "duration": 4.5,
+            "startTime": "2026-09-14T11:36:50.836231+00:00",
+            "endTime": "2026-09-14T11:36:55.752601+00:00",
+            "category": "aoc2015",
+            "model": "sonnet"
+        }"#;
+        std::fs::write(category_dir.join("result_pi_aoc2015_day07.json"), json).unwrap();
+
+        let service = ResultService::new(dir.clone());
+        service.load_all_results();
+        let count = service.result_count();
+        let _ = std::fs::remove_dir_all(&dir);
+        assert_eq!(count, 1, "recursive loader must find category-nested results");
     }
 }
