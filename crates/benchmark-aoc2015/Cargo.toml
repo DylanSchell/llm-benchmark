@@ -11,6 +11,9 @@ description = "Advent of Code 2015 generator/validator, vendored as a library."
 # The folder is a relative path (rust-embed's `compression` feature rejects
 # absolute paths), so it resolves against this crate's directory.
 rust-embed = { workspace = true }
+# Canonical MD5 (RustCrypto) for Day 4's hash-prefix search. Vetted crate rather
+# than a hand-rolled implementation.
+md-5 = { workspace = true }
 
 [features]
 default = []
