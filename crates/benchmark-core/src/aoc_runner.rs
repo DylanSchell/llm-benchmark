@@ -324,4 +324,31 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         assert!(runner.read_answers(dir.path()).is_err());
     }
+
+    /// End-to-end Docker integration: the reference agent solves day 1 through
+    /// `run_day`. Network-gated — the reference agent ignores the validator and
+    /// writes the ground-truth answers, so no model server is required, only the
+    /// runner image. Run with `cargo test -p benchmark-core -- --ignored`.
+    #[tokio::test]
+    #[ignore]
+    async fn reference_agent_completes_day1_in_docker() {
+        use crate::agent::ReferenceAgent;
+        use crate::docker::{DockerClient, DockerConfig};
+
+        let config = benchmark_types::config::Config::default();
+        let docker = DockerClient::new(DockerConfig::from(&config.docker));
+        let agent = Arc::new(ReferenceAgent::new(docker));
+        let runner = AocRunner::new("benchmark", std::env::temp_dir());
+
+        let day = AocDay::new(1, "benchmark");
+        let result = runner
+            .run_day(agent, &day, "http://host.docker.internal:8081/api/aoc/validate", "reference", None)
+            .await
+            .expect("reference agent should complete day 1 in Docker");
+
+        assert_eq!(result.category, Category::Aoc2015);
+        assert!(result.success, "reference agent should solve day 1: {:?}", result.error_message);
+        assert!(result.output.contains("part1"), "output should report part1/part2");
+        assert!(result.output.contains("correct"), "both parts should validate correct");
+    }
 }
