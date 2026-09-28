@@ -1,0 +1,125 @@
+{% extends "layout.tera" %}
+
+{% block content %}
+<h2 style="margin-bottom: 1.5rem;">Run AoC 2015 Benchmark</h2>
+
+<p style="margin-bottom: 1rem; color: #666;">
+    Runs the Advent of Code 2015 puzzles. Each day is a separate run — the agent is given the
+    puzzle description and a generated input, solves it, and validates its answers against a
+    validator endpoint. Results are stored in a separate AoC category, isolated from the
+    Exercism benchmarks.
+</p>
+
+<div class="card">
+    <form id="aoc-form" style="max-width: 600px;">
+        <div class="form-group">
+            <label for="agent">Agent</label>
+            <select id="agent" name="agent" required>
+                <option value="reference">Reference Agent</option>
+                <option value="claude">Claude Agent</option>
+                <option value="pi" selected>Pi Agent</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="model">Model *</label>
+            <select id="model" name="model" required>
+                <option value="">Select a model</option>
+                {% for model in models %}
+                <option value="{{ model }}">{{ model }}</option>
+                {% endfor %}
+            </select>
+            <small id="model-hint" style="color: #666; display: block; margin-top: 0.25rem;">Required for Claude and Pi agents</small>
+        </div>
+
+        <div class="form-group">
+            <label for="thinking_level">Thinking Level (Pi reasoning)</label>
+            <select id="thinking_level" name="thinking_level">
+                <option value="">Default (model/agent default)</option>
+                <option value="off">Off — no reasoning</option>
+                <option value="minimal">Minimal — light reasoning</option>
+                <option value="low">Low — brief reasoning</option>
+                <option value="medium" selected>Medium — balanced reasoning</option>
+                <option value="high">High — deep reasoning</option>
+                <option value="xhigh">Maximum — thorough reasoning (slowest)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Days</label>
+            <div class="language-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.25rem;">
+                {% for day in days %}
+                <label style="font-weight: 400;">
+                    <input type="checkbox" name="days" value="{{ day }}" checked>
+                    <span>Day {{ day }}</span>
+                </label>
+                {% endfor %}
+            </div>
+            <small style="color: #666;">Select one or more days to run. Uncheck all to run every day.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="user">Input seed (user)</label>
+            <input type="text" id="user" name="user" value="benchmark" placeholder="benchmark">
+            <small style="color: #666;">The same seed always produces the same input for a day. Change it to get a fresh input set.</small>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+            <div style="display: flex; align-items: baseline; line-height: 1.4; white-space: nowrap;">
+                <span style="width: 1.5rem; text-align: center; flex-shrink: 0;"><input type="checkbox" id="retry" name="retry"></span>
+                Retry — re-run even previously successful days
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-primary">Start AoC Benchmark</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Disable model select when Reference agent is chosen
+        const agent = document.getElementById('agent');
+        const modelSelect = document.getElementById('model');
+        const modelHint = document.getElementById('model-hint');
+        function toggleModel() {
+            if (agent.value === 'reference') {
+                modelSelect.value = '';
+                modelSelect.disabled = true;
+                modelSelect.required = false;
+                modelHint.textContent = 'Not used by reference agent';
+            } else {
+                modelSelect.disabled = false;
+                modelSelect.required = true;
+                modelHint.textContent = 'Required for Claude and Pi agents';
+            }
+        }
+        agent.addEventListener('change', toggleModel);
+        toggleModel();
+    });
+
+    document.getElementById('aoc-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const agent = document.getElementById('agent').value;
+        const model = document.getElementById('model').value;
+        const thinkingLevel = document.getElementById('thinking_level').value;
+        const retry = document.getElementById('retry').checked;
+        const user = document.getElementById('user').value.trim() || 'benchmark';
+        const days = Array.from(document.querySelectorAll('input[name="days"]:checked')).map(cb => cb.value);
+
+        if (agent !== 'reference' && !model) { alert('Please select a model'); return; }
+
+        const params = new URLSearchParams();
+        params.append('agent', agent);
+        params.append('model', model);
+        if (thinkingLevel) params.append('thinking_level', thinkingLevel);
+        params.append('user', user);
+        params.append('retry', retry.toString());
+        days.forEach(d => params.append('days', d));
+
+        await fetch('/api/aoc/queue/schedule', { method: 'POST', body: params });
+        window.location.href = '/';
+    });
+</script>
+{% endblock %}

@@ -26,6 +26,9 @@ pub struct ExecutorConfig {
     /// Override results directory (from RESULTS_DIR env var).
     /// If set, overrides output.results_dir from config.yaml.
     pub results_dir_override: Option<std::path::PathBuf>,
+    /// The web server's `server.port`, used to build the validator URL the AoC
+    /// agent reaches at `host.docker.internal:<port>/api/aoc/validate`.
+    pub web_port: u16,
 }
 
 impl Default for ExecutorConfig {
@@ -33,6 +36,7 @@ impl Default for ExecutorConfig {
         Self {
             config_path: "config.yaml".to_string(),
             results_dir_override: None,
+            web_port: 8081,
         }
     }
 }
@@ -156,7 +160,11 @@ impl BenchmarkExecutor {
             agent.set_cancellation_token(cancellation_token.clone());
 
             let model_str = &model;
-            if let Some(ref _exercise) = exercise_name {
+            if session.category == benchmark_types::Category::Aoc2015 {
+                // AoC runs are one day per session (one queue item per day), so the
+                // session's single exercise is the day. Run it through the AoC path.
+                self.execute_aoc(session, agent, exercise_name.as_deref(), model_str, thinking_level.as_deref(), &agent_name, cancellation_token.clone()).await?;
+            } else if let Some(ref _exercise) = exercise_name {
                 self.execute_single_exercise(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name, cancellation_token.clone()).await?;
             } else {
                 self.execute_all_exercises(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name, cancellation_token.clone()).await?;
@@ -349,6 +357,85 @@ impl BenchmarkExecutor {
         Ok(())
     }
 
+    /// Execute a single AoC 2015 day.
+    ///
+    /// The session carries one exercise (`dayNN`) and the seed `user`. The
+    /// validator URL is built from the web server port so the agent can reach it
+    /// from inside the container. Results are persisted under the AoC category
+    /// namespace so they never mix with Exercism results.
+    async fn execute_aoc(
+        &self,
+        session: &mut BenchmarkSession,
+        agent: Arc<dyn Agent + Send + Sync>,
+        exercise_name: Option<&str>,
+        model: &str,
+        thinking_level: Option<&str>,
+        agent_name: &str,
+        cancellation_token: Option<CancellationToken>,
+    ) -> Result<()> {
+        // Check for cancellation.
+        if session.status == RunStatus::CANCELLED
+            || cancellation_token.as_ref().is_some_and(|t| t.is_cancelled())
+        {
+            session.emit_output("Benchmark cancelled\n");
+            return Ok(());
+        }
+
+        let exercise = exercise_name.unwrap_or("day01");
+        let day_num: u32 = exercise
+            .strip_prefix("day")
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(1);
+        let user = session.aoc_user.clone().unwrap_or_else(|| "benchmark".to_string());
+        let day = benchmark_types::aoc::AocDay::new(day_num, user);
+
+        let validator_url = crate::services::aoc_validator::validator_url(self.config.web_port);
+        session.emit_output(&format!("Running AoC day {} (user={})\n", day.day, day.user));
+
+        let results_dir = self.results_dir();
+        let aoc_runner = benchmark_core::aoc_runner::AocRunner::new(day.user.clone(), results_dir.clone());
+        let result = aoc_runner
+            .run_day(agent, &day, &validator_url, model, thinking_level)
+            .await
+            .map_err(|e| anyhow::anyhow!("AoC day {} failed: {}", day.day, e))?;
+
+        session.emit_output(&result.output);
+        if let Err(e) = self.save_aoc_result(&result, agent_name, model) {
+            warn!("Failed to save AoC result: {}", e);
+        }
+
+        session.increment_completed();
+        if !result.success {
+            session.status = RunStatus::FAILED;
+            let msg = format!("AoC day {} failed: {}", day.day, result.error_message.as_deref().unwrap_or("unknown"));
+            session.set_error_message(&msg);
+            session.emit_output(&msg);
+            return Ok(());
+        }
+
+        session.status = RunStatus::COMPLETED;
+        session.emit_output(&format!("AoC day {} completed successfully\n", day.day));
+        Ok(())
+    }
+
+    /// Save a single AoC result under the AoC category namespace.
+    fn save_aoc_result(
+        &self,
+        result: &AgentResult,
+        agent_name: &str,
+        model: &str,
+    ) -> Result<()> {
+        let results_dir = self.results_dir();
+        let saved_path = self
+            .persister
+            .save_result(result, agent_name, model, &results_dir)
+            .with_context(|| format!("Failed to save AoC result for {}", result.exercise_name))?;
+        if let Some(ref rs) = self.result_service {
+            rs.update_single_result(&saved_path);
+        }
+        Ok(())
+    }
+
     /// Run a single exercise and return the result.
     async fn run_single_exercise(
         &self,
@@ -501,6 +588,7 @@ mod tests {
         let config = ExecutorConfig {
             config_path: "/nonexistent/llm-benchmark/config.yaml".to_string(),
             results_dir_override: None,
+            web_port: 8081,
         };
 
         BenchmarkExecutor::new(config)

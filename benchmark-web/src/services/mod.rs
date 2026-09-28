@@ -1,5 +1,6 @@
 //! Services for benchmark-web.
 
+pub mod aoc_validator;
 pub mod session_manager;
 pub mod benchmark_executor;
 pub mod queue_processor;

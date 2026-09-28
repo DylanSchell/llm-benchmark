@@ -60,6 +60,9 @@ pub struct BenchmarkQueueItem {
     pub exercise: String,
     /// Benchmark family (default `Polyglot`). AoC runs carry `Aoc2015`.
     pub category: benchmark_types::Category,
+    /// AoC seed user (drives input generation). Only used for `Aoc2015` runs.
+    #[serde(default)]
+    pub aoc_user: Option<String>,
     pub retry: bool,
     pub status: QueueItemStatus,
     pub session_id: Option<String>,
@@ -99,6 +102,7 @@ impl BenchmarkQueueItem {
             language,
             exercise,
             category,
+            aoc_user: None,
             retry,
             status: QueueItemStatus::PENDING,
             session_id: None,
@@ -129,6 +133,12 @@ impl BenchmarkQueueItem {
     /// The benchmark category as a lowercase string (for serialization/UI).
     pub fn category_str(&self) -> String {
         self.category.to_string()
+    }
+
+    /// Set the AoC seed user on this item.
+    pub fn with_aoc_user(mut self, user: impl Into<String>) -> Self {
+        self.aoc_user = Some(user.into());
+        self
     }
 
 

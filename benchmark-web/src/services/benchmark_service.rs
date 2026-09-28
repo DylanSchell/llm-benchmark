@@ -91,6 +91,21 @@ impl BenchmarkService {
         self.queue_processor.schedule_batch(agent_name, languages, model, thinking_level, exercise, retry)
     }
 
+    /// Schedule an AoC 2015 run: one queue item per selected day, carrying the
+    /// seed `user` so the executor can regenerate the input and build the
+    /// validator URL.
+    pub fn schedule_aoc(
+        &self,
+        agent_name: String,
+        days: Vec<u32>,
+        model: String,
+        thinking_level: Option<String>,
+        user: String,
+        retry: bool,
+    ) -> Vec<BenchmarkQueueItem> {
+        self.queue_processor.schedule_aoc(agent_name, days, model, thinking_level, user, retry)
+    }
+
     /// Cancel a queue item.
     pub async fn cancel_queue_item(&self, item_id: &str) -> bool {
         self.queue_processor.cancel_queue_item(item_id).await

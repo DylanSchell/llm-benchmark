@@ -28,6 +28,7 @@ reqwest = { workspace = true }
 rayon = { workspace = true }
 benchmark-core = { path = "../crates/benchmark-core" }
 benchmark-types = { path = "../crates/benchmark-types" }
+benchmark-aoc2015 = { path = "../crates/benchmark-aoc2015" }
 rust-embed = { workspace = true, features = [
     "debug-embed",
     "deterministic-timestamps",

@@ -19,6 +19,8 @@ pub struct BenchmarkSession {
     pub model: String,
     /// Benchmark family (default `Polyglot`). AoC runs carry `Aoc2015`.
     pub category: benchmark_types::Category,
+    /// AoC seed user (drives input generation). Only used for `Aoc2015` runs.
+    pub aoc_user: Option<String>,
     /// Pi thinking level: off, minimal, low, medium, high, xhigh (optional)
     pub thinking_level: Option<String>,
     pub exercise_name: Option<String>,
@@ -75,6 +77,7 @@ impl BenchmarkSession {
             languages,
             model,
             category,
+            aoc_user: None,
             thinking_level,
             exercise_name,
             retry,
@@ -92,6 +95,20 @@ impl BenchmarkSession {
     }
 }
 
+impl BenchmarkSession {
+    /// Set the benchmark category (builder-style).
+    pub fn with_category_value(mut self, category: benchmark_types::Category) -> Self {
+        self.category = category;
+        self
+    }
+
+    /// Set the AoC seed user (builder-style).
+    pub fn with_aoc_user(mut self, user: Option<String>) -> Self {
+        self.aoc_user = user;
+        self
+    }
+}
+
 impl Clone for BenchmarkSession {
     fn clone(&self) -> Self {
         Self {
@@ -100,6 +117,7 @@ impl Clone for BenchmarkSession {
             languages: self.languages.clone(),
             model: self.model.clone(),
             category: self.category,
+            aoc_user: self.aoc_user.clone(),
             thinking_level: self.thinking_level.clone(),
             exercise_name: self.exercise_name.clone(),
             retry: self.retry,

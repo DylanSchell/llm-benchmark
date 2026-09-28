@@ -321,6 +321,7 @@ dependencies = [
  "async-stream",
  "async-trait",
  "axum",
+ "benchmark-aoc2015",
  "benchmark-core",
  "benchmark-types",
  "chrono",

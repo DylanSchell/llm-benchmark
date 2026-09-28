@@ -44,6 +44,16 @@ impl ResultPersister {
         let target_dir = results_dir.join(&subdir);
         fs::create_dir_all(&target_dir)?;
 
+        // Category namespace: non-Polyglot results go in a category subdirectory
+        // so AoC results never collide with Exercism results.
+        let target_dir = if result.category != benchmark_types::Category::Polyglot {
+            let category_dir = target_dir.join(result.category.to_string());
+            fs::create_dir_all(&category_dir)?;
+            category_dir
+        } else {
+            target_dir
+        };
+
         let filename = format!(
             "result_{}_{}_{}.json",
             agent_name, result.language, result.exercise_name

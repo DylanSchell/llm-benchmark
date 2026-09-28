@@ -281,6 +281,50 @@ impl QueueProcessor {
         items
     }
 
+    /// Schedule an AoC 2015 run: one queue item per selected day, all with
+    /// `category = Aoc2015` and the given seed `user`. Days run sequentially
+    /// (one queue item each), matching the confirmed one-by-one execution model.
+    pub fn schedule_aoc(
+        &self,
+        agent_name: String,
+        days: Vec<u32>,
+        model: String,
+        thinking_level: Option<String>,
+        user: String,
+        retry: bool,
+    ) -> Vec<BenchmarkQueueItem> {
+        let mut items = Vec::new();
+        let existing = self.queue.get_pending_items();
+        let existing_keys: std::collections::HashSet<(String, String, String)> = existing
+            .iter()
+            .map(|i| (i.agent_name.clone(), i.language.clone(), i.exercise.clone()))
+            .collect();
+
+        for day in days {
+            let exercise = format!("day{day:02}");
+            let key = (agent_name.clone(), "aoc2015".to_string(), exercise.clone());
+            if !retry && existing_keys.contains(&key) {
+                debug!("Skipping AoC day {exercise} (already in queue)");
+                continue;
+            }
+            let item = BenchmarkQueueItem::with_category(
+                agent_name.clone(),
+                model.clone(),
+                thinking_level.clone(),
+                "aoc2015".to_string(),
+                exercise,
+                retry,
+                benchmark_types::Category::Aoc2015,
+            )
+            .with_aoc_user(user.clone());
+            items.push(item);
+        }
+
+        self.queue.add_all(items.clone());
+        info!("Scheduled {} AoC queue items", items.len());
+        items
+    }
+
     /// Load the duration (in milliseconds) from a previous result file.
     /// Returns 0 if no previous result exists or the file cannot be parsed.
     fn load_previous_duration_ms(
@@ -480,7 +524,9 @@ impl QueueProcessor {
             Some(item.exercise.clone()),
             item.retry,
             3600_000, // 1 hour timeout
-        );
+        )
+        .with_category_value(item.category)
+        .with_aoc_user(item.aoc_user.clone());
 
         let mut session_clone = session.clone();
         let session_id = session.id.clone();

@@ -66,6 +66,7 @@
             <nav style="margin-top: 0.5rem;">
                 <a href="/">Dashboard</a>
                 <a href="/run">Run Benchmark</a>
+                <a href="/run-aoc">Run AoC 2015</a>
                 <a href="/results">Results</a>
                 <a href="/compare">Compare</a>
                 <a href="/scoring">Scoring</a>

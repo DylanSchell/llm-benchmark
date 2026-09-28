@@ -1,6 +1,7 @@
 //! Routes for benchmark-web.
 //! All REST API endpoints matching the Java API exactly.
 
+pub mod aoc;
 pub mod benchmark;
 pub mod compare;
 pub mod exercise;
@@ -12,6 +13,7 @@ pub mod scoring;
 use crate::assets::Templates;
 use axum::{Router, Extension};
 use axum::routing::get;
+use aoc::register as register_aoc;
 use benchmark::register as register_benchmark;
 use compare::register as register_compare;
 use exercise::register as register_exercise;
@@ -135,6 +137,7 @@ pub fn build_router(state: AppState, templates: TemplateEngine) -> Router<()> {
             let m = metrics_state.metrics.clone();
             async move { m.render() }
         }))
+        .merge(register_aoc(Router::new()))
         .merge(register_benchmark(Router::new()))
         .merge(register_compare(Router::new()))
         .merge(register_exercise(Router::new()))

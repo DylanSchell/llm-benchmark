@@ -65,6 +65,7 @@ pub async fn run_web_server() -> anyhow::Result<()> {
         } else {
             None
         },
+        web_port: app_config.server_port,
     };
     // Propagate rather than panic: a bad executor configuration is a startup error the
     // caller should report cleanly, not an abort that bypasses logging and cleanup.
