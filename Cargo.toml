@@ -58,7 +58,7 @@ name = "llm-benchmark"
 path = "src/main.rs"
 
 [workspace.package]
-version = "1.4.0"
+version = "1.4.1"
 edition = "2021"
 authors = ["llm-benchmark contributors"]
 license = "MIT"

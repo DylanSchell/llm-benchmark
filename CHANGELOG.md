@@ -1,3 +1,10 @@
+# Changelog — runner image v1.4.1 (pi 1.0 + drop pi-caveman)
+
+Drops the `pi-caveman` extension and its `caveman mode` prompt injection (models now do shorthand
+thinking natively), and upgrades the pinned `pi` agent from 0.85.1 to 1.0.2 (latest 1.0.x) with both
+linux asset checksums refreshed from the release `SHA256SUMS`. This changes the binary↔image
+contract (one fewer `--extension`), so the runner image version is bumped to 1.4.1.
+
 # Changelog — Advent of Code 2015 benchmark category
 
 Adds a **new, separate benchmark category** for the Advent of Code 2015 puzzles,
