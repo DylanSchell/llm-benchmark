@@ -292,7 +292,7 @@ notices are retained — and they are:
 
 | Component | Licence |
 | --- | --- |
-| pi, pi-caveman, supi-bash-timeout | MIT |
+| pi, supi-bash-timeout | MIT |
 | Go | BSD-3-Clause, plus `PATENTS` |
 | Gradle, Maven | Apache-2.0 |
 | Node.js | MIT |
@@ -330,8 +330,8 @@ and needs a version bump:
 
 - the workspace is mounted at `/workspace`;
 - the npm global root is `/usr/lib/node_modules` (hardcoded in `crates/benchmark-core/src/agent/pi.rs`);
-- the pi extensions `pi-caveman` (`extensions/caveman.ts`) and `@mrclrchtr/supi-bash-timeout`
-  (`src/extension.ts`) exist at those paths within their packages;
+- the pi extension `@mrclrchtr/supi-bash-timeout` (`src/extension.ts`) exists at that path
+  within its package;
 - `claude`, `pi`, `go`, `cargo`, `node`, `python3` and `mvn` are on `PATH`. `pi` is `/opt/pi/pi`
   and resolves its vendored assets relative to `/opt/pi`, so that directory has to stay on `PATH`.
   `gradle` is deliberately *not* installed — Java test runs use `mvn` or the exercise's own

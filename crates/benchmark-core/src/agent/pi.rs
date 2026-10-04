@@ -389,7 +389,6 @@ impl PiAgent {
     fn build_pi_command(&self, prompt: &str, model: &str, thinking_level: Option<&str>) -> Vec<String> {
         // Pi extensions installed globally via npm at build time.
         // Package "pi" fields from package.json:
-        //   pi-caveman: extensions: ["./extensions/caveman.ts"]
         //   @mrclrchtr/supi-bash-timeout: extensions: ["./src/extension.ts"]
         // Debian NodeSource installs to /usr/lib/node_modules (not /usr/local).
         // This must match the npm global root inside the Debian runner image.
@@ -408,9 +407,6 @@ impl PiAgent {
             // bash-timeout extension — injects default timeouts on bash tool calls
             "--extension".to_string(),
             format!("{NPM_GLOBAL}/@mrclrchtr/supi-bash-timeout/src/extension.ts"),
-            // caveman extension — token compression mode
-            "--extension".to_string(),
-            format!("{NPM_GLOBAL}/pi-caveman/extensions/caveman.ts"),
         ];
 
         // Add thinking level if specified
@@ -795,7 +791,6 @@ impl PiAgent {
         // Append agent execution instructions (from prompt.md resource)
         let prompt_instructions = include_str!("../../../../benchmark-web/resources/prompt.md");
         prompt.push_str(prompt_instructions);
-        prompt.push_str("\ncaveman mode\n");
 
         Ok(prompt)
     }

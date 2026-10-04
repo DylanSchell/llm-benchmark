@@ -52,7 +52,6 @@ PI_RELEASE_PINS=(PI_CODING_AGENT_VERSION PI_SHA256_X64 PI_SHA256_ARM64)
 # npm-installed packages. pi is deliberately absent — see PI_RELEASE_PINS above.
 NPM_PINS=(
     "CLAUDE_CODE_VERSION=@anthropic-ai/claude-code"
-    "PI_CAVEMAN_VERSION=pi-caveman"
     "SUPI_BASH_TIMEOUT_VERSION=@mrclrchtr/supi-bash-timeout"
     "JEST_VERSION=jest"
     "BABEL_CORE_VERSION=@babel/core"

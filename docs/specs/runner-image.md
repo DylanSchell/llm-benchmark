@@ -67,14 +67,14 @@ occupying the Docker daemon finishes. The dead `claude-archive` path is T10 (see
 | `docker/Dockerfile.runner` (Alpine, 81 lines) | Legacy; only reachable via a context nobody documents | `COPY gradle-8.7-bin.zip` requires context `docker/`, but `README.md:22` uses context `.` → build fails. The zip is **never extracted** and never on `PATH`. Alpine's npm root is `/usr/local/lib/node_modules`, while `pi.rs` hardcodes `/usr/lib/node_modules` → **the pi extensions could never load**. |
 | `docker/Dockerfile.runner.debian` (122 lines) | The one `build.sh` actually builds | Gradle dist hash hardcoded as `bhs2wmbdwecv87pi65oeuq5iu`; `ARG TARGETARCH` declared twice; `fd-find` listed twice; `touch …zip.lck` likely unnecessary. |
 | `docker/gradle-8.7-bin.zip` | 134,184,980 B, untracked, ignored by `.gitignore:50` | 128 MiB that exists only for the dead Alpine `COPY`. |
-| Agent CLIs | `npm install -g @anthropic-ai/claude-code`, `@earendil-works/pi-coding-agent`, `pi-caveman`, `@mrclrchtr/supi-bash-timeout` | All unpinned → an image rebuild silently changes the agents under test. |
+| Agent CLIs | `npm install -g @anthropic-ai/claude-code`, `@earendil-works/pi-coding-agent`, `@mrclrchtr/supi-bash-timeout` | All unpinned → an image rebuild silently changes the agents under test. |
 | Test deps (jest/babel/eslint) | Pinned inline in the Dockerfile | Correct, but pinned in a second place, easy to miss on re-pin. |
 | `claude-plugins`, `claude-code-transcripts` | Installed but invoked **nowhere** in the repo (see [Dead trace tooling](#dead-trace-tooling-verified)) | Dead. |
 | Base image | `bellsoft/liberica-openjdk-debian:17` | Floating tag, no digest → not reproducible. |
 | `.dockerignore` | Absent | The 128 MiB zip is uploaded as build context every build. |
 | `docker/README.md` | Absent | ROADMAP §6.3 already asks for it. |
 | CI / hooks | None (`.github` absent, no Makefile/justfile, only sample hooks) | Any policy must be enforced by a local script. |
-| `crates/benchmark-core/src/agent/pi.rs` | Hardcodes `/usr/lib/node_modules` and depends on internal paths `@mrclrchtr/supi-bash-timeout/src/extension.ts` and `pi-caveman/extensions/caveman.ts` | This is a **binary↔image contract**, not just a dependency. |
+| `crates/benchmark-core/src/agent/pi.rs` | Hardcodes `/usr/lib/node_modules` and depends on internal paths `@mrclrchtr/supi-bash-timeout/src/extension.ts` | This is a **binary↔image contract**, not just a dependency. |
 
 ### Verified hash derivation
 
@@ -223,7 +223,6 @@ Single source of truth, shell-sourceable (`KEY=value`, no logic):
 ```
 CLAUDE_CODE_VERSION=...
 PI_CODING_AGENT_VERSION=...
-PI_CAVEMAN_VERSION=...
 SUPI_BASH_TIMEOUT_VERSION=...
 JEST_VERSION=...
 BABEL_CORE_VERSION=...
@@ -290,7 +289,7 @@ test changes:
 |---|---|
 | Base image tag/digest | Rust binary refactors, reporter/web changes |
 | System packages / toolchain versions (JDK, Go, Node, Rust, clang, cmake, boost, maven, Gradle) | Adding/removing **exercise content** (already embedded in the binary) |
-| **Any pinned agent version** (claude-code, pi-coding-agent, pi-caveman, supi-bash-timeout) | Test-fixture or docs changes |
+| **Any pinned agent version** (claude-code, pi-coding-agent, supi-bash-timeout) | Test-fixture or docs changes |
 | Test-dependency pins (jest/babel/eslint) | |
 | Binary↔image **contract**: `/workspace` mount, `.claude`/`.pi` volumes, non-root uid, npm global root `/usr/lib/node_modules`, expected binaries (`pi`, `claude`, `uv`), Gradle pre-seed | |
 | **Adding a language** to the manifest (image must gain that toolchain) | |

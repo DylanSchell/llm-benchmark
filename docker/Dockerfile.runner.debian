@@ -116,13 +116,11 @@ ENV PATH="/opt/pi:$PATH"
 
 # pi extensions, loaded by the binary via --extension flags. crates/benchmark-core/src/agent/pi.rs
 # hardcodes /usr/lib/node_modules (Debian's npm global root) and paths inside these packages
-# (extensions/caveman.ts, src/extension.ts), so the npm root and their internal layout are part
-# of the binary-image contract. They stay npm-installed: they are plain TypeScript packages, and
-# Node is present for the JS track regardless.
-ARG PI_CAVEMAN_VERSION
+# (src/extension.ts), so the npm root and their internal layout are part of the binary-image
+# contract. They stay npm-installed: they are plain TypeScript packages, and Node is present for
+# the JS track regardless.
 ARG SUPI_BASH_TIMEOUT_VERSION
 RUN npm install -g \
-    "pi-caveman@${PI_CAVEMAN_VERSION}" \
     "@mrclrchtr/supi-bash-timeout@${SUPI_BASH_TIMEOUT_VERSION}"
 
 # Install pytest for Python testing
