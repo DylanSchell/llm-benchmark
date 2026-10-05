@@ -399,7 +399,7 @@ impl PiAgent {
             "--mode".to_string(),
             "json".to_string(),
             "--tools".to_string(),
-            "read,bash,edit,write,grep,find,ls".to_string(),
+            "read,bash,edit,write,grep,find,ls,codemode".to_string(),
             "--provider".to_string(),
             Self::provider_key_for_model(model).to_string(),
             "--model".to_string(),

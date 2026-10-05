@@ -71,6 +71,5 @@ If you've tried 3+ iterations and tests are still failing:
 ## Verification
 
 12. **Final verification** — after all tests pass:
-    - Run tests one more time with `clean test` to ensure reproducibility
     - Verify no tests are skipped
     - Verify the implementation is clean (remove debug prints, temporary files)
