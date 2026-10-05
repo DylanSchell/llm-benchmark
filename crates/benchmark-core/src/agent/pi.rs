@@ -784,10 +784,6 @@ impl PiAgent {
             _ => {}
         }
 
-        prompt.push_str(
-            "<important>Check that no tests are skipped, enable any tests that shows as skipped in the test results! Any skipped tests will result in failure!</important>\n",
-        );
-
         // Append agent execution instructions (from prompt.md resource)
         let prompt_instructions = include_str!("../../../../benchmark-web/resources/prompt.md");
         prompt.push_str(prompt_instructions);

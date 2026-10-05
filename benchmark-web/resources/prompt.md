@@ -44,12 +44,6 @@
 10. **Create small isolated tests** — when stuck, write small standalone test programs to verify
     specific hypotheses. Don't rewrite the entire implementation to debug one issue.
 
-11. **Check for skipped tests** — after tests pass, verify no tests are skipped:
-    ```bash
-    ./gradlew test --no-daemon 2>&1 | grep -E "(PASSED|FAILED|SKIPPED)"
-    ```
-    Any skipped tests will result in failure. Enable them and fix the underlying issue.
-
 ## Never Do These Things
 
 - **Never skip or disable tests** to make them pass. Always fix the underlying implementation.
@@ -57,6 +51,7 @@
 - **Never rewrite your entire implementation** after a failure. Make targeted fixes.
 - **Never ignore error messages** — they contain the exact information you need to fix the bug.
 - **Never run tests in the background** — run them synchronously in the foreground.
+- **Never provide a summary of what you did** — do not narrate, recap, or explain your changes at the end. The task is complete when the tests pass; stop there.
 
 ## If You Get Stuck
 
@@ -71,5 +66,5 @@ If you've tried 3+ iterations and tests are still failing:
 ## Verification
 
 12. **Final verification** — after all tests pass:
-    - Verify no tests are skipped
     - Verify the implementation is clean (remove debug prints, temporary files)
+    - Do not add a closing summary, recap, or explanation of your work — the task ends when the tests pass.
