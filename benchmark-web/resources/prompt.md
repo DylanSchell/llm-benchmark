@@ -7,7 +7,6 @@
     - Method names, parameter types, and return types expected by each test
     - Any interfaces or abstract classes your implementation must extend/implement
     - Edge cases the tests cover (empty input, boundary values, error conditions)
-    - Any `@Disabled` or `@Skip` annotations — these tests MUST be enabled and passing
 
 2. **Verify the build system works** — check that the project compiles before implementing anything.
    Run the build command and confirm it succeeds with your current (empty/stub) implementation.
