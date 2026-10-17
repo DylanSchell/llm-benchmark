@@ -900,6 +900,28 @@ mod models_json_tests {
     }
 
     #[test]
+    fn glm53_flash_medium_maps_to_high_reasoning_effort() {
+        benchmark_types::reasoning::ReasoningRegistry::register_defaults();
+        let agent = PiAgent::new(test_client());
+        let dir = temp_work_dir("glm53-medium");
+
+        agent.create_models_json(&dir, "glm53-flash", Some("medium")).unwrap();
+        let model = model_obj(&read_models_json(&dir));
+        let _ = std::fs::remove_dir_all(&dir);
+
+        // pi's hard gate: without `reasoning: true` it clamps any level to "off"
+        assert_eq!(model["reasoning"], serde_json::json!(true));
+        // thinkingFormat must live under compat — pi reads model.compat.thinkingFormat
+        assert_eq!(model["compat"]["thinkingFormat"], serde_json::json!("openai"));
+        assert!(model.get("thinkingFormat").is_none(), "top-level thinkingFormat is ignored by pi");
+        // GLM only supports low/high/max; pi's "medium" must map to GLM "high"
+        // (not "max"), otherwise GLM silently falls back to its max default.
+        assert_eq!(model["thinkingLevelMap"]["medium"], serde_json::json!("high"));
+        assert_eq!(model["thinkingLevelMap"]["low"], serde_json::json!("low"));
+        assert_eq!(model["thinkingLevelMap"]["high"], serde_json::json!("max"));
+    }
+
+    #[test]
     fn no_thinking_level_preserves_plain_model() {
         let agent = PiAgent::new(test_client());
         let dir = temp_work_dir("no-level");

@@ -664,6 +664,32 @@ impl ReasoningRegistry {
                 supports_reasoning_effort: Some(true),
             }),
         });
+
+        // GLM-5.x (e.g. GLM-5.3-Flash, exposed by llama-swap as "glm53-flash") —
+        // OpenAI-style `reasoning_effort` param. The GLM chat template only
+        // recognizes "low" and "high"; ANY other value ("medium", "max", or a
+        // missing param) resolves to the default "max" (highest effort). So every
+        // pi level must be mapped explicitly, otherwise a "medium" selection is
+        // sent verbatim and GLM silently runs at max:
+        //   off/minimal/low -> "low", medium -> "high", high/xhigh/max -> "max".
+        // pi's "medium" is GLM's "high" — without this map a medium selection
+        // would silently run at max. GLM-5.3-Flash forces thinking (no true "off").
+        Self::register("glm*", ReasoningConfig {
+            mechanism: ReasoningMechanism::Custom,
+            thinking_format: Some(ThinkingFormat::Openai),
+            thinking_level_map: Some(ThinkingLevelMap {
+                off:     Some(serde_json::json!("low")),
+                minimal: Some(serde_json::json!("low")),
+                low:     Some(serde_json::json!("low")),
+                medium:  Some(serde_json::json!("high")),
+                high:    Some(serde_json::json!("max")),
+                xhigh:   Some(serde_json::json!("max")),
+            }),
+            compat: Some(CompatConfig {
+                supports_developer_role: None,
+                supports_reasoning_effort: Some(true),
+            }),
+        });
     }
 }
 
@@ -767,6 +793,31 @@ mod registry_tests {
 
         // pi must emit `reasoning_effort` for ds4; flag it as supported.
         let compat = config.compat.as_ref().expect("ds4 should have compat");
+        assert_eq!(compat.supports_reasoning_effort, Some(true));
+    }
+
+    #[test]
+    fn test_glm_builtin_registration() {
+        let _guard = TEST_LOCK.lock().unwrap();
+        // Reset registry to avoid pollution from other tests
+        ReasoningRegistry::clear();
+        ReasoningRegistry::register_defaults();
+
+        let config = ReasoningRegistry::get_for_model("glm53-flash");
+        assert_eq!(config.thinking_format, Some(ThinkingFormat::Openai));
+
+        // GLM only accepts low/high/max and defaults to MAX on any unrecognized
+        // value, so pi's "medium" must map to GLM's "high" (never "max").
+        let map = config.thinking_level_map.as_ref().expect("glm should have level map");
+        assert_eq!(map.off, Some(serde_json::json!("low")));
+        assert_eq!(map.minimal, Some(serde_json::json!("low")));
+        assert_eq!(map.low, Some(serde_json::json!("low")));
+        assert_eq!(map.medium, Some(serde_json::json!("high")));
+        assert_eq!(map.high, Some(serde_json::json!("max")));
+        assert_eq!(map.xhigh, Some(serde_json::json!("max")));
+
+        // pi must emit `reasoning_effort` for glm; flag it as supported.
+        let compat = config.compat.as_ref().expect("glm should have compat");
         assert_eq!(compat.supports_reasoning_effort, Some(true));
     }
 }

@@ -1,3 +1,17 @@
+# Changelog — GLM reasoning_effort mapping
+
+Adds a built-in `ReasoningRegistry` entry for GLM-5.x models (matched by the `glm*` glob,
+e.g. `glm53-flash` exposed by llama-swap). GLM's OpenAI-style `reasoning_effort` only accepts
+`low`/`high`/`max` and **defaults to `max`** for any unrecognized value, so every pi thinking
+level is now mapped explicitly instead of being passed through verbatim:
+
+- `off`/`minimal`/`low` → `low`
+- `medium` → `high` (pi's medium is GLM's high — previously this sent `"medium"` and GLM
+  silently ran at max)
+- `high`/`xhigh`/`max` → `max`
+
+Config uses `thinkingFormat: openai` with `supportsReasoningEffort: true`.
+
 # Changelog — runner image v1.4.1 (pi 1.0 + drop pi-caveman)
 
 Drops the `pi-caveman` extension and its `caveman mode` prompt injection (models now do shorthand
