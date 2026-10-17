@@ -665,6 +665,25 @@ impl ReasoningRegistry {
             }),
         });
 
+        // DeepSeek-V4-Flash-0731 (llama-swap) — same reasoning_effort semantics as
+        // the ds4-server above: only "high"/"max" above zero, "none" disables.
+        Self::register("deepseek-v4-flash-0731", ReasoningConfig {
+            mechanism: ReasoningMechanism::Custom,
+            thinking_format: Some(ThinkingFormat::Openai),
+            thinking_level_map: Some(ThinkingLevelMap {
+                off:     Some(serde_json::json!("none")),
+                minimal: Some(serde_json::json!("high")),
+                low:     Some(serde_json::json!("high")),
+                medium:  Some(serde_json::json!("high")),
+                high:    Some(serde_json::json!("high")),
+                xhigh:   Some(serde_json::json!("max")),
+            }),
+            compat: Some(CompatConfig {
+                supports_developer_role: None,
+                supports_reasoning_effort: Some(true),
+            }),
+        });
+
         // GLM-5.x (e.g. GLM-5.3-Flash, exposed by llama-swap as "glm53-flash") —
         // OpenAI-style `reasoning_effort` param. The GLM chat template only
         // recognizes "low" and "high"; ANY other value ("medium", "max", or a
@@ -793,6 +812,29 @@ mod registry_tests {
 
         // pi must emit `reasoning_effort` for ds4; flag it as supported.
         let compat = config.compat.as_ref().expect("ds4 should have compat");
+        assert_eq!(compat.supports_reasoning_effort, Some(true));
+    }
+
+    #[test]
+    fn test_deepseek_v4_flash_0731_registration() {
+        let _guard = TEST_LOCK.lock().unwrap();
+        // Reset registry to avoid pollution from other tests
+        ReasoningRegistry::clear();
+        ReasoningRegistry::register_defaults();
+
+        let config = ReasoningRegistry::get_for_model("deepseek-v4-flash-0731");
+        assert_eq!(config.thinking_format, Some(ThinkingFormat::Openai));
+
+        // DeepSeek-V4 only exposes HIGH and MAX above zero; "none" disables.
+        let map = config.thinking_level_map.as_ref().expect("ds4-0731 should have level map");
+        assert_eq!(map.off, Some(serde_json::json!("none")));
+        assert_eq!(map.minimal, Some(serde_json::json!("high")));
+        assert_eq!(map.low, Some(serde_json::json!("high")));
+        assert_eq!(map.medium, Some(serde_json::json!("high")));
+        assert_eq!(map.high, Some(serde_json::json!("high")));
+        assert_eq!(map.xhigh, Some(serde_json::json!("max")));
+
+        let compat = config.compat.as_ref().expect("ds4-0731 should have compat");
         assert_eq!(compat.supports_reasoning_effort, Some(true));
     }
 
