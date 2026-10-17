@@ -1,5 +1,15 @@
 # Agent Execution Instructions
 
+## Non-Negotiable Rule
+
+**You MUST keep working until EVERY test passes.** This is the single most important requirement.
+
+- **Do not stop, give up, or declare the task complete unless the full test suite passes with zero failures and zero errors.**
+- **Do not hand off, summarize, or report "partial success"** — the task is only done when all tests pass.
+- **When tests fail, keep debugging and fixing** — re-read the tests, trace the logic, and make targeted fixes until they all pass.
+- **Persist through iteration** — there is no iteration limit. You may retry as many times as needed. Only stop when the suite is green.
+- **If the task feels impossible, re-read the test file and reconsider your approach** rather than quitting. The tests are valid and solvable.
+
 ## Before You Start
 
 1. **Read the test file(s) FIRST** — before writing any implementation code, read the test file(s) to understand:
@@ -51,6 +61,7 @@
 - **Never ignore error messages** — they contain the exact information you need to fix the bug.
 - **Never run tests in the background** — run them synchronously in the foreground.
 - **Never provide a summary of what you did** — do not narrate, recap, or explain your changes at the end. The task is complete when the tests pass; stop there.
+- **Never stop before all tests pass** — giving up, declaring partial success, or concluding the task while any test still fails is a failure. Keep working until the entire suite is green.
 
 ## If You Get Stuck
 
