@@ -200,7 +200,7 @@ Two different processes call the model, and they are configured separately:
 | `inference_endpoint` + `api_key` | the benchmark app | on the **host** | auto-detected: the local ports are probed at startup |
 | `docker.environment` → `ANTHROPIC_BASE_URL` / `OPENAI_BASE_URL` | the agent CLI (`pi`, `claude`) | **inside the container** | derived from the endpoint above when it is local; otherwise `OPENAI_BASE_URL` → `http://host.docker.internal:8080/v1`; `ANTHROPIC_BASE_URL` unset |
 
-**`inference_endpoint`** is used for exactly one thing: `GET {inference_endpoint}/models`, which populates the model list in the web dashboard. It is OpenAI-style and must include the `/v1` suffix. If it is unreachable the app logs a warning and falls back to a built-in list, so it is never fatal.
+**`inference_endpoint`** is used for two things, both on the host: `GET {inference_endpoint}/models`, which populates the model list in the web dashboard and reports which model is currently loaded; and, only when a model has to be brought up, a one-token `POST {inference_endpoint}/chat/completions` (see [Keeping the model loaded](#keeping-the-model-loaded)). It is OpenAI-style and must include the `/v1` suffix. If it is unreachable the app logs a warning and falls back to a built-in list, so it is never fatal.
 
 **`docker.environment`** is what actually lets an agent reach your model. Since the agent runs *inside a container*, `localhost` there refers to the container itself, not your machine. Use `host.docker.internal` to reach the host.
 
@@ -215,6 +215,33 @@ The only setup actually required is starting your model server — no endpoint c
 3. If nothing answers, the dashboard falls back to its built-in model list, and the container keeps the default `http://host.docker.internal:8080/v1`. Neither is fatal.
 
 An explicit `inference_endpoint` always wins and disables probing. It is still only rewritten for the container when it points at `localhost` (or `127.0.0.1`, `0.0.0.0`, `::1`) — a remote endpoint is left alone, so a hosted `inference_endpoint` cannot silently become the agent's endpoint.
+
+### Keeping the model loaded
+
+A model server that loads on demand — llama-swap in particular — spends the first request after
+an idle period reading weights off disk. Left alone, that cost lands inside the first exercise of
+a run, which then looks 20× slower than the rest and is not comparable to anything.
+
+So before **each** exercise the runner asks the endpoint what is resident:
+
+1. `GET {inference_endpoint}/models` — a llama-swap listing carries `status.value` per model.
+2. If it claims the model is loaded, `GET {scheme}://{host}:{port}/running` settles whether that
+   upstream is `ready` or still `starting`.
+3. Loaded and ready ⇒ the exercise starts immediately: the check is two small `GET`s.
+4. Not loaded ⇒ the runner sends a one-token chat completion for that model — the request that
+   makes the server load it — and waits, up to `model_load_timeout_secs` (default 600), for the
+   state to change. `model 'clef' ready after 187s` in the log is this.
+5. Anything the endpoint cannot answer — no endpoint, a model served by a
+   [peer](https://github.com/mostlygeek/llama-swap) rather than loaded locally, or a server that
+   reports no load state at all — is skipped without a wait.
+
+Waiting is a *pre-check*, so a swap never enters `duration_ms`, and giving up on one is a warning
+rather than a failed exercise: a model that will not come up fails on its own merits, visibly. The
+gate is why `unload_after` on the server side, an idle queue, or a second client sharing the server
+cost you measurement rather than misleading you.
+
+Set `model_load_timeout_secs` above the slowest load you expect; the floor is 120 s, below which
+the wait could only ever end in "gave up".
 
 ### Worked example — local model server
 
@@ -337,6 +364,7 @@ See [docs/specs/aoc2015-benchmark.md](docs/specs/aoc2015-benchmark.md) for the f
 | `model` | string | — | Label used in result directory names; overridden by `--model` |
 | `inference_endpoint` | string | auto-detected | Host-side OpenAI-compatible base URL, used for `GET /models`. Omit it and the local ports `8000`, `8080`, `9931` are probed at startup |
 | `api_key` | string | — | Bearer token sent to `inference_endpoint` |
+| `model_load_timeout_secs` | int | `600` | How long to wait for the model under test to be loaded before an exercise starts (minimum 120). See [Keeping the model loaded](#keeping-the-model-loaded) |
 | `docker.image` | string | `ghcr.io/dylanschell/llm-benchmark-runner:latest` | Runner image |
 | `docker.work_dir` | string | `/workspace` | Working directory inside the container |
 | `docker.timeout` | int | `300` | Per-exercise container timeout in seconds (minimum 10). Does **not** include pulling the image |

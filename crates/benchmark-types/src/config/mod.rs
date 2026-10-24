@@ -50,11 +50,31 @@ pub struct Config {
 
     #[serde(default)]
     pub api_key: Option<String>,
+
+    /// Seconds to wait for the model under test to become resident before an exercise starts.
+    ///
+    /// Before every exercise the runner asks the inference endpoint whether the model is
+    /// loaded and, when it is not, spends at most this long getting it up so that the swap
+    /// happens outside the measured exercise. Loading a large GGUF is I/O bound — 200 GB at
+    /// ~2 GB/s is already ~100 s, before context allocation — so the floor is
+    /// [`MIN_MODEL_LOAD_TIMEOUT_SECS`].
+    #[serde(default = "default_model_load_timeout_secs")]
+    pub model_load_timeout_secs: u64,
 }
 
 fn default_server_port() -> u16 {
     8081
 }
+
+/// The default [`Config::model_load_timeout_secs`].
+pub fn default_model_load_timeout_secs() -> u64 {
+    600
+}
+
+/// The lowest usable [`Config::model_load_timeout_secs`]: more than ~240 GB of weights cannot
+/// be read at 2 GB/s in less, so a shorter timeout cannot mean "the model is up" — it can only
+/// mean "we stopped waiting", and every exercise would silently keep paying for the swap.
+pub const MIN_MODEL_LOAD_TIMEOUT_SECS: u64 = 120;
 
 fn default_parallelism() -> u32 {
     1
@@ -76,6 +96,7 @@ impl Default for Config {
             model: None,
             inference_endpoint: None,
             api_key: None,
+            model_load_timeout_secs: default_model_load_timeout_secs(),
         }
     }
 }
@@ -132,6 +153,15 @@ impl Config {
 
         if self.docker.memory.is_empty() {
             return Err("docker.memory is required".to_string());
+        }
+
+        // Below the floor the wait can only ever end in "gave up", which is not a setting
+        // anyone wants — say so at startup instead of slowing every exercise down.
+        if self.model_load_timeout_secs < MIN_MODEL_LOAD_TIMEOUT_SECS {
+            return Err(format!(
+                "model_load_timeout_secs must be at least {} seconds, got: {}",
+                MIN_MODEL_LOAD_TIMEOUT_SECS, self.model_load_timeout_secs
+            ));
         }
 
         // Validate output configuration
@@ -766,6 +796,42 @@ mod tests {
 
         assert!(config.model.is_none());
         assert!(config.api_key.is_none());
+        assert_eq!(config.model_load_timeout_secs, 600);
+    }
+
+    /// A model swap must be allowed to take minutes: with a few hundred GB of weights on
+    /// ordinary disk the load alone is over 100 s, and a shorter wait would end in "gave up"
+    /// on every single exercise.
+    #[test]
+    fn the_model_load_timeout_defaults_to_ten_minutes_and_can_be_shortened_only_so_far() {
+        assert_eq!(default_model_load_timeout_secs(), 600);
+        assert_eq!(MIN_MODEL_LOAD_TIMEOUT_SECS, 120);
+
+        let parsed: Config = serde_yaml::from_str("model_load_timeout_secs: 900").unwrap();
+        assert_eq!(parsed.model_load_timeout_secs, 900);
+
+        // Absent means the default, not zero — a zero timeout would make the check a no-op.
+        let parsed: Config = serde_yaml::from_str("parallelism: 1").unwrap();
+        assert_eq!(
+            parsed.model_load_timeout_secs,
+            default_model_load_timeout_secs()
+        );
+
+        let too_short = Config {
+            model_load_timeout_secs: MIN_MODEL_LOAD_TIMEOUT_SECS - 1,
+            ..Default::default()
+        };
+        let error = too_short.validate().unwrap_err();
+        assert!(
+            error.contains("model_load_timeout_secs") && error.contains("120"),
+            "the error must name the setting and the floor, got: {error}"
+        );
+
+        let at_the_floor = Config {
+            model_load_timeout_secs: MIN_MODEL_LOAD_TIMEOUT_SECS,
+            ..Default::default()
+        };
+        at_the_floor.validate().expect("the floor itself is valid");
     }
 
     /// Regression: running with no `config.yaml` is the documented fresh-install path,

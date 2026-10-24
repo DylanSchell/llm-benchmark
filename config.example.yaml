@@ -16,6 +16,14 @@ parallelism: 1
 # Bearer token sent to inference_endpoint, if your server checks it.
 api_key: ""
 
+# How long to wait for the model under test to be loaded before an exercise starts (seconds).
+# Before every exercise the runner asks the endpoint whether that model is resident. When it is
+# not, the runner triggers the load and waits, so swapping weights in is never billed to the
+# first exercise — or first model — of a run. Servers that report no load state (plain
+# llama-server, vLLM, Ollama) are left alone. Minimum 120: 200 GB of weights at ~2 GB/s is
+# already ~100 s before the context is even allocated.
+model_load_timeout_secs: 600
+
 # Docker configuration
 docker:
   # Name of the custom Docker image with build tools

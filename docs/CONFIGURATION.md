@@ -70,6 +70,13 @@ parallelism: 1
 # Bearer token sent to inference_endpoint, if your server checks it.
 api_key: ""
 
+# How long to wait for the model under test to be loaded before an exercise starts (seconds).
+# Before every exercise the runner asks the endpoint whether that model is resident. When it is
+# not, the runner triggers the load and waits, so swapping weights in is never billed to the
+# first exercise of a run. Servers that report no load state (plain llama-server, vLLM, Ollama)
+# are left alone. Minimum 120: 200 GB of weights at ~2 GB/s is already ~100 s.
+model_load_timeout_secs: 600
+
 # Docker configuration
 docker:
   # Name of the custom Docker image with build tools
@@ -123,6 +130,7 @@ default is `300`) and `docker.per_command_timeout: 120` (the default is `600`).
 | `model` | string | *(none)* | Label for the run, used in result directory names. `--model` overrides it. Falls back to `default` when unset |
 | `inference_endpoint` | string | *(none — probed)* | Host-side OpenAI-compatible base URL; see below |
 | `api_key` | string | *(none)* | Bearer token sent to `inference_endpoint` |
+| `model_load_timeout_secs` | int | `600` | Ceiling for waiting on the model under test before an exercise starts. Minimum 120; see below |
 
 ### `server`
 
@@ -175,9 +183,12 @@ set `output.results_dir` explicitly. This is why the README says to set it.
 
 ### `inference_endpoint` and `api_key`
 
-This pair is **host-side only**. It is used for exactly one thing: `GET
-{inference_endpoint}/models` with `Authorization: Bearer {api_key}`, to populate the
-dashboard's model list. It is not what the agent uses — that is `docker.environment`.
+This pair is **host-side only**. It feeds two things: `GET {inference_endpoint}/models` with
+`Authorization: Bearer {api_key}`, which populates the dashboard's model list and reports which
+model is resident; and — only when a model has to be brought up — the one-token
+`POST {inference_endpoint}/chat/completions` described under
+[`model_load_timeout_secs`](#model_load_timeout_secs). It is not what the agent uses — that is
+`docker.environment`.
 
 `api_key` is sent only when non-empty.
 
@@ -191,6 +202,37 @@ Adopting a local endpoint also sets the container's `OPENAI_BASE_URL` to the sam
 path on `host.docker.internal`, unless you have set `OPENAI_BASE_URL` yourself. Finding
 nothing is not an error: the dashboard falls back to a built-in model list and the container
 keeps `http://host.docker.internal:8080/v1`.
+
+### `model_load_timeout_secs`
+
+Before every exercise the runner asks the endpoint whether the model under test is resident, and
+loads it if it is not. That way the weight swap — tens of seconds to minutes on a large GGUF —
+lands before the agent starts, rather than inside the first request of the first exercise, which is
+what a load-on-demand server does to a benchmark if nothing checks.
+
+What the check reads, in order:
+
+| Request | Says | When it is asked |
+|---|---|---|
+| `GET {inference_endpoint}/models` | `status.value` per model: `loaded` / `unloaded` | once per exercise, always |
+| `GET {scheme}://{host}:{port}/running` | `state` per upstream: `ready` / `starting` | only when the list claims the model is loaded, which covers both |
+| `POST {inference_endpoint}/chat/completions` with `max_tokens: 1` | nothing — this is the request that *causes* the load | only when the model is not up |
+
+That makes llama-swap the server this was written for, and deliberately inert elsewhere: a plain
+llama-server, vLLM or Ollama answers `/models` without a `status` field, and "no load state"
+skips the gate rather than guessing at it. A model served by a llama-swap *peer* — another machine's
+model, reachable through this endpoint — is likewise never waited for, because nothing local would
+ever load it.
+
+`model_load_timeout_secs` bounds the wait after a load has been triggered. When it expires the
+exercise starts anyway, with a warning: a model that will not come up makes a broken benchmark
+run, but it should say so with its own failed result instead of being skipped silently. Aliases and
+selectors are followed through to the upstream that actually serves them, since `/running` names
+that model rather than the alias the run asked for.
+
+The 120-second floor is arithmetic, not taste: ~240 GB of weights cannot be read at 2 GB/s in
+less, so anything shorter cannot mean "the model is up" — it can only mean the wait was given up on
+before it could have succeeded.
 
 ### Where things that used to be configured here now live
 

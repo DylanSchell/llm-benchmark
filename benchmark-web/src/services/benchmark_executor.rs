@@ -393,7 +393,8 @@ impl BenchmarkExecutor {
         session.emit_output(&format!("Running AoC day {} (user={})\n", day.day, day.user));
 
         let results_dir = self.results_dir();
-        let aoc_runner = benchmark_core::aoc_runner::AocRunner::new(day.user.clone(), results_dir.clone());
+        let aoc_runner = benchmark_core::aoc_runner::AocRunner::new(day.user.clone(), results_dir.clone())
+            .with_model_gate(self.exercise_runner.model_gate());
         let result = aoc_runner
             .run_day(agent, &day, &validator_url, model, thinking_level)
             .await
@@ -538,8 +539,12 @@ impl BenchmarkExecutor {
     }
 
     /// Get the exercise runner (for queue processor use).
+    ///
+    /// A clone of the runner this executor uses, not a fresh one: clones share the model-load
+    /// gate, so two runners asking about the same model queue behind one check instead of
+    /// starting two loads.
     pub fn get_exercise_runner(&self) -> ExerciseRunner {
-        ExerciseRunner::new_with_docker(Arc::clone(&self.config_ref), Arc::clone(&self.docker_client))
+        (*self.exercise_runner).clone()
     }
 
     /// Set the result service for live cache updates.

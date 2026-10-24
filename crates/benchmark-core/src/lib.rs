@@ -2,6 +2,7 @@ pub mod aoc_runner;
 pub mod docker;
 pub mod endpoint;
 pub mod exercise_runner;
+pub mod model_load;
 pub mod parallel;
 pub mod persistence;
 pub mod agent;

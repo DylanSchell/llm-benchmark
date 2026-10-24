@@ -8,6 +8,7 @@ use benchmark_types::exercise::{Exercise, ExerciseMetadata};
 use benchmark_types::ExerciseSource;
 use benchmark_exercises::EmbeddedSource;
 use crate::docker::DockerClient;
+use crate::model_load::ModelLoadGate;
 use benchmark_types::util::recover_poisoned;
 
 /// Exercises that are deprecated/removed upstream and should not be discovered or run.
@@ -29,6 +30,9 @@ pub struct ExerciseRunner {
     exercises_cache: Arc<RwLock<HashMap<String, Vec<String>>>>,
     // Cached available languages
     languages_cache: Arc<RwLock<Option<Vec<String>>>>,
+    // Keeps the model under test resident across exercises, so a weight swap is never billed to
+    // the exercise that happens to trigger it
+    model_gate: ModelLoadGate,
 }
 
 impl ExerciseRunner {
@@ -46,6 +50,7 @@ impl ExerciseRunner {
 
     /// Creates a runner over an explicit exercise source (used by tests).
     pub fn with_source(config: Arc<Config>, source: Arc<dyn ExerciseSource>) -> Self {
+        let model_gate = ModelLoadGate::from_config(&config);
         Self {
             config,
             source,
@@ -55,12 +60,21 @@ impl ExerciseRunner {
             run_languages: None,
             exercises_cache: Arc::new(RwLock::new(HashMap::new())),
             languages_cache: Arc::new(RwLock::new(None)),
+            model_gate,
         }
     }
 
     /// The exercise source backing this runner.
     pub fn source(&self) -> &Arc<dyn ExerciseSource> {
         &self.source
+    }
+
+    /// The model-load gate backing this runner, shared by every clone of it.
+    ///
+    /// Exposed for run paths that do not go through `run_exercise*` — the AoC runner, for one —
+    /// so that every way an agent can be started asks the same gate.
+    pub fn model_gate(&self) -> ModelLoadGate {
+        self.model_gate.clone()
     }
 
     /// Sets run parameters for result directory computation.
@@ -188,6 +202,10 @@ impl ExerciseRunner {
             }
         };
 
+        // Load the model before the agent's clock starts, so the first request of the exercise
+        // is not the one that pays for a swap.
+        self.model_gate.ensure_ready(model).await;
+
         agent
             .run_exercise_with_timeout(
                 &exercise,
@@ -235,6 +253,7 @@ impl ExerciseRunner {
         );
 
         let agent_name_string = agent_name.to_string();
+        let model_gate = self.model_gate.clone();
 
         // In retry mode, sort by previous duration descending (slowest first)
         // so the longest-running exercises start earliest, maximizing pipeline utilization.
@@ -297,12 +316,17 @@ impl ExerciseRunner {
                 let model = model.clone();
                 let thinking_level = thinking_level.clone();
                 let results_dir = results_dir.clone();
+                let model_gate = model_gate.clone();
 
                 async move {
                     info!(
                         "Running {} for exercise {}/{}",
                         agent_name, language, exercise.name
                     );
+
+                    // Same gate as the single-exercise path; concurrent exercises for the same
+                    // model queue behind one check, and only the first pays for a load.
+                    model_gate.ensure_ready(&model).await;
 
                     let result = agent
                         .run_exercise(

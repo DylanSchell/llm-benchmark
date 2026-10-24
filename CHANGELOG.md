@@ -1,3 +1,34 @@
+# Changelog — model load gate: a weight swap is no longer billed to an exercise
+
+With a load-on-demand server (llama-swap), the first request after an idle period reads the weights
+off disk — minutes on a large GGUF — and that request was the agent's first one, inside the measured
+exercise. The first exercise of every run therefore measured the disk, not the model.
+
+Before **each** exercise the runner now asks the endpoint what is resident, and loads the model
+itself when it is not:
+
+- **`crates/benchmark-core/src/model_load.rs`** — `ModelLoadGate` reads `status.value`
+  (`loaded`/`unloaded`) from `GET {inference_endpoint}/models`, confirms with `state`
+  (`ready`/`starting`) from `GET {root}/running` because a `loaded` model can still be coming up,
+  then triggers the load with a one-token `POST {inference_endpoint}/chat/completions` and polls
+  until the model reports ready. Aliases and selectors are resolved to the upstream that actually
+  serves them, since `/running` names that rather than the requested alias.
+- **Never part of the measurement** — the gate runs before `agent.run_exercise`, so nothing it
+  waits for reaches `duration_ms`. Giving up is a warning, not a failure: the exercise still runs
+  and reports the model's own problem.
+- **Inert where it cannot know** — no endpoint, a model served by a llama-swap *peer*, or a server
+  whose `/models` carries no `status` (plain llama-server, vLLM, Ollama) means no request and no
+  wait. A warm model costs one `GET`.
+- **Shared and serialised** — `ExerciseRunner` owns the gate and shares it with its clones and with
+  `AocRunner`; concurrent exercises queue behind one check instead of starting competing loads.
+  `BenchmarkExecutor::get_exercise_runner` returns a clone of the shared runner for this reason.
+- **`model_load_timeout_secs`** (default 600, minimum 120) bounds the wait. The floor is arithmetic:
+  ~240 GB of weights cannot be read at 2 GB/s in less, so a shorter timeout could only ever mean
+  "gave up". `Config::validate` rejects anything below it.
+- **Tested against the real thing** — an opt-in, read-only test interrogates a live llama-swap and
+  asserts the payload shapes this depends on; it cannot trigger a load, so it cannot evict whatever
+  is resident.
+
 # Changelog — GLM reasoning_effort mapping
 
 Adds a built-in `ReasoningRegistry` entry for GLM-5.x models (matched by the `glm*` glob,

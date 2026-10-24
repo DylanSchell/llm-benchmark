@@ -16,6 +16,7 @@ use tracing::{debug, error, info};
 use benchmark_types::agent::{Agent, AgentResult};
 use benchmark_types::aoc::AocDay;
 use benchmark_types::Category;
+use crate::model_load::ModelLoadGate;
 
 /// Name of the answer file the agent writes into `/workspace` (one line per part).
 pub const ANSWER_FILE: &str = "answer.txt";
@@ -27,6 +28,9 @@ pub struct AocRunner {
     pub user: String,
     /// Base results directory.
     pub results_dir: PathBuf,
+    /// Pre-exercise model-load gate, when the caller has an endpoint to ask. Unset only in
+    /// tests and reference runs, which serve no model.
+    model_gate: Option<ModelLoadGate>,
 }
 
 impl AocRunner {
@@ -35,7 +39,15 @@ impl AocRunner {
         Self {
             user: user.into(),
             results_dir: results_dir.into(),
+            model_gate: None,
         }
+    }
+
+    /// Load the model under test before each day, waiting for a swap if needed. Without this
+    /// the first request of the first day of a run is the one that pays for loading the model.
+    pub fn with_model_gate(mut self, gate: ModelLoadGate) -> Self {
+        self.model_gate = Some(gate);
+        self
     }
 
     /// All puzzle days, `1..=25`.
@@ -144,6 +156,11 @@ impl AocRunner {
             agent.get_name(),
             model
         );
+
+        // Same contract as the Exercism path: the model is resident before the agent starts.
+        if let Some(gate) = &self.model_gate {
+            gate.ensure_ready(model).await;
+        }
 
         let work_dir = Self::create_temp_work_dir(day)?;
         info!("AoC temp work dir: {:?}", work_dir.display());

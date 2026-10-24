@@ -135,6 +135,7 @@ crates/benchmark-core/src/
   agent/{exercise_files,test_patches}.rs
   docker/{client,stream_parser,watchdog}.rs
   endpoint.rs              # local model-server discovery
+  model_load.rs            # pre-exercise "is the model resident?" gate
   parallel/mod.rs          # ParallelExecutor (semaphore)
   persistence/mod.rs       # ResultPersister, ResultSummary
 
@@ -163,6 +164,7 @@ llm-benchmark run --language java --exercise series
   └─ ExerciseRunner::run_exercises               crates/benchmark-core/src/exercise_runner
        │
        └─ for each exercise:
+            0. model_load gate                   model_load.rs (load the model off-clock)
             1. materialize into a temp dir       agent/exercise_files.rs
                (EmbeddedSource bytes + file modes, reference solution withheld)
             2. patch tests                       agent/test_patches.rs
@@ -205,6 +207,32 @@ those modes, withholds the reference solution, and mounts that directory into th
 used as-is; otherwise the local ports 8000, 8080 and 9931 are probed concurrently for
 `/v1/models`, and the first answer whose body has a `data` array wins. A loopback endpoint is also
 handed to the container as `OPENAI_BASE_URL` on `host.docker.internal`; a remote one is not.
+
+### Model load gate
+
+`benchmark-core/src/model_load.rs` runs before *every* exercise, on the host, and keeps a
+load-on-demand server (llama-swap) from billing a weight swap to whichever exercise triggered it.
+It reads `status.value` from `GET {inference_endpoint}/models`, confirms readiness with
+`state` from `GET {root}/running` — a `loaded` model can still be `starting` — and when the model
+is not up it sends a one-token `chat/completions` to make the server load it and polls until the
+state changes, up to `model_load_timeout_secs`.
+
+Three properties keep it out of the way. It is **before** `agent.run_exercise`, so nothing it waits
+for reaches `duration_ms`. It **degrades to silence**: no endpoint, a model served by a peer, or a
+server that reports no `status` at all means no request is sent and no wait happens. And it **never
+fails a run**: a timeout is a warning, and the exercise proceeds to fail on its own merits if the
+model really is unreachable.
+
+`ExerciseRunner` owns the gate and shares it with every clone (and with `AocRunner`), serialising
+waits on one lock: two exercises asking for two models at once would otherwise make the server
+evict one load to begin the other, leaving both waiting for a model that is no longer loading.
+
+Verify it against a running server without touching the load state (read-only, opt-in):
+
+```bash
+LLM_BENCHMARK_LIVE_ENDPOINT=http://localhost:8080/v1 \
+  cargo test -p benchmark-core --lib model_load -- --ignored
+```
 
 ---
 
@@ -371,7 +399,7 @@ check are examples.
 
 | Kind | Where | What it covers |
 |---|---|---|
-| Unit tests | `#[cfg(test)]` in each crate | Config defaults and validation, endpoint probing against real ephemeral TCP servers, container-state classification, the exercise assembler, mode restoration, template rendering |
+| Unit tests | `#[cfg(test)]` in each crate | Config defaults and validation, endpoint probing against real ephemeral TCP servers, the model-load gate against a fake llama-swap, container-state classification, the exercise assembler, mode restoration, template rendering |
 | Integration tests | `benchmark-web/tests/` | `template_rendering.rs`, and `html_equality.rs`, which spawns a real server and compares rendered HTML |
 | Network-gated tests | `benchmark-exercises-build` | Cloning a pinned track; the fidelity check against a local polyglot checkout |
 
