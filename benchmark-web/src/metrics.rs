@@ -3,11 +3,10 @@
 //! Exposes benchmark execution counters, durations, queue depth,
 //! and active worker counts in Prometheus text format.
 
-use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::Mutex;
 use benchmark_types::util::recover_poisoned;
-
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Arc;
+use std::sync::Mutex;
 
 /// Thread-safe metrics registry.
 #[derive(Clone, Default)]

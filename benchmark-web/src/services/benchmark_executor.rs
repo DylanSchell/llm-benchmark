@@ -7,16 +7,18 @@ use crate::models::status::RunStatus;
 use crate::services::result_service::ResultService;
 use crate::services::session_manager::SessionManager;
 use anyhow::{Context, Result};
-use benchmark_core::agent::{ReferenceAgent, ClaudeAgent, PiAgent, ClaudeMessageProcessor, PiMessageProcessor};
-use benchmark_types::agent::Agent;
-use benchmark_types::cancellation::CancellationToken;
+use benchmark_core::agent::{
+    ClaudeAgent, ClaudeMessageProcessor, PiAgent, PiMessageProcessor, ReferenceAgent,
+};
 use benchmark_core::docker::DockerClient;
 use benchmark_core::exercise_runner::ExerciseRunner;
 use benchmark_core::persistence::ResultPersister;
+use benchmark_types::agent::Agent;
 use benchmark_types::agent::AgentResult;
+use benchmark_types::cancellation::CancellationToken;
 use benchmark_types::config::Config;
 use std::sync::Arc;
-use tracing::{info, error, warn};
+use tracing::{error, info, warn};
 
 /// Configuration for benchmark execution.
 #[derive(Debug, Clone)]
@@ -39,6 +41,21 @@ impl Default for ExecutorConfig {
             web_port: 8081,
         }
     }
+}
+
+/// One benchmark run request, shared by the three `execute_*` paths below.
+///
+/// Each of them took the same seven positional arguments, where a swapped `model` /
+/// `agent_name` pair compiles and simply benchmarks the wrong thing.
+struct RunRequest<'a> {
+    /// The agent adapter the exercises run through.
+    agent: Arc<dyn Agent + Send + Sync>,
+    /// Languages to run. The AoC path ignores this: one queue item is one day.
+    languages: &'a [String],
+    model: &'a str,
+    thinking_level: Option<&'a str>,
+    agent_name: &'a str,
+    cancellation_token: Option<CancellationToken>,
 }
 
 /// Executes benchmark runs.
@@ -74,7 +91,10 @@ impl BenchmarkExecutor {
 
         let docker_config = benchmark_core::docker::DockerConfig::from(&config_ref.docker);
         let docker_client = Arc::new(DockerClient::new(docker_config));
-        let exercise_runner = Arc::new(ExerciseRunner::new_with_docker(config_ref.clone(), Arc::clone(&docker_client)));
+        let exercise_runner = Arc::new(ExerciseRunner::new_with_docker(
+            config_ref.clone(),
+            Arc::clone(&docker_client),
+        ));
         let persister = Arc::new(ResultPersister::new());
 
         Ok(Self {
@@ -99,7 +119,8 @@ impl BenchmarkExecutor {
         // Per-session cancellation signal. Fired by SessionManager::cancel_session;
         // consulted at exercise boundaries and attached to agents so in-flight
         // Docker runs abort promptly when the user cancels.
-        let cancellation_token = session_manager.and_then(|sm| sm.get_cancellation_token(&session.id));
+        let cancellation_token =
+            session_manager.and_then(|sm| sm.get_cancellation_token(&session.id));
 
         // Run the body in an inner function so the finalize block always runs
         // even when execute_inner returns Err. This prevents the session from
@@ -160,14 +181,23 @@ impl BenchmarkExecutor {
             agent.set_cancellation_token(cancellation_token.clone());
 
             let model_str = &model;
+            let request = RunRequest {
+                agent,
+                languages: &languages,
+                model: model_str,
+                thinking_level: thinking_level.as_deref(),
+                agent_name: &agent_name,
+                cancellation_token: cancellation_token.clone(),
+            };
             if session.category == benchmark_types::Category::Aoc2015 {
                 // AoC runs are one day per session (one queue item per day), so the
                 // session's single exercise is the day. Run it through the AoC path.
-                self.execute_aoc(session, agent, exercise_name.as_deref(), model_str, thinking_level.as_deref(), &agent_name, cancellation_token.clone()).await?;
+                self.execute_aoc(session, &request, exercise_name.as_deref())
+                    .await?;
             } else if let Some(ref _exercise) = exercise_name {
-                self.execute_single_exercise(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name, cancellation_token.clone()).await?;
+                self.execute_single_exercise(session, &request).await?;
             } else {
-                self.execute_all_exercises(session, agent, &languages, model_str, thinking_level.as_deref(), &agent_name, cancellation_token.clone()).await?;
+                self.execute_all_exercises(session, &request).await?;
             }
 
             Ok::<(), anyhow::Error>(())
@@ -176,9 +206,9 @@ impl BenchmarkExecutor {
         // Finalize: always run regardless of whether execute_inner succeeded or errored.
         session.emit_output("Benchmark execution completed\n");
         // If the execution returned an error, mark as FAILED.
-        if result.is_err() {
+        if let Err(err) = &result {
             session.status = RunStatus::FAILED;
-            let err_msg = format!("{:?}", result.as_ref().unwrap_err());
+            let err_msg = format!("{:?}", err);
             session.set_error_message(&err_msg);
             session.emit_output(&format!("Execution error: {}\n", err_msg));
         }
@@ -186,7 +216,10 @@ impl BenchmarkExecutor {
         // If the user cancelled (token fired) but this local session copy
         // never observed the manager's status change, mark it CANCELLED here
         // so the status propagates back to the manager and queue.
-        if cancellation_token.as_ref().is_some_and(|t| t.is_cancelled()) {
+        if cancellation_token
+            .as_ref()
+            .is_some_and(|t| t.is_cancelled())
+        {
             session.status = RunStatus::CANCELLED;
         }
         // Only transition to COMPLETED if the session is not already in a terminal failure state.
@@ -208,20 +241,26 @@ impl BenchmarkExecutor {
     async fn execute_single_exercise(
         &self,
         session: &mut BenchmarkSession,
-        agent: Arc<dyn Agent + Send + Sync>,
-        languages: &[String],
-        model: &str,
-        thinking_level: Option<&str>,
-        agent_name: &str,
-        cancellation_token: Option<CancellationToken>,
+        req: &RunRequest<'_>,
     ) -> Result<()> {
-        let exercise_name = session.exercise_name.clone().unwrap_or_else(|| "unknown".to_string());
+        let agent = &req.agent;
+        let languages = req.languages;
+        let model = req.model;
+        let thinking_level = req.thinking_level;
+        let agent_name = req.agent_name;
+        let cancellation_token = req.cancellation_token.clone();
+        let exercise_name = session
+            .exercise_name
+            .clone()
+            .unwrap_or_else(|| "unknown".to_string());
 
         for language in languages {
             // Check for cancellation — the token fires even though this local
             // session copy never sees the manager's status change.
             if session.status == RunStatus::CANCELLED
-                || cancellation_token.as_ref().is_some_and(|t| t.is_cancelled())
+                || cancellation_token
+                    .as_ref()
+                    .is_some_and(|t| t.is_cancelled())
             {
                 session.emit_output("Benchmark cancelled\n");
                 return Ok(());
@@ -237,12 +276,22 @@ impl BenchmarkExecutor {
             // so a retry can't waste time spinning. If it previously failed, use
             // the default timeout.
             let timeout_override = if session.retry {
-                self.compute_retry_timeout(&agent_name, language, &exercise_name, model)
+                self.compute_retry_timeout(agent_name, language, &exercise_name, model)
             } else {
                 None
             };
 
-            match self.run_single_exercise(&agent, language, &exercise_name, model, thinking_level, agent_name, timeout_override).await {
+            match self
+                .run_single_exercise(
+                    agent,
+                    language,
+                    &exercise_name,
+                    model,
+                    thinking_level,
+                    timeout_override,
+                )
+                .await
+            {
                 Ok(result) => {
                     session.emit_output(&result.output);
 
@@ -267,7 +316,10 @@ impl BenchmarkExecutor {
                 }
                 Err(e) => {
                     session.status = RunStatus::FAILED;
-                    let error_msg = format!("Exercise execution error for {}/{}: {}", exercise_name, language, e);
+                    let error_msg = format!(
+                        "Exercise execution error for {}/{}: {}",
+                        exercise_name, language, e
+                    );
                     session.set_error_message(&error_msg);
                     session.emit_output(&error_msg);
                     error!("{}", error_msg);
@@ -287,20 +339,23 @@ impl BenchmarkExecutor {
     async fn execute_all_exercises(
         &self,
         session: &mut BenchmarkSession,
-        agent: Arc<dyn Agent + Send + Sync>,
-        languages: &[String],
-        model: &str,
-        thinking_level: Option<&str>,
-        agent_name: &str,
-        cancellation_token: Option<CancellationToken>,
+        req: &RunRequest<'_>,
     ) -> Result<()> {
+        let agent = &req.agent;
+        let languages = req.languages;
+        let model = req.model;
+        let thinking_level = req.thinking_level;
+        let agent_name = req.agent_name;
+        let cancellation_token = req.cancellation_token.clone();
         let mut total_exercises: i32 = 0;
 
         for language in languages {
             // Check for cancellation — the token fires even though this local
             // session copy never sees the manager's status change.
             if session.status == RunStatus::CANCELLED
-                || cancellation_token.as_ref().is_some_and(|t| t.is_cancelled())
+                || cancellation_token
+                    .as_ref()
+                    .is_some_and(|t| t.is_cancelled())
             {
                 session.emit_output("Benchmark cancelled\n");
                 return Ok(());
@@ -312,8 +367,17 @@ impl BenchmarkExecutor {
             ));
 
             let results_dir = self.results_dir();
-            let results = self.exercise_runner
-                .run_all_exercises(Arc::clone(&agent), language, agent_name, model.to_string(), thinking_level.map(|s| s.to_string()), results_dir, false)
+            let results = self
+                .exercise_runner
+                .run_all_exercises(
+                    Arc::clone(agent),
+                    language,
+                    agent_name,
+                    model.to_string(),
+                    thinking_level.map(|s| s.to_string()),
+                    results_dir,
+                    false,
+                )
                 .await;
 
             total_exercises += results.len() as i32;
@@ -324,7 +388,9 @@ impl BenchmarkExecutor {
                 session.status = RunStatus::FAILED;
                 session.emit_output(&format!(
                     "{} exercises failed for language {} out of {}",
-                    failed, language, results.len()
+                    failed,
+                    language,
+                    results.len()
                 ));
             } else {
                 session.emit_output(&format!(
@@ -366,16 +432,19 @@ impl BenchmarkExecutor {
     async fn execute_aoc(
         &self,
         session: &mut BenchmarkSession,
-        agent: Arc<dyn Agent + Send + Sync>,
+        req: &RunRequest<'_>,
         exercise_name: Option<&str>,
-        model: &str,
-        thinking_level: Option<&str>,
-        agent_name: &str,
-        cancellation_token: Option<CancellationToken>,
     ) -> Result<()> {
+        let agent = &req.agent;
+        let model = req.model;
+        let thinking_level = req.thinking_level;
+        let agent_name = req.agent_name;
+        let cancellation_token = req.cancellation_token.clone();
         // Check for cancellation.
         if session.status == RunStatus::CANCELLED
-            || cancellation_token.as_ref().is_some_and(|t| t.is_cancelled())
+            || cancellation_token
+                .as_ref()
+                .is_some_and(|t| t.is_cancelled())
         {
             session.emit_output("Benchmark cancelled\n");
             return Ok(());
@@ -386,17 +455,30 @@ impl BenchmarkExecutor {
             .strip_prefix("day")
             .and_then(|s| s.parse().ok())
             .unwrap_or(1);
-        let user = session.aoc_user.clone().unwrap_or_else(|| "benchmark".to_string());
+        let user = session
+            .aoc_user
+            .clone()
+            .unwrap_or_else(|| "benchmark".to_string());
         let day = benchmark_types::aoc::AocDay::new(day_num, user);
 
         let validator_url = crate::services::aoc_validator::validator_url(self.config.web_port);
-        session.emit_output(&format!("Running AoC day {} (user={})\n", day.day, day.user));
+        session.emit_output(&format!(
+            "Running AoC day {} (user={})\n",
+            day.day, day.user
+        ));
 
         let results_dir = self.results_dir();
-        let aoc_runner = benchmark_core::aoc_runner::AocRunner::new(day.user.clone(), results_dir.clone())
-            .with_model_gate(self.exercise_runner.model_gate());
+        let aoc_runner =
+            benchmark_core::aoc_runner::AocRunner::new(day.user.clone(), results_dir.clone())
+                .with_model_gate(self.exercise_runner.model_gate());
         let result = aoc_runner
-            .run_day(agent, &day, &validator_url, model, thinking_level)
+            .run_day(
+                Arc::clone(agent),
+                &day,
+                &validator_url,
+                model,
+                thinking_level,
+            )
             .await
             .map_err(|e| anyhow::anyhow!("AoC day {} failed: {}", day.day, e))?;
 
@@ -408,7 +490,11 @@ impl BenchmarkExecutor {
         session.increment_completed();
         if !result.success {
             session.status = RunStatus::FAILED;
-            let msg = format!("AoC day {} failed: {}", day.day, result.error_message.as_deref().unwrap_or("unknown"));
+            let msg = format!(
+                "AoC day {} failed: {}",
+                day.day,
+                result.error_message.as_deref().unwrap_or("unknown")
+            );
             session.set_error_message(&msg);
             session.emit_output(&msg);
             return Ok(());
@@ -420,12 +506,7 @@ impl BenchmarkExecutor {
     }
 
     /// Save a single AoC result under the AoC category namespace.
-    fn save_aoc_result(
-        &self,
-        result: &AgentResult,
-        agent_name: &str,
-        model: &str,
-    ) -> Result<()> {
+    fn save_aoc_result(&self, result: &AgentResult, agent_name: &str, model: &str) -> Result<()> {
         let results_dir = self.results_dir();
         let saved_path = self
             .persister
@@ -445,12 +526,19 @@ impl BenchmarkExecutor {
         exercise_name: &str,
         model: &str,
         thinking_level: Option<&str>,
-        _agent_name: &str,
         timeout_override_secs: Option<u64>,
     ) -> Result<AgentResult> {
         let results_dir = self.results_dir();
         self.exercise_runner
-            .run_exercise_with_timeout(Arc::clone(agent), language, exercise_name, model, thinking_level.map(|s| s.to_string()), &results_dir, timeout_override_secs)
+            .run_exercise_with_timeout(
+                Arc::clone(agent),
+                language,
+                exercise_name,
+                model,
+                thinking_level.map(|s| s.to_string()),
+                &results_dir,
+                timeout_override_secs,
+            )
             .await
             .map_err(|e| anyhow::anyhow!("Exercise failed: {}", e))
     }
@@ -499,7 +587,10 @@ impl BenchmarkExecutor {
         let timeout_secs = (duration_ms / 1000).max(1);
         tracing::info!(
             "Retry timeout override for {}/{}: {}s (previous duration: {}ms)",
-            language, exercise_name, timeout_secs, duration_ms
+            language,
+            exercise_name,
+            timeout_secs,
+            duration_ms
         );
         Some(timeout_secs)
     }
@@ -517,9 +608,15 @@ impl BenchmarkExecutor {
             .results_dir_override
             .clone()
             .unwrap_or_else(|| self.config_ref.output.results_dir.clone());
-        let saved_path = self.persister
+        let saved_path = self
+            .persister
             .save_result(result, agent_name, model, &results_dir)
-            .with_context(|| format!("Failed to save result for {}/{}", language, result.exercise_name))?;
+            .with_context(|| {
+                format!(
+                    "Failed to save result for {}/{}",
+                    language, result.exercise_name
+                )
+            })?;
 
         // Update in-memory cache with the newly saved result (replaces any existing entry
         // for the same exercise, avoiding a full cache reload).
@@ -552,7 +649,6 @@ impl BenchmarkExecutor {
     pub fn set_result_service(&mut self, result_service: Arc<ResultService>) {
         self.result_service = Some(result_service);
     }
-
 }
 
 /// Save each result through `save_fn`, returning how many failed to persist.
@@ -567,7 +663,11 @@ fn save_with_reporting(
     let mut failures = 0;
     for result in results {
         if let Err(e) = save_fn(result) {
-            tracing::error!("Failed to save result for {}: {:#}", result.exercise_name, e);
+            tracing::error!(
+                "Failed to save result for {}: {:#}",
+                result.exercise_name,
+                e
+            );
             session.emit_output(&format!(
                 "WARNING: failed to persist result for {}: {}\n",
                 result.exercise_name, e
@@ -639,7 +739,10 @@ mod tests {
 
         assert_eq!(failures, 2);
         let output = session.get_accumulated_output();
-        assert!(output.contains("WARNING"), "expected WARNING, got: {output}");
+        assert!(
+            output.contains("WARNING"),
+            "expected WARNING, got: {output}"
+        );
         assert!(output.contains("two-fer"));
         assert!(output.contains("hello-world"));
         assert_eq!(

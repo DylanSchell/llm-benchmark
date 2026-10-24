@@ -139,7 +139,10 @@ impl Config {
     pub fn validate(&self) -> Result<(), String> {
         // Validate parallelism
         if self.parallelism < 1 {
-            return Err(format!("parallelism must be at least 1, got: {}", self.parallelism));
+            return Err(format!(
+                "parallelism must be at least 1, got: {}",
+                self.parallelism
+            ));
         }
 
         // Validate docker configuration
@@ -148,7 +151,10 @@ impl Config {
         }
 
         if self.docker.timeout < 10 {
-            return Err(format!("docker.timeout must be at least 10 seconds, got: {}", self.docker.timeout));
+            return Err(format!(
+                "docker.timeout must be at least 10 seconds, got: {}",
+                self.docker.timeout
+            ));
         }
 
         if self.docker.memory.is_empty() {
@@ -305,7 +311,11 @@ impl OutputConfig {
     /// Constructs subdirectory as: <agent>-<model>-<languages>-<run#>
     /// Languages are sorted alphabetically and joined with hyphens.
     pub fn get_results_dir(&self, agent_name: &str, model: &str, languages: &[String]) -> PathBuf {
-        let agent_part = if !agent_name.is_empty() { agent_name } else { "unknown" };
+        let agent_part = if !agent_name.is_empty() {
+            agent_name
+        } else {
+            "unknown"
+        };
         let model_part = if !model.is_empty() { model } else { "default" };
 
         // Sort languages alphabetically and join with hyphens
@@ -320,7 +330,8 @@ impl OutputConfig {
         let next_run = Self::get_next_run_number(&self.results_dir, &subdir_base);
 
         if next_run > 1 {
-            self.results_dir.join(format!("{}-r{}", subdir_base, next_run))
+            self.results_dir
+                .join(format!("{}-r{}", subdir_base, next_run))
         } else {
             self.results_dir.join(&subdir_base)
         }
@@ -558,12 +569,21 @@ impl QuickBenchConfig {
 
     /// Returns all languages that have quick-bench exercises defined.
     pub fn get_available_languages() -> Vec<String> {
-        vec!["cpp".to_string(), "go".to_string(), "java".to_string(), "javascript".to_string(), "python".to_string(), "rust".to_string()]
+        vec![
+            "cpp".to_string(),
+            "go".to_string(),
+            "java".to_string(),
+            "javascript".to_string(),
+            "python".to_string(),
+            "rust".to_string(),
+        ]
     }
 
     /// Returns the quick-bench exercise names as a HashSet for O(1) lookup.
     pub fn get_quick_exercises_set(language: &str) -> std::collections::HashSet<String> {
-        Self::get_exercises_for_language(language).into_iter().collect()
+        Self::get_exercises_for_language(language)
+            .into_iter()
+            .collect()
     }
 
     /// Returns the total number of quick-bench exercise slots across all languages.
@@ -603,13 +623,14 @@ mod tests {
     #[test]
     fn test_docker_config_update_model_environment() {
         let mut config = DockerConfig {
-            environment: vec![
-                HashMap::from([
-                    ("ANTHROPIC_MODEL".to_string(), "old-model".to_string()),
-                    ("ANTHROPIC_DEFAULT_SONNET_MODEL".to_string(), "old-sonnet".to_string()),
-                    ("OTHER_VAR".to_string(), "other".to_string()),
-                ]),
-            ],
+            environment: vec![HashMap::from([
+                ("ANTHROPIC_MODEL".to_string(), "old-model".to_string()),
+                (
+                    "ANTHROPIC_DEFAULT_SONNET_MODEL".to_string(),
+                    "old-sonnet".to_string(),
+                ),
+                ("OTHER_VAR".to_string(), "other".to_string()),
+            ])],
             ..Default::default()
         };
 
@@ -620,13 +641,12 @@ mod tests {
             "new-model"
         );
         assert_eq!(
-            config.environment[0].get("ANTHROPIC_DEFAULT_SONNET_MODEL").unwrap(),
+            config.environment[0]
+                .get("ANTHROPIC_DEFAULT_SONNET_MODEL")
+                .unwrap(),
             "new-model"
         );
-        assert_eq!(
-            config.environment[0].get("OTHER_VAR").unwrap(),
-            "other"
-        );
+        assert_eq!(config.environment[0].get("OTHER_VAR").unwrap(), "other");
     }
 
     #[test]
@@ -658,14 +678,18 @@ mod tests {
     #[test]
     fn test_output_config_get_results_dir() {
         let config = OutputConfig::default();
-        let dir = config.get_results_dir("reference", "sonnet", &vec!["java".to_string()]);
+        let dir = config.get_results_dir("reference", "sonnet", &["java".to_string()]);
         assert!(dir.to_string_lossy().contains("reference-sonnet-java"));
     }
 
     #[test]
     fn test_output_config_get_results_dir_sorted_languages() {
         let config = OutputConfig::default();
-        let dir = config.get_results_dir("reference", "sonnet", &vec!["python".to_string(), "java".to_string()]);
+        let dir = config.get_results_dir(
+            "reference",
+            "sonnet",
+            &["python".to_string(), "java".to_string()],
+        );
         // Languages should be sorted: java before python
         assert!(dir.to_string_lossy().contains("java-python"));
     }
@@ -681,10 +705,9 @@ mod tests {
 
         let config = OutputConfig {
             results_dir: temp_dir.clone(),
-            ..Default::default()
         };
 
-        let dir = config.get_results_dir("ref", "sonnet", &vec!["java".to_string()]);
+        let dir = config.get_results_dir("ref", "sonnet", &["java".to_string()]);
         // Should find the existing directory and use it (run 1)
         assert!(dir.to_string_lossy().contains("ref-sonnet-java"));
 
@@ -704,7 +727,10 @@ mod tests {
             ..Default::default()
         };
         assert_eq!(config.parallelism, 1);
-        assert_eq!(config.inference_endpoint.as_deref(), Some("http://localhost:8080/v1"));
+        assert_eq!(
+            config.inference_endpoint.as_deref(),
+            Some("http://localhost:8080/v1")
+        );
     }
 
     /// An endpoint that is absent is not a misconfiguration: it means "probe the local
@@ -864,12 +890,12 @@ mod tests {
     /// (there is no `deny_unknown_fields`), so an obsolete section would still pass here.
     #[test]
     fn the_shipped_example_config_parses_and_is_valid() {
-        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../../config.example.yaml");
+        let path =
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../config.example.yaml");
         let content = std::fs::read_to_string(&path)
             .unwrap_or_else(|e| panic!("cannot read {}: {e}", path.display()));
-        let config: Config = serde_yaml::from_str(&content)
-            .expect("config.example.yaml must parse as Config");
+        let config: Config =
+            serde_yaml::from_str(&content).expect("config.example.yaml must parse as Config");
         config
             .validate()
             .expect("config.example.yaml must satisfy validate()");
@@ -943,7 +969,7 @@ mod tests {
     fn test_quick_bench_config_get_exercises_for_language() {
         let java_exercises = QuickBenchConfig::get_exercises_for_language("java");
         assert!(!java_exercises.is_empty());
-        assert!(java_exercises.contains(&"two-fer".to_string()) == false); // two-fer is not in quick bench
+        assert!(!java_exercises.contains(&"two-fer".to_string())); // two-fer is not in quick bench
         assert!(java_exercises.contains(&"bank-account".to_string()));
     }
 
@@ -962,7 +988,11 @@ mod tests {
     fn test_quick_bench_config_all_languages_have_exercises() {
         for lang in QuickBenchConfig::get_available_languages() {
             let exercises = QuickBenchConfig::get_exercises_for_language(&lang);
-            assert!(!exercises.is_empty(), "Language {} should have quick-bench exercises", lang);
+            assert!(
+                !exercises.is_empty(),
+                "Language {} should have quick-bench exercises",
+                lang
+            );
         }
     }
 

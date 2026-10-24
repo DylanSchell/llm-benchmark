@@ -45,7 +45,13 @@ fn best(list: &[String], pairs: &HashMap<(String, String), i64>) -> i64 {
     best
 }
 
-fn dfs(list: &[String], pairs: &HashMap<(String, String), i64>, used: &mut [bool], order: &mut Vec<usize>, best: &mut i64) {
+fn dfs(
+    list: &[String],
+    pairs: &HashMap<(String, String), i64>,
+    used: &mut [bool],
+    order: &mut Vec<usize>,
+    best: &mut i64,
+) {
     if order.len() == list.len() {
         let mut total = 0i64;
         for i in 0..order.len() {

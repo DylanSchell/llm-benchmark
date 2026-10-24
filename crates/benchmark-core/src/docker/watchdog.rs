@@ -3,6 +3,10 @@ use tokio::task::JoinHandle;
 use tokio::time::{timeout, Duration};
 use tracing::{debug, info, warn};
 
+/// Live tool-call timers: `(tool_call_id, original_command, started_at)`. A `None` id marks a
+/// timer started without one, which can only be cancelled FIFO-style.
+type ActiveTimers = std::sync::Arc<Mutex<Vec<(Option<String>, String, tokio::time::Instant)>>>;
+
 /// Watches for Bash tool calls that exceed a configured timeout and kills them
 /// inside the Docker container using `docker exec`.
 ///
@@ -24,7 +28,7 @@ pub struct CommandWatchdog {
     /// pi `toolCall.id`); `None` marks timers started without an id, which
     /// can only be cancelled FIFO-style. original_command is the actual
     /// command text used for pkill matching.
-    active_timers: std::sync::Arc<Mutex<Vec<(Option<String>, String, tokio::time::Instant)>>>,
+    active_timers: ActiveTimers,
     /// Handle for the periodic timeout-checking task.
     ticker_handle: std::sync::Arc<Mutex<Option<JoinHandle<()>>>>,
 }
@@ -69,10 +73,19 @@ impl CommandWatchdog {
     ///   `None` when unavailable — such timers can only be cancelled FIFO-style.
     /// * `command` - The full bash command that was issued.
     pub async fn on_tool_call_started(&self, id: Option<&str>, command: &str) {
-        let original = command.split('\n').next().unwrap_or(command).trim().to_string();
+        let original = command
+            .split('\n')
+            .next()
+            .unwrap_or(command)
+            .trim()
+            .to_string();
 
         let mut timers = self.active_timers.lock().await;
-        timers.push((id.map(|s| s.to_string()), original.clone(), tokio::time::Instant::now()));
+        timers.push((
+            id.map(|s| s.to_string()),
+            original.clone(),
+            tokio::time::Instant::now(),
+        ));
         debug!(
             "Watchdog timer started for command: {}",
             crate::safe_truncate(&original, 100)
@@ -82,10 +95,19 @@ impl CommandWatchdog {
     /// Synchronous version for use from non-async contexts (e.g.,
     /// StreamParser's accept which must preserve FIFO ordering).
     pub fn on_tool_call_started_sync(&self, id: Option<&str>, command: &str) {
-        let original = command.split('\n').next().unwrap_or(command).trim().to_string();
+        let original = command
+            .split('\n')
+            .next()
+            .unwrap_or(command)
+            .trim()
+            .to_string();
 
         let mut timers = self.active_timers.blocking_lock();
-        timers.push((id.map(|s| s.to_string()), original.clone(), tokio::time::Instant::now()));
+        timers.push((
+            id.map(|s| s.to_string()),
+            original.clone(),
+            tokio::time::Instant::now(),
+        ));
         debug!(
             "Watchdog timer started for command: {}",
             crate::safe_truncate(&original, 100)
@@ -113,7 +135,9 @@ impl CommandWatchdog {
     /// to cancel the oldest (Bash) timer by FIFO.
     pub async fn cancel_timer(&self, id: &str) -> bool {
         let mut timers = self.active_timers.lock().await;
-        let idx = timers.iter().position(|(tid, _, _)| tid.as_deref() == Some(id));
+        let idx = timers
+            .iter()
+            .position(|(tid, _, _)| tid.as_deref() == Some(id));
         match idx {
             Some(i) => {
                 timers.remove(i);
@@ -127,7 +151,9 @@ impl CommandWatchdog {
     /// Synchronous version of cancel_timer for non-async contexts.
     pub fn cancel_timer_sync(&self, id: &str) -> bool {
         let mut timers = self.active_timers.blocking_lock();
-        let idx = timers.iter().position(|(tid, _, _)| tid.as_deref() == Some(id));
+        let idx = timers
+            .iter()
+            .position(|(tid, _, _)| tid.as_deref() == Some(id));
         match idx {
             Some(i) => {
                 timers.remove(i);
@@ -176,13 +202,17 @@ impl CommandWatchdog {
         // Phase 1: SIGTERM
         info!(
             "Sending SIGTERM to process matching '{}' in container '{}'",
-            crate::safe_truncate(&line, 100),
+            crate::safe_truncate(line, 100),
             self.container_name
         );
 
         let _term_result = docker_exec(
             &self.container_name,
-            &["sh", "-c", &format!("pkill -TERM -f '{}' 2>/dev/null || true", pattern)],
+            &[
+                "sh",
+                "-c",
+                &format!("pkill -TERM -f '{}' 2>/dev/null || true", pattern),
+            ],
         )
         .await;
 
@@ -191,7 +221,11 @@ impl CommandWatchdog {
 
         let kill_result = docker_exec(
             &self.container_name,
-            &["sh", "-c", &format!("pkill -9 -f '{}' 2>/dev/null || true", pattern)],
+            &[
+                "sh",
+                "-c",
+                &format!("pkill -9 -f '{}' 2>/dev/null || true", pattern),
+            ],
         )
         .await;
 
@@ -199,15 +233,12 @@ impl CommandWatchdog {
             Ok(_) => {
                 info!(
                     "Killed process matching '{}' in container '{}' via SIGKILL",
-                    crate::safe_truncate(&line, 100),
+                    crate::safe_truncate(line, 100),
                     self.container_name
                 );
             }
             Err(e) => {
-                warn!(
-                    "Failed to SIGKILL process matching '{}': {}",
-                    line, e
-                );
+                warn!("Failed to SIGKILL process matching '{}': {}", line, e);
             }
         }
     }
@@ -235,7 +266,7 @@ impl CommandWatchdog {
         for (_i, original) in &timed_out {
             warn!(
                 "Command watchdog timeout: killing process matching '{}' in container '{}'",
-                crate::safe_truncate(&original, 120),
+                crate::safe_truncate(original, 120),
                 self.container_name
             );
             self.kill_process_by_command(original).await;
@@ -383,9 +414,34 @@ fn extract_bash_call(line: &str) -> Option<(Option<String>, String)> {
     if let Some(msg) = value.get("message") {
         if let Some(items) = msg.get("content").and_then(|c| c.as_array()) {
             for item in items {
-                if item.get("type").and_then(|v| v.as_str()) == Some("tool_use") {
-                    if item.get("name").and_then(|v| v.as_str()) == Some("Bash") {
-                        if let Some(command) = extract_command_from_tool_use(item) {
+                if item.get("type").and_then(|v| v.as_str()) == Some("tool_use")
+                    && item.get("name").and_then(|v| v.as_str()) == Some("Bash")
+                {
+                    if let Some(command) = extract_command_from_tool_use(item) {
+                        let id = item
+                            .get("id")
+                            .and_then(|v| v.as_str())
+                            .map(|s| s.to_string());
+                        return Some((id, command));
+                    }
+                }
+            }
+        }
+    }
+
+    // Pi format: {"type":"message","message":{"content":[{"type":"toolCall","id":"...","name":"bash","arguments":{"command":"..."}}]}}
+    if value.get("type").and_then(|v| v.as_str()) == Some("message") {
+        if let Some(msg) = value.get("message") {
+            if let Some(items) = msg.get("content").and_then(|c| c.as_array()) {
+                for item in items {
+                    if item.get("type").and_then(|v| v.as_str()) == Some("toolCall")
+                        && item
+                            .get("name")
+                            .and_then(|v| v.as_str())
+                            .map(|n| n.eq_ignore_ascii_case("bash"))
+                            .unwrap_or(false)
+                    {
+                        if let Some(command) = extract_command_from_tool_call(item) {
                             let id = item
                                 .get("id")
                                 .and_then(|v| v.as_str())
@@ -398,48 +454,21 @@ fn extract_bash_call(line: &str) -> Option<(Option<String>, String)> {
         }
     }
 
-    // Pi format: {"type":"message","message":{"content":[{"type":"toolCall","id":"...","name":"bash","arguments":{"command":"..."}}]}}
-    if value.get("type").and_then(|v| v.as_str()) == Some("message") {
-        if let Some(msg) = value.get("message") {
-            if let Some(items) = msg.get("content").and_then(|c| c.as_array()) {
-                for item in items {
-                    if item.get("type").and_then(|v| v.as_str()) == Some("toolCall") {
-                        if item
-                            .get("name")
-                            .and_then(|v| v.as_str())
-                            .map(|n| n.eq_ignore_ascii_case("bash"))
-                            .unwrap_or(false)
-                        {
-                            if let Some(command) = extract_command_from_tool_call(item) {
-                                let id = item
-                                    .get("id")
-                                    .and_then(|v| v.as_str())
-                                    .map(|s| s.to_string());
-                                return Some((id, command));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     // Pi tool_execution_start: {"type":"tool_execution_start","toolName":"Bash","args":{"command":"..."}}
-    if value.get("type").and_then(|v| v.as_str()) == Some("tool_execution_start") {
-        if value
+    if value.get("type").and_then(|v| v.as_str()) == Some("tool_execution_start")
+        && value
             .get("toolName")
             .and_then(|v| v.as_str())
             .map(|n| n.eq_ignore_ascii_case("bash"))
             .unwrap_or(false)
-        {
-            if let Some(args) = value.get("args") {
-                if let Some(command) = args.get("command").and_then(|v| v.as_str()) {
-                    let id = value
-                        .get("toolCallId")
-                        .and_then(|v| v.as_str())
-                        .map(|s| s.to_string());
-                    return Some((id, command.to_string()));
-                }
+    {
+        if let Some(args) = value.get("args") {
+            if let Some(command) = args.get("command").and_then(|v| v.as_str()) {
+                let id = value
+                    .get("toolCallId")
+                    .and_then(|v| v.as_str())
+                    .map(|s| s.to_string());
+                return Some((id, command.to_string()));
             }
         }
     }
@@ -498,13 +527,18 @@ fn extract_tool_result_id(line: &str) -> Option<String> {
 /// Extract command from a tool_use node.
 fn extract_command_from_tool_use(node: &serde_json::Value) -> Option<String> {
     let input = node.get("input").or_else(|| node.get("arguments"))?;
-    input.get("command").and_then(|v| v.as_str()).map(|s| s.to_string())
+    input
+        .get("command")
+        .and_then(|v| v.as_str())
+        .map(|s| s.to_string())
 }
 
 /// Extract command from a toolCall node.
 fn extract_command_from_tool_call(node: &serde_json::Value) -> Option<String> {
     let args = node.get("arguments")?;
-    args.get("command").and_then(|v| v.as_str()).map(|s| s.to_string())
+    args.get("command")
+        .and_then(|v| v.as_str())
+        .map(|s| s.to_string())
 }
 
 /// Detect a tool_result event in JSON output.
@@ -583,7 +617,9 @@ mod tests {
     #[tokio::test]
     async fn test_ticker_aborts_on_close() {
         let watchdog = CommandWatchdog::new("test-container", 120);
-        watchdog.on_tool_call_started(Some("id1"), "echo hello").await;
+        watchdog
+            .on_tool_call_started(Some("id1"), "echo hello")
+            .await;
         watchdog.close().await;
         // Ticker should be aborted
         assert!(watchdog.ticker_handle.lock().await.is_none());
@@ -599,14 +635,18 @@ mod tests {
     #[tokio::test]
     async fn test_cancel_oldest_with_pending() {
         let watchdog = CommandWatchdog::new("test-container", 120);
-        watchdog.on_tool_call_started(Some("id1"), "echo hello").await;
+        watchdog
+            .on_tool_call_started(Some("id1"), "echo hello")
+            .await;
         watchdog.cancel_oldest_timer().await;
     }
 
     #[tokio::test]
     async fn test_timer_fires_after_timeout() {
         let watchdog = CommandWatchdog::new("test-container", 0); // 0 second timeout
-        watchdog.on_tool_call_started(Some("id1"), "sleep 999").await;
+        watchdog
+            .on_tool_call_started(Some("id1"), "sleep 999")
+            .await;
         tokio::time::sleep(std::time::Duration::from_millis(100)).await;
         // Timer should have fired and killed the process
     }
@@ -614,7 +654,9 @@ mod tests {
     #[tokio::test]
     async fn test_timer_cancelled_before_firing() {
         let watchdog = CommandWatchdog::new("test-container", 0); // 0 second timeout
-        watchdog.on_tool_call_started(Some("id1"), "sleep 999").await;
+        watchdog
+            .on_tool_call_started(Some("id1"), "sleep 999")
+            .await;
         watchdog.cancel_oldest_timer().await; // Cancel before it fires
         tokio::time::sleep(std::time::Duration::from_millis(100)).await;
         // Should not panic
@@ -657,7 +699,9 @@ mod tests {
         // Ensure Drop doesn't panic
         {
             let watchdog = CommandWatchdog::new("test-container", 120);
-            watchdog.on_tool_call_started(Some("id1"), "echo hello").await;
+            watchdog
+                .on_tool_call_started(Some("id1"), "echo hello")
+                .await;
         }
         // watchdog dropped here
     }
@@ -687,8 +731,12 @@ mod tests {
     async fn repeated_identical_commands_cancel_independently() {
         // Two runs of the same command must have independent timers.
         let watchdog = CommandWatchdog::new("test-container", 120);
-        watchdog.on_tool_call_started(Some("run1"), "cargo test").await;
-        watchdog.on_tool_call_started(Some("run2"), "cargo test").await;
+        watchdog
+            .on_tool_call_started(Some("run1"), "cargo test")
+            .await;
+        watchdog
+            .on_tool_call_started(Some("run2"), "cargo test")
+            .await;
 
         assert!(watchdog.cancel_timer("run1").await);
         let timers = watchdog.active_timers.lock().await;

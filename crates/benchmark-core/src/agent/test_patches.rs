@@ -1,16 +1,22 @@
+use benchmark_types::exercise::Exercise;
 use std::fs;
 use std::path::Path;
 use std::sync::OnceLock;
 use tracing::{debug, info};
-use benchmark_types::exercise::Exercise;
 use walkdir::WalkDir;
 
 /// Cached regex for removing @Disabled annotations from Java tests.
 static DISABLED_ANNOTATION_RE: OnceLock<regex::Regex> = OnceLock::new();
 
+/// Cached regex for removing #[ignore] annotations from Rust tests.
+static IGNORE_ANNOTATION_RE: OnceLock<regex::Regex> = OnceLock::new();
+
 /// Patches test files for the exercise (language-specific modifications).
 /// Removes skip annotations so all tests run.
-pub fn run_patch_tests(exercise: &Exercise, temp_work_dir: &Path) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+pub fn run_patch_tests(
+    exercise: &Exercise,
+    temp_work_dir: &Path,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     info!("Patching tests for language: {}", exercise.language);
     match exercise.language.as_str() {
         "rust" => {
@@ -45,8 +51,8 @@ pub fn run_replace_xtest(dir: &Path) -> Result<(), Box<dyn std::error::Error + S
         if !["js", "ts", "mjs", "cjs"].contains(&ext) {
             continue;
         }
-        let is_test_file = path.to_string_lossy().to_lowercase()
-            .contains(".test.") || path.to_string_lossy().to_lowercase().contains(".spec.")
+        let is_test_file = path.to_string_lossy().to_lowercase().contains(".test.")
+            || path.to_string_lossy().to_lowercase().contains(".spec.")
             || path.to_string_lossy().to_lowercase().contains("test")
             || path.to_string_lossy().to_lowercase().contains("spec");
         if !is_test_file {
@@ -61,16 +67,25 @@ pub fn run_replace_xtest(dir: &Path) -> Result<(), Box<dyn std::error::Error + S
         }
     }
     if count > 0 {
-        info!("Patched {} JavaScript/TypeScript test file(s) - replaced xtest( with test(", count);
+        info!(
+            "Patched {} JavaScript/TypeScript test file(s) - replaced xtest( with test(",
+            count
+        );
     }
     Ok(())
 }
 
 /// Removes #[ignore] annotations from .rs files.
-pub fn run_remove_ignore_annotations(dir: &Path) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+pub fn run_remove_ignore_annotations(
+    dir: &Path,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !dir.exists() {
         return Ok(());
     }
+    // Built once per call rather than per file: the walk below would otherwise recompile
+    // the same pattern for every Rust file in the exercise.
+    let re = IGNORE_ANNOTATION_RE
+        .get_or_init(|| regex::Regex::new(r"#\[ignore\([^)]*\)\]").expect("invalid ignore regex"));
     let mut count = 0;
     for entry in WalkDir::new(dir) {
         let entry = entry?;
@@ -79,9 +94,9 @@ pub fn run_remove_ignore_annotations(dir: &Path) -> Result<(), Box<dyn std::erro
             continue;
         }
         let content = fs::read_to_string(path)?;
-        let re = regex::Regex::new(r"#\[ignore\([^)]*\)\]")
-            .map_err(|e| format!("Invalid regex: {}", e))?;
-        let modified = re.replace_all(&content.replace("#[ignore]", ""), "").to_string();
+        let modified = re
+            .replace_all(&content.replace("#[ignore]", ""), "")
+            .to_string();
         if content != modified {
             fs::write(path, &modified)?;
             count += 1;
@@ -89,16 +104,23 @@ pub fn run_remove_ignore_annotations(dir: &Path) -> Result<(), Box<dyn std::erro
         }
     }
     if count > 0 {
-        info!("Patched {} Rust test file(s) - removed #[ignore] annotations", count);
+        info!(
+            "Patched {} Rust test file(s) - removed #[ignore] annotations",
+            count
+        );
     }
     Ok(())
 }
 
 /// Removes @Disabled annotations from Java test files.
-pub fn run_remove_disabled_annotations(dir: &Path) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+pub fn run_remove_disabled_annotations(
+    dir: &Path,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !dir.exists() {
         return Ok(());
     }
+    let re = DISABLED_ANNOTATION_RE
+        .get_or_init(|| regex::Regex::new(r"@Disabled\([^)]*\)").expect("invalid Disabled regex"));
     let mut count = 0;
     for entry in WalkDir::new(dir) {
         let entry = entry?;
@@ -107,9 +129,6 @@ pub fn run_remove_disabled_annotations(dir: &Path) -> Result<(), Box<dyn std::er
             continue;
         }
         let content = fs::read_to_string(path)?;
-        let re = DISABLED_ANNOTATION_RE.get_or_init(|| {
-            regex::Regex::new(r"@Disabled\([^)]*\)").expect("invalid Disabled regex")
-        });
         let modified = re.replace_all(&content, "");
         if content != modified.as_ref() {
             fs::write(path, modified.as_ref())?;
@@ -118,7 +137,10 @@ pub fn run_remove_disabled_annotations(dir: &Path) -> Result<(), Box<dyn std::er
         }
     }
     if count > 0 {
-        info!("Patched {} Java test file(s) - removed @Disabled annotations", count);
+        info!(
+            "Patched {} Java test file(s) - removed @Disabled annotations",
+            count
+        );
     }
     Ok(())
 }

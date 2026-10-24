@@ -1,15 +1,15 @@
+use crate::docker::DockerClient;
+use crate::model_load::ModelLoadGate;
+use benchmark_exercises::EmbeddedSource;
+use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::config::Config;
+use benchmark_types::exercise::{Exercise, ExerciseMetadata};
+use benchmark_types::util::recover_poisoned;
+use benchmark_types::ExerciseSource;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use tracing::{debug, error, info, warn};
-use benchmark_types::agent::{Agent, AgentResult};
-use benchmark_types::config::Config;
-use benchmark_types::exercise::{Exercise, ExerciseMetadata};
-use benchmark_types::ExerciseSource;
-use benchmark_exercises::EmbeddedSource;
-use crate::docker::DockerClient;
-use crate::model_load::ModelLoadGate;
-use benchmark_types::util::recover_poisoned;
 
 /// Exercises that are deprecated/removed upstream and should not be discovered or run.
 /// E.g. Exercism deprecated the Go `counter` exercise (problem-specifications#80) because
@@ -78,14 +78,13 @@ impl ExerciseRunner {
     }
 
     /// Sets run parameters for result directory computation.
-    pub fn set_run_params(
-        &mut self,
-        agent_name: &str,
-        model: &str,
-        languages: &[String],
-    ) {
+    pub fn set_run_params(&mut self, agent_name: &str, model: &str, languages: &[String]) {
         self.run_agent_name = Some(agent_name.to_string());
-        self.run_model = Some(if model.is_empty() { "default".to_string() } else { model.to_string() });
+        self.run_model = Some(if model.is_empty() {
+            "default".to_string()
+        } else {
+            model.to_string()
+        });
         self.run_languages = Some(languages.to_vec());
     }
 
@@ -136,7 +135,11 @@ impl ExerciseRunner {
         let mut cache = recover_poisoned(self.exercises_cache.write());
         cache.insert(language.to_string(), exercises.clone());
 
-        debug!("Discovered {} exercises for language: {}", exercises.len(), language);
+        debug!(
+            "Discovered {} exercises for language: {}",
+            exercises.len(),
+            language
+        );
 
         exercises
     }
@@ -149,12 +152,16 @@ impl ExerciseRunner {
         }
 
         let mut languages = self.source.languages();
-        languages.sort_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+        languages.sort_by_key(|a| a.to_lowercase());
 
         // Cache the result
         *recover_poisoned(self.languages_cache.write()) = Some(languages.clone());
 
-        debug!("Discovered {} available languages: {:?}", languages.len(), languages);
+        debug!(
+            "Discovered {} available languages: {:?}",
+            languages.len(),
+            languages
+        );
 
         languages
     }
@@ -169,12 +176,24 @@ impl ExerciseRunner {
         thinking_level: Option<String>,
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
-        self.run_exercise_with_timeout(agent, language, exercise_name, model, thinking_level, results_dir, None).await
+        self.run_exercise_with_timeout(
+            agent,
+            language,
+            exercise_name,
+            model,
+            thinking_level,
+            results_dir,
+            None,
+        )
+        .await
     }
 
     /// Run a single exercise using any agent, with an optional Docker container
     /// timeout override (in seconds). When `Some(secs)`, the container timeout is
     /// capped at that value; when `None`, the default from config is used.
+    // Public API: these arguments are one options struct short, but collapsing them
+    // changes every caller (12 of them) rather than just this file.
+    #[allow(clippy::too_many_arguments)]
     pub async fn run_exercise_with_timeout(
         &self,
         agent: Arc<dyn Agent + Send + Sync>,
@@ -226,6 +245,9 @@ impl ExerciseRunner {
     ///
     /// If `retry` is true, exercises that already have result files are still executed
     /// (useful for re-running failed or outdated results).
+    // Public API: these arguments are one options struct short, but collapsing them
+    // changes every caller (5 of them) rather than just this file.
+    #[allow(clippy::too_many_arguments)]
     pub async fn run_all_exercises(
         &self,
         agent: Arc<dyn Agent + Send + Sync>,
@@ -275,7 +297,10 @@ impl ExerciseRunner {
                 let b_dur = durations.get(&b.name).copied().unwrap_or(0);
                 b_dur.cmp(&a_dur)
             });
-            info!("Retry mode: sorted {} exercises by previous duration (slowest first)", exercises.len());
+            info!(
+                "Retry mode: sorted {} exercises by previous duration (slowest first)",
+                exercises.len()
+            );
         }
 
         // Build an async stream of exercise futures, buffered to `parallelism` concurrency
@@ -283,12 +308,15 @@ impl ExerciseRunner {
             .filter(|exercise| {
                 // Skip exercises that already have a successful result (unless retry mode)
                 let keep = if !retry {
-                    let result_file = self.get_result_path(&exercise.name, agent_name, language, &model);
+                    let result_file =
+                        self.get_result_path(&exercise.name, agent_name, language, &model);
                     if result_file.exists() {
                         // Only skip if the existing result was successful
                         let is_success = std::fs::read_to_string(&result_file)
                             .ok()
-                            .and_then(|content| serde_json::from_str::<serde_json::Value>(&content).ok())
+                            .and_then(|content| {
+                                serde_json::from_str::<serde_json::Value>(&content).ok()
+                            })
                             .and_then(|v| v.get("success")?.as_bool())
                             .unwrap_or(false);
                         if is_success {
@@ -391,7 +419,9 @@ impl ExerciseRunner {
     }
 
     /// Extracts the relative file lists from metadata (config.json → files.*).
-    fn resolve_metadata_paths(metadata: &Option<ExerciseMetadata>) -> (Vec<String>, Vec<String>, Vec<String>) {
+    fn resolve_metadata_paths(
+        metadata: &Option<ExerciseMetadata>,
+    ) -> (Vec<String>, Vec<String>, Vec<String>) {
         if let Some(meta) = metadata {
             if let Some(ref files) = meta.files {
                 return (
@@ -407,7 +437,10 @@ impl ExerciseRunner {
     /// Finds a specific exercise by language and name.
     fn find_exercise(&self, language: &str, exercise_name: &str) -> Option<Exercise> {
         if DEPRECATED_EXERCISES.contains(&exercise_name) {
-            debug!("Skipping deprecated exercise: {}/{}", language, exercise_name);
+            debug!(
+                "Skipping deprecated exercise: {}/{}",
+                language, exercise_name
+            );
             return None;
         }
         if !self.source.has_exercise(language, exercise_name) {
@@ -491,7 +524,13 @@ impl ExerciseRunner {
     }
 
     /// Gets the result file path for an exercise.
-    fn get_result_path(&self, exercise_name: &str, agent_name: &str, language: &str, model: &str) -> PathBuf {
+    fn get_result_path(
+        &self,
+        exercise_name: &str,
+        agent_name: &str,
+        language: &str,
+        model: &str,
+    ) -> PathBuf {
         let results_dir = &self.config.output.results_dir;
         let subdir = format!("{}-{}", agent_name, model);
         results_dir.join(&subdir).join(format!(
@@ -506,7 +545,10 @@ impl ExerciseRunner {
         match serde_json::from_slice::<ExerciseMetadata>(&bytes) {
             Ok(metadata) => Some(metadata),
             Err(e) => {
-                warn!("Failed to parse metadata for {}/{}: {}", language, exercise, e);
+                warn!(
+                    "Failed to parse metadata for {}/{}: {}",
+                    language, exercise, e
+                );
                 None
             }
         }
@@ -531,17 +573,18 @@ impl ExerciseRunner {
         }
         match std::fs::read_to_string(&path) {
             Ok(content) => {
-                if let Ok(value) = serde_json::from_str::<serde_json::Value>(&content) {
-                    if let Some(dur) = value.get("duration").and_then(|v| v.as_f64()) {
-                        (dur * 1000.0) as u64
-                    } else if let Some(dur) = value.get("duration_ms").and_then(|v| v.as_u64()) {
-                        dur
-                    } else {
-                        0
-                    }
-                } else {
-                    0
-                }
+                // The serialized field is "duration" (in seconds as f64), but it may
+                // also appear as "duration_ms" (in ms as u64).
+                serde_json::from_str::<serde_json::Value>(&content)
+                    .map(|value| {
+                        value
+                            .get("duration")
+                            .and_then(|v| v.as_f64())
+                            .map(|dur| (dur * 1000.0) as u64)
+                            .or_else(|| value.get("duration_ms").and_then(|v| v.as_u64()))
+                            .unwrap_or_default()
+                    })
+                    .unwrap_or_default()
             }
             Err(_) => 0,
         }
@@ -579,7 +622,11 @@ impl ExerciseRunner {
         let response = builder.send().await?;
 
         if response.status() != 200 {
-            warn!("Failed to fetch models from {}, status code: {}", endpoint, response.status());
+            warn!(
+                "Failed to fetch models from {}, status code: {}",
+                endpoint,
+                response.status()
+            );
             return Ok(builtin_model_list());
         }
 
@@ -593,7 +640,12 @@ impl ExerciseRunner {
                     .filter_map(|m| m.get("id").and_then(|id| id.as_str()))
                     .map(|s| s.to_string())
                     .collect();
-                info!("Found {} models from {}: {:?}", model_ids.len(), endpoint, model_ids);
+                info!(
+                    "Found {} models from {}: {:?}",
+                    model_ids.len(),
+                    endpoint,
+                    model_ids
+                );
                 if model_ids.is_empty() {
                     Ok(builtin_model_list())
                 } else {
@@ -601,7 +653,10 @@ impl ExerciseRunner {
                 }
             }
             _ => {
-                warn!("'data' field not found or not an array in models response from {}", endpoint);
+                warn!(
+                    "'data' field not found or not an array in models response from {}",
+                    endpoint
+                );
                 Ok(builtin_model_list())
             }
         }
@@ -639,14 +694,28 @@ mod tests {
 
     #[test]
     fn java_exercise_carries_relative_paths_only() {
-        let exercise = runner().find_exercise("java", "series").expect("series exists");
+        let exercise = runner()
+            .find_exercise("java", "series")
+            .expect("series exists");
 
-        assert_eq!(exercise.source_file.as_deref(), Some("src/main/java/Series.java"));
-        assert_eq!(exercise.test_file.as_deref(), Some("src/test/java/SeriesTest.java"));
-        assert_eq!(exercise.reference_dir.as_deref(), Some(".meta/src/reference/java"));
+        assert_eq!(
+            exercise.source_file.as_deref(),
+            Some("src/main/java/Series.java")
+        );
+        assert_eq!(
+            exercise.test_file.as_deref(),
+            Some("src/test/java/SeriesTest.java")
+        );
+        assert_eq!(
+            exercise.reference_dir.as_deref(),
+            Some(".meta/src/reference/java")
+        );
         assert_eq!(exercise.solution_files, vec!["src/main/java/Series.java"]);
         assert_eq!(exercise.test_files, vec!["src/test/java/SeriesTest.java"]);
-        assert_eq!(exercise.example_files, vec![".meta/src/reference/java/Series.java"]);
+        assert_eq!(
+            exercise.example_files,
+            vec![".meta/src/reference/java/Series.java"]
+        );
 
         // The model must never contain absolute host paths.
         for path in exercise
@@ -655,16 +724,25 @@ mod tests {
             .chain(&exercise.solution_files)
             .chain(&exercise.test_files)
         {
-            assert!(!path.starts_with('/'), "absolute path leaked into Exercise: {path}");
+            assert!(
+                !path.starts_with('/'),
+                "absolute path leaked into Exercise: {path}"
+            );
         }
     }
 
     #[test]
     fn rust_exercise_resolves_metadata_and_reference_dir() {
-        let exercise = runner().find_exercise("rust", "alphametics").expect("alphametics exists");
+        let exercise = runner()
+            .find_exercise("rust", "alphametics")
+            .expect("alphametics exists");
 
-        assert!(exercise.test_files.contains(&"tests/alphametics.rs".to_string()));
-        assert!(exercise.example_files.contains(&".meta/example.rs".to_string()));
+        assert!(exercise
+            .test_files
+            .contains(&"tests/alphametics.rs".to_string()));
+        assert!(exercise
+            .example_files
+            .contains(&".meta/example.rs".to_string()));
         assert!(exercise.solution_files.contains(&"src/lib.rs".to_string()));
         assert_eq!(exercise.reference_dir.as_deref(), Some(".meta"));
         // Java-only fields stay empty for other languages.
@@ -676,6 +754,8 @@ mod tests {
     fn deprecated_and_unknown_exercises_are_not_found() {
         let runner = runner();
         assert!(runner.find_exercise("go", "counter").is_none());
-        assert!(runner.find_exercise("rust", "not-a-real-exercise").is_none());
+        assert!(runner
+            .find_exercise("rust", "not-a-real-exercise")
+            .is_none());
     }
 }

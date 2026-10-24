@@ -18,9 +18,9 @@ where
                 Ok(0)
             }
         }
-        serde_json::Value::String(s) => Ok(s.parse::<f64>()
-            .map(|f| (f * 1000.0) as u64)
-            .unwrap_or(0)),
+        serde_json::Value::String(s) => {
+            Ok(s.parse::<f64>().map(|f| (f * 1000.0) as u64).unwrap_or(0))
+        }
         _ => Ok(0),
     }
 }
@@ -125,17 +125,38 @@ pub struct ExerciseResult {
     pub exit_code: Option<i32>,
     #[serde(default)]
     pub output: String,
-    #[serde(rename = "durationMs", alias = "duration_ms", alias = "duration", deserialize_with = "deserialize_duration_ms", default)]
+    #[serde(
+        rename = "durationMs",
+        alias = "duration_ms",
+        alias = "duration",
+        deserialize_with = "deserialize_duration_ms",
+        default
+    )]
     pub duration_ms: u64,
-    #[serde(rename = "startTime", alias = "start_time", deserialize_with = "deserialize_timestamp", default)]
+    #[serde(
+        rename = "startTime",
+        alias = "start_time",
+        deserialize_with = "deserialize_timestamp",
+        default
+    )]
     pub start_time: String,
-    #[serde(rename = "endTime", alias = "end_time", deserialize_with = "deserialize_timestamp", default)]
+    #[serde(
+        rename = "endTime",
+        alias = "end_time",
+        deserialize_with = "deserialize_timestamp",
+        default
+    )]
     pub end_time: String,
-    #[serde(rename = "errorMessage", alias = "error_message", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "errorMessage",
+        alias = "error_message",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub error_message: Option<String>,
     #[serde(default)]
     pub trace: Option<String>,
-    
+
     // Token tracking fields
     #[serde(default)]
     pub input_tokens: u64,
@@ -145,7 +166,7 @@ pub struct ExerciseResult {
     pub cached_input_tokens: u64,
     #[serde(default, rename = "uncachedInputTokens")]
     pub uncached_input_tokens: u64,
-    
+
     // For reporting/grouping
     #[serde(default)]
     pub model: String,

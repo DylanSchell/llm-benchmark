@@ -302,12 +302,16 @@ mod tests {
         );
         // A dead candidate first must not stop the live one being found.
         assert_eq!(
-            probe_endpoints(&[other, &url], PROBE_TIMEOUT).await.as_deref(),
+            probe_endpoints(&[other, &url], PROBE_TIMEOUT)
+                .await
+                .as_deref(),
             Some(url.as_str())
         );
         // Priority order decides, even when both answer.
         assert_eq!(
-            probe_endpoints(&[&url, other], PROBE_TIMEOUT).await.as_deref(),
+            probe_endpoints(&[&url, other], PROBE_TIMEOUT)
+                .await
+                .as_deref(),
             Some(url.as_str())
         );
 
@@ -336,7 +340,9 @@ mod tests {
 
         assert_eq!(probe_endpoints(&[&squatter], PROBE_TIMEOUT).await, None);
         assert_eq!(
-            probe_endpoints(&[&squatter, &real], PROBE_TIMEOUT).await.as_deref(),
+            probe_endpoints(&[&squatter, &real], PROBE_TIMEOUT)
+                .await
+                .as_deref(),
             Some(real.as_str()),
             "a squatter must not hide the model server behind it"
         );
@@ -380,7 +386,10 @@ mod tests {
         // The static container default is still in place, so an agent is never left without
         // an endpoint even when nothing was detected.
         assert_eq!(
-            config.docker.environment_with_defaults().get("OPENAI_BASE_URL"),
+            config
+                .docker
+                .environment_with_defaults()
+                .get("OPENAI_BASE_URL"),
             Some(&"http://host.docker.internal:8080/v1".to_string())
         );
     }
@@ -388,8 +397,10 @@ mod tests {
     #[tokio::test]
     async fn a_configured_endpoint_is_used_without_probing() {
         let (url, handle) = serve_model_list().await;
-        let mut config = Config::default();
-        config.inference_endpoint = Some("http://localhost:4321/v1".to_string());
+        let mut config = Config {
+            inference_endpoint: Some("http://localhost:4321/v1".to_string()),
+            ..Default::default()
+        };
 
         let resolved = resolve_with(&mut config, &[&url], PROBE_TIMEOUT).await;
 
@@ -420,8 +431,10 @@ mod tests {
 
     #[tokio::test]
     async fn a_remote_endpoint_does_not_move_the_container_endpoint() {
-        let mut config = Config::default();
-        config.inference_endpoint = Some("https://api.example.com/v1".to_string());
+        let mut config = Config {
+            inference_endpoint: Some("https://api.example.com/v1".to_string()),
+            ..Default::default()
+        };
 
         resolve_with(&mut config, &[], PROBE_TIMEOUT).await;
 

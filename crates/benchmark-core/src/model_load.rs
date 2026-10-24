@@ -204,7 +204,10 @@ impl ModelLoadGate {
                 return Outcome::GaveUpAfter(elapsed);
             }
 
-            debug!("still waiting for model '{model}' ({state:?} after {}s)", elapsed.as_secs());
+            debug!(
+                "still waiting for model '{model}' ({state:?} after {}s)",
+                elapsed.as_secs()
+            );
             tokio::time::sleep(self.inner.poll).await;
         }
     }
@@ -375,7 +378,9 @@ fn server_root(endpoint: &str) -> String {
             "{}://{}{}",
             url.scheme(),
             url.host_str().unwrap_or_default(),
-            url.port().map(|port| format!(":{port}")).unwrap_or_default()
+            url.port()
+                .map(|port| format!(":{port}"))
+                .unwrap_or_default()
         ),
         // Not a URL we can take apart: the endpoint itself is the best guess there is.
         Err(_) => endpoint.to_string(),
@@ -447,7 +452,10 @@ mod tests {
         // A model the endpoint has never heard of must not start a wait that can only end in a
         // timeout — the typo (or the stale config) is reported by the agent's own request.
         assert_eq!(classify(&loaded, "clef-typo"), LoadState::Unknown);
-        assert_eq!(classify(&serde_json::json!({"object": "list"}), MODEL), LoadState::Unknown);
+        assert_eq!(
+            classify(&serde_json::json!({"object": "list"}), MODEL),
+            LoadState::Unknown
+        );
 
         // A peer is another machine's model: nothing here loads, so nothing here waits.
         let peer = listing(&[record(
@@ -484,18 +492,28 @@ mod tests {
         // Asked about the alias, `/running` still reports the real model — so that is the entry
         // readiness has to be read from.
         assert_eq!(
-            running_state(Some(&running(&["ready"])), &serving_ids(&alias, "clef-fast")).as_deref(),
+            running_state(
+                Some(&running(&["ready"])),
+                &serving_ids(&alias, "clef-fast")
+            )
+            .as_deref(),
             Some("ready")
         );
         assert_eq!(
-            running_state(Some(&running(&["starting"])), &serving_ids(&alias, "clef-fast"))
-                .as_deref(),
+            running_state(
+                Some(&running(&["starting"])),
+                &serving_ids(&alias, "clef-fast")
+            )
+            .as_deref(),
             Some("starting")
         );
 
         // `/running` not naming the model is not evidence of anything: the matrix, a selector on
         // another host, or an older server can all answer without it. The list stands.
-        assert_eq!(running_state(Some(&running(&[])), &[MODEL.to_string()]), None);
+        assert_eq!(
+            running_state(Some(&running(&[])), &[MODEL.to_string()]),
+            None
+        );
         assert_eq!(running_state(None, &[MODEL.to_string()]), None);
     }
 
@@ -503,12 +521,18 @@ mod tests {
     /// lives behind `/v1`.
     #[test]
     fn the_running_route_hangs_off_the_server_root() {
-        assert_eq!(server_root("http://localhost:8080/v1"), "http://localhost:8080");
+        assert_eq!(
+            server_root("http://localhost:8080/v1"),
+            "http://localhost:8080"
+        );
         assert_eq!(
             server_root("http://127.0.0.1:9931/v1/"),
             "http://127.0.0.1:9931"
         );
-        assert_eq!(server_root("https://swap.example.com/v1"), "https://swap.example.com");
+        assert_eq!(
+            server_root("https://swap.example.com/v1"),
+            "https://swap.example.com"
+        );
         // Something the URL parser cannot read is used as-is rather than mangled.
         assert_eq!(server_root("not a url"), "not a url");
     }
@@ -622,9 +646,14 @@ mod tests {
         seen.lock().await.push(format!("{method} {path}"));
 
         let (status, body) = match (method, path) {
-            ("GET", "/v1/models") => (200, models_body(scenario, listings.fetch_add(1, Ordering::SeqCst) + 1)),
+            ("GET", "/v1/models") => (
+                200,
+                models_body(scenario, listings.fetch_add(1, Ordering::SeqCst) + 1),
+            ),
             ("GET", "/running") => (200, running_body(scenario, listings.load(Ordering::SeqCst))),
-            ("POST", "/v1/chat/completions") => (200, r#"{"id":"chatcmpl-1","choices":[]}"#.to_string()),
+            ("POST", "/v1/chat/completions") => {
+                (200, r#"{"id":"chatcmpl-1","choices":[]}"#.to_string())
+            }
             _ => (404, r#"{"error":"not found"}"#.to_string()),
         };
         reply(&mut socket, status, &body).await
@@ -636,7 +665,11 @@ mod tests {
             Scenario::LoadsAfter(after) => record(
                 MODEL,
                 r#""type":"model""#,
-                Some(if listings <= after { "unloaded" } else { "loaded" }),
+                Some(if listings <= after {
+                    "unloaded"
+                } else {
+                    "loaded"
+                }),
             ),
             Scenario::StartingUntil(_) => record(MODEL, r#""type":"model""#, Some("loaded")),
             Scenario::Never => record(MODEL, r#""type":"model""#, Some("unloaded")),
@@ -707,7 +740,11 @@ mod tests {
             requests.iter().any(|r| r == "GET /v1/models"),
             "the check itself is the whole cost, got: {requests:?}"
         );
-        assert_eq!(warm_requests(&server).await, 0, "a loaded model needs no request");
+        assert_eq!(
+            warm_requests(&server).await,
+            0,
+            "a loaded model needs no request"
+        );
 
         server.stop().await;
     }
@@ -725,7 +762,11 @@ mod tests {
             matches!(outcome, Outcome::LoadedAfter(_)),
             "expected a completed load, got {outcome:?}"
         );
-        assert_eq!(warm_requests(&server).await, 1, "one trigger request is enough");
+        assert_eq!(
+            warm_requests(&server).await,
+            1,
+            "one trigger request is enough"
+        );
 
         server.stop().await;
     }
@@ -904,17 +945,16 @@ mod tests {
         };
 
         // Show what the gate is doing while it waits, so a slow load is legible.
-        let _ = tracing_subscriber::fmt().with_max_level(tracing::Level::INFO).try_init();
+        let _ = tracing_subscriber::fmt()
+            .with_max_level(tracing::Level::INFO)
+            .try_init();
 
         let gate = ModelLoadGate::from_config(&config);
         let outcome = gate.ensure_ready(&model).await;
         println!("ensure_ready({model}) over {endpoint} -> {outcome:?}");
 
         assert!(
-            matches!(
-                outcome,
-                Outcome::AlreadyLoaded | Outcome::LoadedAfter(_)
-            ),
+            matches!(outcome, Outcome::AlreadyLoaded | Outcome::LoadedAfter(_)),
             "{model} must end up resident, got {outcome:?}"
         );
         assert_eq!(

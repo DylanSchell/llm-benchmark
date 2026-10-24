@@ -1,26 +1,90 @@
 use crate::rng::Rng;
 
 const WEAPONS: [Item; 5] = [
-    Item { cost: 8, damage: 4, armor: 0 },
-    Item { cost: 10, damage: 5, armor: 0 },
-    Item { cost: 25, damage: 6, armor: 0 },
-    Item { cost: 40, damage: 7, armor: 0 },
-    Item { cost: 74, damage: 8, armor: 0 },
+    Item {
+        cost: 8,
+        damage: 4,
+        armor: 0,
+    },
+    Item {
+        cost: 10,
+        damage: 5,
+        armor: 0,
+    },
+    Item {
+        cost: 25,
+        damage: 6,
+        armor: 0,
+    },
+    Item {
+        cost: 40,
+        damage: 7,
+        armor: 0,
+    },
+    Item {
+        cost: 74,
+        damage: 8,
+        armor: 0,
+    },
 ];
 const ARMORS: [Item; 5] = [
-    Item { cost: 13, damage: 0, armor: 1 },
-    Item { cost: 31, damage: 0, armor: 2 },
-    Item { cost: 53, damage: 0, armor: 3 },
-    Item { cost: 75, damage: 0, armor: 4 },
-    Item { cost: 102, damage: 0, armor: 5 },
+    Item {
+        cost: 13,
+        damage: 0,
+        armor: 1,
+    },
+    Item {
+        cost: 31,
+        damage: 0,
+        armor: 2,
+    },
+    Item {
+        cost: 53,
+        damage: 0,
+        armor: 3,
+    },
+    Item {
+        cost: 75,
+        damage: 0,
+        armor: 4,
+    },
+    Item {
+        cost: 102,
+        damage: 0,
+        armor: 5,
+    },
 ];
 const RINGS: [Item; 6] = [
-    Item { cost: 25, damage: 1, armor: 0 },
-    Item { cost: 50, damage: 2, armor: 0 },
-    Item { cost: 100, damage: 3, armor: 0 },
-    Item { cost: 20, damage: 0, armor: 1 },
-    Item { cost: 40, damage: 0, armor: 2 },
-    Item { cost: 80, damage: 0, armor: 3 },
+    Item {
+        cost: 25,
+        damage: 1,
+        armor: 0,
+    },
+    Item {
+        cost: 50,
+        damage: 2,
+        armor: 0,
+    },
+    Item {
+        cost: 100,
+        damage: 3,
+        armor: 0,
+    },
+    Item {
+        cost: 20,
+        damage: 0,
+        armor: 1,
+    },
+    Item {
+        cost: 40,
+        damage: 0,
+        armor: 2,
+    },
+    Item {
+        cost: 80,
+        damage: 0,
+        armor: 3,
+    },
 ];
 
 #[derive(Clone, Copy)]
@@ -78,27 +142,22 @@ fn player_wins(boss: &Boss, dmg: i64, armor: i64) -> bool {
 }
 
 fn each_loadout(f: &mut dyn FnMut(i64, i64, i64)) {
-    for w in 0..WEAPONS.len() {
-        for a in 0..=ARMORS.len() {
-            for r1 in 0..=RINGS.len() {
-                for r2 in (r1 + 1)..=RINGS.len() {
-                    let mut dmg = WEAPONS[w].damage;
+    // `None` is a legal slot: buy no armour, or no ring. Rings are visited in index
+    // order so the same ring is never taken twice.
+    let armors: Vec<Option<&Item>> = ARMORS.iter().map(Some).chain([None]).collect();
+    let rings: Vec<Option<&Item>> = RINGS.iter().map(Some).chain([None]).collect();
+
+    for weapon in &WEAPONS {
+        for armor_slot in &armors {
+            for (i, ring1) in rings.iter().enumerate() {
+                for ring2 in &rings[i + 1..] {
+                    let mut dmg = weapon.damage;
                     let mut armor = 0;
-                    let mut cost = WEAPONS[w].cost;
-                    if a < ARMORS.len() {
-                        dmg += ARMORS[a].damage;
-                        armor += ARMORS[a].armor;
-                        cost += ARMORS[a].cost;
-                    }
-                    if r1 < RINGS.len() {
-                        dmg += RINGS[r1].damage;
-                        armor += RINGS[r1].armor;
-                        cost += RINGS[r1].cost;
-                    }
-                    if r2 < RINGS.len() {
-                        dmg += RINGS[r2].damage;
-                        armor += RINGS[r2].armor;
-                        cost += RINGS[r2].cost;
+                    let mut cost = weapon.cost;
+                    for slot in [*armor_slot, *ring1, *ring2].into_iter().flatten() {
+                        dmg += slot.damage;
+                        armor += slot.armor;
+                        cost += slot.cost;
                     }
                     f(cost, dmg, armor);
                 }

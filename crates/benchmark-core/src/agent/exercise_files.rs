@@ -4,11 +4,11 @@
 //! files an exercise needs into a per-run temporary work directory that is then
 //! bind-mounted into Docker at `/workspace`. No host exercise tree is required.
 
+use benchmark_types::exercise::Exercise;
+use benchmark_types::ExerciseSource;
 use std::fs;
 use std::path::{Path, PathBuf};
 use tracing::{debug, info};
-use benchmark_types::exercise::Exercise;
-use benchmark_types::ExerciseSource;
 
 /// True when a relative exercise path lives under the `.meta/` tree, which is
 /// never written into the container (it holds metadata and reference solutions).
@@ -164,7 +164,10 @@ mod tests {
 
         // .meta/Cargo-example.toml replaces the dependency-less stub Cargo.toml.
         let cargo = fs::read_to_string(dir.path().join("Cargo.toml")).unwrap();
-        assert!(cargo.contains("[dependencies]"), "Cargo.toml was not replaced: {cargo}");
+        assert!(
+            cargo.contains("[dependencies]"),
+            "Cargo.toml was not replaced: {cargo}"
+        );
         assert!(cargo.contains("permutohedron"));
 
         // Real tests are materialized, and .meta is never copied into the container.
@@ -177,7 +180,8 @@ mod tests {
         let source = EmbeddedSource::new();
         let dir = tempfile::tempdir().unwrap();
 
-        let dest = materialize_exercise(&source, &exercise("allergies", "cpp"), dir.path()).unwrap();
+        let dest =
+            materialize_exercise(&source, &exercise("allergies", "cpp"), dir.path()).unwrap();
 
         assert_eq!(dest, dir.path().join("allergies"));
         assert!(dest.join("CMakeLists.txt").exists());

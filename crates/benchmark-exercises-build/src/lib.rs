@@ -221,8 +221,7 @@ pub fn assemble_from(
                 );
             }
 
-            let dest = staging_root
-                .join(render(&manifest.layout.dest, language, exercise));
+            let dest = staging_root.join(render(&manifest.layout.dest, language, exercise));
 
             let (files, excluded) = copy_pruned(&source, &dest, &rules)
                 .with_context(|| format!("copying {language}/{exercise}"))?;
@@ -321,8 +320,7 @@ fn copy_pruned(source: &Path, dest: &Path, rules: &Rules) -> Result<(usize, usiz
 
         let target = dest.join(relative);
         if let Some(parent) = target.parent() {
-            fs::create_dir_all(parent)
-                .with_context(|| format!("creating {}", parent.display()))?;
+            fs::create_dir_all(parent).with_context(|| format!("creating {}", parent.display()))?;
         }
         fs::copy(entry.path(), &target)
             .with_context(|| format!("copying {}", entry.path().display()))?;
@@ -560,8 +558,8 @@ impl Lock {
     }
 
     pub fn load(path: &Path) -> Result<Self> {
-        let text = fs::read_to_string(path)
-            .with_context(|| format!("reading lock {}", path.display()))?;
+        let text =
+            fs::read_to_string(path).with_context(|| format!("reading lock {}", path.display()))?;
         serde_yaml::from_str(&text).with_context(|| format!("parsing lock {}", path.display()))
     }
 
@@ -653,8 +651,14 @@ mod tests {
             },
             exercises,
             rules: vec![
-                Rule { include: None, exclude: Some(".approaches/**".into()) },
-                Rule { include: None, exclude: Some(".meta/tests.toml".into()) },
+                Rule {
+                    include: None,
+                    exclude: Some(".approaches/**".into()),
+                },
+                Rule {
+                    include: None,
+                    exclude: Some(".meta/tests.toml".into()),
+                },
             ],
         }
     }
@@ -742,7 +746,10 @@ mod tests {
         let tmp = tempfile::tempdir().unwrap();
         let source = tmp.path().join("src");
         let staging = tmp.path().join("staging");
-        write(&source.join("rust/exercises/practice/series/Cargo.toml"), "x");
+        write(
+            &source.join("rust/exercises/practice/series/Cargo.toml"),
+            "x",
+        );
         assemble_from(&source, &staging, &test_manifest()).unwrap();
 
         let mut resolved = BTreeMap::new();
@@ -757,7 +764,10 @@ mod tests {
         assert_eq!(reloaded.files, lock.files);
         assert_eq!(reloaded.sources["rust"].resolved, "deadbeef");
 
-        write(&staging.join("rust/exercises/practice/series/Cargo.toml"), "changed");
+        write(
+            &staging.join("rust/exercises/practice/series/Cargo.toml"),
+            "changed",
+        );
         let drift = reloaded.drift(&staging).unwrap();
         assert_eq!(drift.len(), 1);
         assert!(drift[0].starts_with("modified:"));
@@ -782,11 +792,27 @@ mod tests {
 
         for entry in WalkDir::new(&staging).into_iter().filter_map(|e| e.ok()) {
             let relative = entry.path().strip_prefix(&staging).unwrap();
-            let parts: Vec<_> = relative.components().map(|c| c.as_os_str().to_string_lossy().to_string()).collect();
-            assert!(!parts.iter().any(|p| p == ".approaches" || p == ".articles"), "pruned dir leaked: {}", relative.display());
+            let parts: Vec<_> = relative
+                .components()
+                .map(|c| c.as_os_str().to_string_lossy().to_string())
+                .collect();
+            assert!(
+                !parts.iter().any(|p| p == ".approaches" || p == ".articles"),
+                "pruned dir leaked: {}",
+                relative.display()
+            );
             let name = parts.last().cloned().unwrap_or_default();
-            assert_ne!(name, "tests.toml", "pruned tests.toml leaked: {}", relative.display());
-            assert!(!name.ends_with(".j2") && !name.ends_with(".tera"), "pruned template leaked: {}", relative.display());
+            assert_ne!(
+                name,
+                "tests.toml",
+                "pruned tests.toml leaked: {}",
+                relative.display()
+            );
+            assert!(
+                !name.ends_with(".j2") && !name.ends_with(".tera"),
+                "pruned template leaked: {}",
+                relative.display()
+            );
         }
 
         // Files the application depends on must survive.
@@ -797,7 +823,10 @@ mod tests {
             "python/exercises/practice/beer-song/.meta/example.py",
             "cpp/exercises/practice/allergies/test/catch.hpp",
         ] {
-            assert!(staging.join(required).is_file(), "missing required file: {required}");
+            assert!(
+                staging.join(required).is_file(),
+                "missing required file: {required}"
+            );
         }
     }
 
@@ -812,19 +841,41 @@ mod tests {
         let exercises = vec!["alphametics".to_string()];
         let tmp = tempfile::tempdir().unwrap();
 
-        let outcome = fetch_language(source, "rust", &exercises, &manifest.layout, tmp.path(), false)
-            .unwrap();
+        let outcome = fetch_language(
+            source,
+            "rust",
+            &exercises,
+            &manifest.layout,
+            tmp.path(),
+            false,
+        )
+        .unwrap();
         assert!(!outcome.cached);
         assert_eq!(outcome.resolved, source.reference);
 
-        let cargo = outcome.dir.join("exercises/practice/alphametics/Cargo.toml");
-        assert!(cargo.is_file(), "sparse checkout did not materialize the exercise");
+        let cargo = outcome
+            .dir
+            .join("exercises/practice/alphametics/Cargo.toml");
+        assert!(
+            cargo.is_file(),
+            "sparse checkout did not materialize the exercise"
+        );
         let text = fs::read_to_string(&cargo).unwrap();
-        assert!(text.contains("edition = \"2021\""), "pinned content not reproduced");
+        assert!(
+            text.contains("edition = \"2021\""),
+            "pinned content not reproduced"
+        );
 
         // A second call must reuse the cache without network access.
-        let again = fetch_language(source, "rust", &exercises, &manifest.layout, tmp.path(), true)
-            .unwrap();
+        let again = fetch_language(
+            source,
+            "rust",
+            &exercises,
+            &manifest.layout,
+            tmp.path(),
+            true,
+        )
+        .unwrap();
         assert!(again.cached);
         assert_eq!(again.resolved, source.reference);
     }
@@ -848,9 +899,15 @@ mod tests {
         // 1. Clean clone of every pinned track (fresh temp cache).
         for (language, source) in &manifest.sources {
             let exercises = manifest.selection(language).unwrap().effective();
-            let outcome =
-                fetch_language(source, language, &exercises, &manifest.layout, &cache, false)
-                    .unwrap_or_else(|e| panic!("fetch {language}: {e}"));
+            let outcome = fetch_language(
+                source,
+                language,
+                &exercises,
+                &manifest.layout,
+                &cache,
+                false,
+            )
+            .unwrap_or_else(|e| panic!("fetch {language}: {e}"));
             println!(
                 "fetched {language:10} @ {} ({} exercises, cached={})",
                 &outcome.resolved[..10],
@@ -872,9 +929,11 @@ mod tests {
         let mut expected: BTreeMap<String, String> = BTreeMap::new();
         for language in manifest.sources.keys() {
             for exercise in manifest.selection(language).unwrap().effective() {
-                let dir = polyglot
-                    .join(language)
-                    .join(render(&manifest.layout.source, language, &exercise));
+                let dir = polyglot.join(language).join(render(
+                    &manifest.layout.source,
+                    language,
+                    &exercise,
+                ));
                 if !dir.is_dir() {
                     println!("!! polyglot missing {language}/{exercise}");
                     continue;
@@ -924,7 +983,10 @@ mod tests {
         println!("=== FIDELITY REPORT (staged vs polyglot) ===");
         println!("expected (polyglot, post-rules): {}", expected.len());
         println!("staged:                          {}", staged.len());
-        println!("matched:                         {}", expected.len() - missing.len() - differing.len());
+        println!(
+            "matched:                         {}",
+            expected.len() - missing.len() - differing.len()
+        );
         println!("missing (in polyglot, not staged): {}", missing.len());
         println!("extra   (in staged, not polyglot): {}", extra.len());
         println!("differing content:                 {}", differing.len());

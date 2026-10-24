@@ -33,31 +33,106 @@ pub struct Puzzle {
 }
 
 const PUZZLES: [Puzzle; 25] = [
-    Puzzle { generate: day01::generate, solve: day01::solve },
-    Puzzle { generate: day02::generate, solve: day02::solve },
-    Puzzle { generate: day03::generate, solve: day03::solve },
-    Puzzle { generate: day04::generate, solve: day04::solve },
-    Puzzle { generate: day05::generate, solve: day05::solve },
-    Puzzle { generate: day06::generate, solve: day06::solve },
-    Puzzle { generate: day07::generate, solve: day07::solve },
-    Puzzle { generate: day08::generate, solve: day08::solve },
-    Puzzle { generate: day09::generate, solve: day09::solve },
-    Puzzle { generate: day10::generate, solve: day10::solve },
-    Puzzle { generate: day11::generate, solve: day11::solve },
-    Puzzle { generate: day12::generate, solve: day12::solve },
-    Puzzle { generate: day13::generate, solve: day13::solve },
-    Puzzle { generate: day14::generate, solve: day14::solve },
-    Puzzle { generate: day15::generate, solve: day15::solve },
-    Puzzle { generate: day16::generate, solve: day16::solve },
-    Puzzle { generate: day17::generate, solve: day17::solve },
-    Puzzle { generate: day18::generate, solve: day18::solve },
-    Puzzle { generate: day19::generate, solve: day19::solve },
-    Puzzle { generate: day20::generate, solve: day20::solve },
-    Puzzle { generate: day21::generate, solve: day21::solve },
-    Puzzle { generate: day22::generate, solve: day22::solve },
-    Puzzle { generate: day23::generate, solve: day23::solve },
-    Puzzle { generate: day24::generate, solve: day24::solve },
-    Puzzle { generate: day25::generate, solve: day25::solve },
+    Puzzle {
+        generate: day01::generate,
+        solve: day01::solve,
+    },
+    Puzzle {
+        generate: day02::generate,
+        solve: day02::solve,
+    },
+    Puzzle {
+        generate: day03::generate,
+        solve: day03::solve,
+    },
+    Puzzle {
+        generate: day04::generate,
+        solve: day04::solve,
+    },
+    Puzzle {
+        generate: day05::generate,
+        solve: day05::solve,
+    },
+    Puzzle {
+        generate: day06::generate,
+        solve: day06::solve,
+    },
+    Puzzle {
+        generate: day07::generate,
+        solve: day07::solve,
+    },
+    Puzzle {
+        generate: day08::generate,
+        solve: day08::solve,
+    },
+    Puzzle {
+        generate: day09::generate,
+        solve: day09::solve,
+    },
+    Puzzle {
+        generate: day10::generate,
+        solve: day10::solve,
+    },
+    Puzzle {
+        generate: day11::generate,
+        solve: day11::solve,
+    },
+    Puzzle {
+        generate: day12::generate,
+        solve: day12::solve,
+    },
+    Puzzle {
+        generate: day13::generate,
+        solve: day13::solve,
+    },
+    Puzzle {
+        generate: day14::generate,
+        solve: day14::solve,
+    },
+    Puzzle {
+        generate: day15::generate,
+        solve: day15::solve,
+    },
+    Puzzle {
+        generate: day16::generate,
+        solve: day16::solve,
+    },
+    Puzzle {
+        generate: day17::generate,
+        solve: day17::solve,
+    },
+    Puzzle {
+        generate: day18::generate,
+        solve: day18::solve,
+    },
+    Puzzle {
+        generate: day19::generate,
+        solve: day19::solve,
+    },
+    Puzzle {
+        generate: day20::generate,
+        solve: day20::solve,
+    },
+    Puzzle {
+        generate: day21::generate,
+        solve: day21::solve,
+    },
+    Puzzle {
+        generate: day22::generate,
+        solve: day22::solve,
+    },
+    Puzzle {
+        generate: day23::generate,
+        solve: day23::solve,
+    },
+    Puzzle {
+        generate: day24::generate,
+        solve: day24::solve,
+    },
+    Puzzle {
+        generate: day25::generate,
+        solve: day25::solve,
+    },
 ];
 
 pub fn generate(user: &str, year: u32, day: u32) -> String {

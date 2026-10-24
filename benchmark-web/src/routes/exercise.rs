@@ -4,9 +4,9 @@
 use super::AppState;
 use axum::extract::Path;
 use axum::routing::get;
-use axum::Router;
-use axum::Json;
 use axum::Extension;
+use axum::Json;
+use axum::Router;
 use std::collections::HashMap;
 
 // =============================================================================
@@ -14,11 +14,16 @@ use std::collections::HashMap;
 // =============================================================================
 
 /// API endpoint to get available languages and exercises.
-pub async fn get_exercises(Extension(state): Extension<AppState>) -> Json<HashMap<String, Vec<String>>> {
+pub async fn get_exercises(
+    Extension(state): Extension<AppState>,
+) -> Json<HashMap<String, Vec<String>>> {
     let mut exercises: HashMap<String, Vec<String>> = HashMap::new();
     let runner = state.service.get_exercise_runner();
     for language in runner.get_available_languages() {
-        exercises.insert(language.clone(), runner.get_exercises_for_language(&language));
+        exercises.insert(
+            language.clone(),
+            runner.get_exercises_for_language(&language),
+        );
     }
     Json(exercises)
 }

@@ -8,8 +8,8 @@
 //! in flight so it can kill the process promptly instead of waiting out the
 //! (default 3600s) container timeout.
 
-use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 
 /// A one-way cancellation flag that can be shared across threads.
 #[derive(Clone, Default, Debug)]

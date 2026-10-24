@@ -56,10 +56,22 @@ impl BenchmarkSession {
         retry: bool,
         timeout_ms: u64,
     ) -> Self {
-        Self::with_category(agent_name, languages, model, thinking_level, exercise_name, retry, timeout_ms, benchmark_types::Category::Polyglot)
+        Self::with_category(
+            agent_name,
+            languages,
+            model,
+            thinking_level,
+            exercise_name,
+            retry,
+            timeout_ms,
+            benchmark_types::Category::Polyglot,
+        )
     }
 
     /// Create a session with an explicit category.
+    // Public API: these arguments are one options struct short, but collapsing them
+    // changes every caller (4 of them) rather than just this file.
+    #[allow(clippy::too_many_arguments)]
     pub fn with_category(
         agent_name: String,
         languages: Vec<String>,
@@ -121,7 +133,7 @@ impl Clone for BenchmarkSession {
             thinking_level: self.thinking_level.clone(),
             exercise_name: self.exercise_name.clone(),
             retry: self.retry,
-            status: self.status.clone(),
+            status: self.status,
             completed_exercises: self.completed_exercises,
             total_exercises: self.total_exercises,
             progress: self.progress,
@@ -232,7 +244,9 @@ impl BenchmarkSession {
     /// Get accumulated output as a concatenated string.
     /// Mirrors Java BenchmarkSession.getAccumulatedOutput().
     pub fn get_accumulated_output(&self) -> String {
-        self.accumulated_output.lock().map(|v| v.join("")).unwrap_or_default()
+        self.accumulated_output
+            .lock()
+            .map(|v| v.join(""))
+            .unwrap_or_default()
     }
-
 }

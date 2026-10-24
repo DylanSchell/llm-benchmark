@@ -4,7 +4,10 @@ use crate::rng::Rng;
 // Part 2: number of ways using the fewest containers.
 pub fn solve(input: &str) -> (String, String) {
     let target = 150i64;
-    let caps: Vec<i64> = input.lines().filter_map(|l| l.trim().parse().ok()).collect();
+    let caps: Vec<i64> = input
+        .lines()
+        .filter_map(|l| l.trim().parse().ok())
+        .collect();
     let n = caps.len();
     let mut count1 = 0i64;
     let mut min_containers = usize::MAX;
@@ -12,9 +15,9 @@ pub fn solve(input: &str) -> (String, String) {
     for mask in 0u32..(1u32 << n) {
         let mut sum = 0i64;
         let mut cnt = 0usize;
-        for i in 0..n {
+        for (i, &capacity) in caps.iter().enumerate() {
             if mask & (1 << i) != 0 {
-                sum += caps[i];
+                sum += capacity;
                 cnt += 1;
             }
         }

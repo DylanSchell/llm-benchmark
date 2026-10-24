@@ -1,5 +1,7 @@
 use tracing::debug;
 
+/// Output sink the parsed events are forwarded to.
+type Downstream = std::sync::Arc<dyn Fn(&str) + Send + Sync + 'static>;
 
 /// Wraps the output stream from a Docker container and parses JSON events to
 /// detect Bash tool call boundaries. When a Bash tool call starts, it notifies
@@ -9,7 +11,7 @@ use tracing::debug;
 /// This class is designed to work with both Claude Code's stream-json output
 /// format and Pi's JSON event stream format.
 pub struct StreamParser {
-    downstream: Option<std::sync::Arc<dyn Fn(&str) + Send + Sync + 'static>>,
+    downstream: Option<Downstream>,
     watchdog: Option<std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>,
 }
 
@@ -18,9 +20,7 @@ impl StreamParser {
     ///
     /// # Arguments
     /// * `downstream` - The original output consumer (e.g., a logging callback).
-    pub fn new(
-        downstream: std::sync::Arc<dyn Fn(&str) + Send + Sync + 'static>,
-    ) -> Self {
+    pub fn new(downstream: std::sync::Arc<dyn Fn(&str) + Send + Sync + 'static>) -> Self {
         Self {
             downstream: Some(downstream),
             watchdog: None,
@@ -52,7 +52,7 @@ impl StreamParser {
 
         // Only parse non-empty lines that look like JSON
         let trimmed = line.trim();
-        if trimmed.is_empty() || trimmed.chars().next() != Some('{') {
+        if trimmed.is_empty() || !trimmed.starts_with('{') {
             return;
         }
 
@@ -74,11 +74,12 @@ impl StreamParser {
     }
 }
 
-
-
 /// Detects Claude Code tool_use (Bash) and tool_result events in the
 /// assistant/user message format.
-    fn parse_claude_format(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>) {
+fn parse_claude_format(
+    root: &serde_json::Value,
+    watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>,
+) {
     let type_str = root.get("type").and_then(|v| v.as_str());
 
     // Assistant message with tool_use
@@ -87,20 +88,20 @@ impl StreamParser {
             if let Some(content) = message.get("content") {
                 if let Some(items) = content.as_array() {
                     for item in items {
-                        if item.get("type").and_then(|v| v.as_str()) == Some("tool_use") {
-                            if item.get("name").and_then(|v| v.as_str()) == Some("Bash") {
-                                if let Some(command) = extract_command(item) {
-                                        debug!(
-                                            "Claude Bash tool call started: {}",
-                                            crate::safe_truncate(&command, 100)
-                                        );
-                                    // Notify watchdog of tool call start (sync for FIFO ordering)
-                                    if let Some(wd) = watchdog {
-                                        wd.on_tool_call_started_sync(
-                                            item.get("id").and_then(|v| v.as_str()),
-                                            &command,
-                                        );
-                                    }
+                        if item.get("type").and_then(|v| v.as_str()) == Some("tool_use")
+                            && item.get("name").and_then(|v| v.as_str()) == Some("Bash")
+                        {
+                            if let Some(command) = extract_command(item) {
+                                debug!(
+                                    "Claude Bash tool call started: {}",
+                                    crate::safe_truncate(&command, 100)
+                                );
+                                // Notify watchdog of tool call start (sync for FIFO ordering)
+                                if let Some(wd) = watchdog {
+                                    wd.on_tool_call_started_sync(
+                                        item.get("id").and_then(|v| v.as_str()),
+                                        &command,
+                                    );
                                 }
                             }
                         }
@@ -139,7 +140,10 @@ impl StreamParser {
 }
 
 /// Detects Pi agent toolCall events in the message format.
-    fn parse_pi_format(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>) {
+fn parse_pi_format(
+    root: &serde_json::Value,
+    watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>,
+) {
     let type_str = root.get("type").and_then(|v| v.as_str());
 
     if type_str != Some("message") {
@@ -156,7 +160,10 @@ impl StreamParser {
 
     // Handle array or single content
     let items: Vec<_> = if content.is_array() {
-        content.as_array().map(|a| a.to_vec()).unwrap_or_else(|| vec![content.clone()])
+        content
+            .as_array()
+            .map(|a| a.to_vec())
+            .unwrap_or_else(|| vec![content.clone()])
     } else {
         vec![content.clone()]
     };
@@ -167,25 +174,24 @@ impl StreamParser {
         }
 
         // toolCall inside assistant message
-        if item.get("type").and_then(|v| v.as_str()) == Some("toolCall") {
-            if item
+        if item.get("type").and_then(|v| v.as_str()) == Some("toolCall")
+            && item
                 .get("name")
                 .and_then(|v| v.as_str())
                 .map(|n| n.eq_ignore_ascii_case("bash"))
                 .unwrap_or(false)
-            {
-                if let Some(args) = item.get("arguments") {
-                    if let Some(command) = args.get("command").and_then(|v| v.as_str()) {
-                        debug!(
-                            "Pi bash tool call started: {}",
-                            crate::safe_truncate(&command, 100)
+        {
+            if let Some(args) = item.get("arguments") {
+                if let Some(command) = args.get("command").and_then(|v| v.as_str()) {
+                    debug!(
+                        "Pi bash tool call started: {}",
+                        crate::safe_truncate(command, 100)
+                    );
+                    if let Some(wd) = watchdog {
+                        wd.on_tool_call_started_sync(
+                            item.get("id").and_then(|v| v.as_str()),
+                            command,
                         );
-                        if let Some(wd) = watchdog {
-                            wd.on_tool_call_started_sync(
-                                item.get("id").and_then(|v| v.as_str()),
-                                command,
-                            );
-                        }
                     }
                 }
             }
@@ -207,11 +213,7 @@ impl StreamParser {
     }
 
     // Also check for toolResult role directly
-    if message
-        .get("role")
-        .and_then(|v| v.as_str())
-        == Some("toolResult")
-    {
+    if message.get("role").and_then(|v| v.as_str()) == Some("toolResult") {
         if let Some(wd) = watchdog {
             match message.get("toolCallId").and_then(|v| v.as_str()) {
                 Some(id) => {
@@ -227,7 +229,10 @@ impl StreamParser {
 
 /// Detects Pi's explicit tool_execution_start / tool_execution_end events.
 /// These are top-level event types, not nested in messages.
-fn parse_pi_tool_execution_events(root: &serde_json::Value, watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>) {
+fn parse_pi_tool_execution_events(
+    root: &serde_json::Value,
+    watchdog: Option<&std::sync::Arc<crate::docker::watchdog::CommandWatchdog>>,
+) {
     let type_str = root.get("type").and_then(|v| v.as_str());
 
     if type_str == Some("tool_execution_start") {
@@ -237,7 +242,7 @@ fn parse_pi_tool_execution_events(root: &serde_json::Value, watchdog: Option<&st
                     if let Some(command) = args.get("command").and_then(|v| v.as_str()) {
                         debug!(
                             "Pi tool_execution_start (Bash): {}",
-                            crate::safe_truncate(&command, 100)
+                            crate::safe_truncate(command, 100)
                         );
                         if let Some(wd) = watchdog {
                             wd.on_tool_call_started_sync(
@@ -269,7 +274,10 @@ fn extract_command(tool_use_node: &serde_json::Value) -> Option<String> {
     let input = tool_use_node
         .get("input")
         .or_else(|| tool_use_node.get("arguments"))?;
-    input.get("command").and_then(|v| v.as_str()).map(|s| s.to_string())
+    input
+        .get("command")
+        .and_then(|v| v.as_str())
+        .map(|s| s.to_string())
 }
 
 // =============================================================================

@@ -2,7 +2,7 @@
 //! Logs key events with tracing and forwards formatted output to consumer for web UI streaming.
 
 use serde_json::Value;
-use tracing::{info, debug, warn};
+use tracing::{debug, info, warn};
 
 /// Callback type for sending processed output to the web UI SSE stream.
 pub type OutputConsumer = Box<dyn Fn(&str) + Send + Sync>;
@@ -84,19 +84,23 @@ impl PiMessageProcessor {
                         if let Some(content) = message.get("content") {
                             if content.is_string() {
                                 let text = content.as_str().unwrap_or("");
-                                info!("[Pi User] {}", crate::safe_truncate(&text, 200));
+                                info!("[Pi User] {}", crate::safe_truncate(text, 200));
                                 self.send_output(&format!("\n[User]: {}\n", text));
                             } else if content.is_array() {
                                 if let Some(items) = content.as_array() {
                                     for item in items {
-                                        if let Some(item_type) = item.get("type").and_then(|v| v.as_str()) {
-                                            match item_type {
-                                                "text" => {
-                                                    if let Some(text) = item.get("text").and_then(|v| v.as_str()) {
-                                                        self.send_output(&format!("[User]: {}\n", text));
-                                                    }
+                                        if let Some(item_type) =
+                                            item.get("type").and_then(|v| v.as_str())
+                                        {
+                                            if item_type == "text" {
+                                                if let Some(text) =
+                                                    item.get("text").and_then(|v| v.as_str())
+                                                {
+                                                    self.send_output(&format!(
+                                                        "[User]: {}\n",
+                                                        text
+                                                    ));
                                                 }
-                                                _ => {}
                                             }
                                         }
                                     }
@@ -111,16 +115,26 @@ impl PiMessageProcessor {
                             if content.is_array() {
                                 if let Some(items) = content.as_array() {
                                     for item in items {
-                                        if let Some(item_type) = item.get("type").and_then(|v| v.as_str()) {
+                                        if let Some(item_type) =
+                                            item.get("type").and_then(|v| v.as_str())
+                                        {
                                             match item_type {
                                                 "text" => {
-                                                    if let Some(text) = item.get("text").and_then(|v| v.as_str()) {
+                                                    if let Some(text) =
+                                                        item.get("text").and_then(|v| v.as_str())
+                                                    {
                                                         self.send_output(text);
                                                     }
                                                 }
                                                 "thinking" => {
-                                                    if let Some(thinking) = item.get("thinking").and_then(|v| v.as_str()) {
-                                                        self.send_output(&format!("\n[Thinking]:\n{}\n", thinking));
+                                                    if let Some(thinking) = item
+                                                        .get("thinking")
+                                                        .and_then(|v| v.as_str())
+                                                    {
+                                                        self.send_output(&format!(
+                                                            "\n[Thinking]:\n{}\n",
+                                                            thinking
+                                                        ));
                                                     }
                                                 }
                                                 "toolCall" => self.handle_tool_call(item),
@@ -130,16 +144,25 @@ impl PiMessageProcessor {
                                     }
                                 }
                             } else if content.is_object() {
-                                if let Some(item_type) = content.get("type").and_then(|v| v.as_str()) {
+                                if let Some(item_type) =
+                                    content.get("type").and_then(|v| v.as_str())
+                                {
                                     match item_type {
                                         "text" => {
-                                            if let Some(text) = content.get("text").and_then(|v| v.as_str()) {
+                                            if let Some(text) =
+                                                content.get("text").and_then(|v| v.as_str())
+                                            {
                                                 self.send_output(text);
                                             }
                                         }
                                         "thinking" => {
-                                            if let Some(thinking) = content.get("thinking").and_then(|v| v.as_str()) {
-                                                self.send_output(&format!("\n[Thinking]:\n{}\n", thinking));
+                                            if let Some(thinking) =
+                                                content.get("thinking").and_then(|v| v.as_str())
+                                            {
+                                                self.send_output(&format!(
+                                                    "\n[Thinking]:\n{}\n",
+                                                    thinking
+                                                ));
                                             }
                                         }
                                         "toolCall" => self.handle_tool_call(content),
@@ -153,19 +176,23 @@ impl PiMessageProcessor {
                         if let Some(content) = message.get("content") {
                             if content.is_string() {
                                 let text = content.as_str().unwrap_or("");
-                                info!("[Pi Tool Result] {}", crate::safe_truncate(&text, 500));
+                                info!("[Pi Tool Result] {}", crate::safe_truncate(text, 500));
                                 self.send_output(&format!("[Tool Result]: {}\n", text));
                             } else if content.is_array() {
                                 if let Some(items) = content.as_array() {
                                     for item in items {
-                                        if let Some(item_type) = item.get("type").and_then(|v| v.as_str()) {
-                                            match item_type {
-                                                "text" => {
-                                                    if let Some(text) = item.get("text").and_then(|v| v.as_str()) {
-                                                        self.send_output(&format!("[Result]: {}\n", text));
-                                                    }
+                                        if let Some(item_type) =
+                                            item.get("type").and_then(|v| v.as_str())
+                                        {
+                                            if item_type == "text" {
+                                                if let Some(text) =
+                                                    item.get("text").and_then(|v| v.as_str())
+                                                {
+                                                    self.send_output(&format!(
+                                                        "[Result]: {}\n",
+                                                        text
+                                                    ));
                                                 }
-                                                _ => {}
                                             }
                                         }
                                     }
@@ -180,7 +207,10 @@ impl PiMessageProcessor {
     }
 
     fn handle_message_update(&self, json: &Value) {
-        if let Some(assistant_event) = json.get("assistantMessageEvent").and_then(|v| v.as_object()) {
+        if let Some(assistant_event) = json
+            .get("assistantMessageEvent")
+            .and_then(|v| v.as_object())
+        {
             if let Some(event_type) = assistant_event.get("type").and_then(|v| v.as_str()) {
                 match event_type {
                     "text_delta" => {
@@ -203,8 +233,14 @@ impl PiMessageProcessor {
     }
 
     fn handle_tool_execution_start(&self, json: &Value) {
-        let tool_name = json.get("toolName").and_then(|v| v.as_str()).unwrap_or("unknown");
-        let tool_call_id = json.get("toolCallId").and_then(|v| v.as_str()).unwrap_or("");
+        let tool_name = json
+            .get("toolName")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        let tool_call_id = json
+            .get("toolCallId")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
         info!("[Pi Tool: {}] (ID: {})", tool_name, tool_call_id);
         self.send_output(&format!("\n[Tool: {}] (ID: {})\n", tool_name, tool_call_id));
 
@@ -214,7 +250,10 @@ impl PiMessageProcessor {
     }
 
     fn handle_tool_execution_update(&self, json: &Value) {
-        let tool_name = json.get("toolName").and_then(|v| v.as_str()).unwrap_or("unknown");
+        let tool_name = json
+            .get("toolName")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
         if json.get("partialResult").is_some() {
             info!("[Pi Tool {}] progress...", tool_name);
             self.send_output(&format!("[Tool {} progress]...\n", tool_name));
@@ -222,8 +261,14 @@ impl PiMessageProcessor {
     }
 
     fn handle_tool_execution_end(&self, json: &Value) {
-        let tool_name = json.get("toolName").and_then(|v| v.as_str()).unwrap_or("unknown");
-        let is_error = json.get("isError").and_then(|v| v.as_bool()).unwrap_or(false);
+        let tool_name = json
+            .get("toolName")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        let is_error = json
+            .get("isError")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
         if is_error {
             warn!("[Pi Tool {}] failed", tool_name);
             self.send_output(&format!("[Tool {} failed]\n", tool_name));
@@ -261,9 +306,19 @@ impl PiMessageProcessor {
                 }
                 if let Some(content) = args.get("content").and_then(|v| v.as_str()) {
                     let display = if content.len() > 500 {
-                        format!("  Content ({} chars, {} lines):\n  {}...\n", content.len(), content.lines().count(), &content[..500])
+                        format!(
+                            "  Content ({} chars, {} lines):\n  {}...\n",
+                            content.len(),
+                            content.lines().count(),
+                            &content[..500]
+                        )
                     } else {
-                        format!("  Content ({} chars, {} lines):\n{}\n", content.len(), content.lines().count(), content)
+                        format!(
+                            "  Content ({} chars, {} lines):\n{}\n",
+                            content.len(),
+                            content.lines().count(),
+                            content
+                        )
                     };
                     let trimmed = display.trim();
                     info!("  {}", trimmed);
@@ -339,20 +394,32 @@ impl PiMessageProcessor {
             } else {
                 expanded
             };
-            info!("  Output: {}", output_text.lines().next().unwrap_or("").trim());
+            info!(
+                "  Output: {}",
+                output_text.lines().next().unwrap_or("").trim()
+            );
             self.send_output(&format!("  Output: {}\n", output_text));
         }
     }
 
     fn handle_auto_compaction_start(&self, json: &Value) {
-        let reason = json.get("reason").and_then(|v| v.as_str()).unwrap_or("unknown");
+        let reason = json
+            .get("reason")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
         info!("[Pi Auto-compaction started: {}]", reason);
         self.send_output(&format!("\n[Auto-compaction started: {}]\n", reason));
     }
 
     fn handle_auto_compaction_end(&self, json: &Value) {
-        let aborted = json.get("aborted").and_then(|v| v.as_bool()).unwrap_or(false);
-        let will_retry = json.get("willRetry").and_then(|v| v.as_bool()).unwrap_or(false);
+        let aborted = json
+            .get("aborted")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let will_retry = json
+            .get("willRetry")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
         if aborted {
             info!("[Pi Auto-compaction aborted]");
             self.send_output("[Auto-compaction aborted]\n");
@@ -367,57 +434,102 @@ impl PiMessageProcessor {
 
     fn handle_auto_retry_start(&self, json: &Value) {
         let attempt = json.get("attempt").and_then(|v| v.as_i64()).unwrap_or(1);
-        let max_attempts = json.get("maxAttempts").and_then(|v| v.as_i64()).unwrap_or(3);
-        let error_message = json.get("errorMessage").and_then(|v| v.as_str()).unwrap_or("");
-        info!("[Pi Auto-retry {}/{}: {}]", attempt, max_attempts, error_message);
-        self.send_output(&format!("\n[Auto-retry {}/{}: {}]\n", attempt, max_attempts, error_message));
+        let max_attempts = json
+            .get("maxAttempts")
+            .and_then(|v| v.as_i64())
+            .unwrap_or(3);
+        let error_message = json
+            .get("errorMessage")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        info!(
+            "[Pi Auto-retry {}/{}: {}]",
+            attempt, max_attempts, error_message
+        );
+        self.send_output(&format!(
+            "\n[Auto-retry {}/{}: {}]\n",
+            attempt, max_attempts, error_message
+        ));
     }
 
     fn handle_auto_retry_end(&self, json: &Value) {
-        let success = json.get("success").and_then(|v| v.as_bool()).unwrap_or(false);
+        let success = json
+            .get("success")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
         let attempt = json.get("attempt").and_then(|v| v.as_i64()).unwrap_or(1);
         if success {
             info!("[Pi Auto-retry {} succeeded]", attempt);
             self.send_output(&format!("[Auto-retry {} succeeded]\n", attempt));
         } else {
-            let final_error = json.get("finalError").and_then(|v| v.as_str()).unwrap_or("unknown error");
+            let final_error = json
+                .get("finalError")
+                .and_then(|v| v.as_str())
+                .unwrap_or("unknown error");
             warn!("[Pi Auto-retry {} failed: {}]", attempt, final_error);
-            self.send_output(&format!("[Auto-retry {} failed: {}]\n", attempt, final_error));
+            self.send_output(&format!(
+                "[Auto-retry {} failed: {}]\n",
+                attempt, final_error
+            ));
         }
     }
 
     fn handle_model_change(&self, json: &Value) {
-        let provider = json.get("provider").and_then(|v| v.as_str()).unwrap_or("unknown");
-        let model_id = json.get("modelId").and_then(|v| v.as_str()).unwrap_or("unknown");
+        let provider = json
+            .get("provider")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        let model_id = json
+            .get("modelId")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
         info!("[Pi Model changed to: {}/{}]", provider, model_id);
-        self.send_output(&format!("\n[Model changed to: {}/{}]\n", provider, model_id));
+        self.send_output(&format!(
+            "\n[Model changed to: {}/{}]\n",
+            provider, model_id
+        ));
     }
 
     fn handle_thinking_level_change(&self, json: &Value) {
-        let level = json.get("thinkingLevel").and_then(|v| v.as_str()).unwrap_or("unknown");
+        let level = json
+            .get("thinkingLevel")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
         info!("[Pi Thinking level: {}]", level);
         self.send_output(&format!("\n[Thinking level: {}]\n", level));
     }
 
     fn handle_compaction(&self, json: &Value) {
         let summary = json.get("summary").and_then(|v| v.as_str()).unwrap_or("");
-        let tokens_before = json.get("tokensBefore").and_then(|v| v.as_i64()).unwrap_or(0);
-        let preview = crate::safe_truncate(&summary, 100);
+        let tokens_before = json
+            .get("tokensBefore")
+            .and_then(|v| v.as_i64())
+            .unwrap_or(0);
+        let preview = crate::safe_truncate(summary, 100);
         info!("[Pi Compacted {} tokens: {}]", tokens_before, preview);
-        self.send_output(&format!("\n[Compacted {} tokens: {}]\n", tokens_before, preview));
+        self.send_output(&format!(
+            "\n[Compacted {} tokens: {}]\n",
+            tokens_before, preview
+        ));
     }
 
     fn handle_branch_summary(&self, json: &Value) {
         let summary = json.get("summary").and_then(|v| v.as_str()).unwrap_or("");
-        let preview = crate::safe_truncate(&summary, 100);
+        let preview = crate::safe_truncate(summary, 100);
         info!("[Pi Branched: {}]", preview);
         self.send_output(&format!("\n[Branched: {}]\n", preview));
     }
 
     fn handle_custom_message(&self, json: &Value) {
-        let custom_type = json.get("customType").and_then(|v| v.as_str()).unwrap_or("extension");
+        let custom_type = json
+            .get("customType")
+            .and_then(|v| v.as_str())
+            .unwrap_or("extension");
         let content = json.get("content").and_then(|v| v.as_str()).unwrap_or("");
-        let display = json.get("display").and_then(|v| v.as_bool()).unwrap_or(false);
+        let display = json
+            .get("display")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
         if display {
             info!("[Pi {}] {}", custom_type, content);
             self.send_output(&format!("\n[{}] {}\n", custom_type, content));
@@ -426,11 +538,20 @@ impl PiMessageProcessor {
 
     fn handle_bash_execution(&self, json: &Value) {
         let message = json.get("message").or(json.get("data")).unwrap_or(json);
-        let command = message.get("command").and_then(|v| v.as_str()).unwrap_or("");
+        let command = message
+            .get("command")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
         let output = message.get("output").and_then(|v| v.as_str()).unwrap_or("");
         let exit_code = message.get("exitCode").and_then(|v| v.as_i64());
-        let cancelled = message.get("cancelled").and_then(|v| v.as_bool()).unwrap_or(false);
-        let truncated = message.get("truncated").and_then(|v| v.as_bool()).unwrap_or(false);
+        let cancelled = message
+            .get("cancelled")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let truncated = message
+            .get("truncated")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
 
         info!("[Pi Bash: {}]", command);
         self.send_output(&format!("\n[Bash: {}]\n", command));
@@ -497,10 +618,7 @@ mod tests {
         with_info_subscriber(|| {
             let processor = PiMessageProcessor::new(None);
             // >100 bytes, multi-byte chars straddling the 100-byte limit
-            let json = format!(
-                r#"{{"type":"compaction","summary":"{}"}}"#,
-                "€".repeat(34)
-            );
+            let json = format!(r#"{{"type":"compaction","summary":"{}"}}"#, "€".repeat(34));
             processor.process(&json);
         });
     }

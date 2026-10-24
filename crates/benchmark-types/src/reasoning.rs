@@ -43,8 +43,8 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
-use std::sync::Mutex;
 use std::sync::LazyLock;
+use std::sync::Mutex;
 
 /// Unified thinking level from the benchmark UI.
 /// These are pi-native levels that get translated to backend-specific parameters.
@@ -62,7 +62,10 @@ pub enum ThinkingLevel {
 
 impl ThinkingLevel {
     /// Parse a thinking level from a string. Returns None for unrecognized values.
-    pub fn from_str(s: &str) -> Option<Self> {
+    ///
+    /// Not named `from_str`: an inherent method of that name shadows [`std::str::FromStr`]
+    /// while returning `Option` instead of `Result`.
+    pub fn parse(s: &str) -> Option<Self> {
         match s.to_lowercase().as_str() {
             "off" => Some(Self::Off),
             "minimal" | "min" => Some(Self::Minimal),
@@ -97,8 +100,10 @@ impl std::fmt::Display for ThinkingLevel {
 /// Maps directly to pi's `thinkingFormat` model config option.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
+#[derive(Default)]
 pub enum ThinkingFormat {
     /// Default: uses `reasoning_effort` (OpenAI o-series style)
+    #[default]
     Openai,
     /// Uses `reasoning: { effort }` (OpenRouter style)
     Openrouter,
@@ -126,12 +131,6 @@ impl std::fmt::Display for ThinkingFormat {
             Self::Qwen => write!(f, "qwen"),
             Self::QwenChatTemplate => write!(f, "qwen-chat-template"),
         }
-    }
-}
-
-impl Default for ThinkingFormat {
-    fn default() -> Self {
-        Self::Openai
     }
 }
 
@@ -174,7 +173,11 @@ impl ReasoningMechanism {
         let lower = model_name.to_lowercase();
 
         // Anthropic models
-        if lower.contains("claude") || lower.contains("sonnet") || lower.contains("opus") || lower.contains("haiku") {
+        if lower.contains("claude")
+            || lower.contains("sonnet")
+            || lower.contains("opus")
+            || lower.contains("haiku")
+        {
             return Self::AnthropicThinking;
         }
 
@@ -310,19 +313,22 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_thinking_level_from_str() {
-        assert_eq!(ThinkingLevel::from_str("off"), Some(ThinkingLevel::Off));
-        assert_eq!(ThinkingLevel::from_str("minimal"), Some(ThinkingLevel::Minimal));
-        assert_eq!(ThinkingLevel::from_str("low"), Some(ThinkingLevel::Low));
-        assert_eq!(ThinkingLevel::from_str("medium"), Some(ThinkingLevel::Medium));
-        assert_eq!(ThinkingLevel::from_str("high"), Some(ThinkingLevel::High));
-        assert_eq!(ThinkingLevel::from_str("xhigh"), Some(ThinkingLevel::Xhigh));
+    fn test_thinking_level_parse() {
+        assert_eq!(ThinkingLevel::parse("off"), Some(ThinkingLevel::Off));
+        assert_eq!(
+            ThinkingLevel::parse("minimal"),
+            Some(ThinkingLevel::Minimal)
+        );
+        assert_eq!(ThinkingLevel::parse("low"), Some(ThinkingLevel::Low));
+        assert_eq!(ThinkingLevel::parse("medium"), Some(ThinkingLevel::Medium));
+        assert_eq!(ThinkingLevel::parse("high"), Some(ThinkingLevel::High));
+        assert_eq!(ThinkingLevel::parse("xhigh"), Some(ThinkingLevel::Xhigh));
         // Case insensitive
-        assert_eq!(ThinkingLevel::from_str("HIGH"), Some(ThinkingLevel::High));
-        assert_eq!(ThinkingLevel::from_str("XHIGH"), Some(ThinkingLevel::Xhigh));
+        assert_eq!(ThinkingLevel::parse("HIGH"), Some(ThinkingLevel::High));
+        assert_eq!(ThinkingLevel::parse("XHIGH"), Some(ThinkingLevel::Xhigh));
         // Aliases
-        assert_eq!(ThinkingLevel::from_str("min"), Some(ThinkingLevel::Minimal));
-        assert_eq!(ThinkingLevel::from_str("max"), Some(ThinkingLevel::Xhigh));
+        assert_eq!(ThinkingLevel::parse("min"), Some(ThinkingLevel::Minimal));
+        assert_eq!(ThinkingLevel::parse("max"), Some(ThinkingLevel::Xhigh));
     }
 
     #[test]
@@ -365,8 +371,12 @@ mod tests {
 
     #[test]
     fn test_openai_reasoning_effort_config() {
-        let config = ReasoningConfig::default_for_mechanism(&ReasoningMechanism::OpenAIReasoningEffort);
-        assert!(matches!(config.thinking_format, Some(ThinkingFormat::Openai)));
+        let config =
+            ReasoningConfig::default_for_mechanism(&ReasoningMechanism::OpenAIReasoningEffort);
+        assert!(matches!(
+            config.thinking_format,
+            Some(ThinkingFormat::Openai)
+        ));
         assert!(config.thinking_level_map.is_some());
     }
 
@@ -398,12 +408,12 @@ mod tests {
             mechanism: ReasoningMechanism::Custom,
             thinking_format: Some(ThinkingFormat::Qwen),
             thinking_level_map: Some(ThinkingLevelMap {
-                off:     Some(serde_json::json!(false)),
+                off: Some(serde_json::json!(false)),
                 minimal: Some(serde_json::json!(true)),
-                low:     Some(serde_json::json!(true)),
-                medium:  Some(serde_json::json!(true)),
-                high:    Some(serde_json::json!(true)),
-                xhigh:   Some(serde_json::json!(true)),
+                low: Some(serde_json::json!(true)),
+                medium: Some(serde_json::json!(true)),
+                high: Some(serde_json::json!(true)),
+                xhigh: Some(serde_json::json!(true)),
             }),
             compat: None,
         };
@@ -422,12 +432,12 @@ mod tests {
             mechanism: ReasoningMechanism::Custom,
             thinking_format: Some(ThinkingFormat::QwenChatTemplate),
             thinking_level_map: Some(ThinkingLevelMap {
-                off:     Some(serde_json::json!(false)),
+                off: Some(serde_json::json!(false)),
                 minimal: Some(serde_json::json!(true)),
-                low:     Some(serde_json::json!(true)),
-                medium:  Some(serde_json::json!(true)),
-                high:    Some(serde_json::json!(true)),
-                xhigh:   Some(serde_json::json!(true)),
+                low: Some(serde_json::json!(true)),
+                medium: Some(serde_json::json!(true)),
+                high: Some(serde_json::json!(true)),
+                xhigh: Some(serde_json::json!(true)),
             }),
             compat: None,
         };
@@ -474,10 +484,13 @@ impl ReasoningRegistry {
         let mut entries = REASONING_REGISTRY.entries.lock().unwrap();
         // Insert at the front so most-recent registrations take priority
         // (exact matches will still sort above globs during lookup)
-        entries.insert(0, RegisteredEntry {
-            pattern: pattern.to_string(),
-            config,
-        });
+        entries.insert(
+            0,
+            RegisteredEntry {
+                pattern: pattern.to_string(),
+                config,
+            },
+        );
     }
 
     /// Look up the reasoning config for a model.
@@ -576,113 +589,140 @@ impl ReasoningRegistry {
     /// Register built-in defaults. Call this once at application startup.
     pub fn register_defaults() {
         // Anthropic models — native thinking, no extra config needed
-        Self::register("claude-*", ReasoningConfig {
-            mechanism: ReasoningMechanism::AnthropicThinking,
-            thinking_format: None,
-            thinking_level_map: None,
-            compat: None,
-        });
-        Self::register("sonnet", ReasoningConfig {
-            mechanism: ReasoningMechanism::AnthropicThinking,
-            thinking_format: None,
-            thinking_level_map: None,
-            compat: None,
-        });
-        Self::register("opus", ReasoningConfig {
-            mechanism: ReasoningMechanism::AnthropicThinking,
-            thinking_format: None,
-            thinking_level_map: None,
-            compat: None,
-        });
-        Self::register("haiku", ReasoningConfig {
-            mechanism: ReasoningMechanism::AnthropicThinking,
-            thinking_format: None,
-            thinking_level_map: None,
-            compat: None,
-        });
+        Self::register(
+            "claude-*",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::AnthropicThinking,
+                thinking_format: None,
+                thinking_level_map: None,
+                compat: None,
+            },
+        );
+        Self::register(
+            "sonnet",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::AnthropicThinking,
+                thinking_format: None,
+                thinking_level_map: None,
+                compat: None,
+            },
+        );
+        Self::register(
+            "opus",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::AnthropicThinking,
+                thinking_format: None,
+                thinking_level_map: None,
+                compat: None,
+            },
+        );
+        Self::register(
+            "haiku",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::AnthropicThinking,
+                thinking_format: None,
+                thinking_level_map: None,
+                compat: None,
+            },
+        );
 
         // OpenAI o-series — reasoning_effort (thinkingFormat=openai is default)
-        Self::register("o3-*", ReasoningConfig {
-            mechanism: ReasoningMechanism::OpenAIReasoningEffort,
-            thinking_format: Some(ThinkingFormat::Openai),
-            thinking_level_map: Some(ThinkingLevelMap {
-                off: Some(serde_json::json!("disabled")),
-                minimal: Some(serde_json::json!("low")),
-                low: Some(serde_json::json!("low")),
-                medium: Some(serde_json::json!("medium")),
-                high: Some(serde_json::json!("high")),
-                xhigh: Some(serde_json::json!("high")),
-            }),
-            compat: None,
-        });
-        Self::register("o1-*", ReasoningConfig {
-            mechanism: ReasoningMechanism::OpenAIReasoningEffort,
-            thinking_format: Some(ThinkingFormat::Openai),
-            thinking_level_map: Some(ThinkingLevelMap {
-                off: Some(serde_json::json!("disabled")),
-                minimal: Some(serde_json::json!("low")),
-                low: Some(serde_json::json!("low")),
-                medium: Some(serde_json::json!("medium")),
-                high: Some(serde_json::json!("high")),
-                xhigh: Some(serde_json::json!("high")),
-            }),
-            compat: None,
-        });
+        Self::register(
+            "o3-*",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::OpenAIReasoningEffort,
+                thinking_format: Some(ThinkingFormat::Openai),
+                thinking_level_map: Some(ThinkingLevelMap {
+                    off: Some(serde_json::json!("disabled")),
+                    minimal: Some(serde_json::json!("low")),
+                    low: Some(serde_json::json!("low")),
+                    medium: Some(serde_json::json!("medium")),
+                    high: Some(serde_json::json!("high")),
+                    xhigh: Some(serde_json::json!("high")),
+                }),
+                compat: None,
+            },
+        );
+        Self::register(
+            "o1-*",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::OpenAIReasoningEffort,
+                thinking_format: Some(ThinkingFormat::Openai),
+                thinking_level_map: Some(ThinkingLevelMap {
+                    off: Some(serde_json::json!("disabled")),
+                    minimal: Some(serde_json::json!("low")),
+                    low: Some(serde_json::json!("low")),
+                    medium: Some(serde_json::json!("medium")),
+                    high: Some(serde_json::json!("high")),
+                    xhigh: Some(serde_json::json!("high")),
+                }),
+                compat: None,
+            },
+        );
 
         // Qwen3 — enable_thinking kwarg (thinkingFormat=qwen)
-        Self::register("qwen3-*", ReasoningConfig {
-            mechanism: ReasoningMechanism::Custom,
-            thinking_format: Some(ThinkingFormat::Qwen),
-            thinking_level_map: Some(ThinkingLevelMap {
-                off:     Some(serde_json::json!(false)),
-                minimal: Some(serde_json::json!(true)),
-                low:     Some(serde_json::json!(true)),
-                medium:  Some(serde_json::json!(true)),
-                high:    Some(serde_json::json!(true)),
-                xhigh:   Some(serde_json::json!(true)),
-            }),
-            compat: None,
-        });
+        Self::register(
+            "qwen3-*",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::Custom,
+                thinking_format: Some(ThinkingFormat::Qwen),
+                thinking_level_map: Some(ThinkingLevelMap {
+                    off: Some(serde_json::json!(false)),
+                    minimal: Some(serde_json::json!(true)),
+                    low: Some(serde_json::json!(true)),
+                    medium: Some(serde_json::json!(true)),
+                    high: Some(serde_json::json!(true)),
+                    xhigh: Some(serde_json::json!(true)),
+                }),
+                compat: None,
+            },
+        );
 
         // DS4 (custom ds4-server) — reasoning_effort param. ds4-server only exposes
         // HIGH and MAX above zero: "minimal".."high" collapse to "high", "xhigh"
         // maps to true MAX, and reasoning is disabled with "none" (NOT "off" —
         // any unrecognized value is a hard parse error).
-        Self::register("ds4-*", ReasoningConfig {
-            mechanism: ReasoningMechanism::Custom,
-            thinking_format: Some(ThinkingFormat::Openai),
-            thinking_level_map: Some(ThinkingLevelMap {
-                off:     Some(serde_json::json!("none")),
-                minimal: Some(serde_json::json!("high")),
-                low:     Some(serde_json::json!("high")),
-                medium:  Some(serde_json::json!("high")),
-                high:    Some(serde_json::json!("high")),
-                xhigh:   Some(serde_json::json!("max")),
-            }),
-            compat: Some(CompatConfig {
-                supports_developer_role: None,
-                supports_reasoning_effort: Some(true),
-            }),
-        });
+        Self::register(
+            "ds4-*",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::Custom,
+                thinking_format: Some(ThinkingFormat::Openai),
+                thinking_level_map: Some(ThinkingLevelMap {
+                    off: Some(serde_json::json!("none")),
+                    minimal: Some(serde_json::json!("high")),
+                    low: Some(serde_json::json!("high")),
+                    medium: Some(serde_json::json!("high")),
+                    high: Some(serde_json::json!("high")),
+                    xhigh: Some(serde_json::json!("max")),
+                }),
+                compat: Some(CompatConfig {
+                    supports_developer_role: None,
+                    supports_reasoning_effort: Some(true),
+                }),
+            },
+        );
 
         // DeepSeek-V4-Flash-0731 (llama-swap) — same reasoning_effort semantics as
         // the ds4-server above: only "high"/"max" above zero, "none" disables.
-        Self::register("deepseek-v4-flash-0731", ReasoningConfig {
-            mechanism: ReasoningMechanism::Custom,
-            thinking_format: Some(ThinkingFormat::Openai),
-            thinking_level_map: Some(ThinkingLevelMap {
-                off:     Some(serde_json::json!("none")),
-                minimal: Some(serde_json::json!("high")),
-                low:     Some(serde_json::json!("high")),
-                medium:  Some(serde_json::json!("high")),
-                high:    Some(serde_json::json!("high")),
-                xhigh:   Some(serde_json::json!("max")),
-            }),
-            compat: Some(CompatConfig {
-                supports_developer_role: None,
-                supports_reasoning_effort: Some(true),
-            }),
-        });
+        Self::register(
+            "deepseek-v4-flash-0731",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::Custom,
+                thinking_format: Some(ThinkingFormat::Openai),
+                thinking_level_map: Some(ThinkingLevelMap {
+                    off: Some(serde_json::json!("none")),
+                    minimal: Some(serde_json::json!("high")),
+                    low: Some(serde_json::json!("high")),
+                    medium: Some(serde_json::json!("high")),
+                    high: Some(serde_json::json!("high")),
+                    xhigh: Some(serde_json::json!("max")),
+                }),
+                compat: Some(CompatConfig {
+                    supports_developer_role: None,
+                    supports_reasoning_effort: Some(true),
+                }),
+            },
+        );
 
         // GLM-5.x (e.g. GLM-5.3-Flash, exposed by llama-swap as "glm53-flash") —
         // OpenAI-style `reasoning_effort` param. The GLM chat template only
@@ -693,22 +733,25 @@ impl ReasoningRegistry {
         //   off/minimal/low -> "low", medium -> "high", high/xhigh/max -> "max".
         // pi's "medium" is GLM's "high" — without this map a medium selection
         // would silently run at max. GLM-5.3-Flash forces thinking (no true "off").
-        Self::register("glm*", ReasoningConfig {
-            mechanism: ReasoningMechanism::Custom,
-            thinking_format: Some(ThinkingFormat::Openai),
-            thinking_level_map: Some(ThinkingLevelMap {
-                off:     Some(serde_json::json!("low")),
-                minimal: Some(serde_json::json!("low")),
-                low:     Some(serde_json::json!("low")),
-                medium:  Some(serde_json::json!("high")),
-                high:    Some(serde_json::json!("max")),
-                xhigh:   Some(serde_json::json!("max")),
-            }),
-            compat: Some(CompatConfig {
-                supports_developer_role: None,
-                supports_reasoning_effort: Some(true),
-            }),
-        });
+        Self::register(
+            "glm*",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::Custom,
+                thinking_format: Some(ThinkingFormat::Openai),
+                thinking_level_map: Some(ThinkingLevelMap {
+                    off: Some(serde_json::json!("low")),
+                    minimal: Some(serde_json::json!("low")),
+                    low: Some(serde_json::json!("low")),
+                    medium: Some(serde_json::json!("high")),
+                    high: Some(serde_json::json!("max")),
+                    xhigh: Some(serde_json::json!("max")),
+                }),
+                compat: Some(CompatConfig {
+                    supports_developer_role: None,
+                    supports_reasoning_effort: Some(true),
+                }),
+            },
+        );
     }
 }
 
@@ -719,8 +762,8 @@ static REASONING_REGISTRY: LazyLock<ReasoningRegistry> = LazyLock::new(|| Reason
 #[cfg(test)]
 mod registry_tests {
     use super::*;
-    use std::sync::Mutex;
     use std::sync::LazyLock;
+    use std::sync::Mutex;
 
     /// Serializes tests that mutate the global REASONING_REGISTRY. The
     /// registry is a process-wide static; without this, parallel tests racing
@@ -731,32 +774,44 @@ mod registry_tests {
     fn test_exact_match_priority() {
         let _guard = TEST_LOCK.lock().unwrap();
         // Register a broad pattern then a specific override
-        ReasoningRegistry::register("qwen-*", ReasoningConfig {
-            mechanism: ReasoningMechanism::Custom,
-            thinking_format: None,
-            thinking_level_map: None,
-            compat: None,
-        });
-        ReasoningRegistry::register("qwen3-235b-a22b", ReasoningConfig {
-            mechanism: ReasoningMechanism::AnthropicThinking,
-            thinking_format: None,
-            thinking_level_map: None,
-            compat: None,
-        });
+        ReasoningRegistry::register(
+            "qwen-*",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::Custom,
+                thinking_format: None,
+                thinking_level_map: None,
+                compat: None,
+            },
+        );
+        ReasoningRegistry::register(
+            "qwen3-235b-a22b",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::AnthropicThinking,
+                thinking_format: None,
+                thinking_level_map: None,
+                compat: None,
+            },
+        );
 
         let specific = ReasoningRegistry::lookup("qwen3-235b-a22b").unwrap();
-        assert!(matches!(specific.mechanism, ReasoningMechanism::AnthropicThinking));
+        assert!(matches!(
+            specific.mechanism,
+            ReasoningMechanism::AnthropicThinking
+        ));
     }
 
     #[test]
     fn test_glob_pattern_match() {
         let _guard = TEST_LOCK.lock().unwrap();
-        ReasoningRegistry::register("llama-*", ReasoningConfig {
-            mechanism: ReasoningMechanism::Custom,
-            thinking_format: None,
-            thinking_level_map: None,
-            compat: None,
-        });
+        ReasoningRegistry::register(
+            "llama-*",
+            ReasoningConfig {
+                mechanism: ReasoningMechanism::Custom,
+                thinking_format: None,
+                thinking_level_map: None,
+                compat: None,
+            },
+        );
 
         let config = ReasoningRegistry::lookup("llama-3.1-70b").unwrap();
         assert!(matches!(config.mechanism, ReasoningMechanism::Custom));
@@ -774,7 +829,10 @@ mod registry_tests {
         let _guard = TEST_LOCK.lock().unwrap();
         // No registrations — should fall back to detect
         let config = ReasoningRegistry::get_for_model("o3-mini");
-        assert!(matches!(config.mechanism, ReasoningMechanism::OpenAIReasoningEffort));
+        assert!(matches!(
+            config.mechanism,
+            ReasoningMechanism::OpenAIReasoningEffort
+        ));
     }
 
     #[test]
@@ -785,7 +843,10 @@ mod registry_tests {
         ReasoningRegistry::register_defaults();
         let config = ReasoningRegistry::get_for_model("qwen3-235b-a22b");
         assert_eq!(config.thinking_format, Some(ThinkingFormat::Qwen));
-        let map = config.thinking_level_map.as_ref().expect("qwen3 should have level map");
+        let map = config
+            .thinking_level_map
+            .as_ref()
+            .expect("qwen3 should have level map");
         assert_eq!(map.off, Some(serde_json::json!(false)));
         assert_eq!(map.high, Some(serde_json::json!(true)));
     }
@@ -802,7 +863,10 @@ mod registry_tests {
 
         // ds4-server only exposes HIGH and MAX above zero: every level between
         // minimal and high collapses to "high", and xhigh maps to true "max".
-        let map = config.thinking_level_map.as_ref().expect("ds4 should have level map");
+        let map = config
+            .thinking_level_map
+            .as_ref()
+            .expect("ds4 should have level map");
         assert_eq!(map.off, Some(serde_json::json!("none")));
         assert_eq!(map.minimal, Some(serde_json::json!("high")));
         assert_eq!(map.low, Some(serde_json::json!("high")));
@@ -826,7 +890,10 @@ mod registry_tests {
         assert_eq!(config.thinking_format, Some(ThinkingFormat::Openai));
 
         // DeepSeek-V4 only exposes HIGH and MAX above zero; "none" disables.
-        let map = config.thinking_level_map.as_ref().expect("ds4-0731 should have level map");
+        let map = config
+            .thinking_level_map
+            .as_ref()
+            .expect("ds4-0731 should have level map");
         assert_eq!(map.off, Some(serde_json::json!("none")));
         assert_eq!(map.minimal, Some(serde_json::json!("high")));
         assert_eq!(map.low, Some(serde_json::json!("high")));
@@ -850,7 +917,10 @@ mod registry_tests {
 
         // GLM only accepts low/high/max and defaults to MAX on any unrecognized
         // value, so pi's "medium" must map to GLM's "high" (never "max").
-        let map = config.thinking_level_map.as_ref().expect("glm should have level map");
+        let map = config
+            .thinking_level_map
+            .as_ref()
+            .expect("glm should have level map");
         assert_eq!(map.off, Some(serde_json::json!("low")));
         assert_eq!(map.minimal, Some(serde_json::json!("low")));
         assert_eq!(map.low, Some(serde_json::json!("low")));

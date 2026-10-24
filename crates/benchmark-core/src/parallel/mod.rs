@@ -20,10 +20,7 @@ impl ParallelExecutor {
     ///
     /// # Returns
     /// List of successful results (None values filtered out).
-    pub async fn execute_parallel<T, F, Fut>(
-        tasks: Vec<F>,
-        parallelism: usize,
-    ) -> Vec<T>
+    pub async fn execute_parallel<T, F, Fut>(tasks: Vec<F>, parallelism: usize) -> Vec<T>
     where
         T: Send + 'static,
         F: FnOnce() -> Fut + Send + 'static,
@@ -140,9 +137,8 @@ impl ParallelExecutor {
     {
         let mut results = Vec::new();
         for task in tasks {
-            match task().await {
-                Some(result) => results.push(result),
-                None => {}
+            if let Some(result) = task().await {
+                results.push(result)
             }
         }
         results
@@ -163,7 +159,9 @@ impl RateLimiter {
     }
 
     /// Acquires a permit. Returns a guard that releases the permit when dropped.
-    pub async fn acquire(&self) -> Result<tokio::sync::SemaphorePermit<'_>, tokio::sync::AcquireError> {
+    pub async fn acquire(
+        &self,
+    ) -> Result<tokio::sync::SemaphorePermit<'_>, tokio::sync::AcquireError> {
         self.semaphore.acquire().await
     }
 

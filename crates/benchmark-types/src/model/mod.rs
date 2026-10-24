@@ -183,10 +183,11 @@ impl<'de> serde::Deserialize<'de> for MessageContent {
         match value {
             serde_json::Value::String(s) => Ok(MessageContent::Text(s)),
             serde_json::Value::Array(arr) => {
-                let items: Result<Vec<Content>, _> = arr.into_iter()
-                    .map(|v| serde_json::from_value(v))
-                    .collect();
-                items.map_err(serde::de::Error::custom).map(MessageContent::Structured)
+                let items: Result<Vec<Content>, _> =
+                    arr.into_iter().map(serde_json::from_value).collect();
+                items
+                    .map_err(serde::de::Error::custom)
+                    .map(MessageContent::Structured)
             }
             _ => Ok(MessageContent::Text(value.to_string())),
         }
@@ -239,7 +240,9 @@ pub enum PiLogEntry {
     #[serde(rename = "thinking_level_change")]
     ThinkingLevelChange(PiThinkingLevelChange),
     #[serde(rename = "message")]
-    Message(PiMessage),
+    // Boxed: `PiMessage` is 528 bytes against 160 for the next-largest variant, and every
+    // trace line is parsed into this enum.
+    Message(Box<PiMessage>),
     #[serde(rename = "tool_execution_start")]
     ToolExecutionStart(PiToolExecutionStart),
     #[serde(rename = "tool_execution_update")]
@@ -463,9 +466,7 @@ pub struct PiUsage {
 
 impl PiUsage {
     pub fn total_input(&self) -> u64 {
-        self.input.unwrap_or(0)
-            + self.cache_read.unwrap_or(0)
-            + self.cache_write.unwrap_or(0)
+        self.input.unwrap_or(0) + self.cache_read.unwrap_or(0) + self.cache_write.unwrap_or(0)
     }
 
     pub fn total_output(&self) -> u64 {

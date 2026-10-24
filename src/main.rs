@@ -56,9 +56,7 @@ fn main() -> anyhow::Result<()> {
 
     match cli.command {
         Commands::Run(args) => benchmark_cli::run_benchmark(args),
-        Commands::Web(args) => {
-            tokio::runtime::Runtime::new()?.block_on(web::execute(args))
-        }
+        Commands::Web(args) => tokio::runtime::Runtime::new()?.block_on(web::execute(args)),
         Commands::Report(args) => benchmark_reporter::generate_report(&args),
         Commands::TokenReport(args) => benchmark_token_report::generate_token_report(&args),
     }

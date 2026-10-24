@@ -1,16 +1,15 @@
+use crate::agent::{reference::ReferenceAgent, ClaudeMessageProcessor};
+use crate::docker::DockerClient;
+use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::cancellation::CancellationToken;
+use benchmark_types::exercise::Exercise;
+use benchmark_types::util::recover_poisoned;
+use benchmark_types::ExerciseSource;
 use std::fs;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 use tokio::time::Instant;
 use tracing::{error, info};
-use benchmark_types::agent::{Agent, AgentResult};
-use benchmark_types::cancellation::CancellationToken;
-use benchmark_types::exercise::Exercise;
-use benchmark_types::ExerciseSource;
-use crate::docker::DockerClient;
-use crate::agent::{reference::ReferenceAgent, ClaudeMessageProcessor};
-use benchmark_types::util::recover_poisoned;
-
 
 /// Claude agent that invokes Claude Code CLI to solve exercises.
 pub struct ClaudeAgent {
@@ -36,7 +35,10 @@ impl ClaudeAgent {
 
     /// Creates a temporary working directory for the exercise.
     /// Create exercise prompt for Claude Code.
-    fn create_exercise_prompt(exercise: &Exercise, temp_dir: &Path) -> Result<String, std::io::Error> {
+    fn create_exercise_prompt(
+        exercise: &Exercise,
+        temp_dir: &Path,
+    ) -> Result<String, std::io::Error> {
         let mut prompt = String::new();
 
         let instructions_path = temp_dir.join(".docs/instructions.md");
@@ -97,7 +99,8 @@ impl Agent for ClaudeAgent {
         thinking_level: Option<&str>,
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
-        self.run_exercise_with_timeout(exercise, source, model, thinking_level, results_dir, None).await
+        self.run_exercise_with_timeout(exercise, source, model, thinking_level, results_dir, None)
+            .await
     }
 
     #[tracing::instrument(skip(self, source), fields(exercise = %exercise.name, language = %exercise.language))]
@@ -121,7 +124,9 @@ impl Agent for ClaudeAgent {
 
         let prompt = Self::create_exercise_prompt(exercise, &temp_work_dir)?;
 
-        let result = self.run_claude_in_docker(exercise, &temp_work_dir, &prompt, timeout_override_secs).await?;
+        let result = self
+            .run_claude_in_docker(exercise, &temp_work_dir, &prompt, timeout_override_secs)
+            .await?;
 
         // Use the agent's own timing (captured before test verification),
         // not wall-clock time that includes post-agent work.
@@ -135,7 +140,6 @@ impl Agent for ClaudeAgent {
             .start_time(result.start_time)
             .end_time(result.end_time)
             .error_message(result.error_message)
-
             .container_id(result.container_id)
             .build())
     }
@@ -204,13 +208,19 @@ impl Agent for ClaudeAgent {
                 day.day, result.exit_code, result.completed
             );
         } else {
-            info!("Claude agent AoC day {} completed in {}ms", day.day, duration_ms);
+            info!(
+                "Claude agent AoC day {} completed in {}ms",
+                day.day, duration_ms
+            );
         }
 
         let error_message = if claude_success {
             None
         } else {
-            Some(format!("Claude agent failed with exit code: {}", result.exit_code))
+            Some(format!(
+                "Claude agent failed with exit code: {}",
+                result.exit_code
+            ))
         };
 
         Ok(AgentResult::builder()
@@ -306,10 +316,12 @@ impl ClaudeAgent {
         // This mirrors the Java flow where runReferenceSolution() calls
         // runTestsInDocker() after runAgent().
         let test_agent = ReferenceAgent::new(self.docker_client.clone());
-        let test_result = test_agent.run_tests_in_docker(exercise, &temp_work_dir).await;
+        let test_result = test_agent
+            .run_tests_in_docker(exercise, temp_work_dir)
+            .await;
 
         // Cleanup temporary work directory (prevents disk accumulation over many runs)
-        let _ = fs::remove_dir_all(&temp_work_dir);
+        let _ = fs::remove_dir_all(temp_work_dir);
 
         // The overall success is determined by whether tests pass.
         let test_ok = match &test_result {
@@ -322,7 +334,10 @@ impl ClaudeAgent {
             if !claude_success {
                 Some(format!("Claude agent failed with exit code: {}", exit_code))
             } else {
-                test_result.as_ref().ok().and_then(|t| t.error_message.clone())
+                test_result
+                    .as_ref()
+                    .ok()
+                    .and_then(|t| t.error_message.clone())
             }
         } else {
             None
@@ -332,13 +347,23 @@ impl ClaudeAgent {
             .exercise_name(exercise.name.clone())
             .language(exercise.language.clone())
             .success(success)
-            .exit_code(test_result.as_ref().map(|t| t.exit_code).unwrap_or(exit_code))
+            .exit_code(
+                test_result
+                    .as_ref()
+                    .map(|t| t.exit_code)
+                    .unwrap_or(exit_code),
+            )
             .output(output)
             .duration_ms(duration_ms)
             .start_time(start_dt.to_rfc3339())
             .end_time(end_dt.to_rfc3339())
             .error_message(error_message)
-            .container_id(test_result.as_ref().map(|t| t.container_id.clone()).unwrap_or(container_id))
+            .container_id(
+                test_result
+                    .as_ref()
+                    .map(|t| t.container_id.clone())
+                    .unwrap_or(container_id),
+            )
             .build())
     }
 }

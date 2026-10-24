@@ -2,12 +2,12 @@
 //! REST API for queue management.
 
 use super::AppState;
-use axum::extract::{Path, Query, FromRequest, Request};
-use axum::routing::{get, post};
-use axum::Router;
-use axum::Json;
-use axum::Extension;
+use axum::extract::{FromRequest, Path, Query, Request};
 use axum::http::StatusCode;
+use axum::routing::{get, post};
+use axum::Extension;
+use axum::Json;
+use axum::Router;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -33,12 +33,13 @@ where
         let body = axum::body::to_bytes(req.into_body(), 1_048_576)
             .await
             .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
-        
+
         let body_str = String::from_utf8_lossy(&body);
-        
+
         // Parse manually to handle repeated fields
-        let mut pairs: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
-        
+        let mut pairs: std::collections::HashMap<String, Vec<String>> =
+            std::collections::HashMap::new();
+
         for pair in body_str.split('&') {
             if let Some((key, value)) = pair.split_once('=') {
                 let decoded_key = urlencoding::decode(key)
@@ -50,7 +51,7 @@ where
                 pairs.entry(decoded_key).or_default().push(decoded_value);
             }
         }
-        
+
         // Convert to URL-encoded format that serde_urlencoded can handle
         let mut flattened: Vec<(String, String)> = Vec::new();
         for (key, values) in pairs.into_iter() {
@@ -63,13 +64,17 @@ where
                 flattened.push((key, json_array));
             }
         }
-        
+
         let serialized = serde_urlencoded::to_string(&flattened)
             .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
-        
-        let request: T = serde_urlencoded::from_str(&serialized)
-            .map_err(|e| (StatusCode::BAD_REQUEST, format!("Failed to deserialize form: {}", e)))?;
-        
+
+        let request: T = serde_urlencoded::from_str(&serialized).map_err(|e| {
+            (
+                StatusCode::BAD_REQUEST,
+                format!("Failed to deserialize form: {}", e),
+            )
+        })?;
+
         Ok(FlexibleForm(request))
     }
 }
@@ -144,9 +149,7 @@ where
             if v.starts_with('[') && v.ends_with(']') {
                 let raw: Vec<String> = serde_json::from_str(v)
                     .map_err(|e| de::Error::custom(format!("invalid JSON array: {e}")))?;
-                raw.into_iter()
-                    .map(|s| Self::parse_one(&s))
-                    .collect()
+                raw.into_iter().map(|s| Self::parse_one(&s)).collect()
             } else {
                 Self::parse_one(v).map(|x| vec![x])
             }
@@ -170,7 +173,8 @@ where
         T::Err: std::fmt::Display,
     {
         fn parse_one<E: de::Error>(s: &str) -> Result<T, E> {
-            s.parse::<T>().map_err(|e| de::Error::custom(format!("invalid value '{s}': {e}")))
+            s.parse::<T>()
+                .map_err(|e| de::Error::custom(format!("invalid value '{s}': {e}")))
         }
     }
 
@@ -208,21 +212,44 @@ pub async fn get_queue(
     Query(params): Query<QueryParam>,
 ) -> Json<QueueResponse> {
     let items = state.service.get_queue_items();
-    let pending = items.iter().filter(|i| i.status == QueueItemStatus::PENDING).count();
-    let running = items.iter().filter(|i| i.status == QueueItemStatus::RUNNING).count();
-    let completed = items.iter().filter(|i| i.status == QueueItemStatus::COMPLETED).count();
-    let failed = items.iter().filter(|i| i.status == QueueItemStatus::FAILED).count();
-    let cancelled = items.iter().filter(|i| i.status == QueueItemStatus::CANCELLED).count();
+    let pending = items
+        .iter()
+        .filter(|i| i.status == QueueItemStatus::PENDING)
+        .count();
+    let running = items
+        .iter()
+        .filter(|i| i.status == QueueItemStatus::RUNNING)
+        .count();
+    let completed = items
+        .iter()
+        .filter(|i| i.status == QueueItemStatus::COMPLETED)
+        .count();
+    let failed = items
+        .iter()
+        .filter(|i| i.status == QueueItemStatus::FAILED)
+        .count();
+    let cancelled = items
+        .iter()
+        .filter(|i| i.status == QueueItemStatus::CANCELLED)
+        .count();
 
     let filtered_items: Vec<HashMap<String, String>> = if let Some(ref status) = params.status {
-        items.iter().filter(|i| i.status.to_string() == *status).map(|i| item_to_map(i)).collect()
+        items
+            .iter()
+            .filter(|i| i.status.to_string() == *status)
+            .map(item_to_map)
+            .collect()
     } else {
-        items.iter().map(|i| item_to_map(i)).collect()
+        items.iter().map(item_to_map).collect()
     };
 
     Json(QueueResponse {
         items: filtered_items,
-        pending, running, completed, failed, cancelled,
+        pending,
+        running,
+        completed,
+        failed,
+        cancelled,
         active_workers: state.service.get_active_worker_count().await,
         parallelism_limit: state.service.get_parallelism_limit(),
     })
@@ -250,11 +277,15 @@ pub async fn schedule_batch(
     };
 
     let items = state.service.schedule_batch_with_retry(
-        request.agent.clone(), request.languages.clone(),
-        model, request.thinking_level.clone(), exercise, request.retry,
+        request.agent.clone(),
+        request.languages.clone(),
+        model,
+        request.thinking_level.clone(),
+        exercise,
+        request.retry,
     );
 
-    let items_map: Vec<HashMap<String, String>> = items.iter().map(|i| item_to_map(i)).collect();
+    let items_map: Vec<HashMap<String, String>> = items.iter().map(item_to_map).collect();
     let response = serde_json::json!({
         "status": "scheduled",
         "count": items.len(),
@@ -302,7 +333,9 @@ pub async fn clear_pending_queue(Extension(state): Extension<AppState>) -> Json<
 }
 
 /// Clear completed and cancelled items from the queue.
-pub async fn clear_completed_and_cancelled(Extension(state): Extension<AppState>) -> Json<serde_json::Value> {
+pub async fn clear_completed_and_cancelled(
+    Extension(state): Extension<AppState>,
+) -> Json<serde_json::Value> {
     let removed = state.service.clear_completed_and_cancelled();
     Json(serde_json::json!({
         "status": "ok",
@@ -343,7 +376,10 @@ fn item_to_map(item: &BenchmarkQueueItem) -> HashMap<String, String> {
     map.insert("language".to_string(), item.language.clone());
     map.insert("exercise".to_string(), item.exercise.clone());
     map.insert("status".to_string(), item.status.to_string());
-    map.insert("session_id".to_string(), item.session_id.clone().unwrap_or_default());
+    map.insert(
+        "session_id".to_string(),
+        item.session_id.clone().unwrap_or_default(),
+    );
     map.insert("retry".to_string(), item.retry.to_string());
     map
 }
@@ -358,7 +394,10 @@ pub fn register(app: Router<()>) -> Router<()> {
         .route("/api/benchmark/queue/schedule", post(schedule_batch))
         .route("/api/benchmark/queue/cancel/{id}", post(cancel_queue_item))
         .route("/api/benchmark/queue/clear", post(clear_pending_queue))
-        .route("/api/benchmark/queue/clear-terminal", post(clear_completed_and_cancelled))
+        .route(
+            "/api/benchmark/queue/clear-terminal",
+            post(clear_completed_and_cancelled),
+        )
         .route("/api/benchmark/queue/retry/{id}", post(retry_queue_item))
 }
 
@@ -380,7 +419,8 @@ mod tests {
 
     fn parse_days(ser: &str) -> Vec<u32> {
         // Mimic FlexibleForm: repeated keys -> JSON array string of raw values.
-        let mut pairs: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+        let mut pairs: std::collections::HashMap<String, Vec<String>> =
+            std::collections::HashMap::new();
         for pair in ser.split('&') {
             if let Some((k, v)) = pair.split_once('=') {
                 pairs.entry(k.to_string()).or_default().push(v.to_string());
@@ -418,7 +458,8 @@ mod tests {
     fn string_elements_still_work_for_string_vectors() {
         // The generic helper must remain compatible with Vec<String>.
         let ser = "langs=java&langs=python";
-        let mut pairs: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+        let mut pairs: std::collections::HashMap<String, Vec<String>> =
+            std::collections::HashMap::new();
         for pair in ser.split('&') {
             if let Some((k, v)) = pair.split_once('=') {
                 pairs.entry(k.to_string()).or_default().push(v.to_string());

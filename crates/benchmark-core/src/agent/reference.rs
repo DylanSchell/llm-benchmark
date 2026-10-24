@@ -1,20 +1,23 @@
+use crate::docker::DockerClient;
+use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::cancellation::CancellationToken;
+use benchmark_types::exercise::Exercise;
+use benchmark_types::util::recover_poisoned;
+use benchmark_types::ExerciseSource;
 use std::fs;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 use tokio::time::Instant;
 use tracing::{debug, error, info, warn};
-use benchmark_types::agent::{Agent, AgentResult};
-use benchmark_types::cancellation::CancellationToken;
-use benchmark_types::exercise::Exercise;
-use benchmark_types::ExerciseSource;
-use benchmark_types::util::recover_poisoned;
-use crate::docker::DockerClient;
+
+/// Live output sink: receives container output chunks as they arrive.
+type OutputConsumer = Box<dyn Fn(&str) + Send + Sync>;
 
 /// Reference agent that copies reference implementation and runs tests.
 pub struct ReferenceAgent {
     docker_client: DockerClient,
     /// Optional callback for live output streaming.
-    output_consumer: Arc<Mutex<Option<Box<dyn Fn(&str) + Send + Sync>>>>,
+    output_consumer: Arc<Mutex<Option<OutputConsumer>>>,
     /// Session cancellation signal — aborts in-flight Docker runs when fired.
     cancellation_token: Mutex<Option<CancellationToken>>,
 }
@@ -40,7 +43,7 @@ impl ReferenceAgent {
 
     /// Emits output through the consumer if set.
     fn emit_output(&self, message: &str) {
-        if let Some(guard) = self.output_consumer.lock().ok() {
+        if let Ok(guard) = self.output_consumer.lock() {
             if let Some(ref consumer) = *guard {
                 consumer(message);
             }
@@ -49,7 +52,11 @@ impl ReferenceAgent {
 
     /// Patches test files for the exercise (language-specific modifications).
     /// Removes skip annotations so all tests run.
-    pub fn patch_tests(&self, exercise: &Exercise, temp_work_dir: &Path) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    pub fn patch_tests(
+        &self,
+        exercise: &Exercise,
+        temp_work_dir: &Path,
+    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         crate::agent::test_patches::run_patch_tests(exercise, temp_work_dir)
     }
 
@@ -87,11 +94,7 @@ impl ReferenceAgent {
     }
 
     /// Copies reference implementation files into the temp directory.
-    fn copy_reference_impl(
-        source: &dyn ExerciseSource,
-        exercise: &Exercise,
-        temp_dir: &Path,
-    ) {
+    fn copy_reference_impl(source: &dyn ExerciseSource, exercise: &Exercise, temp_dir: &Path) {
         // Use metadata from config.json (matching Java's LanguageHandler.copyReference):
         // files.example are the reference implementation paths, relative to the
         // exercise root.
@@ -129,7 +132,8 @@ impl ReferenceAgent {
         };
         let _ = fs::create_dir_all(&target_dir);
 
-        let mut used_solutions: std::collections::HashSet<String> = std::collections::HashSet::new();
+        let mut used_solutions: std::collections::HashSet<String> =
+            std::collections::HashSet::new();
 
         for relative in &exercise.example_files {
             let Some(bytes) = source.read(&exercise.language, &exercise.name, relative) else {
@@ -137,16 +141,25 @@ impl ReferenceAgent {
             };
 
             let example_name = Path::new(relative).file_name().unwrap();
-            let example_ext = Path::new(relative).extension().and_then(|e| e.to_str()).unwrap_or("");
+            let example_ext = Path::new(relative)
+                .extension()
+                .and_then(|e| e.to_str())
+                .unwrap_or("");
 
             // Find matching solution: prefer exact filename, fall back to extension
-            let matching = exercise.solution_files.iter()
+            let matching = exercise
+                .solution_files
+                .iter()
                 .filter(|s| !used_solutions.contains(*s))
                 .find(|s| Path::new(s).file_name() == Some(example_name))
                 .or_else(|| {
-                    exercise.solution_files.iter()
+                    exercise
+                        .solution_files
+                        .iter()
                         .filter(|s| !used_solutions.contains(*s))
-                        .find(|s| Path::new(s).extension().and_then(|e| e.to_str()) == Some(example_ext))
+                        .find(|s| {
+                            Path::new(s).extension().and_then(|e| e.to_str()) == Some(example_ext)
+                        })
                 });
 
             let dest_rel = match matching {
@@ -191,7 +204,8 @@ impl ReferenceAgent {
                 let _ = fs::create_dir_all(&main_src_dir);
                 info!("Copying reference implementation to {:?}", main_src_dir);
                 for relative in entries.iter().filter(|f| f.ends_with(".java")) {
-                    let Some(bytes) = source.read(&exercise.language, &exercise.name, relative) else {
+                    let Some(bytes) = source.read(&exercise.language, &exercise.name, relative)
+                    else {
                         continue;
                     };
                     let file_name = Path::new(relative).file_name().unwrap();
@@ -201,7 +215,8 @@ impl ReferenceAgent {
             }
             "go" => {
                 for relative in entries.iter().filter(|f| f.ends_with(".go")) {
-                    let Some(bytes) = source.read(&exercise.language, &exercise.name, relative) else {
+                    let Some(bytes) = source.read(&exercise.language, &exercise.name, relative)
+                    else {
                         continue;
                     };
                     let file_name = Path::new(relative).file_name().unwrap();
@@ -210,7 +225,10 @@ impl ReferenceAgent {
                 }
             }
             _ => {
-                warn!("Legacy reference copy not implemented for: {}", exercise.language);
+                warn!(
+                    "Legacy reference copy not implemented for: {}",
+                    exercise.language
+                );
             }
         }
     }
@@ -243,7 +261,10 @@ impl ReferenceAgent {
             .run_command_with_limits_and_volume(
                 None,
                 Some("/workspace"),
-                &prepare_command.iter().map(|s| s.as_str()).collect::<Vec<&str>>(),
+                &prepare_command
+                    .iter()
+                    .map(|s| s.as_str())
+                    .collect::<Vec<&str>>(),
                 None,
                 None,
                 Some(&temp_work_dir.to_string_lossy()),
@@ -254,7 +275,8 @@ impl ReferenceAgent {
         if !result.completed || result.exit_code != 0 {
             let err_msg = format!(
                 "Workspace preparation failed for {}: {}",
-                exercise.language, crate::safe_truncate(&result.output, 500)
+                exercise.language,
+                crate::safe_truncate(&result.output, 500)
             );
             error!("{}", err_msg);
             self.emit_output(&format!("{}\n", err_msg));
@@ -299,7 +321,11 @@ impl ReferenceAgent {
                         "--quiet".to_string(),
                     ]
                 } else if temp_work_dir.join("pom.xml").exists() {
-                    vec!["mvn".to_string(), "dependency:resolve".to_string(), "-q".to_string()]
+                    vec![
+                        "mvn".to_string(),
+                        "dependency:resolve".to_string(),
+                        "-q".to_string(),
+                    ]
                 } else {
                     vec![]
                 }
@@ -333,7 +359,10 @@ impl ReferenceAgent {
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         // Use metadata test paths when available (config.json → files.test)
         if !exercise.test_files.is_empty() {
-            info!("Copying {} fresh test files from metadata", exercise.test_files.len());
+            info!(
+                "Copying {} fresh test files from metadata",
+                exercise.test_files.len()
+            );
             for relative in &exercise.test_files {
                 let Some(bytes) = source.read(&exercise.language, &exercise.name, relative) else {
                     warn!("Test file not found: {}", relative);
@@ -358,7 +387,8 @@ impl ReferenceAgent {
                     .into_iter()
                     .filter(|f| f.starts_with(prefix))
                 {
-                    let Some(bytes) = source.read(&exercise.language, &exercise.name, &relative) else {
+                    let Some(bytes) = source.read(&exercise.language, &exercise.name, &relative)
+                    else {
                         continue;
                     };
                     let dest = dest_dir.join(&relative);
@@ -369,7 +399,10 @@ impl ReferenceAgent {
                 }
             }
             _ => {
-                info!("copy_fresh_tests: using metadata-based paths for {}", exercise.language);
+                info!(
+                    "copy_fresh_tests: using metadata-based paths for {}",
+                    exercise.language
+                );
             }
         }
 
@@ -428,7 +461,9 @@ impl ReferenceAgent {
         let exit_code = result.exit_code;
         let container_id = result.container_id;
         let completed = result.completed;
-        let success = completed && exit_code == 0 && !Self::contains_test_failures(&output, &exercise.language);
+        let success = completed
+            && exit_code == 0
+            && !Self::contains_test_failures(&output, &exercise.language);
 
         if success {
             info!(
@@ -442,11 +477,7 @@ impl ReferenceAgent {
             );
         }
 
-        let output_for_error = if success {
-            None
-        } else {
-            Some(output.clone())
-        };
+        let output_for_error = if success { None } else { Some(output.clone()) };
 
         Ok(AgentResult::builder()
             .exercise_name(exercise.name.clone())
@@ -483,12 +514,14 @@ impl ReferenceAgent {
         } else if exercise.language == "python" {
             // Match Java PythonHandler: always use this command regardless of build files
             // Python Exercism exercises don't have pyproject.toml or setup.py
-            vec!["sh", "-c", ". .venv/bin/activate && uv pip install -q pytest && pytest"]
+            vec![
+                "sh",
+                "-c",
+                ". .venv/bin/activate && uv pip install -q pytest && pytest",
+            ]
         } else if work_dir.join("Gemfile").exists() {
             vec!["bundle", "exec", "rake", "test"]
-        } else if Self::has_extension(work_dir, "csproj")
-            || Self::has_extension(work_dir, "sln")
-        {
+        } else if Self::has_extension(work_dir, "csproj") || Self::has_extension(work_dir, "sln") {
             vec!["dotnet", "test"]
         } else {
             error!(
@@ -569,9 +602,15 @@ impl Agent for ReferenceAgent {
         // the baseline / sanity check that the harness works end-to-end.
         let start = Instant::now();
         let (part1, part2) = benchmark_aoc2015::solve(&day.user, day.year, day.day);
-        fs::write(work_dir.join(crate::aoc_runner::ANSWER_FILE), format!("{part1}\n{part2}\n"))?;
+        fs::write(
+            work_dir.join(crate::aoc_runner::ANSWER_FILE),
+            format!("{part1}\n{part2}\n"),
+        )?;
         let duration_ms = start.elapsed().as_millis() as u64;
-        info!("Reference agent solved AoC day {}: part1={} part2={}", day.day, part1, part2);
+        info!(
+            "Reference agent solved AoC day {}: part1={} part2={}",
+            day.day, part1, part2
+        );
         Ok(AgentResult::builder()
             .category(benchmark_types::Category::Aoc2015)
             .exercise_name(day.exercise_name())
@@ -592,7 +631,8 @@ impl Agent for ReferenceAgent {
         thinking_level: Option<&str>,
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
-        self.run_exercise_with_timeout(exercise, source, model, thinking_level, results_dir, None).await
+        self.run_exercise_with_timeout(exercise, source, model, thinking_level, results_dir, None)
+            .await
     }
 
     #[tracing::instrument(skip(self, source), fields(exercise = %exercise.name, language = %exercise.language))]
@@ -653,7 +693,6 @@ impl Agent for ReferenceAgent {
             } else {
                 test_result.error_message
             })
-
             .container_id(test_result.container_id)
             .build())
     }

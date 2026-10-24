@@ -63,14 +63,20 @@ mod tests {
 
     #[test]
     fn generate_is_deterministic_for_a_fixed_user() {
-        assert_eq!(generate("benchmark", 2015, 1), generate("benchmark", 2015, 1));
+        assert_eq!(
+            generate("benchmark", 2015, 1),
+            generate("benchmark", 2015, 1)
+        );
         assert_eq!(generate("alice", 2015, 7), generate("alice", 2015, 7));
     }
 
     #[test]
     fn generate_differs_by_user_and_day() {
         assert_ne!(generate("benchmark", 2015, 1), generate("other", 2015, 1));
-        assert_ne!(generate("benchmark", 2015, 1), generate("benchmark", 2015, 2));
+        assert_ne!(
+            generate("benchmark", 2015, 1),
+            generate("benchmark", 2015, 2)
+        );
     }
 
     #[test]

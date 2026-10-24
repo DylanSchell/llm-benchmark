@@ -208,6 +208,9 @@ where
 use crate::cancellation::CancellationToken;
 use crate::exercise_source::ExerciseSource;
 
+// `async_trait` boxes each future itself, so Clippy reads the generated `#[must_use]` as
+// redundant; there is no attribute in this source to remove (clippy::double_must_use).
+#[allow(clippy::double_must_use)]
 #[async_trait::async_trait]
 pub trait Agent: Send + Sync {
     async fn run_exercise(
@@ -248,7 +251,14 @@ pub trait Agent: Send + Sync {
         thinking_level: Option<&str>,
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
-        let _ = (day, work_dir, validator_url, model, thinking_level, results_dir);
+        let _ = (
+            day,
+            work_dir,
+            validator_url,
+            model,
+            thinking_level,
+            results_dir,
+        );
         Err(format!("agent {} does not support AoC runs", self.get_name()).into())
     }
 
@@ -436,8 +446,6 @@ impl AgentResultBuilder {
         self
     }
 
-
-
     pub fn container_id(mut self, container_id: String) -> Self {
         self.container_id = Some(container_id);
         self
@@ -526,7 +534,8 @@ mod tests {
             "endTime": 1776844406.589704
         }"#;
 
-        let result: AgentResult = serde_json::from_str(json).expect("should deserialize existing format");
+        let result: AgentResult =
+            serde_json::from_str(json).expect("should deserialize existing format");
         assert_eq!(result.exercise_name, "say");
         assert_eq!(result.language, "javascript");
         assert!(result.success);
@@ -574,7 +583,8 @@ mod tests {
     #[test]
     fn test_deserialize_minimal_fields() {
         let json = r#"{"exerciseName": "foo", "language": "java", "success": false, "exitCode": 1, "output": "", "duration": 0.5, "startTime": "", "endTime": ""}"#;
-        let result: AgentResult = serde_json::from_str(json).expect("should deserialize minimal fields");
+        let result: AgentResult =
+            serde_json::from_str(json).expect("should deserialize minimal fields");
         assert_eq!(result.container_id, ""); // default
         assert_eq!(result.model, ""); // default
         assert_eq!(result.attempts, 1); // default
@@ -585,7 +595,8 @@ mod tests {
     #[test]
     fn test_null_error_message() {
         let json = r#"{"exerciseName": "x", "language": "go", "success": true, "exitCode": 0, "output": "", "duration": 1.0, "startTime": "", "endTime": "", "errorMessage": null}"#;
-        let result: AgentResult = serde_json::from_str(json).expect("null errorMessage should work");
+        let result: AgentResult =
+            serde_json::from_str(json).expect("null errorMessage should work");
         assert!(result.error_message.is_none());
     }
 }

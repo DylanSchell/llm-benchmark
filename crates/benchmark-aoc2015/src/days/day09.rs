@@ -12,46 +12,65 @@ pub fn solve(input: &str) -> (String, String) {
             continue;
         }
         let parts: Vec<&str> = l.split_whitespace().collect();
-        let (a, b, d) = (parts[0].to_string(), parts[2].to_string(), parts[4].parse::<i64>().unwrap());
+        let (a, b, d) = (
+            parts[0].to_string(),
+            parts[2].to_string(),
+            parts[4].parse::<i64>().unwrap(),
+        );
         cities.insert(a.clone());
         cities.insert(b.clone());
         dist.insert((a.clone(), b.clone()), d);
         dist.insert((b.clone(), a.clone()), d);
     }
     let list: Vec<String> = cities.into_iter().collect();
-    let (mut shortest, mut longest) = (i64::MAX, i64::MIN);
-    let mut used = vec![false; list.len()];
-    dfs(&list, &dist, &mut used, 0, 0, 0, &mut shortest, &mut longest);
-    (shortest.to_string(), longest.to_string())
+    let mut search = TourSearch {
+        cities: &list,
+        dist: &dist,
+        used: vec![false; list.len()],
+        shortest: i64::MAX,
+        longest: i64::MIN,
+    };
+    search.run(0, 0, 0);
+    (search.shortest.to_string(), search.longest.to_string())
 }
 
-fn dfs(
-    cities: &[String],
-    dist: &HashMap<(String, String), i64>,
-    used: &mut [bool],
-    count: usize,
-    last: i64,
-    cur: i64,
-    shortest: &mut i64,
-    longest: &mut i64,
-) {
-    if count == cities.len() {
-        *shortest = (*shortest).min(cur);
-        *longest = (*longest).max(cur);
-        return;
-    }
-    for i in 0..cities.len() {
-        if used[i] {
-            continue;
+/// Exhaustive permutation walk over the complete distance graph.
+///
+/// The graph, the visited flags and the running best/worst belong together: passing
+/// them as eight positional arguments only moved the bookkeeping into the call site.
+struct TourSearch<'a> {
+    cities: &'a [String],
+    dist: &'a HashMap<(String, String), i64>,
+    used: Vec<bool>,
+    shortest: i64,
+    longest: i64,
+}
+
+impl TourSearch<'_> {
+    /// Extend a partial route that has visited `count` cities and last stood on
+    /// `last`, having accumulated `cur` distance so far.
+    fn run(&mut self, count: usize, last: i64, cur: i64) {
+        if count == self.cities.len() {
+            self.shortest = self.shortest.min(cur);
+            self.longest = self.longest.max(cur);
+            return;
         }
-        let d = if count == 0 {
-            0
-        } else {
-            *dist.get(&(cities[last as usize].clone(), cities[i].clone())).unwrap()
-        };
-        used[i] = true;
-        dfs(cities, dist, used, count + 1, i as i64, cur + d, shortest, longest);
-        used[i] = false;
+        for i in 0..self.cities.len() {
+            if self.used[i] {
+                continue;
+            }
+            let d = if count == 0 {
+                0
+            } else {
+                *self
+                    .dist
+                    .get(&(self.cities[last as usize].clone(), self.cities[i].clone()))
+                    .unwrap()
+            };
+            self.used[i] = true;
+            self.run(count + 1, i as i64, cur + d);
+            self.used[i] = false;
+        }
     }
 }
 

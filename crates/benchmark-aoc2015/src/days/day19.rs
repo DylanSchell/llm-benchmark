@@ -80,7 +80,10 @@ fn parse(input: &str) -> (Vec<(String, String)>, String) {
 // the minimum because the reverse reduction finds it. We build a derivation
 // whose expansion is exactly the recorded step count.
 pub fn generate(rng: &mut Rng) -> String {
-    let elems = ["H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Al", "Ca", "Mg", "P", "Si", "Ti", "Th"];
+    let elems = [
+        "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Al", "Ca", "Mg", "P", "Si", "Ti",
+        "Th",
+    ];
 
     // Build rules (a small set keeps the reverse search fast). Every rule must
     // strictly LENGTHEN (RHS longer than LHS) so the reverse reduction is an

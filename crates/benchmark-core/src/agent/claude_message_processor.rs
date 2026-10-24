@@ -2,7 +2,7 @@
 //! Logs key events with tracing and forwards formatted output to consumer for web UI streaming.
 
 use serde_json::Value;
-use tracing::{info, debug};
+use tracing::{debug, info};
 
 /// Callback type for sending processed output to the web UI SSE stream.
 pub type OutputConsumer = Box<dyn Fn(&str) + Send + Sync>;
@@ -73,12 +73,16 @@ impl ClaudeMessageProcessor {
                             if let Some(item_type) = item.get("type").and_then(|v| v.as_str()) {
                                 match item_type {
                                     "thinking" => {
-                                        if let Some(thinking) = item.get("thinking").and_then(|v| v.as_str()) {
+                                        if let Some(thinking) =
+                                            item.get("thinking").and_then(|v| v.as_str())
+                                        {
                                             self.send_output(thinking);
                                         }
                                     }
                                     "text" => {
-                                        if let Some(text) = item.get("text").and_then(|v| v.as_str()) {
+                                        if let Some(text) =
+                                            item.get("text").and_then(|v| v.as_str())
+                                        {
                                             self.send_output(text);
                                         }
                                     }
@@ -90,7 +94,8 @@ impl ClaudeMessageProcessor {
                 } else if let Some(content_type) = content.get("type").and_then(|v| v.as_str()) {
                     match content_type {
                         "thinking" => {
-                            if let Some(thinking) = content.get("thinking").and_then(|v| v.as_str()) {
+                            if let Some(thinking) = content.get("thinking").and_then(|v| v.as_str())
+                            {
                                 self.send_output(thinking);
                             }
                         }
@@ -141,13 +146,17 @@ impl ClaudeMessageProcessor {
                             if let Some(item_type) = item.get("type").and_then(|v| v.as_str()) {
                                 match item_type {
                                     "thinking" => {
-                                        if let Some(thinking) = item.get("thinking").and_then(|v| v.as_str()) {
+                                        if let Some(thinking) =
+                                            item.get("thinking").and_then(|v| v.as_str())
+                                        {
                                             self.send_output(thinking);
                                         }
                                     }
                                     "tool_use" => self.render_tool_use(item),
                                     "text" => {
-                                        if let Some(text) = item.get("text").and_then(|v| v.as_str()) {
+                                        if let Some(text) =
+                                            item.get("text").and_then(|v| v.as_str())
+                                        {
                                             self.send_output(text);
                                         }
                                     }
@@ -159,7 +168,8 @@ impl ClaudeMessageProcessor {
                 } else if let Some(content_type) = content.get("type").and_then(|v| v.as_str()) {
                     match content_type {
                         "thinking" => {
-                            if let Some(thinking) = content.get("thinking").and_then(|v| v.as_str()) {
+                            if let Some(thinking) = content.get("thinking").and_then(|v| v.as_str())
+                            {
                                 self.send_output(thinking);
                             }
                         }
@@ -213,15 +223,24 @@ impl ClaudeMessageProcessor {
                             if let Some(item_type) = item.get("type").and_then(|v| v.as_str()) {
                                 match item_type {
                                     "text" => {
-                                        if let Some(text) = item.get("text").and_then(|v| v.as_str()) {
+                                        if let Some(text) =
+                                            item.get("text").and_then(|v| v.as_str())
+                                        {
                                             self.send_output(&format!("[User]: {}\n", text));
                                         }
                                     }
                                     "tool_result" => {
                                         if let Some(tool_content) = item.get("content") {
-                                            let rendered = self.render_tool_result_content(tool_content);
-                                            info!("[Tool result] {}", crate::safe_truncate(&rendered, 500));
-                                            self.send_output(&format!("tool_result:\n{}\n", rendered));
+                                            let rendered =
+                                                self.render_tool_result_content(tool_content);
+                                            info!(
+                                                "[Tool result] {}",
+                                                crate::safe_truncate(&rendered, 500)
+                                            );
+                                            self.send_output(&format!(
+                                                "tool_result:\n{}\n",
+                                                rendered
+                                            ));
                                         } else {
                                             self.send_output("tool_result: [no content]\n");
                                         }
@@ -261,9 +280,15 @@ impl ClaudeMessageProcessor {
 
     fn handle_result(&self, json: &Value) {
         // Result event contains session summary: cost, tokens, turns, etc.
-        let cost = json.get("total_cost_usd").and_then(|v| v.as_f64()).unwrap_or(0.0);
+        let cost = json
+            .get("total_cost_usd")
+            .and_then(|v| v.as_f64())
+            .unwrap_or(0.0);
         let turns = json.get("num_turns").and_then(|v| v.as_i64()).unwrap_or(0);
-        info!("[Claude Code result] Total cost: ${:.4}, Total turns: {}", cost, turns);
+        info!(
+            "[Claude Code result] Total cost: ${:.4}, Total turns: {}",
+            cost, turns
+        );
         self.send_output(&format!("[Result] cost=${:.4}, turns={}\n", cost, turns));
     }
 
@@ -272,13 +297,25 @@ impl ClaudeMessageProcessor {
             match name {
                 "Edit" => {
                     if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
-                        let file_path = input.get("file_path").and_then(|v| v.as_str()).unwrap_or("");
-                        let old_string = input.get("old_string").and_then(|v| v.as_str()).unwrap_or("");
-                        let new_string = input.get("new_string").and_then(|v| v.as_str()).unwrap_or("");
+                        let file_path = input
+                            .get("file_path")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("");
+                        let old_string = input
+                            .get("old_string")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("");
+                        let new_string = input
+                            .get("new_string")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("");
                         info!("[Tool: Edit] {}", file_path);
                         let old_normalized = old_string.replace("\\n", "\n");
                         let new_normalized = new_string.replace("\\n", "\n");
-                        self.send_output(&format!("Edit {}\nOld\n{}\nNew\n{}\n", file_path, old_normalized, new_normalized));
+                        self.send_output(&format!(
+                            "Edit {}\nOld\n{}\nNew\n{}\n",
+                            file_path, old_normalized, new_normalized
+                        ));
                     }
                 }
                 "Glob" => {
@@ -292,9 +329,15 @@ impl ClaudeMessageProcessor {
                 "Grep" => {
                     if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
                         let pattern = input.get("pattern").and_then(|v| v.as_str()).unwrap_or("");
-                        let file_path = input.get("file_path").and_then(|v| v.as_str()).unwrap_or("");
+                        let file_path = input
+                            .get("file_path")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("");
                         info!("[Tool: Grep] pattern={} file={}", pattern, file_path);
-                        self.send_output(&format!("\ntool_use: Grep {} in {}\n", pattern, file_path));
+                        self.send_output(&format!(
+                            "\ntool_use: Grep {} in {}\n",
+                            pattern, file_path
+                        ));
                     }
                 }
                 "Read" => {
@@ -307,28 +350,50 @@ impl ClaudeMessageProcessor {
                 }
                 "Write" => {
                     if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
-                        let file_path = input.get("file_path").and_then(|v| v.as_str()).unwrap_or("");
+                        let file_path = input
+                            .get("file_path")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("");
                         let content = input.get("content").and_then(|v| v.as_str()).unwrap_or("");
                         info!("[Tool: Write] {}", file_path);
                         let normalized = content.replace("\\n", "\n");
-                        self.send_output(&format!("\ntool_use: Write {}\nContent:\n{}\n", file_path, normalized));
+                        self.send_output(&format!(
+                            "\ntool_use: Write {}\nContent:\n{}\n",
+                            file_path, normalized
+                        ));
                     }
                 }
                 "Bash" => {
                     if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
-                        let run_in_background = input.get("run_in_background").and_then(|v| v.as_bool()).unwrap_or(false);
-                        let description = input.get("description").and_then(|v| v.as_str()).unwrap_or("");
+                        let run_in_background = input
+                            .get("run_in_background")
+                            .and_then(|v| v.as_bool())
+                            .unwrap_or(false);
+                        let description = input
+                            .get("description")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("");
                         let command = input.get("command").and_then(|v| v.as_str()).unwrap_or("");
-                        let bg = if run_in_background { " (in background)" } else { "" };
+                        let bg = if run_in_background {
+                            " (in background)"
+                        } else {
+                            ""
+                        };
                         info!("[Tool: Bash{}] {} - {}", bg, description, command);
-                        self.send_output(&format!("\ntool_use: Bash{} {}\nCommand: {}\n", bg, description, command));
+                        self.send_output(&format!(
+                            "\ntool_use: Bash{} {}\nCommand: {}\n",
+                            bg, description, command
+                        ));
                     }
                 }
                 "Task" => {
                     if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
                         let prompt = input.get("prompt").and_then(|v| v.as_str()).unwrap_or("");
-                        info!("[Tool: Task] {}", crate::safe_truncate(&prompt, 200));
-                        self.send_output(&format!("\ntool_use: Task {}\n", crate::safe_truncate(&prompt, 200)));
+                        info!("[Tool: Task] {}", crate::safe_truncate(prompt, 200));
+                        self.send_output(&format!(
+                            "\ntool_use: Task {}\n",
+                            crate::safe_truncate(prompt, 200)
+                        ));
                     }
                 }
                 "TodoWrite" => {
@@ -337,10 +402,14 @@ impl ClaudeMessageProcessor {
                     if let Some(input) = item.get("input").and_then(|v| v.as_object()) {
                         if let Some(todos) = input.get("todos").and_then(|v| v.as_array()) {
                             for todo in todos {
-                                let content = todo.get("content").and_then(|v| v.as_str()).unwrap_or("");
-                                let status = todo.get("status").and_then(|v| v.as_str()).unwrap_or("");
+                                let content =
+                                    todo.get("content").and_then(|v| v.as_str()).unwrap_or("");
+                                let status =
+                                    todo.get("status").and_then(|v| v.as_str()).unwrap_or("");
                                 match status {
-                                    "in_progress" => self.send_output(&format!("[⟳] {}\n", content)),
+                                    "in_progress" => {
+                                        self.send_output(&format!("[⟳] {}\n", content))
+                                    }
                                     "pending" => self.send_output(&format!("[⌛] {}\n", content)),
                                     "completed" => self.send_output(&format!("[✅] {}\n", content)),
                                     _ => self.send_output(&format!("[ ] {}\n", content)),
@@ -350,7 +419,11 @@ impl ClaudeMessageProcessor {
                     }
                 }
                 _ => {
-                    debug!("[Tool: {}] args={}", name, item.get("input").map(|i| i.to_string()).unwrap_or_default());
+                    debug!(
+                        "[Tool: {}] args={}",
+                        name,
+                        item.get("input").map(|i| i.to_string()).unwrap_or_default()
+                    );
                     self.send_output(&format!("\ntool_use: {}\n", name));
                 }
             }
@@ -428,7 +501,10 @@ mod tests {
 
         let out = captured.lock().unwrap().join("");
         assert!(out.contains("tests passed"), "expected text, got: {out}");
-        assert!(out.contains("[image]"), "expected image placeholder, got: {out}");
+        assert!(
+            out.contains("[image]"),
+            "expected image placeholder, got: {out}"
+        );
         assert!(!out.contains("\"type\""), "raw JSON leaked into UI: {out}");
     }
 }

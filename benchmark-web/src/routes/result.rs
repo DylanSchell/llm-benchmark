@@ -30,14 +30,14 @@
 use super::{AppState, TemplateEngine};
 use axum::extract::{Path, Query};
 
-use axum::routing::{get, post};
-use axum::Router;
-use axum::Json;
-use axum::Extension;
+use crate::services::result_service::LoadingStatus;
 use axum::response::IntoResponse;
+use axum::routing::{get, post};
+use axum::Extension;
+use axum::Json;
+use axum::Router;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use crate::services::result_service::LoadingStatus;
 
 // =============================================================================
 // Request/Response types
@@ -83,7 +83,10 @@ pub struct RecentResultsResponse {
 /// Refresh the result cache.
 pub async fn refresh(Extension(state): Extension<AppState>) -> Json<RefreshResponse> {
     state.service.refresh_result_cache();
-    Json(RefreshResponse { message: "Result cache refreshed".to_string(), loaded: 0 })
+    Json(RefreshResponse {
+        message: "Result cache refreshed".to_string(),
+        loaded: 0,
+    })
 }
 
 /// Get loading status of the result cache.
@@ -108,20 +111,28 @@ pub async fn recent_results_fragment(
         params.exercise.as_deref(),
         false,
     );
-    let result_maps: Vec<HashMap<String, String>> = results.iter().map(|r| {
-        let mut map = HashMap::new();
-        map.insert("filename".to_string(), r.filename.clone());
-        map.insert("detail_url".to_string(), r.detail_url.clone());
-        map.insert("trace_url".to_string(), r.trace_url.clone());
-        map.insert("agent".to_string(), r.agent.clone());
-        map.insert("language".to_string(), r.language.clone());
-        map.insert("model".to_string(), r.model.clone());
-        map.insert("exercise".to_string(), r.exercise.clone());
-        map.insert("success".to_string(), r.success.to_string());
-        map.insert("timestamp".to_string(), r.timestamp.clone().unwrap_or_default());
-        map
-    }).collect();
-    Json(RecentResultsResponse { results: result_maps })
+    let result_maps: Vec<HashMap<String, String>> = results
+        .iter()
+        .map(|r| {
+            let mut map = HashMap::new();
+            map.insert("filename".to_string(), r.filename.clone());
+            map.insert("detail_url".to_string(), r.detail_url.clone());
+            map.insert("trace_url".to_string(), r.trace_url.clone());
+            map.insert("agent".to_string(), r.agent.clone());
+            map.insert("language".to_string(), r.language.clone());
+            map.insert("model".to_string(), r.model.clone());
+            map.insert("exercise".to_string(), r.exercise.clone());
+            map.insert("success".to_string(), r.success.to_string());
+            map.insert(
+                "timestamp".to_string(),
+                r.timestamp.clone().unwrap_or_default(),
+            );
+            map
+        })
+        .collect();
+    Json(RecentResultsResponse {
+        results: result_maps,
+    })
 }
 
 /// Get individual results.
@@ -131,7 +142,10 @@ pub async fn get_individual_results(
 ) -> Json<IndividualResultsResponse> {
     // If results are still loading, return empty results
     if !state.service.get_loading_status().loaded {
-        return Json(IndividualResultsResponse { results: vec![], total: 0 });
+        return Json(IndividualResultsResponse {
+            results: vec![],
+            total: 0,
+        });
     }
 
     let results = state.service.list_individual_results(
@@ -141,22 +155,31 @@ pub async fn get_individual_results(
         params.exercise.as_deref(),
         false,
     );
-    let result_maps: Vec<HashMap<String, String>> = results.iter().map(|r| {
-        let mut map = HashMap::new();
-        map.insert("filename".to_string(), r.filename.clone());
-        map.insert("detail_url".to_string(), r.detail_url.clone());
-        map.insert("trace_url".to_string(), r.trace_url.clone());
-        map.insert("agent".to_string(), r.agent.clone());
-        map.insert("language".to_string(), r.language.clone());
-        map.insert("model".to_string(), r.model.clone());
-        map.insert("exercise".to_string(), r.exercise.clone());
-        map.insert("success".to_string(), r.success.to_string());
-        map.insert("timestamp".to_string(), r.timestamp.clone().unwrap_or_default());
-        map.insert("has_trace_file".to_string(), r.has_trace_file.to_string());
-        map
-    }).collect();
+    let result_maps: Vec<HashMap<String, String>> = results
+        .iter()
+        .map(|r| {
+            let mut map = HashMap::new();
+            map.insert("filename".to_string(), r.filename.clone());
+            map.insert("detail_url".to_string(), r.detail_url.clone());
+            map.insert("trace_url".to_string(), r.trace_url.clone());
+            map.insert("agent".to_string(), r.agent.clone());
+            map.insert("language".to_string(), r.language.clone());
+            map.insert("model".to_string(), r.model.clone());
+            map.insert("exercise".to_string(), r.exercise.clone());
+            map.insert("success".to_string(), r.success.to_string());
+            map.insert(
+                "timestamp".to_string(),
+                r.timestamp.clone().unwrap_or_default(),
+            );
+            map.insert("has_trace_file".to_string(), r.has_trace_file.to_string());
+            map
+        })
+        .collect();
     let total = result_maps.len();
-    Json(IndividualResultsResponse { results: result_maps, total })
+    Json(IndividualResultsResponse {
+        results: result_maps,
+        total,
+    })
 }
 
 // =============================================================================
@@ -196,8 +219,15 @@ pub async fn result_detail_page(
     // Internal implementation detail: reconstruct directory name for cache lookup
     // This is NOT exposed in the URL - the URL keeps agent and model separate
     let dir = format!("{}-{}", agent, model);
-    tracing::debug!("RESULT DETAIL: agent={}, model={}, internal_dir={}, lang={}, ex={}", agent, model, dir, lang, ex);
-    
+    tracing::debug!(
+        "RESULT DETAIL: agent={}, model={}, internal_dir={}, lang={}, ex={}",
+        agent,
+        model,
+        dir,
+        lang,
+        ex
+    );
+
     // Get the full result details (filter by model to ensure we get the right one)
     let results = state.service.list_individual_results(
         Some(&lang),
@@ -207,16 +237,21 @@ pub async fn result_detail_page(
         false,
     );
     tracing::info!("Found {} results", results.len());
-    
+
     let mut ctx = tera::Context::new();
-    
+
     if let Some(r) = results.first() {
         // Verify the model matches what's in the URL
         if r.model != model {
-            return axum::response::Html("<h1>Result Not Found</h1><p>The requested result does not exist.</p>".to_string());
+            return axum::response::Html(
+                "<h1>Result Not Found</h1><p>The requested result does not exist.</p>".to_string(),
+            );
         }
-        
-        ctx.insert("title", &format!("Result: {} - {} - {}", agent, r.model, ex));
+
+        ctx.insert(
+            "title",
+            &format!("Result: {} - {} - {}", agent, r.model, ex),
+        );
         ctx.insert("agent", &r.agent);
         ctx.insert("model", &r.model);
         ctx.insert("directory", &dir);
@@ -235,9 +270,11 @@ pub async fn result_detail_page(
         ctx.insert("total_tokens", &r.total_tokens);
         ctx.insert("tokens_per_sec", &r.tokens_per_sec);
     } else {
-        return axum::response::Html("<h1>Result Not Found</h1><p>The requested result does not exist.</p>".to_string());
+        return axum::response::Html(
+            "<h1>Result Not Found</h1><p>The requested result does not exist.</p>".to_string(),
+        );
     }
-    
+
     axum::response::Html(templates.render("result-detail.tera", &ctx))
 }
 

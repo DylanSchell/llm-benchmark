@@ -4,12 +4,11 @@
 use crate::models::session::BenchmarkSession;
 use crate::models::status::RunStatus;
 use benchmark_types::cancellation::CancellationToken;
+use benchmark_types::util::recover_poisoned;
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use tokio::sync::broadcast;
-use tracing::{info, debug, warn};
-use benchmark_types::util::recover_poisoned;
-
+use tracing::{debug, info, warn};
 
 /// Manages benchmark session lifecycle.
 #[derive(Debug, Clone)]
@@ -30,6 +29,9 @@ impl SessionManager {
     }
 
     /// Create a new benchmark session.
+    // Public API: these arguments are one options struct short, but collapsing them
+    // changes every caller (36 of them) rather than just this file.
+    #[allow(clippy::too_many_arguments)]
     pub fn create_session(
         &self,
         agent_name: String,
@@ -82,7 +84,9 @@ impl SessionManager {
     /// benchmark executor attaches it to the agent so in-flight Docker runs
     /// abort promptly.
     pub fn get_cancellation_token(&self, session_id: &str) -> Option<CancellationToken> {
-        recover_poisoned(self.tokens.read()).get(session_id).cloned()
+        recover_poisoned(self.tokens.read())
+            .get(session_id)
+            .cloned()
     }
 
     /// Take the internal message receiver from a session.
@@ -136,10 +140,7 @@ impl SessionManager {
     /// Get the number of active sessions.
     pub fn get_active_session_count(&self) -> usize {
         let sessions = recover_poisoned(self.sessions.read());
-        sessions
-            .values()
-            .filter(|s| s.status.is_active())
-            .count()
+        sessions.values().filter(|s| s.status.is_active()).count()
     }
 
     /// Get all active sessions.
@@ -166,7 +167,6 @@ impl SessionManager {
         }
         sessions.clear();
     }
-
 }
 
 impl Default for SessionManager {
@@ -214,7 +214,10 @@ mod tests {
         drop(sessions);
 
         assert!(manager.cancel_session(&session_id));
-        assert!(token.is_cancelled(), "cancelling a session must fire its token");
+        assert!(
+            token.is_cancelled(),
+            "cancelling a session must fire its token"
+        );
     }
 
     #[test]

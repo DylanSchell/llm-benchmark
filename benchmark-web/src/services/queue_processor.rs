@@ -11,10 +11,10 @@ use anyhow::Result;
 use benchmark_core::exercise_runner::ExerciseRunner;
 use benchmark_types::config::QuickBenchConfig;
 use std::sync::Arc;
-use tokio::sync::Mutex;
 use std::time::Duration;
+use tokio::sync::Mutex;
 use tokio::sync::Semaphore;
-use tracing::{info, warn, error, debug};
+use tracing::{debug, error, info, warn};
 
 /// Configuration for the queue processor.
 #[derive(Debug)]
@@ -25,9 +25,7 @@ pub struct QueueConfig {
 
 impl Default for QueueConfig {
     fn default() -> Self {
-        Self {
-            parallelism: 2,
-        }
+        Self { parallelism: 2 }
     }
 }
 
@@ -82,7 +80,7 @@ impl QueueProcessor {
         &self,
         agent_name: String,
         languages: Vec<String>,
-        model: String,  // Required - no default model
+        model: String, // Required - no default model
         thinking_level: Option<String>,
         exercise: Option<String>,
         retry: bool,
@@ -94,7 +92,13 @@ impl QueueProcessor {
         let existing_items = self.queue.get_pending_items();
         let existing_keys: std::collections::HashSet<(String, String, String)> = existing_items
             .iter()
-            .map(|item| (item.agent_name.clone(), item.language.clone(), item.exercise.clone()))
+            .map(|item| {
+                (
+                    item.agent_name.clone(),
+                    item.language.clone(),
+                    item.exercise.clone(),
+                )
+            })
             .collect();
 
         match exercise.as_deref() {
@@ -108,11 +112,21 @@ impl QueueProcessor {
                         .filter(|e| !quick_set.contains(e))
                         .collect();
                     if slow_exercises.is_empty() {
-                        info!("No slow-bench exercises for language: {} (all are quick-bench)", language);
+                        info!(
+                            "No slow-bench exercises for language: {} (all are quick-bench)",
+                            language
+                        );
                         continue;
                     }
                     for exercise_name in slow_exercises {
-                        if !retry && self.result_exists(&exercise_name, &agent_name, &effective_model, language) {
+                        if !retry
+                            && self.result_exists(
+                                &exercise_name,
+                                &agent_name,
+                                effective_model,
+                                language,
+                            )
+                        {
                             debug!(
                                 "Skipping slow-bench exercise: {} for language: {} (already completed successfully)",
                                 exercise_name, language
@@ -146,12 +160,22 @@ impl QueueProcessor {
                 for language in &languages {
                     let quick_exercises = QuickBenchConfig::get_exercises_for_language(language);
                     if quick_exercises.is_empty() {
-                        warn!("No quick-bench exercises defined for language: {}", language);
+                        warn!(
+                            "No quick-bench exercises defined for language: {}",
+                            language
+                        );
                         continue;
                     }
                     for exercise_name in quick_exercises {
                         // Skip if already completed successfully (unless retry)
-                        if !retry && self.result_exists(&exercise_name, &agent_name, &effective_model, language) {
+                        if !retry
+                            && self.result_exists(
+                                &exercise_name,
+                                &agent_name,
+                                effective_model,
+                                language,
+                            )
+                        {
                             debug!(
                                 "Skipping quick-bench exercise: {} for language: {} (already completed successfully)",
                                 exercise_name, language
@@ -190,12 +214,17 @@ impl QueueProcessor {
 
                 // Sanity check: if we have more than expected languages, log a warning
                 if languages.len() > 1 {
-                    tracing::warn!("WARNING: Expected 1 language for single exercise mode, got {}", languages.len());
+                    tracing::warn!(
+                        "WARNING: Expected 1 language for single exercise mode, got {}",
+                        languages.len()
+                    );
                 }
-                
+
                 // Create exactly ONE item per language in the list
                 for language in &languages {
-                    if !retry && self.result_exists(exercise_name, &agent_name, &effective_model, language) {
+                    if !retry
+                        && self.result_exists(exercise_name, &agent_name, effective_model, language)
+                    {
                         info!(
                             "Skipping exercise: {} for language: {} (already completed successfully)",
                             exercise_name, language
@@ -204,7 +233,11 @@ impl QueueProcessor {
                     }
 
                     // Skip if already in queue (unless retry)
-                    let key = (agent_name.clone(), language.clone(), exercise_name.to_string());
+                    let key = (
+                        agent_name.clone(),
+                        language.clone(),
+                        exercise_name.to_string(),
+                    );
                     if !retry && existing_keys.contains(&key) {
                         debug!(
                             "Skipping exercise: {} for language: {} (already in queue)",
@@ -229,7 +262,14 @@ impl QueueProcessor {
                 for language in &languages {
                     let exercises = self.exercise_runner.get_exercises_for_language(language);
                     for exercise_name in exercises {
-                        if !retry && self.result_exists(&exercise_name, &agent_name, &effective_model, language) {
+                        if !retry
+                            && self.result_exists(
+                                &exercise_name,
+                                &agent_name,
+                                effective_model,
+                                language,
+                            )
+                        {
                             debug!(
                                 "Skipping exercise: {} for language: {} (already completed successfully)",
                                 exercise_name, language
@@ -258,8 +298,17 @@ impl QueueProcessor {
             let durations: std::collections::HashMap<String, u64> = items
                 .iter()
                 .map(|item| {
-                    let key = format!("{}:{}:{}:{}", item.agent_name, item.model, item.language, item.exercise);
-                    let dur = Self::load_previous_duration_ms(&dir, &item.agent_name, &item.model, &item.language, &item.exercise);
+                    let key = format!(
+                        "{}:{}:{}:{}",
+                        item.agent_name, item.model, item.language, item.exercise
+                    );
+                    let dur = Self::load_previous_duration_ms(
+                        &dir,
+                        &item.agent_name,
+                        &item.model,
+                        &item.language,
+                        &item.exercise,
+                    );
                     (key, dur)
                 })
                 .collect();
@@ -270,14 +319,14 @@ impl QueueProcessor {
                 let b_dur = durations.get(&b_key).copied().unwrap_or(0);
                 b_dur.cmp(&a_dur)
             });
-            info!("Retry mode: sorted {} items by previous duration (slowest first)", items.len());
+            info!(
+                "Retry mode: sorted {} items by previous duration (slowest first)",
+                items.len()
+            );
         }
 
         self.queue.add_all(items.clone());
-        info!(
-            "Scheduled {} queue items total",
-            items.len()
-        );
+        info!("Scheduled {} queue items total", items.len());
         items
     }
 
@@ -344,19 +393,18 @@ impl QueueProcessor {
         }
         match std::fs::read_to_string(&path) {
             Ok(content) => {
-                if let Ok(value) = serde_json::from_str::<serde_json::Value>(&content) {
-                    // The serialized field is "duration" (in seconds as f64),
-                    // but it may also appear as "duration_ms" (in ms as u64).
-                    if let Some(dur) = value.get("duration").and_then(|v| v.as_f64()) {
-                        (dur * 1000.0) as u64
-                    } else if let Some(dur) = value.get("duration_ms").and_then(|v| v.as_u64()) {
-                        dur
-                    } else {
-                        0
-                    }
-                } else {
-                    0
-                }
+                // The serialized field is "duration" (in seconds as f64),
+                // but it may also appear as "duration_ms" (in ms as u64).
+                serde_json::from_str::<serde_json::Value>(&content)
+                    .map(|value| {
+                        value
+                            .get("duration")
+                            .and_then(|v| v.as_f64())
+                            .map(|dur| (dur * 1000.0) as u64)
+                            .or_else(|| value.get("duration_ms").and_then(|v| v.as_u64()))
+                            .unwrap_or_default()
+                    })
+                    .unwrap_or_default()
             }
             Err(_) => 0,
         }
@@ -365,10 +413,14 @@ impl QueueProcessor {
     /// Check if a result file already exists for this exercise and was successful.
     fn result_exists(&self, exercise: &str, agent: &str, model: &str, language: &str) -> bool {
         // The ResultService knows where to find results
-        self.result_service.result_file_success(exercise, agent, model, language, self.result_service.results_dir())
+        self.result_service.result_file_success(
+            exercise,
+            agent,
+            model,
+            language,
+            self.result_service.results_dir(),
+        )
     }
-
-
 
     /// Start the queue worker.
     pub async fn start_queue_worker(&self) -> bool {
@@ -414,7 +466,7 @@ impl QueueProcessor {
                 }
 
                 // Try to acquire a permit
-                let _permit = match worker_semaphore.clone().try_acquire_owned() {
+                match worker_semaphore.clone().try_acquire_owned() {
                     Ok(permit) => {
                         // Forget the owned permit so we don't release it here.
                         // The worker task will release it on completion via add_permits(1).
@@ -455,11 +507,7 @@ impl QueueProcessor {
                 let worker_count = *active_workers.lock().await;
                 info!(
                     "Starting queue item: {} - {}/{} (active workers: {}/{})",
-                    item_id,
-                    item.language,
-                    item.exercise,
-                    worker_count,
-                    parallelism
+                    item_id, item.language, item.exercise, worker_count, parallelism
                 );
 
                 // Process the item
@@ -495,8 +543,7 @@ impl QueueProcessor {
                     let worker_count = *active_workers.lock().await;
                     info!(
                         "Completed queue item: {} (active workers: {})",
-                        item_id,
-                        worker_count
+                        item_id, worker_count
                     );
                 });
             }
@@ -516,17 +563,18 @@ impl QueueProcessor {
         benchmark_executor: &BenchmarkExecutor,
         item: BenchmarkQueueItem,
     ) -> Result<()> {
-        let session = session_manager.create_session(
-            item.agent_name.clone(),
-            vec![item.language.clone()],
-            item.model.clone(),
-            item.thinking_level.clone(),
-            Some(item.exercise.clone()),
-            item.retry,
-            3600_000, // 1 hour timeout
-        )
-        .with_category_value(item.category)
-        .with_aoc_user(item.aoc_user.clone());
+        let session = session_manager
+            .create_session(
+                item.agent_name.clone(),
+                vec![item.language.clone()],
+                item.model.clone(),
+                item.thinking_level.clone(),
+                Some(item.exercise.clone()),
+                item.retry,
+                3_600_000, // 1 hour timeout
+            )
+            .with_category_value(item.category)
+            .with_aoc_user(item.aoc_user.clone());
 
         let mut session_clone = session.clone();
         let session_id = session.id.clone();
@@ -537,7 +585,10 @@ impl QueueProcessor {
         info!("Starting benchmark execution for session: {}", session.id);
 
         // Execute the benchmark (session is passed mutably for output consumer setup)
-        if let Err(e) = benchmark_executor.execute(&mut session_clone, Some(session_manager)).await {
+        if let Err(e) = benchmark_executor
+            .execute(&mut session_clone, Some(session_manager))
+            .await
+        {
             error!("Benchmark execution error: {:?}", e);
             queue.fail_current(&item.id);
             warn!("Queue item failed (executor error): {}", item.id);
@@ -644,7 +695,11 @@ impl QueueProcessor {
 
         // Wipe the queue
         let removed = self.queue.clear_all();
-        info!("Cleared all {} queue items, cancelled {} active sessions", removed, active.len());
+        info!(
+            "Cleared all {} queue items, cancelled {} active sessions",
+            removed,
+            active.len()
+        );
         removed
     }
 

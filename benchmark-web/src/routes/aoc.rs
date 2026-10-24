@@ -3,13 +3,13 @@
 //! A dedicated, category-isolated set of endpoints for the AoC benchmark:
 //! the run form, day listing, answer validation, and AoC scheduling.
 
-use super::AppState;
 use super::queue::{deserialize_vec_u32, FlexibleForm};
+use super::AppState;
 use crate::services::aoc_validator::{validate, ValidateRequest};
 use axum::routing::{get, post};
-use axum::Router;
-use axum::Json;
 use axum::Extension;
+use axum::Json;
+use axum::Router;
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -36,9 +36,7 @@ pub async fn get_aoc_days() -> Json<Vec<u32>> {
 }
 
 /// Validate a submitted AoC answer.
-pub async fn validate_answer(
-    Json(request): Json<ValidateRequest>,
-) -> Json<serde_json::Value> {
+pub async fn validate_answer(Json(request): Json<ValidateRequest>) -> Json<serde_json::Value> {
     match validate(&request) {
         Some(resp) => Json(serde_json::to_value(&resp).unwrap()),
         None => Json(serde_json::json!({
@@ -73,12 +71,14 @@ pub async fn schedule_aoc(
         days,
         model,
         request.thinking_level.clone(),
-        request.user.clone().unwrap_or_else(|| "benchmark".to_string()),
+        request
+            .user
+            .clone()
+            .unwrap_or_else(|| "benchmark".to_string()),
         request.retry,
     );
 
-    let items_map: Vec<HashMap<String, String>> =
-        items.iter().map(|i| aoc_item_to_map(i)).collect();
+    let items_map: Vec<HashMap<String, String>> = items.iter().map(aoc_item_to_map).collect();
     Json(serde_json::json!({
         "status": "scheduled",
         "count": items.len(),
@@ -87,7 +87,9 @@ pub async fn schedule_aoc(
 }
 
 /// Map an AoC queue item to a simple serializable shape.
-fn aoc_item_to_map(item: &crate::models::queue_item::BenchmarkQueueItem) -> HashMap<String, String> {
+fn aoc_item_to_map(
+    item: &crate::models::queue_item::BenchmarkQueueItem,
+) -> HashMap<String, String> {
     let mut m = HashMap::new();
     m.insert("id".to_string(), item.id.clone());
     m.insert("agent".to_string(), item.agent_name.clone());

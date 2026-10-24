@@ -50,7 +50,10 @@ impl BenchmarkService {
     /// Take the internal message receiver from a session.
     /// Used by SSE endpoint to connect to the session's message channel.
     /// Broadcast channels support multiple consumers — each call creates a fresh subscriber.
-    pub fn take_session_receiver(&self, session_id: &str) -> Option<tokio::sync::broadcast::Receiver<String>> {
+    pub fn take_session_receiver(
+        &self,
+        session_id: &str,
+    ) -> Option<tokio::sync::broadcast::Receiver<String>> {
         self.session_manager.take_session_receiver(session_id)
     }
 
@@ -83,12 +86,19 @@ impl BenchmarkService {
         &self,
         agent_name: String,
         languages: Vec<String>,
-        model: String,  // Required - no default model
+        model: String, // Required - no default model
         thinking_level: Option<String>,
         exercise: Option<String>,
         retry: bool,
     ) -> Vec<BenchmarkQueueItem> {
-        self.queue_processor.schedule_batch(agent_name, languages, model, thinking_level, exercise, retry)
+        self.queue_processor.schedule_batch(
+            agent_name,
+            languages,
+            model,
+            thinking_level,
+            exercise,
+            retry,
+        )
     }
 
     /// Schedule an AoC 2015 run: one queue item per selected day, carrying the
@@ -103,7 +113,8 @@ impl BenchmarkService {
         user: String,
         retry: bool,
     ) -> Vec<BenchmarkQueueItem> {
-        self.queue_processor.schedule_aoc(agent_name, days, model, thinking_level, user, retry)
+        self.queue_processor
+            .schedule_aoc(agent_name, days, model, thinking_level, user, retry)
     }
 
     /// Cancel a queue item.
@@ -189,7 +200,8 @@ impl BenchmarkService {
         exercise: Option<&str>,
         quick_only: bool,
     ) -> Vec<crate::services::result_service::IndividualResult> {
-        self.result_service.list_individual_results(language, agent, model, exercise, quick_only, None)
+        self.result_service
+            .list_individual_results(language, agent, model, exercise, quick_only, None)
     }
 
     /// List individual results filtered by benchmark category.
@@ -202,7 +214,8 @@ impl BenchmarkService {
         exercise: Option<&str>,
         quick_only: bool,
     ) -> Vec<crate::services::result_service::IndividualResult> {
-        self.result_service.list_individual_results(language, agent, model, exercise, quick_only, category)
+        self.result_service
+            .list_individual_results(language, agent, model, exercise, quick_only, category)
     }
 
     /// All benchmark categories present in the results, as a map of id → label.
@@ -224,7 +237,8 @@ impl BenchmarkService {
         exercise: Option<&str>,
         quick_only: bool,
     ) -> crate::services::result_service::Statistics {
-        self.result_service.get_statistics(language, agent, model, exercise, quick_only, None)
+        self.result_service
+            .get_statistics(language, agent, model, exercise, quick_only, None)
     }
 
     /// Get aggregate statistics filtered by benchmark category.
@@ -237,7 +251,8 @@ impl BenchmarkService {
         exercise: Option<&str>,
         quick_only: bool,
     ) -> crate::services::result_service::Statistics {
-        self.result_service.get_statistics(language, agent, model, exercise, quick_only, category)
+        self.result_service
+            .get_statistics(language, agent, model, exercise, quick_only, category)
     }
 
     /// Get loading status of the result cache.
@@ -259,7 +274,8 @@ impl BenchmarkService {
         exercise: Option<&str>,
         quick_only: bool,
     ) -> Vec<crate::services::result_service::ScoredResult> {
-        self.result_service.calculate_scores(language, agent, model, exercise, quick_only)
+        self.result_service
+            .calculate_scores(language, agent, model, exercise, quick_only)
     }
 
     /// Get aggregated model scores.
@@ -274,14 +290,16 @@ impl BenchmarkService {
         quick_only: bool,
     ) -> Vec<crate::services::result_service::ModelScore> {
         // Build the authoritative expected exercise set from the exercise runner.
-        let mut expected: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+        let mut expected: std::collections::HashMap<String, Vec<String>> =
+            std::collections::HashMap::new();
         for lang in self.exercise_runner.get_available_languages() {
             let exercises = self.exercise_runner.get_exercises_for_language(&lang);
             if !exercises.is_empty() {
                 expected.insert(lang, exercises);
             }
         }
-        self.result_service.get_model_scores(language, agent, quick_only, &expected)
+        self.result_service
+            .get_model_scores(language, agent, quick_only, &expected)
     }
 
     /// Get completeness info for dashboard filtering.
@@ -297,7 +315,11 @@ impl BenchmarkService {
                 expected.insert(lang, exercises);
             }
         }
-        tracing::info!("Completeness check: {} languages with {} total exercises", expected.len(), expected.values().map(|v| v.len()).sum::<usize>());
+        tracing::info!(
+            "Completeness check: {} languages with {} total exercises",
+            expected.len(),
+            expected.values().map(|v| v.len()).sum::<usize>()
+        );
         self.result_service
             .get_completeness_info(quick_only, Some(expected))
     }

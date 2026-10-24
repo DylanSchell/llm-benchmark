@@ -3,25 +3,20 @@
 //! Port of Java's `BenchmarkRunner` — orchestrates agent creation, exercise execution,
 //! result persistence, and summary output.
 
-use std::str::FromStr;
-use std::sync::Arc;
-use tracing::{error, info};
-use benchmark_types::agent::{AgentKind, AgentResult};
-use benchmark_types::config::Config;
 use benchmark_core::agent::{ClaudeAgent, ClaudeMessageProcessor, PiAgent, ReferenceAgent};
 use benchmark_core::docker::{DockerClient, DockerConfig};
 use benchmark_core::exercise_runner::ExerciseRunner;
 use benchmark_core::persistence::ResultPersister;
+use benchmark_types::agent::{AgentKind, AgentResult};
+use benchmark_types::config::Config;
+use std::str::FromStr;
+use std::sync::Arc;
+use tracing::{error, info};
 
 use crate::RunArgs;
 
 /// Run the full benchmark workflow.
-pub async fn run(
-    cli: &RunArgs,
-    config: &Config,
-    model: &str,
-    retry: bool,
-) -> anyhow::Result<()> {
+pub async fn run(cli: &RunArgs, config: &Config, model: &str, retry: bool) -> anyhow::Result<()> {
     // Validate agent name
     let agent_kind = match AgentKind::from_str(&cli.agent) {
         Ok(k) => k,
@@ -41,9 +36,7 @@ pub async fn run(
 
     info!(
         "Starting benchmark: agent={}, model={}, language(s)={}",
-        agent_kind,
-        model,
-        cli.language
+        agent_kind, model, cli.language
     );
 
     // Check Docker availability
@@ -84,12 +77,8 @@ pub async fn run(
 
         // Save individual result
         let persister = ResultPersister::new();
-        if let Err(e) = persister.save_result(
-            &result,
-            &agent_kind.to_string(),
-            model,
-            &results_dir,
-        ) {
+        if let Err(e) = persister.save_result(&result, &agent_kind.to_string(), model, &results_dir)
+        {
             tracing::error!("Failed to save result: {}", e);
         }
 
@@ -141,7 +130,8 @@ pub async fn run(
         persister.print_summary(&all_results);
 
         // Save batch results — collect unique languages from results
-        let languages_str: Vec<String> = all_results.iter()
+        let languages_str: Vec<String> = all_results
+            .iter()
             .map(|r| r.language.clone())
             .collect::<std::collections::BTreeSet<_>>()
             .into_iter()

@@ -1,5 +1,5 @@
-use md5::{Digest, Md5};
 use crate::rng::Rng;
+use md5::{Digest, Md5};
 
 // Find the lowest positive integer whose MD5(prefix+num) hex starts with
 // 5 (part1) or 6 (part2) zeroes.

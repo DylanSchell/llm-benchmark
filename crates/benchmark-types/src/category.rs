@@ -9,17 +9,13 @@ use serde::{Deserialize, Serialize};
 /// The benchmark family a result / run belongs to.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
+#[derive(Default)]
 pub enum Category {
     /// The existing Exercism exercise set (default).
+    #[default]
     Polyglot,
     /// The Advent of Code 2015 puzzle set.
     Aoc2015,
-}
-
-impl Default for Category {
-    fn default() -> Self {
-        Self::Polyglot
-    }
 }
 
 impl std::fmt::Display for Category {
@@ -55,9 +51,18 @@ mod tests {
 
     #[test]
     fn serde_round_trips_lowercase() {
-        assert_eq!(serde_json::to_string(&Category::Aoc2015).unwrap(), "\"aoc2015\"");
-        assert_eq!(serde_json::from_str::<Category>("\"aoc2015\"").unwrap(), Category::Aoc2015);
-        assert_eq!(serde_json::from_str::<Category>("\"polyglot\"").unwrap(), Category::Polyglot);
+        assert_eq!(
+            serde_json::to_string(&Category::Aoc2015).unwrap(),
+            "\"aoc2015\""
+        );
+        assert_eq!(
+            serde_json::from_str::<Category>("\"aoc2015\"").unwrap(),
+            Category::Aoc2015
+        );
+        assert_eq!(
+            serde_json::from_str::<Category>("\"polyglot\"").unwrap(),
+            Category::Polyglot
+        );
     }
 
     #[test]

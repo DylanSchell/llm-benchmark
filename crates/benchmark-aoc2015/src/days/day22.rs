@@ -3,11 +3,11 @@ use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
 const SPELLS: [(i64, i64, i64, i64, usize); 5] = [
-    (53, 4, 0, 0, 3),   // Magic Missile
-    (73, 2, 2, 0, 3),   // Drain
-    (113, 0, 0, 6, 0),  // Shield (armor 7)
-    (173, 0, 0, 6, 1),  // Poison (3 dmg/turn)
-    (229, 0, 0, 5, 2),  // Recharge (101 mana/turn)
+    (53, 4, 0, 0, 3),  // Magic Missile
+    (73, 2, 2, 0, 3),  // Drain
+    (113, 0, 0, 6, 0), // Shield (armor 7)
+    (173, 0, 0, 6, 1), // Poison (3 dmg/turn)
+    (229, 0, 0, 5, 2), // Recharge (101 mana/turn)
 ];
 
 const PLAYER_HP: i64 = 50;
@@ -229,4 +229,3 @@ mod gen_tests {
         assert!(p2.parse::<i64>().unwrap() >= p1.parse::<i64>().unwrap());
     }
 }
-

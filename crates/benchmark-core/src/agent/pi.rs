@@ -1,17 +1,16 @@
+use crate::agent::{reference::ReferenceAgent, PiMessageProcessor};
+use crate::docker::DockerClient;
+use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::cancellation::CancellationToken;
+use benchmark_types::exercise::Exercise;
+use benchmark_types::util::recover_poisoned;
+use benchmark_types::ExerciseSource;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use tokio::time::Instant;
 use tracing::{debug, error, info, warn};
-use benchmark_types::agent::{Agent, AgentResult};
-use benchmark_types::cancellation::CancellationToken;
-use benchmark_types::exercise::Exercise;
-use benchmark_types::ExerciseSource;
 use walkdir::WalkDir;
-use crate::docker::DockerClient;
-use crate::agent::{reference::ReferenceAgent, PiMessageProcessor};
-use benchmark_types::util::recover_poisoned;
-
 
 /// Pi agent that uses the pi coding agent to solve exercises.
 /// Extends ReferenceAgent behavior with Pi-specific setup.
@@ -109,7 +108,7 @@ impl PiAgent {
 
         // Build reasoning configuration: check registry first, fall back to mechanism detection
         let reasoning_config = if let Some(level_str) = thinking_level {
-            if benchmark_types::reasoning::ThinkingLevel::from_str(level_str).is_some() {
+            if benchmark_types::reasoning::ThinkingLevel::parse(level_str).is_some() {
                 let config = benchmark_types::reasoning::ReasoningRegistry::get_for_model(model);
                 Some(config)
             } else {
@@ -121,10 +120,16 @@ impl PiAgent {
 
         // Build the model JSON object using serde_json for proper escaping
         let mut model_map = serde_json::Map::new();
-        model_map.insert("id".to_string(), serde_json::Value::String(model.to_string()));
+        model_map.insert(
+            "id".to_string(),
+            serde_json::Value::String(model.to_string()),
+        );
         // All benchmark models have at least 256k context; set it explicitly
         // to prevent premature auto-compaction (pi defaults to 128k).
-        model_map.insert("contextWindow".to_string(), serde_json::Value::Number(serde_json::Number::from(262_144)));
+        model_map.insert(
+            "contextWindow".to_string(),
+            serde_json::Value::Number(serde_json::Number::from(262_144)),
+        );
 
         if let Some(ref rc) = reasoning_config {
             // pi's hard gate for thinking support: without `reasoning: true`,
@@ -157,10 +162,7 @@ impl PiAgent {
                 }
             }
             if !compat_map.is_empty() {
-                model_map.insert(
-                    "compat".to_string(),
-                    serde_json::Value::Object(compat_map),
-                );
+                model_map.insert("compat".to_string(), serde_json::Value::Object(compat_map));
             }
 
             if let Some(ref tlm) = rc.thinking_level_map {
@@ -190,19 +192,34 @@ impl PiAgent {
 
         // Build providers with serde_json for bulletproof escaping
         let mut provider = serde_json::Map::new();
-        provider.insert("baseUrl".to_string(), serde_json::Value::String(base_url.to_string()));
-        provider.insert("apiKey".to_string(), serde_json::Value::String(api_key.to_string()));
-        provider.insert("api".to_string(), serde_json::Value::String(api_type.to_string()));
+        provider.insert(
+            "baseUrl".to_string(),
+            serde_json::Value::String(base_url.to_string()),
+        );
+        provider.insert(
+            "apiKey".to_string(),
+            serde_json::Value::String(api_key.to_string()),
+        );
+        provider.insert(
+            "api".to_string(),
+            serde_json::Value::String(api_type.to_string()),
+        );
         provider.insert("models".to_string(), serde_json::json!([model_obj]));
 
         let mut providers = serde_json::Map::new();
-        providers.insert(Self::provider_key_for_model(model).to_string(), serde_json::Value::Object(provider));
+        providers.insert(
+            Self::provider_key_for_model(model).to_string(),
+            serde_json::Value::Object(provider),
+        );
 
         let mut root = serde_json::Map::new();
-        root.insert("providers".to_string(), serde_json::Value::Object(providers));
+        root.insert(
+            "providers".to_string(),
+            serde_json::Value::Object(providers),
+        );
 
         let models_json = serde_json::to_string_pretty(&serde_json::Value::Object(root))
-            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+            .map_err(std::io::Error::other)?;
 
         let models_file = pi_agent_dir.join("models.json");
         fs::write(&models_file, &models_json)?;
@@ -212,8 +229,6 @@ impl PiAgent {
         Ok(())
     }
 
-
-
     /// Collects trace information from pi session files and exports to HTML.
     async fn collect_pi_trace(
         &self,
@@ -222,10 +237,7 @@ impl PiAgent {
         exercise: &Exercise,
         model: &str,
     ) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        let pi_sessions_dir = temp_work_dir
-            .join(".pi")
-            .join("agent")
-            .join("sessions");
+        let pi_sessions_dir = temp_work_dir.join(".pi").join("agent").join("sessions");
 
         if !pi_sessions_dir.exists() {
             warn!("No pi sessions directory found at: {:?}", pi_sessions_dir);
@@ -259,8 +271,10 @@ impl PiAgent {
                 info!("Copied pi JSONL trace file: {}", target_name);
                 jsonl_files.push(path.to_path_buf());
             } else if file_name.ends_with(".json") {
-                let target_name =
-                    format!("log_pi_{}_{}_{}", exercise.language, exercise.name, file_name);
+                let target_name = format!(
+                    "log_pi_{}_{}_{}",
+                    exercise.language, exercise.name, file_name
+                );
                 let target_dir = results_dir.join(format!("pi-{}", model));
                 let _ = fs::create_dir_all(&target_dir);
                 let target_path = target_dir.join(&target_name);
@@ -297,7 +311,8 @@ impl PiAgent {
                 let host_copy_path = temp_work_dir.join(jsonl_filename);
                 fs::copy(jsonl_file, &host_copy_path)?;
                 let container_jsonl_path = PathBuf::from("/workspace").join(jsonl_filename);
-                let container_html_path = PathBuf::from("/workspace").join(format!("{}.html", base_name));
+                let container_html_path =
+                    PathBuf::from("/workspace").join(format!("{}.html", base_name));
 
                 info!(
                     "Exporting from {} to {} (container paths)",
@@ -346,17 +361,20 @@ impl PiAgent {
                     info!("Found HTML file at: {:?}", host_html_file);
                     let html_content = fs::read_to_string(&host_html_file)?;
                     html_traces.push(html_content);
-                    info!("Read HTML trace with {} chars", html_traces.last().unwrap().len());
+                    info!(
+                        "Read HTML trace with {} chars",
+                        html_traces.last().unwrap().len()
+                    );
 
                     // Copy to results directory with standard naming
                     let html_target_name =
                         format!("trace_{}_{}.html", exercise.language, exercise.name);
                     let target_dir = results_dir.join(format!("pi-{}", model));
-                    let _ = fs::copy(
-                        &host_html_file,
-                        target_dir.join(&html_target_name),
+                    let _ = fs::copy(&host_html_file, target_dir.join(&html_target_name));
+                    info!(
+                        "Copied HTML trace to results directory: {}",
+                        html_target_name
                     );
-                    info!("Copied HTML trace to results directory: {}", html_target_name);
                 } else {
                     warn!("HTML file not found at: {:?}", host_html_file);
                     // List what's actually in the temp work dir
@@ -377,16 +395,18 @@ impl PiAgent {
             info!("Found/generated {} HTML trace(s)", html_traces.len());
         }
 
-        Ok(html_traces
-            .first()
-            .cloned()
-            .unwrap_or_default())
+        Ok(html_traces.first().cloned().unwrap_or_default())
     }
 
     /// Builds the command line arguments for invoking pi.
     /// Includes --thinking flag when thinking_level is specified.
     /// Extensions are loaded via --extension flags pointing to globally installed npm packages.
-    fn build_pi_command(&self, prompt: &str, model: &str, thinking_level: Option<&str>) -> Vec<String> {
+    fn build_pi_command(
+        &self,
+        prompt: &str,
+        model: &str,
+        thinking_level: Option<&str>,
+    ) -> Vec<String> {
         // Pi extensions installed globally via npm at build time.
         // Package "pi" fields from package.json:
         //   @mrclrchtr/supi-bash-timeout: extensions: ["./src/extension.ts"]
@@ -434,7 +454,8 @@ impl Agent for PiAgent {
         thinking_level: Option<&str>,
         results_dir: &Path,
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
-        self.run_exercise_with_timeout(exercise, source, model, thinking_level, results_dir, None).await
+        self.run_exercise_with_timeout(exercise, source, model, thinking_level, results_dir, None)
+            .await
     }
 
     async fn run_aoc(
@@ -460,9 +481,15 @@ impl Agent for PiAgent {
         // Build and run the pi command.
         let command = self.build_pi_command(&prompt, model, thinking_level);
         let prompt_arg = command.last().map(|s| s.as_str());
-        let command_refs: Vec<&str> = command[..command.len().saturating_sub(1)].iter().map(|s| s.as_str()).collect();
+        let command_refs: Vec<&str> = command[..command.len().saturating_sub(1)]
+            .iter()
+            .map(|s| s.as_str())
+            .collect();
 
-        info!("Running Pi agent for AoC day {} (model: {})", day.day, model);
+        info!(
+            "Running Pi agent for AoC day {} (model: {})",
+            day.day, model
+        );
         info!("Temp work dir: {:?}", work_dir);
 
         let processor = Arc::clone(&self.message_processor);
@@ -503,28 +530,39 @@ impl Agent for PiAgent {
                 day.day, result.exit_code, result.completed, preview
             );
         } else {
-            info!("Pi agent AoC day {} completed in {}ms", day.day, duration_ms);
+            info!(
+                "Pi agent AoC day {} completed in {}ms",
+                day.day, duration_ms
+            );
         }
 
         // Collect the pi trace, as for Exercism runs.
         let model_str = model.to_string();
         let _trace = self
-            .collect_pi_trace(work_dir, results_dir, &Exercise {
-                name: day.exercise_name(),
-                language: day.language().to_string(),
-                source_file: None,
-                test_file: None,
-                reference_dir: None,
-                metadata: None,
-                example_files: Vec::new(),
-                solution_files: Vec::new(),
-                test_files: Vec::new(),
-            }, &model_str)
+            .collect_pi_trace(
+                work_dir,
+                results_dir,
+                &Exercise {
+                    name: day.exercise_name(),
+                    language: day.language().to_string(),
+                    source_file: None,
+                    test_file: None,
+                    reference_dir: None,
+                    metadata: None,
+                    example_files: Vec::new(),
+                    solution_files: Vec::new(),
+                    test_files: Vec::new(),
+                },
+                &model_str,
+            )
             .await
             .unwrap_or_default();
 
         let error_message = if !pi_success {
-            Some(format!("Pi agent failed with exit code: {}", result.exit_code))
+            Some(format!(
+                "Pi agent failed with exit code: {}",
+                result.exit_code
+            ))
         } else {
             None
         };
@@ -556,10 +594,7 @@ impl Agent for PiAgent {
     ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
         let start_time = Instant::now();
         let start_dt = chrono::Utc::now();
-        info!(
-            "Running Pi agent for exercise: {}",
-            exercise.name
-        );
+        info!("Running Pi agent for exercise: {}", exercise.name);
         if let Some(t) = timeout_override_secs {
             info!("  Timeout override: {}s", t);
         }
@@ -584,7 +619,10 @@ impl Agent for PiAgent {
         let command = self.build_pi_command(&prompt, &model, thinking_level);
         // Prompt is the last element — pass separately so it's never in logs
         let prompt_arg = command.last().map(|s| s.as_str());
-        let command_refs: Vec<&str> = command[..command.len().saturating_sub(1)].iter().map(|s| s.as_str()).collect();
+        let command_refs: Vec<&str> = command[..command.len().saturating_sub(1)]
+            .iter()
+            .map(|s| s.as_str())
+            .collect();
 
         // Log environment and configuration for debugging
         let env_vars = self.docker_client.get_config().environment().clone();
@@ -593,13 +631,43 @@ impl Agent for PiAgent {
             exercise.name, exercise.language
         );
         info!("Temp work dir: {:?}", temp_work_dir);
-        info!("Container work dir: /workspace{}", if exercise.language == "cpp" { "/<exercise_name>" } else { "" });
+        info!(
+            "Container work dir: /workspace{}",
+            if exercise.language == "cpp" {
+                "/<exercise_name>"
+            } else {
+                ""
+            }
+        );
         info!("Model: {}", model);
-        info!("OPENAI_BASE_URL: {}", env_vars.get("OPENAI_BASE_URL").map(|s| s.as_str()).unwrap_or("NOT SET"));
-        info!("OPENAI_API_KEY set: {}", env_vars.get("OPENAI_API_KEY").map(|_| "yes").unwrap_or("no"));
-        info!("ANTHROPIC_MODEL: {}", env_vars.get("ANTHROPIC_MODEL").map(|s| s.as_str()).unwrap_or("NOT SET"));
-        info!("ANTHROPIC_AUTH_TOKEN set: {}", env_vars.get("ANTHROPIC_AUTH_TOKEN").map(|_| "yes").unwrap_or("no"));
-
+        info!(
+            "OPENAI_BASE_URL: {}",
+            env_vars
+                .get("OPENAI_BASE_URL")
+                .map(|s| s.as_str())
+                .unwrap_or("NOT SET")
+        );
+        info!(
+            "OPENAI_API_KEY set: {}",
+            env_vars
+                .get("OPENAI_API_KEY")
+                .map(|_| "yes")
+                .unwrap_or("no")
+        );
+        info!(
+            "ANTHROPIC_MODEL: {}",
+            env_vars
+                .get("ANTHROPIC_MODEL")
+                .map(|s| s.as_str())
+                .unwrap_or("NOT SET")
+        );
+        info!(
+            "ANTHROPIC_AUTH_TOKEN set: {}",
+            env_vars
+                .get("ANTHROPIC_AUTH_TOKEN")
+                .map(|_| "yes")
+                .unwrap_or("no")
+        );
 
         let processor = Arc::clone(&self.message_processor);
         // For C++, use subdirectory as work dir
@@ -623,7 +691,7 @@ impl Agent for PiAgent {
                     let proc = recover_poisoned(processor.lock());
                     proc.process(line);
                 })),
-                true,  // enable .pi volume mount for session data (matches Java)
+                true, // enable .pi volume mount for session data (matches Java)
                 cancellation,
             )
             .await?;
@@ -637,7 +705,10 @@ impl Agent for PiAgent {
 
         if !pi_success {
             let output_preview = if result.output.len() > 1000 {
-                format!("{}...[truncated]", crate::safe_truncate(&result.output, 1000))
+                format!(
+                    "{}...[truncated]",
+                    crate::safe_truncate(&result.output, 1000)
+                )
             } else {
                 result.output.clone()
             };
@@ -664,7 +735,7 @@ impl Agent for PiAgent {
         // Collect trace from pi session files — use the agent-model subdirectory
         let model_str = model.to_string();
         let _trace = self
-            .collect_pi_trace(&temp_work_dir, &results_dir, exercise, &model_str)
+            .collect_pi_trace(&temp_work_dir, results_dir, exercise, &model_str)
             .await
             .unwrap_or_default();
 
@@ -674,7 +745,9 @@ impl Agent for PiAgent {
         // crashes or can't connect still exits 0 and is incorrectly
         // marked as success.
         let test_agent = ReferenceAgent::new(self.docker_client.clone());
-        let test_result = test_agent.run_tests_in_docker(exercise, &temp_work_dir).await;
+        let test_result = test_agent
+            .run_tests_in_docker(exercise, &temp_work_dir)
+            .await;
 
         // Cleanup
         let _ = fs::remove_dir_all(&temp_work_dir);
@@ -689,9 +762,15 @@ impl Agent for PiAgent {
 
         let error_message = if !success {
             if !pi_success {
-                Some(format!("Pi agent failed with exit code: {}", result.exit_code))
+                Some(format!(
+                    "Pi agent failed with exit code: {}",
+                    result.exit_code
+                ))
             } else {
-                test_result.as_ref().ok().and_then(|t| t.error_message.clone())
+                test_result
+                    .as_ref()
+                    .ok()
+                    .and_then(|t| t.error_message.clone())
             }
         } else {
             None
@@ -701,13 +780,23 @@ impl Agent for PiAgent {
             .exercise_name(exercise.name.clone())
             .language(exercise.language.clone())
             .success(success)
-            .exit_code(test_result.as_ref().map(|t| t.exit_code).unwrap_or(result.exit_code))
+            .exit_code(
+                test_result
+                    .as_ref()
+                    .map(|t| t.exit_code)
+                    .unwrap_or(result.exit_code),
+            )
             .output(String::new()) // Don't store raw output - trace is saved separately
             .duration_ms(duration_ms)
             .start_time(start_dt.to_rfc3339())
             .end_time(end_dt.to_rfc3339())
             .error_message(error_message)
-            .container_id(test_result.as_ref().map(|t| t.container_id.clone()).unwrap_or(result.container_id))
+            .container_id(
+                test_result
+                    .as_ref()
+                    .map(|t| t.container_id.clone())
+                    .unwrap_or(result.container_id),
+            )
             .build())
     }
 
@@ -735,7 +824,9 @@ impl PiAgent {
             prompt.push_str("IMPORTANT RULES:\n");
             prompt.push_str("1. Implement the solution in the source files only, do not touch the test files.\n");
             prompt.push_str("2. Run the tests to verify your solution\n\n");
-            prompt.push_str("3. The tests are validated to be correct, never assume the test to be wrong!\n\n");
+            prompt.push_str(
+                "3. The tests are validated to be correct, never assume the test to be wrong!\n\n",
+            );
             prompt.push_str(
                 "4. Do not run tests in the background, run them synchronously in the foreground.\n",
             );
@@ -815,7 +906,10 @@ mod provider_routing_tests {
 
     #[test]
     fn provider_key_matches_model_family() {
-        assert_eq!(PiAgent::provider_key_for_model("claude-sonnet-5"), "anthropic");
+        assert_eq!(
+            PiAgent::provider_key_for_model("claude-sonnet-5"),
+            "anthropic"
+        );
         assert_eq!(PiAgent::provider_key_for_model("gpt-4o"), "openai");
     }
 }
@@ -828,8 +922,14 @@ mod models_json_tests {
 
     fn test_client() -> DockerClient {
         let mut env = HashMap::new();
-        env.insert("ANTHROPIC_BASE_URL".to_string(), "http://host.docker.internal:8080".to_string());
-        env.insert("OPENAI_BASE_URL".to_string(), "http://host.docker.internal:8080/v1".to_string());
+        env.insert(
+            "ANTHROPIC_BASE_URL".to_string(),
+            "http://host.docker.internal:8080".to_string(),
+        );
+        env.insert(
+            "OPENAI_BASE_URL".to_string(),
+            "http://host.docker.internal:8080/v1".to_string(),
+        );
         env.insert("OPENAI_API_KEY".to_string(), "api-key".to_string());
         DockerClient::new(DockerConfig {
             image: "ghcr.io/dylanschell/llm-benchmark-runner:latest".to_string(),
@@ -869,15 +969,23 @@ mod models_json_tests {
         let agent = PiAgent::new(test_client());
         let dir = temp_work_dir("ds4-xhigh");
 
-        agent.create_models_json(&dir, "ds4-flash", Some("xhigh")).unwrap();
+        agent
+            .create_models_json(&dir, "ds4-flash", Some("xhigh"))
+            .unwrap();
         let model = model_obj(&read_models_json(&dir));
         let _ = std::fs::remove_dir_all(&dir);
 
         // pi's hard gate: without `reasoning: true` it clamps any level to "off"
         assert_eq!(model["reasoning"], serde_json::json!(true));
         // thinkingFormat must live under compat — pi reads model.compat.thinkingFormat
-        assert_eq!(model["compat"]["thinkingFormat"], serde_json::json!("openai"));
-        assert!(model.get("thinkingFormat").is_none(), "top-level thinkingFormat is ignored by pi");
+        assert_eq!(
+            model["compat"]["thinkingFormat"],
+            serde_json::json!("openai")
+        );
+        assert!(
+            model.get("thinkingFormat").is_none(),
+            "top-level thinkingFormat is ignored by pi"
+        );
         // ds4-specific level map at model level
         assert_eq!(model["thinkingLevelMap"]["off"], serde_json::json!("none"));
         assert_eq!(model["thinkingLevelMap"]["xhigh"], serde_json::json!("max"));
@@ -889,7 +997,9 @@ mod models_json_tests {
         let agent = PiAgent::new(test_client());
         let dir = temp_work_dir("ds4-off");
 
-        agent.create_models_json(&dir, "ds4-flash", Some("off")).unwrap();
+        agent
+            .create_models_json(&dir, "ds4-flash", Some("off"))
+            .unwrap();
         let model = model_obj(&read_models_json(&dir));
         let _ = std::fs::remove_dir_all(&dir);
 
@@ -905,18 +1015,29 @@ mod models_json_tests {
         let agent = PiAgent::new(test_client());
         let dir = temp_work_dir("glm53-medium");
 
-        agent.create_models_json(&dir, "glm53-flash", Some("medium")).unwrap();
+        agent
+            .create_models_json(&dir, "glm53-flash", Some("medium"))
+            .unwrap();
         let model = model_obj(&read_models_json(&dir));
         let _ = std::fs::remove_dir_all(&dir);
 
         // pi's hard gate: without `reasoning: true` it clamps any level to "off"
         assert_eq!(model["reasoning"], serde_json::json!(true));
         // thinkingFormat must live under compat — pi reads model.compat.thinkingFormat
-        assert_eq!(model["compat"]["thinkingFormat"], serde_json::json!("openai"));
-        assert!(model.get("thinkingFormat").is_none(), "top-level thinkingFormat is ignored by pi");
+        assert_eq!(
+            model["compat"]["thinkingFormat"],
+            serde_json::json!("openai")
+        );
+        assert!(
+            model.get("thinkingFormat").is_none(),
+            "top-level thinkingFormat is ignored by pi"
+        );
         // GLM only supports low/high/max; pi's "medium" must map to GLM "high"
         // (not "max"), otherwise GLM silently falls back to its max default.
-        assert_eq!(model["thinkingLevelMap"]["medium"], serde_json::json!("high"));
+        assert_eq!(
+            model["thinkingLevelMap"]["medium"],
+            serde_json::json!("high")
+        );
         assert_eq!(model["thinkingLevelMap"]["low"], serde_json::json!("low"));
         assert_eq!(model["thinkingLevelMap"]["high"], serde_json::json!("max"));
     }

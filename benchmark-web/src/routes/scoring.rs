@@ -3,9 +3,9 @@
 use super::{AppState, TemplateEngine};
 use axum::extract::Query;
 use axum::routing::get;
-use axum::Router;
-use axum::Json;
 use axum::Extension;
+use axum::Json;
+use axum::Router;
 use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize)]
 pub struct ScoreFilterQuery {
@@ -84,7 +84,8 @@ pub async fn scoring_dashboard(
     // Sort by composite score descending
     let mut sorted_results = scored_results.clone();
     sorted_results.sort_by(|a, b| {
-        b.composite_score.partial_cmp(&a.composite_score)
+        b.composite_score
+            .partial_cmp(&a.composite_score)
             .unwrap_or(std::cmp::Ordering::Equal)
     });
 
@@ -97,7 +98,8 @@ pub async fn scoring_dashboard(
     // Sort models by composite score
     let mut sorted_models = model_scores.clone();
     sorted_models.sort_by(|a, b| {
-        b.avg_composite_score.partial_cmp(&a.avg_composite_score)
+        b.avg_composite_score
+            .partial_cmp(&a.avg_composite_score)
             .unwrap_or(std::cmp::Ordering::Equal)
     });
 
@@ -129,30 +131,34 @@ pub async fn get_scored_results(
     // Sort by composite score descending
     let mut sorted = results.clone();
     sorted.sort_by(|a, b| {
-        b.composite_score.partial_cmp(&a.composite_score)
+        b.composite_score
+            .partial_cmp(&a.composite_score)
             .unwrap_or(std::cmp::Ordering::Equal)
     });
 
     let total = sorted.len();
 
     Json(ScoredResultsResponse {
-        results: sorted.into_iter().map(|r| ScoredResultView {
-            agent: r.agent,
-            model: r.model,
-            language: r.language,
-            exercise: r.exercise,
-            success: r.success,
-            success_rate: r.success_rate,
-            speed_score: r.speed_score,
-            token_score: r.token_score,
-            composite_score: r.composite_score,
-            duration: r.duration,
-            output_tokens: r.output_tokens,
-            input_chars: r.input_chars,
-            output_chars: r.output_chars,
-            tokens_per_sec: r.tokens_per_sec,
-            detail_url: r.detail_url,
-        }).collect(),
+        results: sorted
+            .into_iter()
+            .map(|r| ScoredResultView {
+                agent: r.agent,
+                model: r.model,
+                language: r.language,
+                exercise: r.exercise,
+                success: r.success,
+                success_rate: r.success_rate,
+                speed_score: r.speed_score,
+                token_score: r.token_score,
+                composite_score: r.composite_score,
+                duration: r.duration,
+                output_tokens: r.output_tokens,
+                input_chars: r.input_chars,
+                output_chars: r.output_chars,
+                tokens_per_sec: r.tokens_per_sec,
+                detail_url: r.detail_url,
+            })
+            .collect(),
         total,
         filters: ScoreFilters {
             language: params.language,
@@ -176,21 +182,25 @@ pub async fn get_model_scores(
     // Sort by composite score descending
     let mut sorted = scores.clone();
     sorted.sort_by(|a, b| {
-        b.avg_composite_score.partial_cmp(&a.avg_composite_score)
+        b.avg_composite_score
+            .partial_cmp(&a.avg_composite_score)
             .unwrap_or(std::cmp::Ordering::Equal)
     });
 
     Json(ModelScoresResponse {
-        scores: sorted.into_iter().map(|s| ModelScoreView {
-            name: s.name,
-            avg_composite_score: s.avg_composite_score,
-            avg_success_rate: s.avg_success_rate,
-            avg_speed_score: s.avg_speed_score,
-            avg_token_score: s.avg_token_score,
-            total_tokens: s.total_tokens,
-            total_chars: s.total_chars,
-            total_runs: s.total_runs,
-        }).collect(),
+        scores: sorted
+            .into_iter()
+            .map(|s| ModelScoreView {
+                name: s.name,
+                avg_composite_score: s.avg_composite_score,
+                avg_success_rate: s.avg_success_rate,
+                avg_speed_score: s.avg_speed_score,
+                avg_token_score: s.avg_token_score,
+                total_tokens: s.total_tokens,
+                total_chars: s.total_chars,
+                total_runs: s.total_runs,
+            })
+            .collect(),
         filters: ScoreFilters {
             language: params.language,
             agent: params.agent,

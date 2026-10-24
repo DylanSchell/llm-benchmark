@@ -9,14 +9,14 @@
 //! The agent never sees the generator or the solver — only the description, the
 //! input, and the validator URL.
 
+use crate::model_load::ModelLoadGate;
+use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::aoc::AocDay;
+use benchmark_types::Category;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tracing::{debug, error, info};
-use benchmark_types::agent::{Agent, AgentResult};
-use benchmark_types::aoc::AocDay;
-use benchmark_types::Category;
-use crate::model_load::ModelLoadGate;
 
 /// Name of the answer file the agent writes into `/workspace` (one line per part).
 pub const ANSWER_FILE: &str = "answer.txt";
@@ -64,9 +64,8 @@ impl AocRunner {
         day: &AocDay,
         dest: &Path,
     ) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        let description = benchmark_aoc2015::description(day.day).ok_or_else(|| {
-            format!("no description for day {}", day.day)
-        })?;
+        let description = benchmark_aoc2015::description(day.day)
+            .ok_or_else(|| format!("no description for day {}", day.day))?;
         let input = benchmark_aoc2015::generate(&day.user, day.year, day.day);
 
         fs::create_dir_all(dest)?;
@@ -85,7 +84,9 @@ impl AocRunner {
     pub fn build_prompt(&self, day: &AocDay, validator_url: &str) -> String {
         let mut prompt = String::new();
         prompt.push_str("You are solving an Advent of Code 2015 puzzle.\n\n");
-        prompt.push_str("The puzzle description is in /workspace/problem.md (it contains part 1 and part 2).\n");
+        prompt.push_str(
+            "The puzzle description is in /workspace/problem.md (it contains part 1 and part 2).\n",
+        );
         prompt.push_str("The input for the puzzle is in /workspace/input.txt.\n\n");
         prompt.push_str("Read the description fully before writing any code.\n");
         prompt.push_str("Write a program (in any language available in this container) that reads /workspace/input.txt and computes the answer for each part.\n");
@@ -95,12 +96,16 @@ impl AocRunner {
             "  curl -sS -X POST {validator_url} -H 'Content-Type: application/json' -d '{{\"user\": \"{}\", \"year\": {}, \"day\": {}, \"part\": 1, \"answer\": \"<your part-1 answer>\"}}'\n",
             day.user, day.year, day.day
         ));
-        prompt.push_str("The response tells you whether the answer is correct and which part it matches.\n");
+        prompt.push_str(
+            "The response tells you whether the answer is correct and which part it matches.\n",
+        );
         prompt.push_str("Validate part 1 first, then part 2. Iterate until both are correct.\n\n");
         prompt.push_str("When you are satisfied, write your final answers to /workspace/answer.txt, one answer per line:\n");
         prompt.push_str("  line 1 = part 1 answer\n");
         prompt.push_str("  line 2 = part 2 answer\n");
-        prompt.push_str("(For a day with only one part, write just the part 1 answer on line 1.)\n\n");
+        prompt.push_str(
+            "(For a day with only one part, write just the part 1 answer on line 1.)\n\n",
+        );
         prompt.push_str("Do not modify input.txt. Do not touch any file other than your solution and answer.txt.\n");
         prompt
     }
@@ -170,7 +175,14 @@ impl AocRunner {
 
         // Run the agent (it writes answer.txt into the container /workspace).
         let result = agent
-            .run_aoc(day, &work_dir, validator_url, model, thinking_level, &self.results_dir)
+            .run_aoc(
+                day,
+                &work_dir,
+                validator_url,
+                model,
+                thinking_level,
+                &self.results_dir,
+            )
             .await?;
 
         // Read + validate the agent's answers.
@@ -203,7 +215,10 @@ impl AocRunner {
         final_result.error_message = if success {
             None
         } else {
-            Some(format!("AoC day {}: one or both answers incorrect", day.day))
+            Some(format!(
+                "AoC day {}: one or both answers incorrect",
+                day.day
+            ))
         };
 
         // Cleanup.
@@ -244,12 +259,13 @@ impl AocRunner {
         days: Option<&[u32]>,
     ) -> Vec<AgentResult> {
         let mut results = Vec::new();
-        let days: Vec<u32> = days
-            .map(|d| d.to_vec())
-            .unwrap_or_else(|| self.days());
+        let days: Vec<u32> = days.map(|d| d.to_vec()).unwrap_or_else(|| self.days());
         for day_num in days {
             let day = AocDay::new(day_num, self.user.clone());
-            match self.run_day(agent.clone(), &day, validator_url, model, thinking_level).await {
+            match self
+                .run_day(agent.clone(), &day, validator_url, model, thinking_level)
+                .await
+            {
                 Ok(r) => results.push(r),
                 Err(e) => {
                     error!("AoC day {} failed: {}", day_num, e);
@@ -285,7 +301,10 @@ mod tests {
 
         assert!(!input.is_empty());
         let desc = fs::read_to_string(dir.path().join("problem.md")).unwrap();
-        assert!(desc.contains("Part Two"), "day 1 description missing part 2");
+        assert!(
+            desc.contains("Part Two"),
+            "day 1 description missing part 2"
+        );
         let written = fs::read_to_string(dir.path().join("input.txt")).unwrap();
         assert_eq!(written, input);
     }
@@ -293,7 +312,8 @@ mod tests {
     #[test]
     fn build_prompt_includes_validator_and_answer_file() {
         let runner = AocRunner::new("benchmark", std::env::temp_dir());
-        let prompt = runner.build_prompt(&day(1), "http://host.docker.internal:8081/api/aoc/validate");
+        let prompt =
+            runner.build_prompt(&day(1), "http://host.docker.internal:8081/api/aoc/validate");
         assert!(prompt.contains("problem.md"));
         assert!(prompt.contains("input.txt"));
         assert!(prompt.contains("host.docker.internal:8081/api/aoc/validate"));
@@ -359,13 +379,29 @@ mod tests {
 
         let day = AocDay::new(1, "benchmark");
         let result = runner
-            .run_day(agent, &day, "http://host.docker.internal:8081/api/aoc/validate", "reference", None)
+            .run_day(
+                agent,
+                &day,
+                "http://host.docker.internal:8081/api/aoc/validate",
+                "reference",
+                None,
+            )
             .await
             .expect("reference agent should complete day 1 in Docker");
 
         assert_eq!(result.category, Category::Aoc2015);
-        assert!(result.success, "reference agent should solve day 1: {:?}", result.error_message);
-        assert!(result.output.contains("part1"), "output should report part1/part2");
-        assert!(result.output.contains("correct"), "both parts should validate correct");
+        assert!(
+            result.success,
+            "reference agent should solve day 1: {:?}",
+            result.error_message
+        );
+        assert!(
+            result.output.contains("part1"),
+            "output should report part1/part2"
+        );
+        assert!(
+            result.output.contains("correct"),
+            "both parts should validate correct"
+        );
     }
 }

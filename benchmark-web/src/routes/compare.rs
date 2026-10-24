@@ -4,8 +4,8 @@
 use super::{AppState, TemplateEngine};
 use axum::extract::Query;
 use axum::routing::get;
-use axum::Router;
 use axum::Extension;
+use axum::Router;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -15,10 +15,10 @@ use std::collections::HashMap;
 
 #[derive(Debug, Deserialize)]
 pub struct CompareQuery {
-    pub a: Option<String>,  // model key for run A (format: "agent - model")
-    pub b: Option<String>,  // model key for run B (format: "agent - model")
+    pub a: Option<String>, // model key for run A (format: "agent - model")
+    pub b: Option<String>, // model key for run B (format: "agent - model")
     #[serde(default)]
-    pub metric: Option<String>,  // which metric to compare: "speed" (default), "tokens", "turns", "toolcalls"
+    pub metric: Option<String>, // which metric to compare: "speed" (default), "tokens", "turns", "toolcalls"
 }
 
 /// A single row in the comparison table — one exercise, two values for the selected metric.
@@ -70,7 +70,9 @@ pub async fn compare_page(
     Query(params): Query<CompareQuery>,
 ) -> impl axum::response::IntoResponse {
     // Build full "agent - model" keys from individual results
-    let all_results = state.service.list_individual_results(None, None, None, None, false);
+    let all_results = state
+        .service
+        .list_individual_results(None, None, None, None, false);
     let mut model_keys: Vec<String> = Vec::new();
     let mut seen = std::collections::HashSet::new();
     for r in &all_results {
@@ -116,10 +118,11 @@ pub async fn compare_page(
             None,
             false,
         );
-        let b_map: HashMap<(String, String), &crate::services::result_service::IndividualResult> = b_results
-            .iter()
-            .map(|r| ((r.language.clone(), r.exercise.clone()), r))
-            .collect();
+        let b_map: HashMap<(String, String), &crate::services::result_service::IndividualResult> =
+            b_results
+                .iter()
+                .map(|r| ((r.language.clone(), r.exercise.clone()), r))
+                .collect();
 
         /// Extract (display_value, sort_value) for the selected metric.
         fn metric_values(
@@ -130,7 +133,11 @@ pub async fn compare_page(
                 "tokens" => {
                     let v = r.input_tokens + r.output_tokens;
                     let sort = if v > 0 { Some(v as f64) } else { None };
-                    let disp = if v > 0 { format_tokens_compact(v) } else { String::new() };
+                    let disp = if v > 0 {
+                        format_tokens_compact(v)
+                    } else {
+                        String::new()
+                    };
                     (disp, sort)
                 }
                 "turns" => {
@@ -187,7 +194,13 @@ pub async fn compare_page(
             let (ratio_fmt, sort_ratio, ratio_favor) = match (a_sort, b_sort) {
                 (Some(av), Some(bv)) if bv > 0.0 => {
                     let r = av / bv;
-                    let favor = if r < 1.0 { "a" } else if r > 1.0 { "b" } else { "tie" };
+                    let favor = if r < 1.0 {
+                        "a"
+                    } else if r > 1.0 {
+                        "b"
+                    } else {
+                        "tie"
+                    };
                     (format!("{:.2}x", r), r, favor.to_string())
                 }
                 _ => (String::new(), 999.0, String::new()),
@@ -218,7 +231,7 @@ pub async fn compare_page(
                 metric_fmt: metric_fmt.to_string(),
                 a_duration: a.duration.clone(),
                 a_sort_duration: a_dur,
-                b_duration: b.map(|r| r.duration.clone()).flatten(),
+                b_duration: b.and_then(|r| r.duration.clone()),
                 b_sort_duration: b_dur,
                 a_tps,
                 tps_a_fmt,
@@ -269,7 +282,9 @@ pub async fn compare_page(
 
         // Sort by language, then exercise
         rows.sort_by(|a, b| {
-            a.language.cmp(&b.language).then_with(|| a.exercise.cmp(&b.exercise))
+            a.language
+                .cmp(&b.language)
+                .then_with(|| a.exercise.cmp(&b.exercise))
         });
     }
 

@@ -4,9 +4,9 @@
 use super::{AppState, TemplateEngine};
 use axum::extract::{Path, Query};
 use axum::routing::get;
-use axum::Router;
-use axum::Json;
 use axum::Extension;
+use axum::Json;
+use axum::Router;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -71,14 +71,20 @@ fn result_to_map(r: &crate::services::result_service::IndividualResult) -> HashM
     map.insert("model".to_string(), r.model.clone());
     map.insert("exercise".to_string(), r.exercise.clone());
     map.insert("success".to_string(), r.success.to_string());
-    map.insert("timestamp".to_string(), r.timestamp.clone().unwrap_or_default());
+    map.insert(
+        "timestamp".to_string(),
+        r.timestamp.clone().unwrap_or_default(),
+    );
     map.insert(
         "timestamp_epoch".to_string(),
         r.timestamp_epoch.map(|e| e.to_string()).unwrap_or_default(),
     );
     map.insert("has_trace_file".to_string(), r.has_trace_file.to_string());
     map.insert("category".to_string(), r.category.clone());
-    map.insert("duration".to_string(), r.duration.clone().unwrap_or_default());
+    map.insert(
+        "duration".to_string(),
+        r.duration.clone().unwrap_or_default(),
+    );
     map
 }
 
@@ -104,8 +110,10 @@ pub async fn results_page(
     );
     let results = state.service.list_individual_results_by_category(
         category,
-        q.language.as_deref(), q.agent.as_deref(),
-        q.model.as_deref(), q.exercise.as_deref(),
+        q.language.as_deref(),
+        q.agent.as_deref(),
+        q.model.as_deref(),
+        q.exercise.as_deref(),
         q.quick_only,
     );
     let models = state.service.get_models();
@@ -139,34 +147,43 @@ pub async fn get_results_api(
     let q = params.cleaned();
     let results = state.service.list_individual_results_by_category(
         q.category.as_deref(),
-        q.language.as_deref(), q.agent.as_deref(),
-        q.model.as_deref(), q.exercise.as_deref(),
+        q.language.as_deref(),
+        q.agent.as_deref(),
+        q.model.as_deref(),
+        q.exercise.as_deref(),
         q.quick_only,
     );
     let result_maps: Vec<HashMap<String, String>> = results.iter().map(result_to_map).collect();
-    Json(ResultsTable { results: result_maps, total: results.len() })
+    Json(ResultsTable {
+        results: result_maps,
+        total: results.len(),
+    })
 }
-
-
-
-
 
 /// Get results by language/exercise: /results/{lang}/{ex}
 pub async fn get_results_by_lang_ex(
     Extension(state): Extension<AppState>,
     Path((lang, ex)): Path<(String, String)>,
 ) -> Json<Vec<HashMap<String, String>>> {
-    let results = state.service.list_individual_results(Some(&lang), None, None, Some(&ex), false);
-    let result_maps: Vec<HashMap<String, String>> = results.iter().map(|r| {
-        let mut map = HashMap::new();
-        map.insert("filename".to_string(), r.filename.clone());
-        map.insert("detail_url".to_string(), r.detail_url.clone());
-        map.insert("agent".to_string(), r.agent.clone());
-        map.insert("model".to_string(), r.model.clone());
-        map.insert("success".to_string(), r.success.to_string());
-        map.insert("timestamp".to_string(), r.timestamp.clone().unwrap_or_default());
-        map
-    }).collect();
+    let results = state
+        .service
+        .list_individual_results(Some(&lang), None, None, Some(&ex), false);
+    let result_maps: Vec<HashMap<String, String>> = results
+        .iter()
+        .map(|r| {
+            let mut map = HashMap::new();
+            map.insert("filename".to_string(), r.filename.clone());
+            map.insert("detail_url".to_string(), r.detail_url.clone());
+            map.insert("agent".to_string(), r.agent.clone());
+            map.insert("model".to_string(), r.model.clone());
+            map.insert("success".to_string(), r.success.to_string());
+            map.insert(
+                "timestamp".to_string(),
+                r.timestamp.clone().unwrap_or_default(),
+            );
+            map
+        })
+        .collect();
     Json(result_maps)
 }
 
@@ -175,16 +192,25 @@ pub async fn get_results_api_agent_lang_ex(
     Extension(state): Extension<AppState>,
     Path((_agent, lang, ex)): Path<(String, String, String)>,
 ) -> Json<Vec<HashMap<String, String>>> {
-    let results = state.service.list_individual_results(Some(&lang), Some(&_agent), None, Some(&ex), false);
-    let result_maps: Vec<HashMap<String, String>> = results.iter().map(|r| {
-        let mut map = HashMap::new();
-        map.insert("filename".to_string(), r.filename.clone());
-        map.insert("detail_url".to_string(), r.detail_url.clone());
-        map.insert("model".to_string(), r.model.clone());
-        map.insert("success".to_string(), r.success.to_string());
-        map.insert("timestamp".to_string(), r.timestamp.clone().unwrap_or_default());
-        map
-    }).collect();
+    let results =
+        state
+            .service
+            .list_individual_results(Some(&lang), Some(&_agent), None, Some(&ex), false);
+    let result_maps: Vec<HashMap<String, String>> = results
+        .iter()
+        .map(|r| {
+            let mut map = HashMap::new();
+            map.insert("filename".to_string(), r.filename.clone());
+            map.insert("detail_url".to_string(), r.detail_url.clone());
+            map.insert("model".to_string(), r.model.clone());
+            map.insert("success".to_string(), r.success.to_string());
+            map.insert(
+                "timestamp".to_string(),
+                r.timestamp.clone().unwrap_or_default(),
+            );
+            map
+        })
+        .collect();
     Json(result_maps)
 }
 
@@ -212,12 +238,17 @@ pub async fn table_fragment(
 ) -> Json<ResultsTable> {
     let results = state.service.list_individual_results_by_category(
         params.category.as_deref(),
-        params.language.as_deref(), params.agent.as_deref(),
-        params.model.as_deref(), params.exercise.as_deref(),
+        params.language.as_deref(),
+        params.agent.as_deref(),
+        params.model.as_deref(),
+        params.exercise.as_deref(),
         params.quick_only,
     );
     let result_maps: Vec<HashMap<String, String>> = results.iter().map(result_to_map).collect();
-    Json(ResultsTable { results: result_maps, total: results.len() })
+    Json(ResultsTable {
+        results: result_maps,
+        total: results.len(),
+    })
 }
 
 // =============================================================================
@@ -229,10 +260,19 @@ pub fn register(app: Router<()>) -> Router<()> {
     app.route("/results", get(results_page))
         .route("/results/api/results", get(get_results_api))
         // More specific routes must come before parameterized ones
-        .route("/results/{agent}/{dir}/{lang}/{ex}/trace", get(super::result::result_detail_trace))
-        .route("/results/{agent}/{dir}/{lang}/{ex}", get(super::result::result_detail_page))
+        .route(
+            "/results/{agent}/{dir}/{lang}/{ex}/trace",
+            get(super::result::result_detail_trace),
+        )
+        .route(
+            "/results/{agent}/{dir}/{lang}/{ex}",
+            get(super::result::result_detail_page),
+        )
         .route("/results/{lang}/{ex}", get(get_results_by_lang_ex))
-        .route("/results/api/{agent}/{lang}/{ex}", get(get_results_api_agent_lang_ex))
+        .route(
+            "/results/api/{agent}/{lang}/{ex}",
+            get(get_results_api_agent_lang_ex),
+        )
         .route("/results/api/stats", get(get_stats))
         .route("/results/table-fragment", get(table_fragment))
 }

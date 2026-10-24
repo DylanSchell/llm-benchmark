@@ -1,18 +1,21 @@
-pub mod reference;
 pub mod claude;
-pub mod pi;
 pub mod claude_message_processor;
-pub mod pi_message_processor;
-pub mod test_patches;
 pub mod exercise_files;
+pub mod pi;
+pub mod pi_message_processor;
+pub mod reference;
+pub mod test_patches;
 
-pub use reference::ReferenceAgent;
-pub use test_patches::{run_patch_tests, run_remove_ignore_annotations, run_replace_xtest, run_remove_disabled_annotations};
 pub use claude::ClaudeAgent;
-pub use pi::PiAgent;
 pub use claude_message_processor::ClaudeMessageProcessor;
+pub use exercise_files::{create_temp_work_dir, materialize_exercise};
+pub use pi::PiAgent;
 pub use pi_message_processor::PiMessageProcessor;
-pub use exercise_files::{materialize_exercise, create_temp_work_dir};
+pub use reference::ReferenceAgent;
+pub use test_patches::{
+    run_patch_tests, run_remove_disabled_annotations, run_remove_ignore_annotations,
+    run_replace_xtest,
+};
 
 // =============================================================================
 // Tests
@@ -21,9 +24,9 @@ pub use exercise_files::{materialize_exercise, create_temp_work_dir};
 #[cfg(test)]
 mod tests {
     use super::*;
-    use benchmark_types::util::recover_poisoned;
-    use benchmark_types::agent::Agent;
     use crate::docker::{DockerClient, DockerConfig};
+    use benchmark_types::agent::Agent;
+    use benchmark_types::util::recover_poisoned;
     use std::collections::HashMap;
 
     fn create_test_docker_client() -> DockerClient {

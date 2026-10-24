@@ -65,5 +65,9 @@ pub fn generate(rng: &mut Rng) -> String {
 fn sorted_pair(rng: &mut Rng) -> (i64, i64) {
     let a = rng.range(0, 999);
     let b = rng.range(0, 999);
-    if a <= b { (a, b) } else { (b, a) }
+    if a <= b {
+        (a, b)
+    } else {
+        (b, a)
+    }
 }

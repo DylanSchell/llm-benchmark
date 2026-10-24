@@ -92,7 +92,10 @@ fn ensure_server() {
             )
         });
 
-    println!("[html_equality] Starting benchmark-web on port {} ...", port);
+    println!(
+        "[html_equality] Starting benchmark-web on port {} ...",
+        port
+    );
 
     // Wait for the server to be ready: first TCP, then an HTTP health check.
     // This avoids flaky tests where parallel test threads hit the server
@@ -102,7 +105,7 @@ fn ensure_server() {
         std::thread::sleep(Duration::from_secs(1));
         if TcpStream::connect(format!("localhost:{}", port)).is_ok() {
             // Verify HTTP is actually responding
-            if let Ok(mut stream) =TcpStream::connect(format!("localhost:{}", port)) {
+            if let Ok(mut stream) = TcpStream::connect(format!("localhost:{}", port)) {
                 use std::io::Write;
                 let request = b"GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n";
                 let _ = stream.write_all(request);
@@ -110,7 +113,11 @@ fn ensure_server() {
                 if stream.read_to_end(&mut response).is_ok() {
                     let resp_str = String::from_utf8_lossy(&response);
                     if resp_str.contains("200") || resp_str.contains("<html") {
-                        println!("[html_equality] Server ready on port {} (took {}s)", port, i + 1);
+                        println!(
+                            "[html_equality] Server ready on port {} (took {}s)",
+                            port,
+                            i + 1
+                        );
                         SERVER_CHILD.set(child).expect("Child already set");
                         return;
                     }
@@ -141,9 +148,8 @@ fn ensure_server() {
 /// Set SERVER_URL env var to test against an external server (e.g., Java: `SERVER_URL=http://localhost:8081`).
 fn server_url() -> String {
     ensure_server();
-    std::env::var("SERVER_URL").unwrap_or_else(|_| {
-        format!("http://localhost:{}", SERVER_PORT.get().unwrap())
-    })
+    std::env::var("SERVER_URL")
+        .unwrap_or_else(|_| format!("http://localhost:{}", SERVER_PORT.get().unwrap()))
 }
 
 /// HTTP client with timeout
@@ -194,10 +200,10 @@ fn extract_api_endpoints(html: &str) -> Vec<String> {
     let mut endpoints = Vec::new();
     // Match fetch() calls and href attributes that reference API endpoints
     for part in html.split("'").chain(html.split("\"")) {
-        if part.starts_with("/api/") || part.starts_with("/results/api/") {
-            if !endpoints.contains(&part.to_string()) {
-                endpoints.push(part.to_string());
-            }
+        if (part.starts_with("/api/") || part.starts_with("/results/api/"))
+            && !endpoints.contains(&part.to_string())
+        {
+            endpoints.push(part.to_string());
         }
     }
     endpoints
@@ -312,10 +318,7 @@ async fn test_dashboard_has_meta_viewport() {
 #[tokio::test]
 async fn test_dashboard_has_htmx() {
     let html = fetch_page("/").await.expect("Dashboard should return 200");
-    assert!(
-        html.contains("htmx.org"),
-        "Dashboard should include HTMX"
-    );
+    assert!(html.contains("htmx.org"), "Dashboard should include HTMX");
 }
 
 #[tokio::test]
@@ -730,13 +733,17 @@ async fn test_dashboard_has_llm_benchmark_runner_text() {
 
 #[tokio::test]
 async fn test_run_status_200() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(!html.is_empty(), "Run page should not be empty");
 }
 
 #[tokio::test]
 async fn test_run_has_doctype() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("<!DOCTYPE html>"),
         "Run page should have DOCTYPE html"
@@ -745,55 +752,73 @@ async fn test_run_has_doctype() {
 
 #[tokio::test]
 async fn test_run_has_html_tag() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(html.contains("<html"), "Run page should have html tag");
 }
 
 #[tokio::test]
 async fn test_run_has_head() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(html.contains("<head"), "Run page should have head tag");
 }
 
 #[tokio::test]
 async fn test_run_has_body() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(html.contains("<body"), "Run page should have body tag");
 }
 
 #[tokio::test]
 async fn test_run_has_header() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(html.contains("<header"), "Run page should have header");
 }
 
 #[tokio::test]
 async fn test_run_has_main() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(html.contains("<main"), "Run page should have main");
 }
 
 #[tokio::test]
 async fn test_run_has_footer() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(html.contains("<footer"), "Run page should have footer");
 }
 
 #[tokio::test]
 async fn test_run_has_nav() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(html.contains("<nav"), "Run page should have nav");
 }
 
 #[tokio::test]
 async fn test_run_has_h2() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(html.contains("<h2"), "Run page should have h2");
 }
 
 #[tokio::test]
 async fn test_run_has_title() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("Run Benchmark"),
         "Run page should have 'Run Benchmark' title"
@@ -802,7 +827,9 @@ async fn test_run_has_title() {
 
 #[tokio::test]
 async fn test_run_has_agent_select() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("id=\"agent\""),
         "Run page should have agent select"
@@ -823,7 +850,9 @@ async fn test_run_has_agent_select() {
 
 #[tokio::test]
 async fn test_run_has_language_checkboxes() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("language-grid"),
         "Run page should have language-grid"
@@ -843,7 +872,9 @@ async fn test_run_has_language_checkboxes() {
 
 #[tokio::test]
 async fn test_run_has_model_select() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("id=\"model\""),
         "Run page should have model select"
@@ -852,7 +883,9 @@ async fn test_run_has_model_select() {
 
 #[tokio::test]
 async fn test_run_has_mode_radios() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("name=\"mode\""),
         "Run page should have mode radio buttons"
@@ -868,20 +901,21 @@ async fn test_run_has_mode_radios() {
 
 #[tokio::test]
 async fn test_run_has_retry_checkbox() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("id=\"retry\""),
         "Run page should have retry checkbox"
     );
-    assert!(
-        html.contains("Retry"),
-        "Run page should have 'Retry' text"
-    );
+    assert!(html.contains("Retry"), "Run page should have 'Retry' text");
 }
 
 #[tokio::test]
 async fn test_run_has_submit_button() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("Start Benchmark"),
         "Run page should have 'Start Benchmark' button"
@@ -890,7 +924,9 @@ async fn test_run_has_submit_button() {
 
 #[tokio::test]
 async fn test_run_has_exercise_list() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("language-exercises"),
         "Run page should have language-exercises container"
@@ -911,7 +947,9 @@ async fn test_run_has_exercise_list() {
 
 #[tokio::test]
 async fn test_run_has_toggle_exercise_mode_js() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("function toggleExerciseMode"),
         "Run page should have toggleExerciseMode"
@@ -932,7 +970,9 @@ async fn test_run_has_toggle_exercise_mode_js() {
 
 #[tokio::test]
 async fn test_run_has_mode_hints() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("modeHints"),
         "Run page should have modeHints object"
@@ -945,16 +985,17 @@ async fn test_run_has_mode_hints() {
 
 #[tokio::test]
 async fn test_run_has_htmx() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
-    assert!(
-        html.contains("htmx.org"),
-        "Run page should include HTMX"
-    );
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
+    assert!(html.contains("htmx.org"), "Run page should include HTMX");
 }
 
 #[tokio::test]
 async fn test_run_has_alpinejs() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("alpinejs"),
         "Run page should include Alpine.js"
@@ -963,7 +1004,9 @@ async fn test_run_has_alpinejs() {
 
 #[tokio::test]
 async fn test_run_has_htmx_sse() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("ext/sse.js"),
         "Run page should include HTMX SSE extension"
@@ -972,7 +1015,9 @@ async fn test_run_has_htmx_sse() {
 
 #[tokio::test]
 async fn test_run_has_style_css() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("style.css"),
         "Run page should link to style.css"
@@ -981,7 +1026,9 @@ async fn test_run_has_style_css() {
 
 #[tokio::test]
 async fn test_run_has_container() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("class=\"container\""),
         "Run page should have container class"
@@ -990,7 +1037,9 @@ async fn test_run_has_container() {
 
 #[tokio::test]
 async fn test_run_has_card_class() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("class=\"card\""),
         "Run page should have card class"
@@ -999,7 +1048,9 @@ async fn test_run_has_card_class() {
 
 #[tokio::test]
 async fn test_run_has_btn_class() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("btn-primary"),
         "Run page should have btn-primary class"
@@ -1008,11 +1059,10 @@ async fn test_run_has_btn_class() {
 
 #[tokio::test]
 async fn test_run_has_form() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
-    assert!(
-        html.contains("<form"),
-        "Run page should have form element"
-    );
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
+    assert!(html.contains("<form"), "Run page should have form element");
     assert!(
         html.contains("id=\"benchmark-form\""),
         "Run page should have benchmark-form id"
@@ -1021,7 +1071,9 @@ async fn test_run_has_form() {
 
 #[tokio::test]
 async fn test_run_has_nav_links() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("href=\"/\""),
         "Run page should have link to /"
@@ -1038,7 +1090,9 @@ async fn test_run_has_nav_links() {
 
 #[tokio::test]
 async fn test_run_has_llm_benchmark_runner_text() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("LLM Benchmark Runner"),
         "Run page should have 'LLM Benchmark Runner' text"
@@ -1051,13 +1105,17 @@ async fn test_run_has_llm_benchmark_runner_text() {
 
 #[tokio::test]
 async fn test_results_status_200() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(!html.is_empty(), "Results page should not be empty");
 }
 
 #[tokio::test]
 async fn test_results_has_doctype() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("<!DOCTYPE html>"),
         "Results page should have DOCTYPE html"
@@ -1066,61 +1124,81 @@ async fn test_results_has_doctype() {
 
 #[tokio::test]
 async fn test_results_has_html_tag() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(html.contains("<html"), "Results page should have html tag");
 }
 
 #[tokio::test]
 async fn test_results_has_head() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(html.contains("<head"), "Results page should have head tag");
 }
 
 #[tokio::test]
 async fn test_results_has_body() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(html.contains("<body"), "Results page should have body tag");
 }
 
 #[tokio::test]
 async fn test_results_has_header() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(html.contains("<header"), "Results page should have header");
 }
 
 #[tokio::test]
 async fn test_results_has_main() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(html.contains("<main"), "Results page should have main");
 }
 
 #[tokio::test]
 async fn test_results_has_footer() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(html.contains("<footer"), "Results page should have footer");
 }
 
 #[tokio::test]
 async fn test_results_has_nav() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(html.contains("<nav"), "Results page should have nav");
 }
 
 #[tokio::test]
 async fn test_results_has_h2() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(html.contains("<h2"), "Results page should have h2");
 }
 
 #[tokio::test]
 async fn test_results_has_h3() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(html.contains("<h3"), "Results page should have h3");
 }
 
 #[tokio::test]
 async fn test_results_has_title() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("Results - LLM Benchmark"),
         "Results page should have correct title"
@@ -1129,7 +1207,9 @@ async fn test_results_has_title() {
 
 #[tokio::test]
 async fn test_results_has_stats_grid() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("stats-grid"),
         "Results page should have stats-grid"
@@ -1138,7 +1218,9 @@ async fn test_results_has_stats_grid() {
 
 #[tokio::test]
 async fn test_results_has_stat_cards() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("class=\"stat-card\""),
         "Results page should have stat-card class"
@@ -1147,7 +1229,9 @@ async fn test_results_has_stat_cards() {
 
 #[tokio::test]
 async fn test_results_has_total_runs_stat() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("Total Runs"),
         "Results page should have 'Total Runs' stat"
@@ -1156,7 +1240,9 @@ async fn test_results_has_total_runs_stat() {
 
 #[tokio::test]
 async fn test_results_has_exercises_run_stat() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("Exercises Run"),
         "Results page should have 'Exercises Run' stat"
@@ -1165,7 +1251,9 @@ async fn test_results_has_exercises_run_stat() {
 
 #[tokio::test]
 async fn test_results_has_successful_stat() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("Successful"),
         "Results page should have 'Successful' stat"
@@ -1174,7 +1262,9 @@ async fn test_results_has_successful_stat() {
 
 #[tokio::test]
 async fn test_results_has_success_rate_stat() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("Success Rate"),
         "Results page should have 'Success Rate' stat"
@@ -1183,7 +1273,9 @@ async fn test_results_has_success_rate_stat() {
 
 #[tokio::test]
 async fn test_results_has_total_time_stat() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     // Rust port renamed the Java "Total Time" stat; the template now renders
     // "Execution Time" (sum of individual durations) and "Wall-Clock Time".
     assert!(
@@ -1194,7 +1286,9 @@ async fn test_results_has_total_time_stat() {
 
 #[tokio::test]
 async fn test_results_has_filter_form() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("<form"),
         "Results page should have form element"
@@ -1203,7 +1297,9 @@ async fn test_results_has_filter_form() {
 
 #[tokio::test]
 async fn test_results_has_language_filter() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("filter-language"),
         "Results page should have filter-language"
@@ -1223,7 +1319,9 @@ async fn test_results_has_language_filter() {
 
 #[tokio::test]
 async fn test_results_has_agent_filter() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("filter-agent"),
         "Results page should have filter-agent"
@@ -1243,7 +1341,9 @@ async fn test_results_has_agent_filter() {
 
 #[tokio::test]
 async fn test_results_has_model_filter() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("filter-model"),
         "Results page should have filter-model"
@@ -1256,7 +1356,9 @@ async fn test_results_has_model_filter() {
 
 #[tokio::test]
 async fn test_results_has_exercise_filter() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("filter-exercise"),
         "Results page should have filter-exercise"
@@ -1269,7 +1371,9 @@ async fn test_results_has_exercise_filter() {
 
 #[tokio::test]
 async fn test_results_has_quick_bench_filter() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("Quick bench only"),
         "Results page should have 'Quick bench only' filter"
@@ -1278,7 +1382,9 @@ async fn test_results_has_quick_bench_filter() {
 
 #[tokio::test]
 async fn test_results_has_filter_button() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("Filter"),
         "Results page should have Filter button"
@@ -1287,7 +1393,9 @@ async fn test_results_has_filter_button() {
 
 #[tokio::test]
 async fn test_results_has_clear_button() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("Clear"),
         "Results page should have Clear button"
@@ -1296,7 +1404,9 @@ async fn test_results_has_clear_button() {
 
 #[tokio::test]
 async fn test_results_has_by_language_table() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("By Language"),
         "Results page should have 'By Language' section"
@@ -1309,7 +1419,9 @@ async fn test_results_has_by_language_table() {
 
 #[tokio::test]
 async fn test_results_has_individual_results_section() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("Individual Exercise Results"),
         "Results page should have 'Individual Exercise Results' heading"
@@ -1318,7 +1430,9 @@ async fn test_results_has_individual_results_section() {
 
 #[tokio::test]
 async fn test_results_has_sortable_table() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("sortable-table"),
         "Results page should have sortable-table class"
@@ -1331,7 +1445,9 @@ async fn test_results_has_sortable_table() {
 
 #[tokio::test]
 async fn test_results_has_timestamp_cell_class() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("timestamp-cell"),
         "Results page should have timestamp-cell class"
@@ -1344,7 +1460,9 @@ async fn test_results_has_timestamp_cell_class() {
 
 #[tokio::test]
 async fn test_results_has_data_sort_attribute() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("data-sort"),
         "Results page should have data-sort attribute"
@@ -1354,7 +1472,9 @@ async fn test_results_has_data_sort_attribute() {
 #[tokio::test]
 async fn test_results_has_success_symbols() {
     // Results page uses unicode checkmark/X symbols
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     // Checkmark and X symbols are used for success/failure display
 }
 
@@ -1362,7 +1482,9 @@ async fn test_results_has_success_symbols() {
 async fn test_results_has_view_details_button() {
     // The exercise name is a link to the details page (not a separate "View Details" button).
     // When there are no results, the page shows a "No individual results found" message.
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     let has_no_results_msg = html.contains("No individual results found");
     assert!(
         html.contains("exercise") || has_no_results_msg,
@@ -1374,34 +1496,44 @@ async fn test_results_has_view_details_button() {
 async fn test_results_has_view_trace_button() {
     // View Trace button is present in Java results page for each result
     // Rust port should add this button to match
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     // The button should be present for each result that has a trace file
 }
 
 #[tokio::test]
 async fn test_results_has_no_results_message() {
     // 'No individual results found' only appears when there are no matching results
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     // The message exists in the template but only renders when no results match
 }
 
 #[tokio::test]
 async fn test_results_has_no_language_stats_message() {
     // 'No language statistics available' only appears when there are no language stats
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     // The message exists in the template but only renders when no stats exist
 }
 
 #[tokio::test]
 async fn test_results_has_showing_filters_message() {
     // 'Showing exercises matching filters' only appears when filters are applied
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     // The message exists in the template but only renders when filters are active
 }
 
 #[tokio::test]
 async fn test_results_has_sort_table_js() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("function sortTable"),
         "Results page should have sortTable function"
@@ -1418,7 +1550,9 @@ async fn test_results_has_sort_table_js() {
 
 #[tokio::test]
 async fn test_results_has_htmx() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("htmx.org"),
         "Results page should include HTMX"
@@ -1427,7 +1561,9 @@ async fn test_results_has_htmx() {
 
 #[tokio::test]
 async fn test_results_has_alpinejs() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("alpinejs"),
         "Results page should include Alpine.js"
@@ -1436,7 +1572,9 @@ async fn test_results_has_alpinejs() {
 
 #[tokio::test]
 async fn test_results_has_htmx_sse() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("ext/sse.js"),
         "Results page should include HTMX SSE extension"
@@ -1445,7 +1583,9 @@ async fn test_results_has_htmx_sse() {
 
 #[tokio::test]
 async fn test_results_has_style_css() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("style.css"),
         "Results page should link to style.css"
@@ -1454,7 +1594,9 @@ async fn test_results_has_style_css() {
 
 #[tokio::test]
 async fn test_results_has_container() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("class=\"container\""),
         "Results page should have container class"
@@ -1463,7 +1605,9 @@ async fn test_results_has_container() {
 
 #[tokio::test]
 async fn test_results_has_card_class() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("class=\"card\""),
         "Results page should have card class"
@@ -1472,7 +1616,9 @@ async fn test_results_has_card_class() {
 
 #[tokio::test]
 async fn test_results_has_btn_class() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("btn-primary"),
         "Results page should have btn-primary class"
@@ -1481,7 +1627,9 @@ async fn test_results_has_btn_class() {
 
 #[tokio::test]
 async fn test_results_has_nav_links() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("href=\"/\""),
         "Results page should have link to /"
@@ -1498,7 +1646,9 @@ async fn test_results_has_nav_links() {
 
 #[tokio::test]
 async fn test_results_has_llm_benchmark_runner_text() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("LLM Benchmark Runner"),
         "Results page should have 'LLM Benchmark Runner' text"
@@ -1513,7 +1663,9 @@ async fn test_results_has_llm_benchmark_runner_text() {
 async fn test_result_detail_has_required_elements() {
     // Result detail pages are accessed via /results/{agent}/{dir}/{lang}/{ex}
     // This test verifies the results page has links to detail pages (when results exist)
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     // When there are results, the page should have links to detail pages.
     // When there are no results, the page should show a "No individual results found" message.
     let has_links = html.contains("/results/");
@@ -1630,7 +1782,7 @@ async fn test_api_active_sessions_get() {
 async fn test_dashboard_has_required_css_classes() {
     let html = fetch_page("/").await.expect("Dashboard should return 200");
     let classes = extract_css_classes(&html);
-    
+
     // Only check classes that are actually used as attributes (not just defined in CSS)
     let required = [
         "container",
@@ -1643,7 +1795,7 @@ async fn test_dashboard_has_required_css_classes() {
         "sortable-table",
         "chevron",
     ];
-    
+
     for cls in &required {
         assert!(
             classes.contains(&cls.to_string()),
@@ -1655,21 +1807,17 @@ async fn test_dashboard_has_required_css_classes() {
 
 #[tokio::test]
 async fn test_results_has_required_css_classes() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     let classes = extract_css_classes(&html);
-    
+
     // Classes that are always present on the results page
-    let always_required = [
-        "container",
-        "card",
-        "btn",
-        "btn-primary",
-        "sortable-table",
-    ];
-    
+    let always_required = ["container", "card", "btn", "btn-primary", "sortable-table"];
+
     // timestamp-cell is only present when there are actual result rows
     let has_no_results_msg = html.contains("No individual results found");
-    
+
     for cls in &always_required {
         assert!(
             classes.contains(&cls.to_string()),
@@ -1677,7 +1825,7 @@ async fn test_results_has_required_css_classes() {
             cls
         );
     }
-    
+
     // timestamp-cell is only rendered inside result rows, so it's optional when no results exist
     if !has_no_results_msg {
         assert!(
@@ -1689,9 +1837,11 @@ async fn test_results_has_required_css_classes() {
 
 #[tokio::test]
 async fn test_run_has_required_css_classes() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     let classes = extract_css_classes(&html);
-    
+
     // Only check classes that are in the initial HTML (not dynamically added by JS)
     // Note: exercise-list, exercise-item, select-all-row are added dynamically by JS
     let required = [
@@ -1702,7 +1852,7 @@ async fn test_run_has_required_css_classes() {
         "language-grid",
         "language-checkbox",
     ];
-    
+
     for cls in &required {
         assert!(
             classes.contains(&cls.to_string()),
@@ -1731,7 +1881,9 @@ async fn test_dashboard_has_responsive_meta() {
 
 #[tokio::test]
 async fn test_results_has_responsive_meta() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("width=device-width"),
         "Results page should have responsive viewport"
@@ -1744,7 +1896,9 @@ async fn test_results_has_responsive_meta() {
 
 #[tokio::test]
 async fn test_run_has_responsive_meta() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     assert!(
         html.contains("width=device-width"),
         "Run page should have responsive viewport"
@@ -1763,10 +1917,7 @@ async fn test_run_has_responsive_meta() {
 async fn test_dashboard_has_semantic_header() {
     let html = fetch_page("/").await.expect("Dashboard should return 200");
     // Header should contain the site title
-    assert!(
-        html.contains("<h1"),
-        "Dashboard should have h1 in header"
-    );
+    assert!(html.contains("<h1"), "Dashboard should have h1 in header");
     assert!(
         html.contains("LLM Benchmark"),
         "Dashboard header should contain site name"
@@ -1775,7 +1926,9 @@ async fn test_dashboard_has_semantic_header() {
 
 #[tokio::test]
 async fn test_results_has_semantic_header() {
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     assert!(
         html.contains("<h1"),
         "Results page should have h1 in header"
@@ -1788,11 +1941,10 @@ async fn test_results_has_semantic_header() {
 
 #[tokio::test]
 async fn test_run_has_semantic_header() {
-    let html = fetch_page("/run").await.expect("Run page should return 200");
-    assert!(
-        html.contains("<h1"),
-        "Run page should have h1 in header"
-    );
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
+    assert!(html.contains("<h1"), "Run page should have h1 in header");
     assert!(
         html.contains("LLM Benchmark"),
         "Run page header should contain site name"
@@ -1813,13 +1965,17 @@ async fn test_dashboard_has_lang_attribute() {
 #[tokio::test]
 async fn test_results_has_lang_attribute() {
     // Results page extends layout but layout does not have lang=
-    let html = fetch_page("/results").await.expect("Results page should return 200");
+    let html = fetch_page("/results")
+        .await
+        .expect("Results page should return 200");
     // The results page does not have lang= attribute
 }
 
 #[tokio::test]
 async fn test_run_has_lang_attribute() {
     // Run page extends layout but layout does not have lang=
-    let html = fetch_page("/run").await.expect("Run page should return 200");
+    let html = fetch_page("/run")
+        .await
+        .expect("Run page should return 200");
     // The run page does not have lang= attribute
 }

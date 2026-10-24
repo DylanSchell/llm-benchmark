@@ -11,9 +11,9 @@ pub mod results;
 pub mod scoring;
 
 use crate::assets::Templates;
-use axum::{Router, Extension};
-use axum::routing::get;
 use aoc::register as register_aoc;
+use axum::routing::get;
+use axum::{Extension, Router};
 use benchmark::register as register_benchmark;
 use compare::register as register_compare;
 use exercise::register as register_exercise;
@@ -31,8 +31,6 @@ pub struct AppState {
     pub shutdown_flag: Arc<std::sync::atomic::AtomicBool>,
     pub metrics: crate::metrics::Metrics,
 }
-
-
 
 /// Shared Tera template engine.
 #[derive(Clone)]
@@ -85,36 +83,43 @@ impl TemplateEngine {
     /// Register the custom filters and wrap the engine for sharing.
     fn finish(mut tera: Tera) -> Self {
         // Add custom filter for formatting large numbers with K/M/G suffixes
-        tera.register_filter("format_number", |value: &tera::Value, _args: &std::collections::HashMap<String, tera::Value>| -> tera::Result<tera::Value> {
-            let num = match value {
-                tera::Value::Number(n) => {
-                    if let Some(i) = n.as_i64() {
-                        i
-                    } else if let Some(f) = n.as_f64() {
-                        f as i64
-                    } else {
-                        return Ok(tera::Value::String("0".to_string()));
+        tera.register_filter(
+            "format_number",
+            |value: &tera::Value,
+             _args: &std::collections::HashMap<String, tera::Value>|
+             -> tera::Result<tera::Value> {
+                let num = match value {
+                    tera::Value::Number(n) => {
+                        if let Some(i) = n.as_i64() {
+                            i
+                        } else if let Some(f) = n.as_f64() {
+                            f as i64
+                        } else {
+                            return Ok(tera::Value::String("0".to_string()));
+                        }
                     }
-                }
-                tera::Value::String(s) => s.parse::<i64>().unwrap_or(0),
-                _ => 0,
-            };
-            
-            let abs = num.unsigned_abs();
-            let formatted = if abs >= 1_000_000_000 {
-                format!("{:.1}G", num as f64 / 1_000_000_000.0)
-            } else if abs >= 1_000_000 {
-                format!("{:.1}M", num as f64 / 1_000_000.0)
-            } else if abs >= 1_000 {
-                format!("{:.1}K", num as f64 / 1_000.0)
-            } else {
-                num.to_string()
-            };
-            
-            Ok(tera::Value::String(formatted))
-        });
-        
-        Self { tera: Arc::new(tera) }
+                    tera::Value::String(s) => s.parse::<i64>().unwrap_or(0),
+                    _ => 0,
+                };
+
+                let abs = num.unsigned_abs();
+                let formatted = if abs >= 1_000_000_000 {
+                    format!("{:.1}G", num as f64 / 1_000_000_000.0)
+                } else if abs >= 1_000_000 {
+                    format!("{:.1}M", num as f64 / 1_000_000.0)
+                } else if abs >= 1_000 {
+                    format!("{:.1}K", num as f64 / 1_000.0)
+                } else {
+                    num.to_string()
+                };
+
+                Ok(tera::Value::String(formatted))
+            },
+        );
+
+        Self {
+            tera: Arc::new(tera),
+        }
     }
 
     pub fn render(&self, template: &str, context: &tera::Context) -> String {
@@ -122,7 +127,8 @@ impl TemplateEngine {
             Ok(html) => html,
             Err(e) => {
                 tracing::error!("Template rendering error in '{}': {}", template, e);
-                "<h1>Internal Server Error</h1><p>Something went wrong. Please try again later.</p>".to_string()
+                "<h1>Internal Server Error</h1><p>Something went wrong. Please try again later.</p>"
+                    .to_string()
             }
         }
     }
@@ -133,10 +139,13 @@ impl TemplateEngine {
 pub fn build_router(state: AppState, templates: TemplateEngine) -> Router<()> {
     let metrics_state = state.clone();
     Router::new()
-        .route("/metrics", get(move || {
-            let m = metrics_state.metrics.clone();
-            async move { m.render() }
-        }))
+        .route(
+            "/metrics",
+            get(move || {
+                let m = metrics_state.metrics.clone();
+                async move { m.render() }
+            }),
+        )
         .merge(register_aoc(Router::new()))
         .merge(register_benchmark(Router::new()))
         .merge(register_compare(Router::new()))

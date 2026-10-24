@@ -2,11 +2,10 @@
 //! Thread-safe concurrent queue for benchmark items.
 
 use crate::models::queue_item::{BenchmarkQueueItem, QueueItemStatus};
+use benchmark_types::util::recover_poisoned;
 use std::collections::{HashMap, VecDeque};
 use std::sync::{Arc, Mutex};
 use tokio::sync::Notify;
-use benchmark_types::util::recover_poisoned;
-
 
 /// Internal state, protected by a single Mutex to ensure atomic transitions.
 #[derive(Debug)]
@@ -144,8 +143,10 @@ impl BenchmarkQueue {
     /// Clear all pending items.
     pub fn clear_pending(&self) {
         let mut data = recover_poisoned(self.data.lock());
-        data.inner.retain(|item| item.status != QueueItemStatus::PENDING);
-        data.all_items.retain(|item| item.status != QueueItemStatus::PENDING);
+        data.inner
+            .retain(|item| item.status != QueueItemStatus::PENDING);
+        data.all_items
+            .retain(|item| item.status != QueueItemStatus::PENDING);
     }
 
     /// Clear terminal items (COMPLETED, FAILED, CANCELLED).
@@ -155,14 +156,27 @@ impl BenchmarkQueue {
     pub fn clear_terminal_items(&self) -> usize {
         let mut data = recover_poisoned(self.data.lock());
         // Only remove COMPLETED and CANCELLED — keep FAILED items visible for retry.
-        let removed = data.inner.iter().filter(|item| {
-            matches!(item.status, QueueItemStatus::COMPLETED | QueueItemStatus::CANCELLED)
-        }).count();
+        let removed = data
+            .inner
+            .iter()
+            .filter(|item| {
+                matches!(
+                    item.status,
+                    QueueItemStatus::COMPLETED | QueueItemStatus::CANCELLED
+                )
+            })
+            .count();
         data.inner.retain(|item| {
-            !matches!(item.status, QueueItemStatus::COMPLETED | QueueItemStatus::CANCELLED)
+            !matches!(
+                item.status,
+                QueueItemStatus::COMPLETED | QueueItemStatus::CANCELLED
+            )
         });
         data.all_items.retain(|item| {
-            !matches!(item.status, QueueItemStatus::COMPLETED | QueueItemStatus::CANCELLED)
+            !matches!(
+                item.status,
+                QueueItemStatus::COMPLETED | QueueItemStatus::CANCELLED
+            )
         });
         removed
     }

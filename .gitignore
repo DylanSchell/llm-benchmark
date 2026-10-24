@@ -44,7 +44,9 @@ logs/
 # Results
 results/
 results.md
-.gitignore
+# (No bare `.gitignore` here: it matched this very file, so the repo's own ignore
+# rules were themselves ignored. Generated ignore files are already covered by
+# `.benchmark-temp/`, and each Symposium-installed skill carries its own.)
 .benchmark-temp/
 .run/
 CLAUDE.md

@@ -6,8 +6,7 @@ pub fn solve(input: &str) -> (String, String) {
     let mut paper = 0i64;
     let mut ribbon = 0i64;
     for line in input.lines() {
-        let dims: Vec<i64> =
-            line.trim().split('x').map(|x| x.parse().unwrap()).collect();
+        let dims: Vec<i64> = line.trim().split('x').map(|x| x.parse().unwrap()).collect();
         let (l, w, h) = (dims[0], dims[1], dims[2]);
         let (a, b, c) = (l * w, w * h, h * l);
         paper += 2 * (a + b + c) + a.min(b).min(c);

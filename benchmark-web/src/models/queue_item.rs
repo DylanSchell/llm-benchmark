@@ -7,6 +7,10 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 /// Status of a queue item (separate from RunStatus for the queue).
+///
+/// SCREAMING_CASE is the serde wire format and mirrors the Java implementation, so
+/// `clippy::upper_case_acronyms` would change what the queue persists and renders.
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum QueueItemStatus {
     PENDING,
@@ -20,8 +24,6 @@ impl QueueItemStatus {
     pub fn is_terminal(&self) -> bool {
         matches!(self, Self::COMPLETED | Self::FAILED | Self::CANCELLED)
     }
-
-
 }
 
 impl From<RunStatus> for QueueItemStatus {
@@ -53,7 +55,7 @@ impl std::fmt::Display for QueueItemStatus {
 pub struct BenchmarkQueueItem {
     pub id: String,
     pub agent_name: String,
-    pub model: String,  // Required - no default model
+    pub model: String, // Required - no default model
     /// Pi thinking level: off, minimal, low, medium, high, xhigh (optional)
     pub thinking_level: Option<String>,
     pub language: String,
@@ -75,13 +77,21 @@ impl BenchmarkQueueItem {
     /// Create a new queue item.
     pub fn new(
         agent_name: String,
-        model: String,  // Required - no default model
+        model: String, // Required - no default model
         thinking_level: Option<String>,
         language: String,
         exercise: String,
         retry: bool,
     ) -> Self {
-        Self::with_category(agent_name, model, thinking_level, language, exercise, retry, benchmark_types::Category::Polyglot)
+        Self::with_category(
+            agent_name,
+            model,
+            thinking_level,
+            language,
+            exercise,
+            retry,
+            benchmark_types::Category::Polyglot,
+        )
     }
 
     /// Create a queue item with an explicit category.
@@ -140,6 +150,4 @@ impl BenchmarkQueueItem {
         self.aoc_user = Some(user.into());
         self
     }
-
-
 }

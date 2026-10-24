@@ -11,12 +11,12 @@ pub mod services;
 use anyhow::Context;
 use config::AppConfig;
 use services::{
-    BenchmarkExecutor, BenchmarkService, QueueProcessor, QueueConfig, ResultService, SessionManager,
+    BenchmarkExecutor, BenchmarkService, QueueConfig, QueueProcessor, ResultService, SessionManager,
 };
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use tower_http::services::ServeDir;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use routes::TemplateEngine;
 
@@ -30,8 +30,9 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     // Initialize tracing
     tracing_subscriber::registry()
         .with(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "benchmark_web=debug,benchmark_core=debug,tower_http=debug,axum=trace".into()),
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+                "benchmark_web=debug,benchmark_core=debug,tower_http=debug,axum=trace".into()
+            }),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
@@ -56,8 +57,8 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     let result_service = ResultService::new(app_config.results_dir.clone());
 
     // BenchmarkExecutor handles actual execution
-    let config_path_str = std::env::var("CONFIG_PATH")
-        .unwrap_or_else(|_| "config.yaml".to_string());
+    let config_path_str =
+        std::env::var("CONFIG_PATH").unwrap_or_else(|_| "config.yaml".to_string());
     let executor_config = services::benchmark_executor::ExecutorConfig {
         config_path: config_path_str,
         results_dir_override: if std::env::var("RESULTS_DIR").is_ok() {
@@ -79,7 +80,6 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     // QueueProcessor manages the benchmark queue
     let queue_config = QueueConfig {
         parallelism: app_config.parallelism,
-        ..QueueConfig::default()
     };
     let exercise_runner = benchmark_executor.get_exercise_runner();
     let queue_processor = QueueProcessor::new(
@@ -102,7 +102,10 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     );
 
     // Start the queue worker
-    benchmark_service.get_queue_processor().start_queue_worker().await;
+    benchmark_service
+        .get_queue_processor()
+        .start_queue_worker()
+        .await;
 
     // =============================================================================
     // Build Router
@@ -157,7 +160,7 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     }
 
     tracing::info!("Server shut down gracefully");
-    
+
     Ok(())
 }
 

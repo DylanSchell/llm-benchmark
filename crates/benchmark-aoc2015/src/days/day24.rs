@@ -11,7 +11,10 @@ pub fn solve(input: &str) -> (String, String) {
 }
 
 fn parse(input: &str) -> Vec<i64> {
-    input.lines().filter_map(|l| l.trim().parse().ok()).collect()
+    input
+        .lines()
+        .filter_map(|l| l.trim().parse().ok())
+        .collect()
 }
 
 fn best_first_group(weights: &[i64], groups: usize) -> i128 {
@@ -24,7 +27,15 @@ fn best_first_group(weights: &[i64], groups: usize) -> i128 {
     let mut best_size = usize::MAX;
     let mut best_qe = i128::MAX;
     let mut subset = Vec::new();
-    search(weights, 0, target, &mut subset, groups, &mut best_size, &mut best_qe);
+    search(
+        weights,
+        0,
+        target,
+        &mut subset,
+        groups,
+        &mut best_size,
+        &mut best_qe,
+    );
     best_qe
 }
 
@@ -59,9 +70,25 @@ fn search(
         return;
     }
     subset.push(idx);
-    search(weights, idx + 1, remaining - weights[idx], subset, groups, best_size, best_qe);
+    search(
+        weights,
+        idx + 1,
+        remaining - weights[idx],
+        subset,
+        groups,
+        best_size,
+        best_qe,
+    );
     subset.pop();
-    search(weights, idx + 1, remaining, subset, groups, best_size, best_qe);
+    search(
+        weights,
+        idx + 1,
+        remaining,
+        subset,
+        groups,
+        best_size,
+        best_qe,
+    );
 }
 
 fn can_partition(weights: &[i64], chosen: &[usize], groups: usize) -> bool {
@@ -106,10 +133,10 @@ pub fn generate(rng: &mut Rng) -> String {
     // Build 3 groups summing to X each, then split into 4 requires total
     // divisible by 4 too. Choose a base that's divisible by both 3 and 4 (12),
     // then create a multiset whose total is divisible by 12.
-    let base = rng.range(1, 8) as i64; // group weight unit
+    let base = rng.range(1, 8); // group weight unit
     let unit = base * 12; // divisible by 3 and 4
-    // Number of "units" spread across weights. We create random weights that
-    // sum to a multiple of 12.
+                          // Number of "units" spread across weights. We create random weights that
+                          // sum to a multiple of 12.
     let n = rng.range(12, 28) as usize;
     let mut weights: Vec<i64> = (0..n).map(|_| rng.range(1, unit)).collect();
     // Adjust so total is divisible by 12.

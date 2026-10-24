@@ -1,4 +1,4 @@
-use crate::json::{Json, parse};
+use crate::json::{parse, Json};
 use crate::rng::Rng;
 
 // Part 1: sum all numbers. Part 2: sum all numbers, ignoring any object whose
@@ -24,7 +24,9 @@ fn sum_no_red(v: &Json) -> i64 {
         Json::Num(n) => *n,
         Json::Array(a) => a.iter().map(sum_no_red).sum(),
         Json::Object(o) => {
-            if o.iter().any(|(_, x)| matches!(x, Json::Str(s) if s == "red")) {
+            if o.iter()
+                .any(|(_, x)| matches!(x, Json::Str(s) if s == "red"))
+            {
                 0
             } else {
                 o.iter().map(|(_, x)| sum_no_red(x)).sum()

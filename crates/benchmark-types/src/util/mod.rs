@@ -2,9 +2,30 @@ use std::collections::HashSet;
 
 /// All programming languages supported by the benchmark suite.
 pub static SUPPORTED_LANGUAGES: &[&str] = &[
-    "java", "go", "rust", "javascript", "typescript", "python", "ruby", "c",
-    "cpp", "csharp", "kotlin", "scala", "swift", "php", "dart", "haskell",
-    "elixir", "ocaml", "racket", "lua", "julia", "perl", "r", "zig",
+    "java",
+    "go",
+    "rust",
+    "javascript",
+    "typescript",
+    "python",
+    "ruby",
+    "c",
+    "cpp",
+    "csharp",
+    "kotlin",
+    "scala",
+    "swift",
+    "php",
+    "dart",
+    "haskell",
+    "elixir",
+    "ocaml",
+    "racket",
+    "lua",
+    "julia",
+    "perl",
+    "r",
+    "zig",
 ];
 
 /// Returns a HashSet of all supported language names.

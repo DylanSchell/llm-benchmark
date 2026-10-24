@@ -13,7 +13,11 @@ use tracing_subscriber::EnvFilter;
 
 /// CLI arguments for running benchmarks.
 #[derive(Parser, Debug, Clone)]
-#[command(name = "run", version, about = "Run autonomous coding agent benchmarks")]
+#[command(
+    name = "run",
+    version,
+    about = "Run autonomous coding agent benchmarks"
+)]
 pub struct RunArgs {
     /// Path to config file (default: config.yaml)
     #[arg(long, default_value = "config.yaml")]
@@ -59,14 +63,10 @@ pub fn run_benchmark(args: RunArgs) -> anyhow::Result<()> {
                 EnvFilter::new("benchmark_cli=info,benchmark_core=warn,info")
             }
         }
-        _ => {
-            EnvFilter::from_default_env()
-        }
+        _ => EnvFilter::from_default_env(),
     };
 
-    tracing_subscriber::fmt()
-        .with_env_filter(env_filter)
-        .init();
+    tracing_subscriber::fmt().with_env_filter(env_filter).init();
 
     execute(&args)
 }
@@ -76,9 +76,8 @@ pub fn execute(args: &RunArgs) -> anyhow::Result<()> {
     info!("Loading config from: {}", args.config);
     // A missing config file is not fatal — every field has a default, so this is the
     // documented fresh-install path. An unreadable or malformed one still is.
-    let (mut config, from_file) = Config::load_or_default(&args.config).with_context(|| {
-        format!("Failed to load config file: {}", args.config)
-    })?;
+    let (mut config, from_file) = Config::load_or_default(&args.config)
+        .with_context(|| format!("Failed to load config file: {}", args.config))?;
     if !from_file {
         warn!(
             "Config file {} not found — using built-in defaults",
@@ -96,7 +95,10 @@ pub fn execute(args: &RunArgs) -> anyhow::Result<()> {
         config.output.results_dir = results_dir.clone();
     }
 
-    let model = config.model.clone().unwrap_or_else(|| "default".to_string());
+    let model = config
+        .model
+        .clone()
+        .unwrap_or_else(|| "default".to_string());
 
     // Validate config
     if let Err(e) = config.validate() {

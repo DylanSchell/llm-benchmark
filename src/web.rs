@@ -7,11 +7,11 @@ pub async fn execute(args: WebArgs) -> anyhow::Result<()> {
     if let Some(port) = args.port {
         std::env::set_var("SERVER_PORT", port.to_string());
     }
-    
+
     if let Some(dir) = args.results_dir {
         std::env::set_var("RESULTS_DIR", dir.to_string_lossy().to_string());
     }
-    
+
     if let Some(parallelism) = args.parallelism {
         std::env::set_var("PARALLELISM", parallelism.to_string());
     }

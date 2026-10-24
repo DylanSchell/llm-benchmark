@@ -29,10 +29,12 @@ fn parse_grid(input: &str) -> Vec<Vec<bool>> {
 }
 
 fn count(g: &[Vec<bool>]) -> i64 {
-    g.iter().map(|r| r.iter().filter(|&&c| c).count() as i64).sum()
+    g.iter()
+        .map(|r| r.iter().filter(|&&c| c).count() as i64)
+        .sum()
 }
 
-fn corners_on(g: &mut Vec<Vec<bool>>) {
+fn corners_on(g: &mut [Vec<bool>]) {
     let n = g.len();
     if n == 0 {
         return;
@@ -58,10 +60,13 @@ fn step(g: &[Vec<bool>]) -> Vec<Vec<bool>> {
                     }
                     let ni = i as i64 + di;
                     let nj = j as i64 + dj;
-                    if ni >= 0 && ni < n as i64 && nj >= 0 && nj < m as i64 {
-                        if g[ni as usize][nj as usize] {
-                            on += 1;
-                        }
+                    if ni >= 0
+                        && ni < n as i64
+                        && nj >= 0
+                        && nj < m as i64
+                        && g[ni as usize][nj as usize]
+                    {
+                        on += 1;
                     }
                 }
             }

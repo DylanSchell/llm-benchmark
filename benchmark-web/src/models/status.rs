@@ -4,6 +4,11 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 /// Status of a benchmark run / queue item.
+///
+/// The SCREAMING_CASE variants are the wire format: serde derives them verbatim and the
+/// dashboard compares against the Java implementation's spelling, so `upper_case_acronyms`
+/// cannot be honoured here without breaking every stored result and template.
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RunStatus {
     PENDING,

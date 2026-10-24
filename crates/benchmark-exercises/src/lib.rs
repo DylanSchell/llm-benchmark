@@ -123,8 +123,12 @@ mod tests {
     fn lists_exercises_per_language() {
         let source = EmbeddedSource::new();
         assert_eq!(source.exercise_names("rust").len(), 30);
-        assert!(source.exercise_names("rust").contains(&"alphametics".to_string()));
-        assert!(source.exercise_names("java").contains(&"series".to_string()));
+        assert!(source
+            .exercise_names("rust")
+            .contains(&"alphametics".to_string()));
+        assert!(source
+            .exercise_names("java")
+            .contains(&"series".to_string()));
     }
 
     #[test]
@@ -138,7 +142,9 @@ mod tests {
             .read("rust", "alphametics", "Cargo.toml")
             .expect("Cargo.toml is embedded");
         assert!(String::from_utf8_lossy(&bytes).contains("edition = \"2021\""));
-        assert!(source.read("rust", "alphametics", "does-not-exist").is_none());
+        assert!(source
+            .read("rust", "alphametics", "does-not-exist")
+            .is_none());
     }
 
     #[test]

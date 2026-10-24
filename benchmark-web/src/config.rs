@@ -1,7 +1,7 @@
 //! Application configuration for benchmark-web, loaded from config.yaml and env vars.
 
-use std::path::PathBuf;
 use benchmark_types::config::Config;
+use std::path::PathBuf;
 
 /// Runtime configuration assembled from `config.yaml` and environment variables.
 #[derive(Debug, Clone)]
@@ -14,7 +14,8 @@ pub struct AppConfig {
 impl AppConfig {
     /// Load configuration from config.yaml with environment variable overrides.
     pub fn load() -> Self {
-        let config_path = std::env::var("CONFIG_PATH").unwrap_or_else(|_| "config.yaml".to_string());
+        let config_path =
+            std::env::var("CONFIG_PATH").unwrap_or_else(|_| "config.yaml".to_string());
         // Keep `None` for "no usable config file" so the defaults below stay in force: a
         // missing file is expected (defaults are fine), while a file that exists but
         // cannot be parsed is reported instead of passing silently.
@@ -56,13 +57,17 @@ impl AppConfig {
         // RESULTS_DIR env var overrides config.yaml; falls back to config value or ./results
         let results_dir = std::env::var("RESULTS_DIR")
             .ok()
-            .or(config.as_ref().map(|c| c.output.results_dir.to_string_lossy().to_string()))
+            .or(config
+                .as_ref()
+                .map(|c| c.output.results_dir.to_string_lossy().to_string()))
             .unwrap_or_else(|| "./results".to_string());
         let results_path = PathBuf::from(&results_dir);
 
         tracing::info!(
             "Configuration: results_dir={}, parallelism={}, port={}",
-            results_dir, parallelism, server_port
+            results_dir,
+            parallelism,
+            server_port
         );
 
         Self {
@@ -71,5 +76,4 @@ impl AppConfig {
             results_dir: results_path,
         }
     }
-
 }

@@ -10,10 +10,7 @@ pub fn solve(input: &str) -> (String, String) {
         if l.is_empty() {
             continue;
         }
-        let nums: Vec<i64> = l
-            .split([' ', ','])
-            .filter_map(|t| t.parse().ok())
-            .collect();
+        let nums: Vec<i64> = l.split([' ', ',']).filter_map(|t| t.parse().ok()).collect();
         // capacity, durability, flavor, texture, calories
         ing.push((nums[0], nums[1], nums[2], nums[3], nums[4]));
     }

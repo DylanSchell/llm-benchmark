@@ -54,15 +54,27 @@ fn run(prog: &[Instr], a: i64, b: i64) -> (i64, i64) {
     while pc >= 0 && (pc as usize) < prog.len() {
         match &prog[pc as usize] {
             Instr::Hlf(r) => {
-                if *r == 'a' { a /= 2; } else { b /= 2; }
+                if *r == 'a' {
+                    a /= 2;
+                } else {
+                    b /= 2;
+                }
                 pc += 1;
             }
             Instr::Tpl(r) => {
-                if *r == 'a' { a *= 3; } else { b *= 3; }
+                if *r == 'a' {
+                    a *= 3;
+                } else {
+                    b *= 3;
+                }
                 pc += 1;
             }
             Instr::Inc(r) => {
-                if *r == 'a' { a += 1; } else { b += 1; }
+                if *r == 'a' {
+                    a += 1;
+                } else {
+                    b += 1;
+                }
                 pc += 1;
             }
             Instr::Jmp(off) => pc += off,
@@ -84,17 +96,17 @@ pub fn generate(rng: &mut Rng) -> String {
     // part 1 (a=0) and part 2 (a=1) differ. Structure:
     //   - a short prologue that manipulates `a` and branches on it,
     //   - then a deterministic loop that increments `b`.
-    let loop_count = rng.range(3, 12) as i64;
+    let loop_count = rng.range(3, 12);
     let mut prog: Vec<Instr> = Vec::new();
     // Prologue: make `a` depend on its initial value so part1/part2 diverge.
     prog.push(Instr::Inc('a'));
     prog.push(Instr::Tpl('a'));
     // Conditional: if a is odd/even, do an extra step so the two runs differ.
     // We use jie/jio with a forward skip.
-    let skip = rng.range(2, 4) as i64;
+    let skip = rng.range(2, 4);
     prog.push(Instr::Jie('a', skip)); // if a even, skip `skip` forward
-    // (when a starts 1: after inc,tpl -> a=3 odd, so no jump; when a starts 0:
-    //  inc,tpl -> a=2 even, jump forward)
+                                      // (when a starts 1: after inc,tpl -> a=3 odd, so no jump; when a starts 0:
+                                      //  inc,tpl -> a=2 even, jump forward)
     prog.push(Instr::Inc('b')); // extra b when odd path
     prog.push(Instr::Inc('a'));
     prog.push(Instr::Inc('a'));

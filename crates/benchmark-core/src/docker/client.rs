@@ -139,7 +139,7 @@ impl DockerClient {
     /// Check if Docker is available and running.
     pub async fn is_available(&self) -> bool {
         match Command::new("docker")
-            .args(&["version", "--format", "{{.Server.Version}}"])
+            .args(["version", "--format", "{{.Server.Version}}"])
             .output()
             .await
         {
@@ -175,8 +175,7 @@ impl DockerClient {
 
         info!(
             "Image {} is not present locally — pulling it (up to {}s, once per machine)",
-            image,
-            self.config.pull_timeout
+            image, self.config.pull_timeout
         );
         let started = std::time::Instant::now();
 
@@ -229,6 +228,9 @@ impl DockerClient {
     /// - Setting up streaming output via tokio async I/O
     /// - Per-command timeout enforcement via CommandWatchdog
     /// - Container cleanup after execution
+    // Public API: these arguments are one options struct short, but collapsing them
+    // changes every caller (4 of them) rather than just this file.
+    #[allow(clippy::too_many_arguments)]
     pub async fn run_command_with_limits_and_volume(
         &self,
         container_image: Option<&str>,
@@ -260,6 +262,9 @@ impl DockerClient {
     /// `command` — the executable and its arguments (e.g. ["cargo", "test"])
     /// `prompt`   — optional prompt text appended as the last argument for agents.
     ///              Kept separate from command so logs never leak prompts.
+    // Public API: these arguments are one options struct short, but collapsing them
+    // changes every caller (4 of them) rather than just this file.
+    #[allow(clippy::too_many_arguments)]
     pub async fn run_command_with_limits_and_volume_with_callback(
         &self,
         container_image: Option<&str>,
@@ -314,13 +319,11 @@ impl DockerClient {
         let work = work_dir.unwrap_or(&self.config.work_dir);
         let timeout_secs = timeout_seconds.unwrap_or(self.config.timeout);
         let memory = memory_limit.unwrap_or(&self.config.memory);
-        let host_dir = volume_host_dir
-            .map(|s| s.to_string())
-            .unwrap_or_else(|| {
-                std::env::current_dir()
-                    .map(|p| p.to_string_lossy().to_string())
-                    .unwrap_or_else(|_| ".".to_string())
-            });
+        let host_dir = volume_host_dir.map(|s| s.to_string()).unwrap_or_else(|| {
+            std::env::current_dir()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|_| ".".to_string())
+        });
 
         // Generate deterministic container name
         let container_id = format!(
@@ -362,28 +365,28 @@ impl DockerClient {
         }
 
         // Build docker command for execution
-        let full_command = build_docker_run_command(
-            &container_id,
+        let full_command = build_docker_run_command(&DockerRunArgs {
+            container_id: &container_id,
             image,
             work,
             memory,
-            &merged_env,
-            &host_dir,
+            environment: &merged_env,
+            host_dir: &host_dir,
             enable_pi_volume,
-            &exec_args,
-        );
+            command: &exec_args,
+        });
 
         // Log only the command — never leak prompts
-        let log_command = build_docker_run_command(
-            &container_id,
+        let log_command = build_docker_run_command(&DockerRunArgs {
+            container_id: &container_id,
             image,
             work,
             memory,
-            &merged_env,
-            &host_dir,
+            environment: &merged_env,
+            host_dir: &host_dir,
             enable_pi_volume,
             command,
-        );
+        });
 
         debug!(
             "Executing with memory limit {} and volume {}:/workspace: {}",
@@ -397,16 +400,17 @@ impl DockerClient {
 
         // Wrap the output callback so the stream parser can intercept tool call boundaries.
         let container_id_for_watchdog = container_id.clone();
-        let wrapped_callback: std::sync::Arc<dyn Fn(&str) + Send + Sync> = if let Some(cb) = output_callback {
-            let watchdog = watchdog.clone();
-            let cid = container_id_for_watchdog.clone();
-            std::sync::Arc::new(move |line: &str| {
-                cb(line);
-                watchdog.forward_line(line, &cid);
-            })
-        } else {
-            std::sync::Arc::new(|_line: &str| {})
-        };
+        let wrapped_callback: std::sync::Arc<dyn Fn(&str) + Send + Sync> =
+            if let Some(cb) = output_callback {
+                let watchdog = watchdog.clone();
+                let cid = container_id_for_watchdog.clone();
+                std::sync::Arc::new(move |line: &str| {
+                    cb(line);
+                    watchdog.forward_line(line, &cid);
+                })
+            } else {
+                std::sync::Arc::new(|_line: &str| {})
+            };
 
         // Execute the docker command asynchronously
         let result = execute_docker_command_v2(
@@ -427,7 +431,10 @@ impl DockerClient {
 
         if !result.is_success() {
             let output_preview = if result.output.len() > 500 {
-                format!("{}...[truncated]", crate::safe_truncate(&result.output, 500))
+                format!(
+                    "{}...[truncated]",
+                    crate::safe_truncate(&result.output, 500)
+                )
             } else {
                 result.output.clone()
             };
@@ -451,7 +458,7 @@ impl DockerClient {
     pub async fn cleanup_all_containers(&self) {
         info!("Cleaning up all benchmark Docker containers...");
         let mut cmd = Command::new("docker");
-        cmd.args(&["ps", "-q", "--filter", "name=bench-"]);
+        cmd.args(["ps", "-q", "--filter", "name=bench-"]);
 
         match timeout(Duration::from_secs(30), cmd.output()).await {
             Ok(Ok(output)) => {
@@ -474,17 +481,33 @@ impl DockerClient {
     }
 }
 
-/// Build the docker run command arguments.
-fn build_docker_run_command(
-    container_id: &str,
-    image: &str,
-    work: &str,
-    memory: &str,
-    environment: &HashMap<String, String>,
-    host_dir: &str,
+/// Everything `docker run` needs for one execution, already resolved to concrete values.
+///
+/// Grouped because `image`, `work`, `memory` and `host_dir` were four adjacent `&str`
+/// parameters, and reordering them is silent breakage rather than a compile error.
+struct DockerRunArgs<'a> {
+    container_id: &'a str,
+    image: &'a str,
+    work: &'a str,
+    memory: &'a str,
+    environment: &'a HashMap<String, String>,
+    host_dir: &'a str,
     enable_pi_volume: bool,
-    command: &[&str],
-) -> Vec<String> {
+    command: &'a [&'a str],
+}
+
+/// Build the docker run command arguments.
+fn build_docker_run_command(args: &DockerRunArgs<'_>) -> Vec<String> {
+    let DockerRunArgs {
+        container_id,
+        image,
+        work,
+        memory,
+        environment,
+        host_dir,
+        enable_pi_volume,
+        command,
+    } = *args;
     let mut full_command = Vec::with_capacity(32);
     full_command.push("docker".to_string());
     full_command.push("run".to_string());
@@ -508,16 +531,10 @@ fn build_docker_run_command(
     full_command.push("-v".to_string());
     full_command.push(format!("{}:/workspace", host_dir));
     full_command.push("-v".to_string());
-    full_command.push(format!(
-        "{}/.claude:/home/runner/.claude",
-        host_dir
-    ));
+    full_command.push(format!("{}/.claude:/home/runner/.claude", host_dir));
     if enable_pi_volume {
         full_command.push("-v".to_string());
-        full_command.push(format!(
-            "{}/.pi:/home/runner/.pi",
-            host_dir
-        ));
+        full_command.push(format!("{}/.pi:/home/runner/.pi", host_dir));
     }
 
     full_command.push(image.to_string());
@@ -552,9 +569,12 @@ async fn execute_docker_command_v2(
     cmd.stderr(std::process::Stdio::piped());
     cmd.stdin(std::process::Stdio::null());
 
-    let mut process = cmd
-        .spawn()
-        .with_context(|| format!("Failed to spawn docker process: {}", full_command[1..].join(" ")))?;
+    let mut process = cmd.spawn().with_context(|| {
+        format!(
+            "Failed to spawn docker process: {}",
+            full_command[1..].join(" ")
+        )
+    })?;
 
     let pid = process.id().unwrap_or(0);
 
@@ -678,7 +698,10 @@ async fn execute_docker_command_v2(
         let wait_result = timeout(Duration::from_secs(10), process.wait()).await;
         match wait_result {
             Ok(Ok(status)) => status.code().unwrap_or(0),
-            _ => { force_kill_container(container_id).await; 137 }
+            _ => {
+                force_kill_container(container_id).await;
+                137
+            }
         }
     } else {
         // Phase 1: kill the docker CLI process
@@ -689,7 +712,10 @@ async fn execute_docker_command_v2(
         let wait_result = timeout(Duration::from_secs(15), process.wait()).await;
         match wait_result {
             Ok(Ok(status)) => status.code().unwrap_or(137),
-            _ => { error!("Process pid={} did not exit after kill+rm", pid); 137 }
+            _ => {
+                error!("Process pid={} did not exit after kill+rm", pid);
+                137
+            }
         }
     };
 
@@ -699,15 +725,12 @@ async fn execute_docker_command_v2(
     // an un-aborted reader would keep its channel sender alive — making the
     // unbounded recv() drain below block forever (observed hang).
     drop(tx);
-    let readers_done = timeout(
-        Duration::from_secs(30),
-        async { let _ = tokio::join!(&mut stdout_task, &mut stderr_task); },
-    )
+    let readers_done = timeout(Duration::from_secs(30), async {
+        let _ = tokio::join!(&mut stdout_task, &mut stderr_task);
+    })
     .await;
     if readers_done.is_err() {
-        warn!(
-            "Reader tasks did not finish within 30s (stuck pipe?) — aborting them"
-        );
+        warn!("Reader tasks did not finish within 30s (stuck pipe?) — aborting them");
     }
     // No-op for tasks that already finished; drops their sender clones so
     // the drain below terminates.
@@ -750,7 +773,10 @@ const OUTPUT_DRAIN_SILENCE: Duration = Duration::from_millis(500);
 /// keeps its sender alive indefinitely.
 async fn drain_output(rx: &mut tokio::sync::mpsc::UnboundedReceiver<String>) -> String {
     let mut output = String::new();
-    while let Some(line) = timeout(OUTPUT_DRAIN_SILENCE, rx.recv()).await.unwrap_or(None) {
+    while let Some(line) = timeout(OUTPUT_DRAIN_SILENCE, rx.recv())
+        .await
+        .unwrap_or(None)
+    {
         output.push_str(&line);
         output.push('\n');
     }
@@ -834,12 +860,16 @@ async fn container_state(container_id: &str) -> Result<ContainerState, anyhow::E
 /// More reliable than killing the CLI process when the CLI itself is stuck.
 async fn force_kill_container(container_id: &str) {
     let mut kill_cmd = tokio::process::Command::new("docker");
-    kill_cmd.args(&["rm", "-f", container_id]);
+    kill_cmd.args(["rm", "-f", container_id]);
     kill_cmd.stdout(std::process::Stdio::null());
     kill_cmd.stderr(std::process::Stdio::null());
     match timeout(Duration::from_secs(10), kill_cmd.output()).await {
         Ok(Ok(o)) if o.status.success() => info!("Force-killed container: {}", container_id),
-        Ok(Ok(o)) => warn!("docker rm -f {} exited with {}", container_id, o.status.code().unwrap_or(-1)),
+        Ok(Ok(o)) => warn!(
+            "docker rm -f {} exited with {}",
+            container_id,
+            o.status.code().unwrap_or(-1)
+        ),
         Ok(Err(e)) => warn!("Failed to force-kill container {}: {}", container_id, e),
         Err(_) => warn!("Timeout force-killing container {}", container_id),
     }
@@ -848,7 +878,7 @@ async fn force_kill_container(container_id: &str) {
 /// Clean up a Docker container by name.
 async fn cleanup_container(container_name: &str) {
     let mut cmd = Command::new("docker");
-    cmd.args(&["rm", "-f", container_name]);
+    cmd.args(["rm", "-f", container_name]);
 
     match timeout(Duration::from_secs(30), cmd.output()).await {
         Ok(Ok(output)) => {
@@ -861,17 +891,13 @@ async fn cleanup_container(container_name: &str) {
             warn!("Failed to cleanup container {}: {}", container_name, e);
         }
         Err(_) => {
-            warn!(
-                "Cleanup timeout for container {}, forcing",
-                container_name
-            );
+            warn!("Cleanup timeout for container {}, forcing", container_name);
             let mut kill_cmd = Command::new("docker");
-            kill_cmd.args(&["rm", "-f", container_name]);
+            kill_cmd.args(["rm", "-f", container_name]);
             let _ = kill_cmd.output().await;
         }
     }
 }
-
 
 // =============================================================================
 // Tests
@@ -928,7 +954,10 @@ mod tests {
         let config = DockerConfig::from(&types_config);
 
         assert_eq!(
-            config.environment().get("OPENAI_BASE_URL").map(String::as_str),
+            config
+                .environment()
+                .get("OPENAI_BASE_URL")
+                .map(String::as_str),
             Some("http://host.docker.internal:8080/v1")
         );
     }
@@ -940,16 +969,16 @@ mod tests {
         let types_config = benchmark_types::config::DockerConfig::default();
         let config = DockerConfig::from(&types_config);
 
-        let args = build_docker_run_command(
-            "bench-abc123",
-            &config.image,
-            &config.work_dir,
-            &config.memory,
-            &config.environment,
-            "/tmp/host",
-            false,
-            &["cargo", "test"],
-        );
+        let args = build_docker_run_command(&DockerRunArgs {
+            container_id: "bench-abc123",
+            image: &config.image,
+            work: &config.work_dir,
+            memory: &config.memory,
+            environment: &config.environment,
+            host_dir: "/tmp/host",
+            enable_pi_volume: false,
+            command: &["cargo", "test"],
+        });
 
         assert!(
             args.windows(2).any(|pair| pair[0] == "-e"
@@ -973,7 +1002,10 @@ mod tests {
         // Exists but not running: a real death.
         assert_eq!(classify_container_state("exited"), ContainerState::Stopped);
         assert_eq!(classify_container_state("dead"), ContainerState::Stopped);
-        assert_eq!(classify_container_state("removing"), ContainerState::Stopped);
+        assert_eq!(
+            classify_container_state("removing"),
+            ContainerState::Stopped
+        );
 
         // The policy the liveness monitor acts on, pinned independently of the mapping:
         // only a container that has genuinely stopped ends the run early.

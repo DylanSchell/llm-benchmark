@@ -5,7 +5,10 @@ use std::path::PathBuf;
 
 /// Arguments for generating a report.
 #[derive(Parser, Debug, Clone)]
-#[command(name = "report", about = "Generate a full markdown report from results")]
+#[command(
+    name = "report",
+    about = "Generate a full markdown report from results"
+)]
 pub struct ReportArgs {
     /// Results directory to analyze (default: ../benchmark-results)
     #[arg(long, default_value = "../benchmark-results")]

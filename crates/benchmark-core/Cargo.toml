@@ -10,7 +10,6 @@ benchmark-types = { path = "../benchmark-types" }
 benchmark-exercises = { path = "../benchmark-exercises" }
 benchmark-aoc2015 = { path = "../benchmark-aoc2015" }
 tokio = { workspace = true }
-tokio-util = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 anyhow = { workspace = true }
@@ -22,8 +21,6 @@ futures = { workspace = true }
 walkdir = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-serde_yaml = { workspace = true }
-clap = { workspace = true }
 home = { workspace = true }
 regex = { workspace = true }
 reqwest = { workspace = true }

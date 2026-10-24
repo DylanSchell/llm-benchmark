@@ -2,10 +2,8 @@
 
 use benchmark_types::agent::AgentResult;
 use serde::Deserialize;
-use std::collections::{HashMap, BTreeSet};
-use std::fs::{self, File};
-use std::io::BufRead;
-use std::io::BufReader;
+use std::collections::{BTreeSet, HashMap};
+use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 
@@ -43,19 +41,33 @@ impl BenchmarkStats {
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type")]
-enum PiLogEntry { #[serde(rename = "message")] Message(PiMessage), #[serde(other)] Other }
+enum PiLogEntry {
+    #[serde(rename = "message")]
+    Message(PiMessage),
+    #[serde(other)]
+    Other,
+}
 #[derive(Debug, Deserialize)]
-struct PiMessage { message: Option<PiMessageData> }
+struct PiMessage {
+    message: Option<PiMessageData>,
+}
 #[derive(Debug, Deserialize)]
-struct PiMessageData { usage: Option<PiUsage> }
+struct PiMessageData {
+    usage: Option<PiUsage>,
+}
 #[derive(Debug, Deserialize)]
-struct PiUsage { input: Option<i64>, output: Option<i64> }
+struct PiUsage {
+    input: Option<i64>,
+    output: Option<i64>,
+}
 
 fn calculate_pi_tokens(trace_path: &Path) -> (i64, i64, i64, i64) {
     let mut input = 0i64;
     let mut output = 0i64;
-    if let Ok(file) = File::open(trace_path) {
-        for line in BufReader::new(file).lines().flatten() {
+    // A whole-file read keeps the loop free of per-line io::Result: a failed read
+    // leaves the loop body unentered, which is what a failed open did.
+    if let Ok(trace) = std::fs::read_to_string(trace_path) {
+        for line in trace.lines() {
             if let Ok(PiLogEntry::Message(msg)) = serde_json::from_str::<PiLogEntry>(line.trim()) {
                 if let Some(ref data) = msg.message {
                     if let Some(ref usage) = data.usage {
@@ -71,15 +83,31 @@ fn calculate_pi_tokens(trace_path: &Path) -> (i64, i64, i64, i64) {
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type")]
-enum LogEntry { #[serde(rename = "assistant")] Assistant(AssistantEntry), #[serde(rename = "user")] User(UserEntry), #[serde(other)] Other }
+enum LogEntry {
+    #[serde(rename = "assistant")]
+    Assistant(AssistantEntry),
+    #[serde(rename = "user")]
+    User(UserEntry),
+    #[serde(other)]
+    Other,
+}
 #[derive(Debug, Deserialize)]
-struct AssistantEntry { message: Option<Message> }
+struct AssistantEntry {
+    message: Option<Message>,
+}
 #[derive(Debug, Deserialize)]
-struct UserEntry { message: Option<Message> }
+struct UserEntry {
+    message: Option<Message>,
+}
 #[derive(Debug, Deserialize)]
-struct Message { usage: Option<Usage> }
+struct Message {
+    usage: Option<Usage>,
+}
 #[derive(Debug, Deserialize)]
-struct Usage { input_tokens: u64, output_tokens: u64 }
+struct Usage {
+    input_tokens: u64,
+    output_tokens: u64,
+}
 
 fn calculate_claude_tokens(trace_path: &Path) -> (i64, i64, i64, i64) {
     let mut input = 0i64;
@@ -87,16 +115,27 @@ fn calculate_claude_tokens(trace_path: &Path) -> (i64, i64, i64, i64) {
     let mut cached = 0i64;
     let mut uncached = 0i64;
     let mut prev_input: u64 = 0;
-    if let Ok(file) = File::open(trace_path) {
-        for line in BufReader::new(file).lines().flatten() {
+    // A whole-file read keeps the loop free of per-line io::Result: a failed read
+    // leaves the loop body unentered, which is what a failed open did.
+    if let Ok(trace) = std::fs::read_to_string(trace_path) {
+        for line in trace.lines() {
             if let Ok(entry) = serde_json::from_str::<LogEntry>(line.trim()) {
-                let msg = match &entry { LogEntry::Assistant(a) => a.message.as_ref(), LogEntry::User(u) => u.message.as_ref(), _ => continue };
+                let msg = match &entry {
+                    LogEntry::Assistant(a) => a.message.as_ref(),
+                    LogEntry::User(u) => u.message.as_ref(),
+                    _ => continue,
+                };
                 if let Some(m) = msg {
                     if let Some(ref usage) = m.usage {
                         input += usage.input_tokens as i64;
                         output += usage.output_tokens as i64;
                         let new = usage.input_tokens.saturating_sub(prev_input);
-                        if new > 0 { uncached += new as i64; cached += (usage.input_tokens - new) as i64; } else { uncached += usage.input_tokens as i64; }
+                        if new > 0 {
+                            uncached += new as i64;
+                            cached += (usage.input_tokens - new) as i64;
+                        } else {
+                            uncached += usage.input_tokens as i64;
+                        }
                         prev_input = usage.input_tokens;
                     }
                 }
@@ -106,39 +145,75 @@ fn calculate_claude_tokens(trace_path: &Path) -> (i64, i64, i64, i64) {
     (input, output, cached, uncached)
 }
 
-struct PathTime { path: PathBuf, file_time: SystemTime }
-impl PartialEq for PathTime { fn eq(&self, other: &Self) -> bool { self.path == other.path && self.file_time == other.file_time } }
+struct PathTime {
+    path: PathBuf,
+    file_time: SystemTime,
+}
+impl PartialEq for PathTime {
+    fn eq(&self, other: &Self) -> bool {
+        self.path == other.path && self.file_time == other.file_time
+    }
+}
 impl Eq for PathTime {}
-impl PartialOrd for PathTime { fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> { Some(self.cmp(other)) } }
-impl Ord for PathTime { fn cmp(&self, other: &Self) -> std::cmp::Ordering { self.file_time.cmp(&other.file_time) } }
+impl PartialOrd for PathTime {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl Ord for PathTime {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.file_time.cmp(&other.file_time)
+    }
+}
 
 fn is_result_file(name: &str) -> bool {
-    if !name.ends_with(".json") { return false; }
+    if !name.ends_with(".json") {
+        return false;
+    }
     let n = name;
-    if n.starts_with("result_pi_") || n.starts_with("result_claude") || n.starts_with("result_reference") {
-        if !regex::Regex::new(r"result_claude_\d{8}_\d{6}\.json").unwrap().is_match(n) { return true; }
+    if (n.starts_with("result_pi_")
+        || n.starts_with("result_claude")
+        || n.starts_with("result_reference"))
+        && !regex::Regex::new(r"result_claude_\d{8}_\d{6}\.json")
+            .unwrap()
+            .is_match(n)
+    {
+        return true;
     }
     false
 }
 
 fn format_number(num: i64) -> String {
     let abs = num.unsigned_abs();
-    if abs >= 1_000_000_000 { format!("{:.1}G", num as f64 / 1_000_000_000.0) }
-    else if abs >= 1_000_000 { format!("{:.1}M", num as f64 / 1_000_000.0) }
-    else if abs >= 1_000 { format!("{:.1}K", num as f64 / 1_000.0) }
-    else { num.to_string() }
+    if abs >= 1_000_000_000 {
+        format!("{:.1}G", num as f64 / 1_000_000_000.0)
+    } else if abs >= 1_000_000 {
+        format!("{:.1}M", num as f64 / 1_000_000.0)
+    } else if abs >= 1_000 {
+        format!("{:.1}K", num as f64 / 1_000.0)
+    } else {
+        num.to_string()
+    }
 }
 
 fn format_duration(total_seconds: f64) -> String {
-    if total_seconds == 0.0 { return "0s".to_string(); }
+    if total_seconds == 0.0 {
+        return "0s".to_string();
+    }
     let days = (total_seconds / 86400.0) as i64;
     let hours = ((total_seconds % 86400.0) / 3600.0) as i64;
     let minutes = ((total_seconds % 3600.0) / 60.0) as i64;
     let seconds = (total_seconds % 60.0) as i64;
     let mut parts = Vec::new();
-    if days > 0 { parts.push(format!("{}d", days)); }
-    if hours > 0 { parts.push(format!("{}h", hours)); }
-    if minutes > 0 { parts.push(format!("{}m", minutes)); }
+    if days > 0 {
+        parts.push(format!("{}d", days));
+    }
+    if hours > 0 {
+        parts.push(format!("{}h", hours));
+    }
+    if minutes > 0 {
+        parts.push(format!("{}m", minutes));
+    }
     parts.push(format!("{}s", seconds));
     parts.join(" ")
 }
@@ -154,31 +229,66 @@ fn format_tokens(input: u64, cached: u64, output: u64) -> String {
 
 fn sort_by_count_and_percentage(a: &BenchmarkStats, b: &BenchmarkStats) -> std::cmp::Ordering {
     let cmp = b.total_results.cmp(&a.total_results);
-    if cmp != std::cmp::Ordering::Equal { return cmp; }
-    if a.total_results == 0 && b.total_results == 0 { return std::cmp::Ordering::Equal; }
+    if cmp != std::cmp::Ordering::Equal {
+        return cmp;
+    }
+    if a.total_results == 0 && b.total_results == 0 {
+        return std::cmp::Ordering::Equal;
+    }
     let comp_a = (a.success_results as f64 * 100.0) / a.total_results as f64;
     let comp_b = (b.success_results as f64 * 100.0) / b.total_results as f64;
-    let cmp = comp_b.partial_cmp(&comp_a).unwrap_or(std::cmp::Ordering::Equal);
-    if cmp != std::cmp::Ordering::Equal { return cmp; }
-    a.total_duration.partial_cmp(&b.total_duration).unwrap_or(std::cmp::Ordering::Equal)
+    let cmp = comp_b
+        .partial_cmp(&comp_a)
+        .unwrap_or(std::cmp::Ordering::Equal);
+    if cmp != std::cmp::Ordering::Equal {
+        return cmp;
+    }
+    a.total_duration
+        .partial_cmp(&b.total_duration)
+        .unwrap_or(std::cmp::Ordering::Equal)
 }
 
 fn sort_by_percentage(a: &BenchmarkStats, b: &BenchmarkStats) -> std::cmp::Ordering {
-    if a.total_results == 0 && b.total_results == 0 { return std::cmp::Ordering::Equal; }
+    if a.total_results == 0 && b.total_results == 0 {
+        return std::cmp::Ordering::Equal;
+    }
     let comp_a = (a.success_results as f64 * 100.0) / a.total_results as f64;
     let comp_b = (b.success_results as f64 * 100.0) / b.total_results as f64;
-    let cmp = comp_b.partial_cmp(&comp_a).unwrap_or(std::cmp::Ordering::Equal);
-    if cmp != std::cmp::Ordering::Equal { return cmp; }
-    a.total_duration.partial_cmp(&b.total_duration).unwrap_or(std::cmp::Ordering::Equal)
+    let cmp = comp_b
+        .partial_cmp(&comp_a)
+        .unwrap_or(std::cmp::Ordering::Equal);
+    if cmp != std::cmp::Ordering::Equal {
+        return cmp;
+    }
+    a.total_duration
+        .partial_cmp(&b.total_duration)
+        .unwrap_or(std::cmp::Ordering::Equal)
 }
 
 fn dump_sorted_stats(sorted_stats: &[BenchmarkStats], markdown: &mut String) {
     for stats in sorted_stats {
-        if stats.total_results == 0 { continue; }
-        let completion_percent = (stats.success_results as f64 * 100.0) / stats.total_results as f64;
+        if stats.total_results == 0 {
+            continue;
+        }
+        let completion_percent =
+            (stats.success_results as f64 * 100.0) / stats.total_results as f64;
         let duration_str = format_duration(stats.total_duration);
         let display_name = stats.benchmark_name.replace('.', "_").replace(':', "-");
-        markdown.push_str(&format!("| [{}](#{}) | {} | {} | {} | {:.1}% | {} | {} |\n", display_name, display_name, stats.total_results, stats.success_results, stats.failed_results, completion_percent, duration_str, format_tokens(stats.uncached_input_tokens, stats.cached_input_tokens, stats.output_tokens)));
+        markdown.push_str(&format!(
+            "| [{}](#{}) | {} | {} | {} | {:.1}% | {} | {} |\n",
+            display_name,
+            display_name,
+            stats.total_results,
+            stats.success_results,
+            stats.failed_results,
+            completion_percent,
+            duration_str,
+            format_tokens(
+                stats.uncached_input_tokens,
+                stats.cached_input_tokens,
+                stats.output_tokens
+            )
+        ));
     }
 }
 
@@ -196,7 +306,9 @@ fn process_results_directory(
     let mut trace_files: Vec<PathTime> = Vec::new();
     let mut stack: Vec<PathBuf> = vec![dir.to_path_buf()];
     while let Some(d) = stack.pop() {
-        let Ok(entries) = fs::read_dir(&d) else { continue };
+        let Ok(entries) = fs::read_dir(&d) else {
+            continue;
+        };
         for e in entries.flatten() {
             let path = e.path();
             if path.is_dir() {
@@ -217,14 +329,19 @@ fn process_results_directory(
     }
     result_files.sort();
     trace_files.sort();
-    if result_files.is_empty() { return; }
+    if result_files.is_empty() {
+        return;
+    }
 
     let benchmark_name = dir.file_name().unwrap().to_string_lossy().to_string();
     let mut stats = BenchmarkStats::new(&benchmark_name);
 
     for pt in &result_files {
         let result_file = &pt.path;
-        let content = match fs::read_to_string(result_file) { Ok(c) => c, Err(_) => continue };
+        let content = match fs::read_to_string(result_file) {
+            Ok(c) => c,
+            Err(_) => continue,
+        };
         let mut result: AgentResult = match serde_json::from_str(&content) {
             Ok(r) => r,
             Err(_) => continue,
@@ -278,7 +395,10 @@ fn process_results_directory(
             .entry(benchmark_name.clone())
             .or_default()
             .push(result_with_tokens.clone());
-        results_by_exercise.entry(exercise_key).or_default().push(result_with_tokens);
+        results_by_exercise
+            .entry(exercise_key)
+            .or_default()
+            .push(result_with_tokens);
     }
     if stats.total_results > 0 {
         stats_by_benchmark.insert(benchmark_name, stats);
@@ -293,7 +413,10 @@ pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
     let mut results_by_benchmark: HashMap<String, Vec<AgentResult>> = HashMap::new();
 
     for entry in walkdir::WalkDir::new(base_dir) {
-        let entry = match entry { Ok(e) => e, Err(_) => continue };
+        let entry = match entry {
+            Ok(e) => e,
+            Err(_) => continue,
+        };
         if entry.file_type().is_dir() {
             // Category-namespace dirs (`{agent}-{model}/aoc2015/`) are processed
             // by their parent run dir's recursive scan; skip them here to avoid
@@ -302,7 +425,14 @@ pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
             if matches!(name.as_str(), "aoc2015" | "polyglot") {
                 continue;
             }
-            process_results_directory(entry.path(), &mut all_results, &mut all_exercises, &mut stats_by_benchmark, &mut results_by_benchmark, &mut results_by_exercise);
+            process_results_directory(
+                entry.path(),
+                &mut all_results,
+                &mut all_exercises,
+                &mut stats_by_benchmark,
+                &mut results_by_benchmark,
+                &mut results_by_exercise,
+            );
         }
     }
 
@@ -344,7 +474,7 @@ pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
     dump_sorted_stats(&exercise_stats, &mut markdown);
 
     for (benchmark_name, results) in &results_by_benchmark {
-        markdown.push_str("\n");
+        markdown.push('\n');
         let display_name = benchmark_name.replace('.', "_").replace(':', "-");
         markdown.push_str(&format!("# {}\n\n", display_name));
         markdown.push_str("| Exercise | Success | Duration | Input / Cached / Output |\n|----------|---------|----------|---------------------------|\n");
@@ -375,13 +505,13 @@ pub fn run_report(base_dir: &Path, output: &str) -> anyhow::Result<()> {
     }
 
     for (exercise, results) in &results_by_exercise {
-        markdown.push_str("\n");
+        markdown.push('\n');
         let display_name = exercise.replace('.', "_");
         markdown.push_str(&format!("# {}\n\n", display_name));
         markdown.push_str("| Model | Success | Duration | Input / Cached / Output |\n|-------|---------|----------|---------------------------|\n");
         let mut sorted_results = results.clone();
         // Sort by duration_ms (already in ms)
-        sorted_results.sort_by(|a, b| a.duration_ms.cmp(&b.duration_ms));
+        sorted_results.sort_by_key(|a| a.duration_ms);
         for result in sorted_results {
             let model_display = result.model.replace('.', "_");
             let success_indicator = if result.success { "✅" } else { "❌" };
@@ -414,7 +544,15 @@ mod tests {
     use super::*;
     use std::fs;
 
-    fn write_result(dir: &Path, run_dir: &str, agent: &str, lang: &str, ex: &str, success: bool, category: Option<&str>) {
+    fn write_result(
+        dir: &Path,
+        run_dir: &str,
+        agent: &str,
+        lang: &str,
+        ex: &str,
+        success: bool,
+        category: Option<&str>,
+    ) {
         let base = if let Some(cat) = category {
             dir.join(run_dir).join(cat)
         } else {
@@ -435,7 +573,11 @@ mod tests {
             "input_tokens": 100,
             "output_tokens": 50,
         });
-        fs::write(base.join(format!("result_{}_{}_{}.json", agent, lang, ex)), serde_json::to_string_pretty(&json).unwrap()).unwrap();
+        fs::write(
+            base.join(format!("result_{}_{}_{}.json", agent, lang, ex)),
+            serde_json::to_string_pretty(&json).unwrap(),
+        )
+        .unwrap();
     }
 
     #[test]
@@ -446,8 +588,24 @@ mod tests {
         // Exercism result at top level of the run dir (agent prefix `pi`).
         write_result(&base, run_dir, "pi", "java", "series", true, None);
         // AoC results nested under the category subdir.
-        write_result(&base, run_dir, "pi", "aoc2015", "day01", true, Some("aoc2015"));
-        write_result(&base, run_dir, "pi", "aoc2015", "day02", false, Some("aoc2015"));
+        write_result(
+            &base,
+            run_dir,
+            "pi",
+            "aoc2015",
+            "day01",
+            true,
+            Some("aoc2015"),
+        );
+        write_result(
+            &base,
+            run_dir,
+            "pi",
+            "aoc2015",
+            "day02",
+            false,
+            Some("aoc2015"),
+        );
 
         let out = base.join("results.md");
         run_report(&base, out.to_str().unwrap()).unwrap();
@@ -456,9 +614,18 @@ mod tests {
 
         // AoC results are aggregated under the run dir benchmark name (pi-sonnet),
         // not under a separate "aoc2015" benchmark.
-        assert!(report.contains("pi-sonnet"), "benchmark name should be pi-sonnet");
-        assert!(!report.contains("# aoc2015"), "should not create a separate aoc2015 benchmark");
+        assert!(
+            report.contains("pi-sonnet"),
+            "benchmark name should be pi-sonnet"
+        );
+        assert!(
+            !report.contains("# aoc2015"),
+            "should not create a separate aoc2015 benchmark"
+        );
         // Total 3 results (1 exercism + 2 aoc), 2 successful.
-        assert!(report.contains("| 3 | 2 | 1 |"), "expected 3 total / 2 success / 1 failed");
+        assert!(
+            report.contains("| 3 | 2 | 1 |"),
+            "expected 3 total / 2 success / 1 failed"
+        );
     }
 }

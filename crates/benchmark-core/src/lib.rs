@@ -1,3 +1,4 @@
+pub mod agent;
 pub mod aoc_runner;
 pub mod docker;
 pub mod endpoint;
@@ -5,18 +6,17 @@ pub mod exercise_runner;
 pub mod model_load;
 pub mod parallel;
 pub mod persistence;
-pub mod agent;
 
-use std::str::FromStr;
-use std::sync::Arc;
-use anyhow::Result;
-use tracing::info;
-use benchmark_types::agent::{Agent, AgentKind};
-use benchmark_types::config::Config;
+use crate::agent::{ClaudeAgent, PiAgent, ReferenceAgent};
 use crate::docker::{DockerClient, DockerConfig};
 use crate::exercise_runner::ExerciseRunner;
-use crate::agent::{ReferenceAgent, ClaudeAgent, PiAgent};
 use crate::persistence::ResultPersister;
+use anyhow::Result;
+use benchmark_types::agent::{Agent, AgentKind};
+use benchmark_types::config::Config;
+use std::str::FromStr;
+use std::sync::Arc;
+use tracing::info;
 
 /// Safely truncate a string at (or just before) `max_len` bytes on a UTF-8 character boundary.
 pub fn safe_truncate(s: &str, max_len: usize) -> &str {
@@ -55,30 +55,53 @@ pub async fn run_benchmark(
     let docker_config = DockerConfig::from(&config.docker);
     let docker_client = DockerClient::new(docker_config);
 
-    info!("Starting benchmark run for language: {} with agent: {}", language, agent_kind);
+    info!(
+        "Starting benchmark run for language: {} with agent: {}",
+        language, agent_kind
+    );
 
     let exercise_runner = ExerciseRunner::new(config.clone());
 
     let results = if let Some(exercise) = exercise_name {
         let agent = make_agent(agent_kind, docker_client.clone());
-        match exercise_runner.run_exercise(agent, language, exercise, model, None, &output.results_dir).await {
+        match exercise_runner
+            .run_exercise(agent, language, exercise, model, None, &output.results_dir)
+            .await
+        {
             Ok(r) => vec![r],
             Err(e) => return Err(anyhow::anyhow!("Exercise failed: {}", e)),
         }
     } else {
         let agent = make_agent(agent_kind, docker_client.clone());
         exercise_runner
-            .run_all_exercises(agent, language, &agent_kind.to_string(), model.to_string(), None, output.results_dir.clone(), false)
+            .run_all_exercises(
+                agent,
+                language,
+                &agent_kind.to_string(),
+                model.to_string(),
+                None,
+                output.results_dir.clone(),
+                false,
+            )
             .await
     };
 
-    info!("Benchmark run complete. {} exercises processed.", results.len());
+    info!(
+        "Benchmark run complete. {} exercises processed.",
+        results.len()
+    );
 
     let persister = ResultPersister::new();
     persister.print_summary(&results);
     // Batch save doesn't use retry logic - just saves summary file.
     // Report failures loudly — this is the only persistence in this path.
-    if let Err(e) = persister.save_results(&results, &agent_kind.to_string(), model, language, &output.results_dir) {
+    if let Err(e) = persister.save_results(
+        &results,
+        &agent_kind.to_string(),
+        model,
+        language,
+        &output.results_dir,
+    ) {
         tracing::error!("Failed to save batch results summary: {:#}", e);
     }
 
