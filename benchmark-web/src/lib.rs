@@ -10,6 +10,7 @@ pub mod services;
 
 use anyhow::Context;
 use config::AppConfig;
+pub use config::WebOverrides;
 use services::{
     BenchmarkExecutor, BenchmarkService, QueueConfig, QueueProcessor, ResultService, SessionManager,
 };
@@ -20,13 +21,14 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use routes::TemplateEngine;
 
-/// Run the web server with the given configuration.
-/// This function reads configuration from environment variables:
-/// - CONFIG_PATH: Path to config.yaml (default: "config.yaml")
-/// - SERVER_PORT: Port to listen on (default: 8081)
-/// - RESULTS_DIR: Results directory (default: "./results")
-/// - PARALLELISM: Parallelism level (default: 1)
-pub async fn run_web_server() -> anyhow::Result<()> {
+/// Run the web server.
+///
+/// Configuration resolves in layers, highest first: the explicit [`WebOverrides`] a
+/// caller passes (the `web` subcommand's flags), then the environment — `CONFIG_PATH`,
+/// `SERVER_PORT`, `RESULTS_DIR`, `PARALLELISM` — then `config.yaml`, then the built-in
+/// defaults. Pass [`WebOverrides::default`] when there are no flags, as the standalone
+/// `benchmark-web` binary does.
+pub async fn run_web_server(overrides: WebOverrides) -> anyhow::Result<()> {
     // Initialize tracing
     tracing_subscriber::registry()
         .with(
@@ -44,7 +46,7 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     // Configuration
     // =============================================================================
 
-    let app_config = AppConfig::load();
+    let app_config = AppConfig::load_with(&overrides);
 
     // =============================================================================
     // Initialize Services
@@ -56,16 +58,12 @@ pub async fn run_web_server() -> anyhow::Result<()> {
     // ResultService loads and caches result files
     let result_service = ResultService::new(app_config.results_dir.clone());
 
-    // BenchmarkExecutor handles actual execution
-    let config_path_str =
-        std::env::var("CONFIG_PATH").unwrap_or_else(|_| "config.yaml".to_string());
+    // BenchmarkExecutor handles actual execution. Both values come from the already
+    // resolved AppConfig: reading CONFIG_PATH/RESULTS_DIR again here meant a `--config`
+    // flag reached the port and parallelism but not the executor.
     let executor_config = services::benchmark_executor::ExecutorConfig {
-        config_path: config_path_str,
-        results_dir_override: if std::env::var("RESULTS_DIR").is_ok() {
-            Some(app_config.results_dir.clone())
-        } else {
-            None
-        },
+        config_path: app_config.config_path.clone(),
+        results_dir_override: app_config.results_dir_override.clone(),
         web_port: app_config.server_port,
     };
     // Propagate rather than panic: a bad executor configuration is a startup error the

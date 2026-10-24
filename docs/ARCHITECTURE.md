@@ -102,7 +102,7 @@ The real tree, not an aspirational one:
 ```
 src/
   main.rs                  # clap subcommands -> the crates below
-  web.rs                   # sets SERVER_PORT / RESULTS_DIR / PARALLELISM / CONFIG_PATH
+  web.rs                   # web subcommand flags -> WebOverrides (data, not env)
 
 benchmark-cli/src/
   lib.rs                   # RunArgs, config loading, CLI overrides
@@ -116,7 +116,9 @@ benchmark-web/src/
   models/                  # session, queue, queue_item, status
   routes/                  # one module per feature area
   services/                # session_manager, benchmark_executor, queue_processor,
-                           # result_service, benchmark_service
+                           # result_service/, benchmark_service
+    result_service/        # mod.rs (types + cache), load.rs, query.rs,
+                           # statistics.rs, scoring.rs, trace.rs
 
 crates/benchmark-types/src/
   config/mod.rs            # Config and friends, defaults, validation
@@ -372,14 +374,24 @@ silently ignored. `Config::validate()` runs on `run` and rejects `parallelism < 
 
 ## Error Handling
 
-There is no exception hierarchy and no custom error enum — no `thiserror`, no `BenchmarkError`.
-Rust's `?` carries errors along three shapes:
+Typed errors where a caller might branch, `anyhow` where the only reader is a human:
 
 | Boundary | Shape |
 |---|---|
-| CLI and library entry points | `anyhow::Result<T>` |
-| The `Agent` trait and other dynamic boundaries | `Result<T, Box<dyn std::error::Error + Send + Sync>>` |
+| Binaries (`src/`, `benchmark-cli`, the two reporters) | `anyhow::Result<T>`, `.context()` describing the attempt |
+| Library API (`benchmark-types`) | `thiserror` enums — `ConfigError` today, `#[non_exhaustive]`, boxed cause |
+| The `Agent` trait and other dynamic boundaries | `AgentError` = `Box<dyn std::error::Error + Send + Sync + 'static>` |
 | Web handlers | `Json` bodies; the handler never returns a 5xx for a domain error |
+
+Two formatting rules, both from `.agents/skills/error-handling-basics`: `Display` names only its
+own failure and never its source (reporters walk `.source()` separately, so interpolating it prints
+the same sentence twice), and context says what was attempted — `failed to read config from "x"`,
+not `file not found`.
+
+Known gap: `DockerClient` and the agent adapters still return `anyhow`/`AgentError`, so no caller
+can distinguish "image pull failed" from "container vanished". The target shape is one `thiserror`
+enum per subsystem behind an opaque public type, which touches the `Agent` trait, `DockerClient`,
+and every caller of both.
 
 Two conventions follow from that:
 
@@ -390,8 +402,9 @@ Two conventions follow from that:
   exists because `.unwrap()` on a `std::sync::Mutex` poisoned by one panicking request thread would
   panic on every later request.
 
-Validation is fail-fast at startup and before a run; `Config::validate()` and the exercise manifest
-check are examples.
+Validation is fail-fast at startup and before a run: `Config::validate()` returns
+`Result<(), ConfigError>` with one variant per rule (each carrying the floor and the rejected
+value), and the exercise manifest is checked the same way.
 
 ---
 
@@ -403,13 +416,26 @@ check are examples.
 | Integration tests | `benchmark-web/tests/` | `template_rendering.rs`, and `html_equality.rs`, which spawns a real server and compares rendered HTML |
 | Network-gated tests | `benchmark-exercises-build` | Cloning a pinned track; the fidelity check against a local polyglot checkout |
 
-Current count: **190 unit tests pass, 3 are `#[ignore]`d** (two need network, one needs a
-`POLYGLOT_DIR` checkout of the aggregator this project deliberately does not use).
+Current count: **403 tests pass — 245 unit and 158 integration — with 10 `#[ignore]`d** (some need
+network, one needs a `POLYGLOT_DIR` checkout of the aggregator this project deliberately does not
+use).
 
-There is no coverage tooling and no coverage threshold; an earlier revision of this document
-quoted percentages that nothing measures. CI runs `cargo test --release --workspace --lib --bins`,
-a binary smoke test, `./build.sh docker-verify`, and `git diff --exit-code -- exercises.lock.yaml`
-to prove the exercise lock is current. Neither `rustfmt` nor `clippy` gates the build.
+There is no coverage tooling and no coverage threshold; an earlier revision of this document quoted
+percentages that nothing measures. CI runs, as separate steps:
+
+```
+./build.sh docker-verify                                            # docker-inputs job
+cargo fmt --all --check                                             # lint job
+cargo clippy --all --workspace --all-targets -- -D warnings         # lint job
+cargo test --release --workspace --lib --bins --tests --locked      # build job
+"<binary>" --help for all four binaries                             # build job
+git diff --exit-code -- exercises.lock.yaml                          # build job
+```
+
+`./build.sh lint` runs the same two lint commands locally. Clippy is at zero warnings on `main`, so
+`-D warnings` is the standing rule: silence a lint at its site with a reason (see the
+`upper_case_acronyms` allow on `RunStatus`, whose SCREAMING_CASE names are serde wire format) rather
+than relaxing the gate.
 
 ---
 

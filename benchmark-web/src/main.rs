@@ -2,5 +2,5 @@
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    benchmark_web::run_web_server().await
+    benchmark_web::run_web_server(benchmark_web::WebOverrides::default()).await
 }

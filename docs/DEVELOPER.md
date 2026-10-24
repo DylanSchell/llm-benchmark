@@ -69,6 +69,18 @@ cargo build --release
 
 This creates the `llm-benchmark` launcher binary.
 
+### Checks — what CI runs
+
+```bash
+./build.sh lint                                                 # rustfmt + clippy -D warnings
+cargo test --workspace --lib --bins --tests --locked             # 245 unit + 158 integration
+```
+
+`lint` runs the same two commands as the `lint` job in `.github/workflows/build.yml`, so a gate
+failure is reproducible without pushing. Clippy is at zero warnings: if a lint must go, allow it at
+its site and say why — `RunStatus` and `QueueItemStatus` do exactly that because their
+SCREAMING_CASE variants are serde output the HTML parity tests compare against.
+
 ### Build Docker Image
 
 ```bash
