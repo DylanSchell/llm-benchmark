@@ -70,7 +70,12 @@ pub async fn run(cli: &RunArgs, config: &Config, model: &str, retry: bool) -> an
                 &results_dir,
             )
             .await
-            .map_err(|e| anyhow::anyhow!("Exercise failed: {}", e))?;
+            .map_err(|e| {
+                anyhow::Error::msg(e).context(format!(
+                    "exercise run failed: {}/{}",
+                    cli.language, exercise_name
+                ))
+            })?;
 
         // Print result
         print_single_result(&result);
@@ -125,9 +130,9 @@ pub async fn run(cli: &RunArgs, config: &Config, model: &str, retry: bool) -> an
             all_results.extend(results_for_lang);
         }
 
-        // Print summary
+        // Print summary — the library renders it, this binary owns the terminal.
         let persister = ResultPersister::new();
-        persister.print_summary(&all_results);
+        print!("{}", persister.format_summary(&all_results));
 
         // Save batch results — collect unique languages from results
         let languages_str: Vec<String> = all_results

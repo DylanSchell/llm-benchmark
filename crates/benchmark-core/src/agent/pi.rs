@@ -1,6 +1,6 @@
 use crate::agent::{reference::ReferenceAgent, PiMessageProcessor};
 use crate::docker::DockerClient;
-use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::agent::{Agent, AgentError, AgentResult};
 use benchmark_types::cancellation::CancellationToken;
 use benchmark_types::exercise::Exercise;
 use benchmark_types::util::recover_poisoned;
@@ -236,7 +236,7 @@ impl PiAgent {
         results_dir: &Path,
         exercise: &Exercise,
         model: &str,
-    ) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<String, AgentError> {
         let pi_sessions_dir = temp_work_dir.join(".pi").join("agent").join("sessions");
 
         if !pi_sessions_dir.exists() {
@@ -453,7 +453,7 @@ impl Agent for PiAgent {
         model: &str,
         thinking_level: Option<&str>,
         results_dir: &Path,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         self.run_exercise_with_timeout(exercise, source, model, thinking_level, results_dir, None)
             .await
     }
@@ -466,7 +466,7 @@ impl Agent for PiAgent {
         model: &str,
         thinking_level: Option<&str>,
         results_dir: &Path,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         let start_time = Instant::now();
         let start_dt = chrono::Utc::now();
         info!("Running Pi agent for AoC day {}", day.day);
@@ -591,7 +591,7 @@ impl Agent for PiAgent {
         thinking_level: Option<&str>,
         results_dir: &Path,
         timeout_override_secs: Option<u64>,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         let start_time = Instant::now();
         let start_dt = chrono::Utc::now();
         info!("Running Pi agent for exercise: {}", exercise.name);
@@ -811,7 +811,7 @@ impl PiAgent {
     fn create_exercise_prompt(
         exercise: &Exercise,
         temp_work_dir: &Path,
-    ) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<String, AgentError> {
         let mut prompt = String::new();
 
         let instructions_path = temp_work_dir.join(".docs").join("instructions.md");

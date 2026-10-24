@@ -1,3 +1,4 @@
+use benchmark_types::agent::AgentError;
 use benchmark_types::exercise::Exercise;
 use std::fs;
 use std::path::Path;
@@ -13,10 +14,7 @@ static IGNORE_ANNOTATION_RE: OnceLock<regex::Regex> = OnceLock::new();
 
 /// Patches test files for the exercise (language-specific modifications).
 /// Removes skip annotations so all tests run.
-pub fn run_patch_tests(
-    exercise: &Exercise,
-    temp_work_dir: &Path,
-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+pub fn run_patch_tests(exercise: &Exercise, temp_work_dir: &Path) -> Result<(), AgentError> {
     info!("Patching tests for language: {}", exercise.language);
     match exercise.language.as_str() {
         "rust" => {
@@ -36,7 +34,7 @@ pub fn run_patch_tests(
 }
 
 /// Replaces xtest( with test( in JavaScript/TypeScript test files.
-pub fn run_replace_xtest(dir: &Path) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+pub fn run_replace_xtest(dir: &Path) -> Result<(), AgentError> {
     if !dir.exists() {
         return Ok(());
     }
@@ -76,9 +74,7 @@ pub fn run_replace_xtest(dir: &Path) -> Result<(), Box<dyn std::error::Error + S
 }
 
 /// Removes #[ignore] annotations from .rs files.
-pub fn run_remove_ignore_annotations(
-    dir: &Path,
-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+pub fn run_remove_ignore_annotations(dir: &Path) -> Result<(), AgentError> {
     if !dir.exists() {
         return Ok(());
     }
@@ -113,9 +109,7 @@ pub fn run_remove_ignore_annotations(
 }
 
 /// Removes @Disabled annotations from Java test files.
-pub fn run_remove_disabled_annotations(
-    dir: &Path,
-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+pub fn run_remove_disabled_annotations(dir: &Path) -> Result<(), AgentError> {
     if !dir.exists() {
         return Ok(());
     }

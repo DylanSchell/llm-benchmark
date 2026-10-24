@@ -4,6 +4,7 @@
 //! files an exercise needs into a per-run temporary work directory that is then
 //! bind-mounted into Docker at `/workspace`. No host exercise tree is required.
 
+use benchmark_types::agent::AgentError;
 use benchmark_types::exercise::Exercise;
 use benchmark_types::ExerciseSource;
 use std::fs;
@@ -22,7 +23,7 @@ fn write_file(
     exercise: &Exercise,
     relative: &str,
     dest: &Path,
-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+) -> Result<(), AgentError> {
     let Some(bytes) = source.read(&exercise.language, &exercise.name, relative) else {
         debug!(
             "Skipping missing exercise file {}/{}/{}",
@@ -48,7 +49,7 @@ fn apply_mode(
     exercise: &Exercise,
     relative: &str,
     dest: &Path,
-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+) -> Result<(), AgentError> {
     use std::os::unix::fs::PermissionsExt;
     if let Some(mode) = source.mode(&exercise.language, &exercise.name, relative) {
         fs::set_permissions(dest, fs::Permissions::from_mode(mode))?;
@@ -63,7 +64,7 @@ fn apply_mode(
     _exercise: &Exercise,
     _relative: &str,
     _dest: &Path,
-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+) -> Result<(), AgentError> {
     Ok(())
 }
 
@@ -79,7 +80,7 @@ pub fn materialize_exercise(
     source: &dyn ExerciseSource,
     exercise: &Exercise,
     dest_dir: &Path,
-) -> Result<PathBuf, Box<dyn std::error::Error + Send + Sync>> {
+) -> Result<PathBuf, AgentError> {
     let exercise_dest = if exercise.language == "cpp" {
         let dest = dest_dir.join(&exercise.name);
         fs::create_dir_all(&dest)?;

@@ -1,6 +1,6 @@
 use crate::agent::{reference::ReferenceAgent, ClaudeMessageProcessor};
 use crate::docker::DockerClient;
-use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::agent::{Agent, AgentError, AgentResult};
 use benchmark_types::cancellation::CancellationToken;
 use benchmark_types::exercise::Exercise;
 use benchmark_types::util::recover_poisoned;
@@ -98,7 +98,7 @@ impl Agent for ClaudeAgent {
         model: &str,
         thinking_level: Option<&str>,
         results_dir: &Path,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         self.run_exercise_with_timeout(exercise, source, model, thinking_level, results_dir, None)
             .await
     }
@@ -112,7 +112,7 @@ impl Agent for ClaudeAgent {
         _thinking_level: Option<&str>,
         _results_dir: &Path,
         timeout_override_secs: Option<u64>,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         info!("Starting exercise: {} with Claude agent", exercise.name);
         if let Some(t) = timeout_override_secs {
             info!("  Timeout override: {}s", t);
@@ -152,7 +152,7 @@ impl Agent for ClaudeAgent {
         _model: &str,
         _thinking_level: Option<&str>,
         _results_dir: &Path,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         info!("Running Claude agent for AoC day {}", day.day);
         let start_tokio = tokio::time::Instant::now();
 
@@ -251,7 +251,7 @@ impl ClaudeAgent {
         temp_work_dir: &Path,
         prompt: &str,
         timeout_override_secs: Option<u64>,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         let _start_time = Instant::now();
         let start_dt = chrono::Utc::now();
 

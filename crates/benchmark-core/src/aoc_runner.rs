@@ -10,7 +10,7 @@
 //! input, and the validator URL.
 
 use crate::model_load::ModelLoadGate;
-use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::agent::{Agent, AgentError, AgentResult};
 use benchmark_types::aoc::AocDay;
 use benchmark_types::Category;
 use std::fs;
@@ -59,11 +59,7 @@ impl AocRunner {
     ///
     /// Writes `problem.md` (both parts) and `input.txt`. Returns the generated
     /// input for reference.
-    pub fn materialize_day(
-        &self,
-        day: &AocDay,
-        dest: &Path,
-    ) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    pub fn materialize_day(&self, day: &AocDay, dest: &Path) -> Result<String, AgentError> {
         let description = benchmark_aoc2015::description(day.day)
             .ok_or_else(|| format!("no description for day {}", day.day))?;
         let input = benchmark_aoc2015::generate(&day.user, day.year, day.day);
@@ -154,7 +150,7 @@ impl AocRunner {
         validator_url: &str,
         model: &str,
         thinking_level: Option<&str>,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         info!(
             "Running AoC day {} for agent {} (model={})",
             day.day,

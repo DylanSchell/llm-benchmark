@@ -1,7 +1,7 @@
 use crate::docker::DockerClient;
 use crate::model_load::ModelLoadGate;
 use benchmark_exercises::EmbeddedSource;
-use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::agent::{Agent, AgentError, AgentResult};
 use benchmark_types::config::Config;
 use benchmark_types::exercise::{Exercise, ExerciseMetadata};
 use benchmark_types::util::recover_poisoned;
@@ -175,7 +175,7 @@ impl ExerciseRunner {
         model: &str,
         thinking_level: Option<String>,
         results_dir: &Path,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         self.run_exercise_with_timeout(
             agent,
             language,
@@ -203,7 +203,7 @@ impl ExerciseRunner {
         thinking_level: Option<String>,
         results_dir: &Path,
         timeout_override_secs: Option<u64>,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         info!(
             "Running exercise: {} for language: {}",
             exercise_name, language

@@ -1,5 +1,5 @@
 use crate::docker::DockerClient;
-use benchmark_types::agent::{Agent, AgentResult};
+use benchmark_types::agent::{Agent, AgentError, AgentResult};
 use benchmark_types::cancellation::CancellationToken;
 use benchmark_types::exercise::Exercise;
 use benchmark_types::util::recover_poisoned;
@@ -52,11 +52,7 @@ impl ReferenceAgent {
 
     /// Patches test files for the exercise (language-specific modifications).
     /// Removes skip annotations so all tests run.
-    pub fn patch_tests(
-        &self,
-        exercise: &Exercise,
-        temp_work_dir: &Path,
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    pub fn patch_tests(&self, exercise: &Exercise, temp_work_dir: &Path) -> Result<(), AgentError> {
         crate::agent::test_patches::run_patch_tests(exercise, temp_work_dir)
     }
 
@@ -66,7 +62,7 @@ impl ReferenceAgent {
         source: &dyn ExerciseSource,
         exercise: &Exercise,
         temp_dir: &Path,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         let start_time = Instant::now();
 
         if !exercise.example_files.is_empty() {
@@ -239,7 +235,7 @@ impl ReferenceAgent {
         &self,
         exercise: &Exercise,
         temp_work_dir: &Path,
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<(), AgentError> {
         let prepare_command = Self::get_prepare_command(exercise, temp_work_dir);
         if prepare_command.is_empty() {
             debug!("No workspace preparation needed for {}", exercise.language);
@@ -356,7 +352,7 @@ impl ReferenceAgent {
         source: &dyn ExerciseSource,
         exercise: &Exercise,
         dest_dir: &Path,
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<(), AgentError> {
         // Use metadata test paths when available (config.json → files.test)
         if !exercise.test_files.is_empty() {
             info!(
@@ -414,7 +410,7 @@ impl ReferenceAgent {
         &self,
         exercise: &Exercise,
         temp_work_dir: &Path,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         let start_time = Instant::now();
 
         // For C++, files are in a subdirectory named after the exercise
@@ -596,7 +592,7 @@ impl Agent for ReferenceAgent {
         _model: &str,
         _thinking_level: Option<&str>,
         _results_dir: &Path,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         // The reference agent is the ground truth: it solves the puzzle directly
         // (no model call) and writes the correct answers to the answer file. It is
         // the baseline / sanity check that the harness works end-to-end.
@@ -630,7 +626,7 @@ impl Agent for ReferenceAgent {
         model: &str,
         thinking_level: Option<&str>,
         results_dir: &Path,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         self.run_exercise_with_timeout(exercise, source, model, thinking_level, results_dir, None)
             .await
     }
@@ -644,7 +640,7 @@ impl Agent for ReferenceAgent {
         _thinking_level: Option<&str>,
         _results_dir: &Path,
         _timeout_override_secs: Option<u64>,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         let start_time = Instant::now();
         let start_dt = chrono::Utc::now();
         info!("Running reference agent for exercise: {}", exercise.name);

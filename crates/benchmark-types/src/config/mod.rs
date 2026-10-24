@@ -101,10 +101,59 @@ impl Default for Config {
     }
 }
 
+/// Why a configuration file could not be loaded, or is unusable once loaded.
+///
+/// `#[non_exhaustive]` plus boxed causes keep `serde_yaml` out of this crate's public
+/// surface, so a parser swap is not a breaking change for callers. Match on the variant,
+/// print the chain: `Display` names only this failure, never its source.
+#[derive(thiserror::Error, Debug)]
+#[non_exhaustive]
+pub enum ConfigError {
+    /// The file exists but could not be read.
+    #[error("failed to read config from \"{path}\"")]
+    Read {
+        path: String,
+        #[source]
+        source: std::io::Error,
+    },
+
+    /// The file was read but is not a valid `Config`.
+    #[error("failed to parse config \"{path}\"")]
+    Parse {
+        path: String,
+        #[source]
+        source: Box<dyn std::error::Error + Send + Sync + 'static>,
+    },
+
+    #[error("parallelism must be at least 1, got {value}")]
+    ParallelismTooLow { value: u32 },
+
+    #[error("docker.image is required")]
+    DockerImageMissing,
+
+    #[error("docker.timeout must be at least {minimum} seconds, got {value}")]
+    DockerTimeoutTooLow { minimum: u32, value: u32 },
+
+    #[error("docker.memory is required")]
+    DockerMemoryMissing,
+
+    #[error("model_load_timeout_secs must be at least {minimum} seconds, got {value}")]
+    ModelLoadTimeoutTooLow { minimum: u64, value: u64 },
+
+    #[error("output.results_dir is required")]
+    ResultsDirMissing,
+}
+
 impl Config {
-    pub fn load(path: &str) -> Result<Self, anyhow::Error> {
-        let content = std::fs::read_to_string(path)?;
-        let config: Config = serde_yaml::from_str(&content)?;
+    pub fn load(path: &str) -> Result<Self, ConfigError> {
+        let content = std::fs::read_to_string(path).map_err(|e| ConfigError::Read {
+            path: path.to_string(),
+            source: e,
+        })?;
+        let config: Config = serde_yaml::from_str(&content).map_err(|e| ConfigError::Parse {
+            path: path.to_string(),
+            source: Box::new(e),
+        })?;
         Ok(config)
     }
 
@@ -117,11 +166,14 @@ impl Config {
     ///
     /// Returns `(config, loaded_from_file)` so callers can warn when defaults are in
     /// use. Prefer this over [`Config::load`] wherever a user can point at the path.
-    pub fn load_or_default(path: &str) -> Result<(Self, bool), anyhow::Error> {
+    pub fn load_or_default(path: &str) -> Result<(Self, bool), ConfigError> {
         match std::fs::read_to_string(path) {
             Ok(content) => {
-                let config: Config = serde_yaml::from_str(&content)
-                    .map_err(|e| anyhow::anyhow!("failed to parse {}: {}", path, e))?;
+                let config: Config =
+                    serde_yaml::from_str(&content).map_err(|e| ConfigError::Parse {
+                        path: path.to_string(),
+                        source: Box::new(e),
+                    })?;
                 Ok((config, true))
             }
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
@@ -130,49 +182,54 @@ impl Config {
                 // same config a partial `config.yaml` would produce.
                 Ok((Self::default(), false))
             }
-            Err(e) => Err(anyhow::anyhow!("failed to read {}: {}", path, e)),
+            Err(e) => Err(ConfigError::Read {
+                path: path.to_string(),
+                source: e,
+            }),
         }
     }
 
-    /// Validates the configuration.
-    /// Checks for required fields and valid paths.
-    pub fn validate(&self) -> Result<(), String> {
+    /// Validate the configuration, reporting the first rule it breaks.
+    ///
+    /// Each rule is its own variant rather than a `String`, so a caller can branch on
+    /// the failure (exit code, HTTP status, a field highlight in the UI) instead of
+    /// matching on message text.
+    pub fn validate(&self) -> Result<(), ConfigError> {
         // Validate parallelism
         if self.parallelism < 1 {
-            return Err(format!(
-                "parallelism must be at least 1, got: {}",
-                self.parallelism
-            ));
+            return Err(ConfigError::ParallelismTooLow {
+                value: self.parallelism,
+            });
         }
 
         // Validate docker configuration
         if self.docker.image.is_empty() {
-            return Err("docker.image is required".to_string());
+            return Err(ConfigError::DockerImageMissing);
         }
 
         if self.docker.timeout < 10 {
-            return Err(format!(
-                "docker.timeout must be at least 10 seconds, got: {}",
-                self.docker.timeout
-            ));
+            return Err(ConfigError::DockerTimeoutTooLow {
+                minimum: 10,
+                value: self.docker.timeout,
+            });
         }
 
         if self.docker.memory.is_empty() {
-            return Err("docker.memory is required".to_string());
+            return Err(ConfigError::DockerMemoryMissing);
         }
 
         // Below the floor the wait can only ever end in "gave up", which is not a setting
         // anyone wants — say so at startup instead of slowing every exercise down.
         if self.model_load_timeout_secs < MIN_MODEL_LOAD_TIMEOUT_SECS {
-            return Err(format!(
-                "model_load_timeout_secs must be at least {} seconds, got: {}",
-                MIN_MODEL_LOAD_TIMEOUT_SECS, self.model_load_timeout_secs
-            ));
+            return Err(ConfigError::ModelLoadTimeoutTooLow {
+                minimum: MIN_MODEL_LOAD_TIMEOUT_SECS,
+                value: self.model_load_timeout_secs,
+            });
         }
 
         // Validate output configuration
         if self.output.results_dir.as_os_str().is_empty() {
-            return Err("output.results_dir is required".to_string());
+            return Err(ConfigError::ResultsDirMissing);
         }
 
         Ok(())
@@ -847,7 +904,7 @@ mod tests {
             model_load_timeout_secs: MIN_MODEL_LOAD_TIMEOUT_SECS - 1,
             ..Default::default()
         };
-        let error = too_short.validate().unwrap_err();
+        let error = too_short.validate().unwrap_err().to_string();
         assert!(
             error.contains("model_load_timeout_secs") && error.contains("120"),
             "the error must name the setting and the floor, got: {error}"
@@ -927,8 +984,13 @@ mod tests {
             parallelism: 0,
             ..Default::default()
         };
-        let err = config.validate().unwrap_err();
-        assert!(err.contains("parallelism"));
+        assert!(
+            matches!(
+                config.validate().unwrap_err(),
+                ConfigError::ParallelismTooLow { value: 0 }
+            ),
+            "must name the setting and the value it rejected"
+        );
     }
 
     #[test]
@@ -942,9 +1004,13 @@ mod tests {
             },
             ..Default::default()
         };
-        let err = config.validate().unwrap_err();
-        eprintln!("Error: {}", err);
-        assert!(!err.is_empty());
+        assert!(
+            matches!(
+                config.validate().unwrap_err(),
+                ConfigError::DockerImageMissing
+            ),
+            "an empty image must be reported as the missing setting, not a generic error"
+        );
     }
 
     #[test]
@@ -958,9 +1024,16 @@ mod tests {
             },
             ..Default::default()
         };
-        let err = config.validate().unwrap_err();
-        eprintln!("Error: {}", err);
-        assert!(!err.is_empty());
+        assert!(
+            matches!(
+                config.validate().unwrap_err(),
+                ConfigError::DockerTimeoutTooLow {
+                    minimum: 10,
+                    value: 5
+                }
+            ),
+            "the error must carry both the floor and the rejected value"
+        );
     }
 
     // ── QuickBenchConfig tests ────────────────────────────────────────

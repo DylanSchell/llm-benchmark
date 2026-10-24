@@ -69,7 +69,9 @@ pub async fn run_benchmark(
             .await
         {
             Ok(r) => vec![r],
-            Err(e) => return Err(anyhow::anyhow!("Exercise failed: {}", e)),
+            // `context` describes the attempt and keeps the source error as `source()`;
+            // interpolating it into the message printed the same text twice.
+            Err(e) => return Err(anyhow::Error::msg(e).context("exercise run failed")),
         }
     } else {
         let agent = make_agent(agent_kind, docker_client.clone());
@@ -92,7 +94,9 @@ pub async fn run_benchmark(
     );
 
     let persister = ResultPersister::new();
-    persister.print_summary(&results);
+    // A library has no terminal to own, so the summary goes to the log. A caller that
+    // wants it on stdout renders `ResultPersister::format_summary` itself.
+    info!("Benchmark summary:\n{}", persister.format_summary(&results));
     // Batch save doesn't use retry logic - just saves summary file.
     // Report failures loudly — this is the only persistence in this path.
     if let Err(e) = persister.save_results(

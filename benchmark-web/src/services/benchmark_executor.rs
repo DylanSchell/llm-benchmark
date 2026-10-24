@@ -480,7 +480,7 @@ impl BenchmarkExecutor {
                 thinking_level,
             )
             .await
-            .map_err(|e| anyhow::anyhow!("AoC day {} failed: {}", day.day, e))?;
+            .map_err(|e| anyhow::Error::msg(e).context(format!("AoC day {} failed", day.day)))?;
 
         session.emit_output(&result.output);
         if let Err(e) = self.save_aoc_result(&result, agent_name, model) {
@@ -540,7 +540,11 @@ impl BenchmarkExecutor {
                 timeout_override_secs,
             )
             .await
-            .map_err(|e| anyhow::anyhow!("Exercise failed: {}", e))
+            // The source error already says what broke; this says what was attempted.
+            .map_err(|e| {
+                anyhow::Error::msg(e)
+                    .context(format!("exercise run failed: {language}/{exercise_name}"))
+            })
     }
 
     /// Computes the Docker container timeout override for a retry.

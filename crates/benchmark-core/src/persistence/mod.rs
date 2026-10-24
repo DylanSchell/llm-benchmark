@@ -1,4 +1,5 @@
 use benchmark_types::agent::AgentResult;
+use std::fmt::Write as _;
 use std::fs;
 use std::path::{Path, PathBuf};
 use tracing::{info, warn};
@@ -276,8 +277,12 @@ impl ResultPersister {
         }
     }
 
-    /// Prints a summary of benchmark results to stdout.
-    pub fn print_summary(&self, results: &[AgentResult]) {
+    /// Render the end-of-run summary.
+    ///
+    /// Returns the text instead of printing it: this is a library, and the binary that
+    /// owns the terminal decides where the summary goes. `benchmark-cli` prints it, the
+    /// web dashboard can render it, and a test can assert on it.
+    pub fn format_summary(&self, results: &[AgentResult]) -> String {
         let successful = results.iter().filter(|r| r.success).count();
         let failed = results.len() - successful;
         let success_rate = if results.is_empty() {
@@ -286,24 +291,31 @@ impl ResultPersister {
             (successful * 100) as f64 / results.len() as f64
         };
 
-        println!("\n=== Benchmark Summary ===");
-        println!("Exercises run: {}", results.len());
-        println!("Tests passed: {} ({:.1}%)", successful, success_rate);
-        println!("Tests failed: {}", failed);
+        // Writing into a String cannot fail; the `let _ =` keeps that off clippy's radar.
+        let mut out = String::new();
+        let _ = writeln!(out, "\n=== Benchmark Summary ===");
+        let _ = writeln!(out, "Exercises run: {}", results.len());
+        let _ = writeln!(out, "Tests passed: {} ({:.1}%)", successful, success_rate);
+        let _ = writeln!(out, "Tests failed: {}", failed);
 
         if failed > 0 {
-            println!("\nFailed exercises:");
+            let _ = writeln!(out, "\nFailed exercises:");
             for result in results.iter().filter(|r| !r.success) {
-                println!("  - {}", result.exercise_name);
+                let _ = writeln!(out, "  - {}", result.exercise_name);
                 if !result.output.is_empty() {
                     let preview = crate::safe_truncate(&result.output, 200);
-                    println!("    Output preview: {}", preview);
+                    let _ = writeln!(out, "    Output preview: {}", preview);
                     if result.output.len() > 200 {
-                        println!("    ... ({} more characters)", result.output.len() - 200);
+                        let _ = writeln!(
+                            out,
+                            "    ... ({} more characters)",
+                            result.output.len() - 200
+                        );
                     }
                 }
             }
         }
+        out
     }
 }
 
@@ -601,7 +613,7 @@ mod tests {
     }
 
     #[test]
-    fn test_print_summary() {
+    fn test_format_summary_counts_and_lists_failures() {
         let persister = ResultPersister::new();
         let results = vec![
             create_test_result("test1", "java", true),
@@ -609,14 +621,27 @@ mod tests {
             create_test_result("test3", "java", false),
         ];
 
-        // Should not panic
-        persister.print_summary(&results);
+        let summary = persister.format_summary(&results);
+        assert!(summary.contains("Exercises run: 3"), "{summary}");
+        assert!(summary.contains("Tests passed: 2 (66.7%)"), "{summary}");
+        assert!(summary.contains("Tests failed: 1"), "{summary}");
+        assert!(summary.contains("  - test3"), "{summary}");
+        assert!(
+            !summary.contains("  - test1"),
+            "a passing exercise must not be listed under failed: {summary}"
+        );
     }
 
     #[test]
-    fn test_print_summary_empty() {
+    fn test_format_summary_empty() {
         let persister = ResultPersister::new();
-        persister.print_summary(&[]);
+        let summary = persister.format_summary(&[]);
+        assert!(summary.contains("Exercises run: 0"), "{summary}");
+        assert!(summary.contains("Tests passed: 0 (0.0%)"), "{summary}");
+        assert!(
+            !summary.contains("Failed exercises:"),
+            "an empty run has no failures to head: {summary}"
+        );
     }
 
     #[test]

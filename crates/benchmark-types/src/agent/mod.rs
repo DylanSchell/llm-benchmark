@@ -210,6 +210,14 @@ use crate::exercise_source::ExerciseSource;
 
 // `async_trait` boxes each future itself, so Clippy reads the generated `#[must_use]` as
 // redundant; there is no attribute in this source to remove (clippy::double_must_use).
+/// Error type carried across the [`Agent`] trait boundary.
+///
+/// Boxed rather than an enum so each adapter (`pi`, `claude`, `reference`) can fail with
+/// whatever it fails with — which is also why every caller has to re-wrap it into
+/// `anyhow` by hand and no caller can branch on the failure. A typed `AgentError` enum
+/// is the follow-up, and this alias is what makes it a one-file change.
+pub type AgentError = Box<dyn std::error::Error + Send + Sync + 'static>;
+
 #[allow(clippy::double_must_use)]
 #[async_trait::async_trait]
 pub trait Agent: Send + Sync {
@@ -220,7 +228,7 @@ pub trait Agent: Send + Sync {
         model: &str,
         thinking_level: Option<&str>,
         results_dir: &Path,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>>;
+    ) -> Result<AgentResult, AgentError>;
 
     /// Run an exercise with a custom Docker container timeout override (in seconds).
     /// When `Some(secs)`, overrides the default container timeout. When `None`,
@@ -233,7 +241,7 @@ pub trait Agent: Send + Sync {
         thinking_level: Option<&str>,
         results_dir: &Path,
         timeout_override_secs: Option<u64>,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>>;
+    ) -> Result<AgentResult, AgentError>;
 
     /// Run an Advent of Code 2015 puzzle day.
     ///
@@ -250,7 +258,7 @@ pub trait Agent: Send + Sync {
         model: &str,
         thinking_level: Option<&str>,
         results_dir: &Path,
-    ) -> Result<AgentResult, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<AgentResult, AgentError> {
         let _ = (
             day,
             work_dir,
