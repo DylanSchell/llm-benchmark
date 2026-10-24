@@ -32,6 +32,39 @@ jobs:
       - name: Verify docker/ inputs against runner.lock
         run: ./build.sh docker-verify
 
+  # Nothing in CI checked formatting or lints, which is how the workspace reached 757 rustfmt
+  # hunks and 144 clippy warnings without a single signal. One Linux job is enough: both checks
+  # read source, not machine code, so a second architecture would only re-lint identical bytes.
+  # `-D warnings` is affordable because clippy is at zero warnings on this tree — keep it there,
+  # or drop the specific lint at its site with a reason rather than lowering the bar globally.
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Install Rust toolchain
+        # rustfmt and clippy are not in the minimal profile, so they are named explicitly.
+        run: |
+          set -euo pipefail
+          toolchain="$(awk -F'"' '/^channel = /{print $2; exit}' rust-toolchain.toml)"
+          rustup toolchain install "${toolchain}" --profile minimal --no-self-update \
+            -c rustfmt -c clippy
+          rustup default "${toolchain}"
+
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          # Same key as the build job: clippy has to run the exercises build.rs, which is the
+          # slow part of a cold cache there too.
+          key: exercises-${{ hashFiles('exercises.manifest.yaml', 'exercises.lock.yaml') }}
+
+      # First and cheapest: a formatting failure should not wait on a full compile.
+      - name: Check formatting
+        run: cargo fmt --all --check
+
+      - name: Check clippy
+        # --all-targets lints tests too; the build job compiles them but never lints them.
+        run: cargo clippy --all --workspace --all-targets --locked -- -D warnings
+
   build:
     name: build ${{ matrix.os }}/${{ matrix.arch }}
     strategy:
@@ -95,8 +128,12 @@ jobs:
           # into the key keeps a changed exercise selection from reusing a stale bundle.
           key: exercises-${{ hashFiles('exercises.manifest.yaml', 'exercises.lock.yaml') }}
 
-      - name: Unit tests
-        run: cargo test --release --workspace --lib --bins --locked
+      - name: Unit and integration tests
+        # --tests pulls in benchmark-web's integration suites (html_equality, template_rendering
+        # — 158 tests), which boot the server as a subprocess and check the HTML/JSON parity with
+        # the Java reference. Filtering to --lib --bins had been excluding them silently, so that
+        # half of the suite had never run in CI.
+        run: cargo test --release --workspace --lib --bins --tests --locked
 
       # After the tests, so the packaged binaries are definitely the real ones rather than a test
       # harness. Release dependencies are already compiled by then, so this is cheap.

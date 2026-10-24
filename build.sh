@@ -24,7 +24,8 @@ Commands:
   docker-run     Run a command inside the runner container
   docker-verify  Check docker/ inputs against docker/runner.lock
   cargo          Pass-through to cargo
-  test           Run all workspace tests
+  test           Run all workspace tests (unit + integration, as CI does)
+  lint           Formatting and clippy, exactly as the CI lint job runs them
   clean          Clean build artifacts
 
 Options:
@@ -397,6 +398,13 @@ test_all() {
     cargo test --workspace
 }
 
+# The same two commands as the `lint` job in .github/workflows/build.yml, so a gate failure is
+# reproducible locally instead of being a CI-only mystery. set -e stops at the first one.
+lint_all() {
+    cargo fmt --all --check
+    cargo clippy --all --workspace --all-targets --locked -- -D warnings
+}
+
 clean_artifacts() {
     rm -rf target
     echo "Cleaned build artifacts." >&2
@@ -414,7 +422,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
             --arch)  ARCH="$2";       shift 2 ;;
             --tag)   TAG="$2";        shift 2 ;;
             --image) IMAGE_REPO="$2";  shift 2 ;;
-            docker-build|build|docker-push|push|docker-run|run|docker-verify|verify|cargo|test|clean)
+            docker-build|build|docker-push|push|docker-run|run|docker-verify|verify|cargo|test|lint|clean)
                 COMMAND="$1"
                 shift
                 ;;
@@ -429,6 +437,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
         docker-verify|verify) docker_verify ;;
         cargo)                cargo_cmd "$@" ;;
         test)                 test_all ;;
+        lint)                 lint_all ;;
         clean)                clean_artifacts ;;
         *)                    usage ;;
     esac
