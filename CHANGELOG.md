@@ -1,3 +1,48 @@
+# Changelog — v1.5.0: day 22 stopped charging for a spell the player never cast
+
+Every Advent of Code day is graded against `benchmark_aoc2015::solve`, so a wrong reference answer is
+not a bug in a corner of the code — it is a wrong score. Day 22 (Wizard Simulator 20XX) had one. Its
+reference solver ticked the start-of-turn effects and then went straight to the mana check and the
+spell cast, so a boss that Poison killed **at the start of the player's turn** was made to cost one
+more spell. The puzzle says effects apply at the start of both turns and that the first character at
+or below 0 hit points loses; the fight is over at that tick, and nothing more is spent. Agents that
+got the rules right — which is the entire point of the exercise — could not match the expected answer.
+
+- **The shape of the error** — one Magic Missile (53) high whenever the optimal line ended on a
+  poison tick at the turn start, plus a subtler inversion: a player with too little mana to cast was
+  reported as having *lost* a fight they had already won, pruning a winning line entirely. It bit
+  **part 1 as often as part 2** (29 part-1-only, 25 part-2-only, 12 both of the 408 boss configurations
+  the generator can emit — 66, 16%; 21% of sampled seed users).
+- **The default seed was one of them** — seed `benchmark`, the UI default, generates a 79 hp /
+  7 damage boss: part 1 was 1764 and correct, part 2 was graded at 1877 when the true optimum is
+  **1824**. Day 22 part 2 therefore failed for a correct agent on the configuration most runs use.
+- **`crates/benchmark-aoc2015/src/days/day22.rs`** — `simulate` now returns a win when the start-of-turn
+  effects kill the boss, before the spell is chosen or paid for.
+- **Armour on the turn a Shield expires** — the same function read the Shield timer *before* the
+  boss-turn tick, crediting +7 armour to a shield whose timer had just reached 0, which the rules text
+  ("if this decreases the timer to zero, the effect ends") and both worked examples contradict. It does
+  not change any answer in the generated range; it is corrected so the model matches the text it is
+  graded against.
+- **The memo now prunes** — `search`'s Dijkstra memo was keyed on the full state *including* `spent`,
+  which is the value being minimised, so its cheaper-path check could never fire and only exact
+  duplicates were skipped. Keyed on the position without `spent`, the pruning its comment always
+  claimed happens (~20% faster across the generated range).
+- **Tested against the puzzle text, not against itself** — the new tests replay the second worked
+  example from `descriptions/day22.md` round by round, asserting every HP/mana/timer value the text
+  logs, which pins what a "turn" means; then the two semantic regressions above, the real 2015 input
+  (71 hp / 10 damage → 1824 / 1937, unchanged — that input is why this went unnoticed), and the
+  `benchmark` seed's answers.
+- **Results move** — day 22 scores recorded before v1.5.0 graded against the old model and are not
+  comparable with later ones on that day; the other 24 days are unaffected. Regenerating history is
+  not possible: an agent's answer was correct or it was not, judged against the model of the day.
+- **`v1.4.1` → `v1.5.0`** — the version is also the runner-image tag, so the bump needs a real build
+  to refresh `docker/runner.lock` even though no file under `docker/` changed: the lock now records
+  1.5.0 against the unchanged input hash (`715f0d7fb4a5…`). Rebuilt cold for `linux/{amd64,arm64}`: the
+  layer diff-ids differ from 1.4.1 because Docker layers are not byte-reproducible, but every resolved
+  version spot-checked across the two images — JDK, Node, Go, Python, clang, cmake, maven, binutils,
+  Boost, rustc/cargo, uv, the npm test dependencies, pi 1.0.2 — is the same, so nothing moved under the
+  benchmark. Publishing it is still a separate `./build.sh docker-push`.
+
 # Changelog — model load gate: a weight swap is no longer billed to an exercise
 
 With a load-on-demand server (llama-swap), the first request after an idle period reads the weights

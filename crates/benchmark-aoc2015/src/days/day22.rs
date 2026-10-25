@@ -34,7 +34,7 @@ fn parse(input: &str) -> (i64, i64) {
     (hp, dmg)
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 struct State {
     hp: i64,
     mana: i64,
@@ -55,6 +55,14 @@ impl PartialOrd for State {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
+}
+
+/// Everything about a fight that decides how it can continue, minus the mana spent so
+/// far. `bdmg` is fixed for a whole search, so it is left out.
+type Position = (i64, i64, i64, i64, i64, i64);
+
+fn position(s: &State) -> Position {
+    (s.hp, s.mana, s.bhp, s.shield, s.poison, s.recharge)
 }
 
 fn apply_effects(s: &State) -> State {
@@ -82,6 +90,13 @@ fn simulate(s: &State, spell: usize, hard: bool) -> Option<(State, i64, bool)> {
         }
     }
     cur = apply_effects(&cur);
+    // Effects resolve at the start of the player's turn, and the first character at or
+    // below 0 hit points loses. A boss killed by Poison *there* is dead before another
+    // spell is cast, so the fight ends with no further mana spent — including when the
+    // player is too broke to cast anything at all. The returned cost is 0: no spell.
+    if cur.bhp <= 0 {
+        return Some((cur, 0, true));
+    }
     let (cost, dmg, heal, dur, effect) = SPELLS[spell];
     if cur.mana < cost {
         return None;
@@ -108,12 +123,13 @@ fn simulate(s: &State, spell: usize, hard: bool) -> Option<(State, i64, bool)> {
     if cur.bhp <= 0 {
         return Some((cur, cost, true));
     }
-    let shield_active = cur.shield > 0;
     cur = apply_effects(&cur);
     if cur.bhp <= 0 {
         return Some((cur, cost, true));
     }
-    let armor = if shield_active { 7 } else { 0 };
+    // Armour is whatever Shield is active *after* the boss-turn tick: an effect whose
+    // timer reaches 0 has ended, so a shield expiring here blocks nothing.
+    let armor = if cur.shield > 0 { 7 } else { 0 };
     let dmg_to_player = (cur.bdmg - armor).max(1);
     cur.hp -= dmg_to_player;
     if cur.hp <= 0 {
@@ -137,14 +153,17 @@ fn search(bhp0: i64, bdmg: i64, hard: bool) -> i64 {
     heap.push(start);
     let mut best = i64::MAX;
     // Dijkstra-style memo: the cheapest cost at which we've already expanded a
-    // state. Reaching the same state at a higher (or equal) cost can never lead
+    // position. Reaching the same position at a higher (or equal) cost can never lead
     // to a cheaper win, so it can be pruned. Without this, the search re-expands
-    // identical states many times and explodes for high-HP / low-damage bosses.
-    let mut best_seen: std::collections::HashMap<State, i64> = std::collections::HashMap::new();
-    best_seen.insert(start, 0);
+    // identical positions many times and explodes for high-HP / low-damage bosses.
+    //
+    // Keyed on the position *without* `spent`: `spent` is what we are minimising, so
+    // keying on it would make every path look like a new position and prune nothing.
+    let mut best_seen: std::collections::HashMap<Position, i64> = std::collections::HashMap::new();
+    best_seen.insert(position(&start), 0);
     while let Some(s) = heap.pop() {
-        // Skip if a cheaper path already expanded this state.
-        if best_seen.get(&s).copied().unwrap_or(i64::MAX) < s.spent {
+        // Skip if a cheaper path already expanded this position.
+        if best_seen.get(&position(&s)).copied().unwrap_or(i64::MAX) < s.spent {
             continue;
         }
         if s.spent >= best {
@@ -156,7 +175,7 @@ fn search(bhp0: i64, bdmg: i64, hard: bool) -> i64 {
                     best = best.min(next.spent);
                 } else if next.spent < best {
                     // Only expand if this is the cheapest known cost for `next`.
-                    match best_seen.entry(next) {
+                    match best_seen.entry(position(&next)) {
                         std::collections::hash_map::Entry::Occupied(mut e) => {
                             if next.spent < *e.get() {
                                 e.insert(next.spent);
@@ -214,18 +233,117 @@ mod gen_tests {
         }
     }
 
-    // The memoised search must match a brute-force reference on a small, solvable
-    // case. Guards the optimisation against changing the answer.
+    // The rules as written in `descriptions/day22.md`, applied to the real Advent of
+    // Code 2015 input (also the generator's fallback). Unchanged by the turn-start fix
+    // below — that is why this input never exposed the bug.
     #[test]
-    fn memoised_search_matches_known_answer() {
-        // Real AoC 2015 day 22 input. Verified solvable; the search finds a finite
-        // optimal cost for both parts quickly.
-        let input = "Hit Points: 71\nDamage: 10\n";
-        let (p1, p2) = solve(input);
-        assert!(p1 != i64::MAX.to_string() && p2 != i64::MAX.to_string());
-        assert!(p1.parse::<i64>().unwrap() > 0);
-        assert!(p2.parse::<i64>().unwrap() > 0);
-        // Part 2 (hard mode) always costs at least as much as part 1.
-        assert!(p2.parse::<i64>().unwrap() >= p1.parse::<i64>().unwrap());
+    fn solves_the_real_2015_input() {
+        let (p1, p2) = solve("Hit Points: 71\nDamage: 10\n");
+        assert_eq!((p1.as_str(), p2.as_str()), ("1824", "1937"));
+    }
+
+    // Effects resolve at the start of the player's turn, so Poison that brings the boss
+    // to 0 there wins the fight before another spell is cast or paid for. The solver
+    // used to fall through to the cast, overcharging by a spell (and treating a broke
+    // player as having lost a fight they had already won).
+    #[test]
+    fn poison_kill_at_turn_start_costs_no_extra_spell() {
+        let s = State {
+            hp: 20,
+            mana: 0,
+            bhp: 2,
+            bdmg: 10,
+            shield: 0,
+            poison: 1,
+            recharge: 0,
+            spent: 1824,
+        };
+        let (next, _cost, won) =
+            simulate(&s, 0, false).expect("poison kills the boss at the turn start");
+        assert!(won);
+        assert_eq!(
+            next.spent, 1824,
+            "no mana may be charged after the boss dies"
+        );
+    }
+
+    // An effect whose timer reaches 0 has ended, so a shield expiring at the start of
+    // the boss turn blocks nothing.
+    #[test]
+    fn shield_expiring_on_the_boss_turn_blocks_nothing() {
+        let s = State {
+            hp: 50,
+            mana: 500,
+            bhp: 100,
+            bdmg: 10,
+            shield: 2,
+            poison: 0,
+            recharge: 0,
+            spent: 0,
+        };
+        let (next, _, won) = simulate(&s, 0, false).expect("both survive the round");
+        assert!(!won);
+        assert_eq!(next.shield, 0);
+        assert_eq!(next.hp, 40, "an expired shield must not reduce boss damage");
+    }
+
+    // The second worked example in the puzzle text, round by round: player 10 hp /
+    // 250 mana, boss 14 hp / 8 damage, casting Recharge, Shield, Drain, Poison, Magic
+    // Missile. Every value asserted here is quoted from `descriptions/day22.md`, so
+    // this is the authoritative check on what a "turn" means.
+    #[test]
+    fn reproduces_the_puzzle_text_walkthrough() {
+        let mut s = State {
+            hp: 10,
+            mana: 250,
+            bhp: 14,
+            bdmg: 8,
+            shield: 0,
+            poison: 0,
+            recharge: 0,
+            spent: 0,
+        };
+        let casts = [4usize, 2, 1, 3, 0];
+        // (hp, mana, boss hp, shield, poison, recharge) as the text logs them at the
+        // start of the next player turn.
+        let after = [
+            (2, 122, 14, 0, 0, 4),
+            (1, 211, 14, 5, 0, 2),
+            (2, 340, 12, 3, 0, 0),
+            (1, 167, 9, 1, 5, 0),
+        ];
+        for (i, (hp, mana, bhp, shield, poison, recharge)) in after.into_iter().enumerate() {
+            let (next, _, won) = simulate(&s, casts[i], false).expect("player survives the round");
+            assert!(!won, "round {} should not end the fight", i + 1);
+            assert_eq!(
+                (
+                    next.hp,
+                    next.mana,
+                    next.bhp,
+                    next.shield,
+                    next.poison,
+                    next.recharge
+                ),
+                (hp, mana, bhp, shield, poison, recharge),
+                "after round {}",
+                i + 1
+            );
+            s = next;
+        }
+        // "Poison deals 3 damage. This kills the boss, and the player wins."
+        let (next, _, won) = simulate(&s, casts[4], false).expect("player wins");
+        assert!(won);
+        assert_eq!(next.spent, 641);
+    }
+
+    // The default seed in the web UI generates a 79 hp / 7 damage boss, whose part 2 is
+    // won by Poison at the start of a player turn. The old solver charged one more Magic
+    // Missile (1877), so a correct agent could never match it.
+    #[test]
+    fn default_seed_day22_is_scored_at_the_true_optimum() {
+        let input = crate::days::generate("benchmark", 2015, 22);
+        assert_eq!(input, "Hit Points: 79\nDamage: 7\n");
+        let (p1, p2) = solve(&input);
+        assert_eq!((p1.as_str(), p2.as_str()), ("1764", "1824"));
     }
 }
