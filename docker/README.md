@@ -96,16 +96,30 @@ It pushes `<image>:<version>` and then `<image>:latest`, and refuses to run unle
   not be published anywhere — see [Licensing](#licensing). Override deliberately with
   `PUSH_UNLICENSED=1`.
 
-Authenticate first:
+Authenticate with a token that can write to the package. For a package under a **personal** account
+that means a *classic* PAT with `write:packages` (`ghp_…`):
 
 ```bash
-docker login ghcr.io
+echo "<token>" | docker login ghcr.io -u <your-username> --password-stdin
 ```
 
-What it publishes is **single-platform**: whichever architecture you built. Shipping both
-`linux/amd64` and `linux/arm64` means building and pushing each, or moving to a
-`buildx --platform linux/amd64,linux/arm64 --push` build — which cannot also load into the local
-image store, so it is a different workflow.
+A *fine-grained* PAT (`github_pat_…`) cannot write to a personal-account package, and the trap is that
+`docker login` still prints `Login Succeeded`: GHCR mints a read-only session from it, so pulls and
+`docker manifest inspect` keep working and the failure surfaces only on push, as
+`permission_denied: The token provided does not match expected scopes`. To check the credential Docker
+is actually using without printing it — the header appears for a classic token and is absent for a
+fine-grained one:
+
+```bash
+echo "https://ghcr.io" | docker-credential-osxkeychain get | python3 -c 'import sys,json;print(json.load(sys.stdin)["Secret"])' | xargs -I{} curl -s -o /dev/null -D - https://api.github.com/user -H "Authorization: Bearer {}" | grep -i "^x-oauth-scopes\|^HTTP"
+```
+
+What it publishes is **whatever was built**. A host-platform build publishes one manifest; a
+`./build.sh docker-build --arch linux/amd64,linux/arm64` build yields an OCI index and the push
+publishes **both** architectures from it — `--provenance=false` is what keeps that index digest stable
+across rebuilds. `docker-push` reports the platform set it is about to publish, and warns when the
+registry already serves more platforms for the tag than the push would leave behind: the failure mode
+worth guarding is a later single-platform rebuild quietly narrowing a published multi-platform tag.
 
 A published package is **private by default**. Container registry storage and bandwidth are
 currently free, so visibility is a sharing decision rather than a cost one; change it under
